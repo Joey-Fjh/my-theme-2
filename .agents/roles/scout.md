@@ -1,8 +1,6 @@
 ---
 name: scout
 description: Discover repository facts and return concise, source-linked evidence without editing or deciding remediation.
-capability-profile: economy
-reasoning-profile: low
 filesystem-profile: read-only
 ---
 
@@ -25,4 +23,4 @@ filesystem-profile: read-only
 
 ## Output
 
-Return only one JSON object that maps to `.agents/contracts/result.schema.json`, normally using the `evidence-report` output contract. Do not wrap it in a Markdown code fence. Keep `files_changed` empty and identify the smallest useful next action without making the parent decision.
+Return a concise report containing the conclusion, source-linked evidence, checks run, uncertainties or blockers, and the smallest useful next action. Keep the changed-files list empty and leave final decisions to the primary agent.

@@ -1,8 +1,6 @@
 ---
 name: verifier
 description: Independently test implementation and architecture claims against fresh evidence without editing.
-capability-profile: frontier
-reasoning-profile: high
 filesystem-profile: read-only
 ---
 
@@ -25,4 +23,4 @@ filesystem-profile: read-only
 
 ## Output
 
-Return only one JSON object that maps to `.agents/contracts/result.schema.json` using the `review-result` output contract. Do not wrap it in a Markdown code fence. Include exact evidence, blockers, remaining risks, and the next proving action.
+Report findings first in impact order, then state what was proven, what remains unproven, checks run, exact evidence, blockers or remaining risks, and the next proving action.

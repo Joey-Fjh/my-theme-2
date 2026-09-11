@@ -1,36 +1,38 @@
 ---
 name: orchestrate-agents
-description: Orchestrate bounded multi-agent project work with isolated context, explicit roles, structured handoffs, and independent verification. Use after agent-router for broad audits, parallel read-heavy discovery, noisy command output, cross-domain work, or changes that benefit from separating implementation and review. Do not use for trivial, single-step, or tightly coupled work.
+description: Coordinate bounded multi-agent work only when agent-router determines that isolated context, independent verification, or parallel execution materially improves the result.
 ---
 
 # Orchestrate Agents
 
-Multi-agent execution dispatcher after `agent-router` selects it. Read `docs/references/agent-workflow/multi-agent-architecture.md` before delegating.
+Use this capability-aware SOP only after `agent-router` selects delegation.
 
 ## Workflow
 
-1. Confirm the delegation test passes.
-2. Keep the primary agent as orchestrator and final decision owner.
-3. Create one bounded task capsule per delegated role using `.agents/contracts/task.schema.json`.
-4. Give each agent only task-local context, files, rules, permissions, and acceptance criteria.
-5. Parallelize independent read-only work; keep dependent or write-heavy work sequential.
-6. Allow only one writer in a shared worktree.
-7. Require delegated results to map to `.agents/contracts/result.schema.json` and pass the shared runtime validator when available.
-8. Reject invalid results; allow one format-only correction, then mark blocked.
-9. Consolidate evidence before completion claims.
-10. Persist only accepted decisions in the matching reference or `docs/agent/context.md`.
+1. Confirm that native delegation tools are available and that the user-authorized delivery mode permits delegation.
+2. If delegation is unavailable, continue sequentially or provide an explicit prompt-only handoff; do not pretend independent execution occurred.
+3. Keep the primary agent responsible for task division, decisions, user communication, and final acceptance.
+4. Give each delegated agent a bounded task containing the objective, scope and authority, necessary context, acceptance criteria, and stop conditions.
+5. Parallelize only independent work. Keep dependent work sequential and allow only one writer in a shared worktree.
+6. Require a concise result containing status and conclusion, evidence, changed files, validation, and unresolved risks or blockers.
+7. Check delegated claims against repository evidence before accepting them.
 
-## Role Selection
+## Roles
 
-Read `.agents/roles/<role>.md` before assigning: `scout`, `implementer`, `validator`, `verifier`, or `docs-steward`. The orchestrator role is in `.agents/roles/orchestrator.md`.
+- `scout`: read-only discovery and evidence.
+- `implementer`: the sole writer for one approved change scope.
+- `verifier`: independent read-only review and validation.
+
+Read the matching `.agents/roles/<role>.md` before assigning a named role.
 
 ## Guardrails
 
-- Do not pass full conversation history when a task capsule is sufficient.
+- Pass only the context needed for the delegated objective; do not fork full conversation history by default.
 - Do not return raw logs when a concise evidence summary is enough.
-- Do not let delegated agents expand scope, approve their own work, change merchant-owned content without authorization, or create more agents (`allow_nested_delegation: false`).
+- Do not let delegated agents expand scope, approve their own work, change merchant-owned content without authorization, or create more agents.
 - Do not use multiple agents merely to imitate parallelism.
+- Do not hardcode vendor model names or assume every client exposes delegation.
 
 ## Fallback
 
-If the client cannot create subagents or enforce role boundaries, run the lifecycle sequentially and report that independent execution was unavailable.
+If native delegation or required isolation is missing, use the primary agent sequentially. When the user requested external execution instead, return a self-contained task prompt with scope, acceptance criteria, validation, and stop conditions.

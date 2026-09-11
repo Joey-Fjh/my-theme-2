@@ -8,7 +8,7 @@ This file is the always-on entry point for agents working in this repository. Ke
 
 ## Project Context
 
-This is a custom Shopify theme maintained as a multi-industry, sellable Shopify Theme Store candidate.
+This is an internal Shopify Skeleton Theme mother template for building future themes. It keeps a minimal, platform-complete architecture and quality baseline; derived themes own their business features, page design, and Theme Store positioning.
 
 Tech stack:
 
@@ -33,18 +33,17 @@ Runtime constraints:
 - `AGENTS.md` is the source entry file. `CLAUDE.md` is a symlink adapter to `AGENTS.md`.
 - `.agents/skills/` is the single source of truth for project skills. `.claude/skills/` is a symlink adapter to `../.agents/skills`.
 - Cursor discovers `.agents/skills/` directly; do not add a duplicate `.cursor/skills/` tree or symlink.
-- `.agents/roles/` and `.agents/contracts/` are the vendor-neutral sources for multi-agent roles and structured handoffs.
-- Tool-specific agent definitions such as `.codex/agents/*.toml` and `.cursor/agents/*.md` are thin adapters to the canonical `.agents/` role files.
+- `.agents/roles/` contains the vendor-neutral Scout, Implementer, and Verifier role contracts.
+- Tool-specific agent definitions such as `.codex/agents/*.toml`, `.cursor/agents/*.md`, and `.claude/agents/*.md` are thin adapters to the canonical `.agents/` role files.
 - Tool-specific entry points may use relative symlinks to source files or directories. Do not copy rule or skill files into adapter paths.
 - Tool-specific configuration, including MCP, permissions, local settings, and hooks, belongs in tool-owned directories such as `.claude/`, `.codex/`, or `.cursor/`; it does not change the project skill source.
 - `docs/` is the agent-readable knowledge layer. Read referenced docs only when the task needs them.
-- `docs/references/agent-workflow/` defines task routing and multi-agent collaboration policy. Read the matching reference for non-trivial agent work.
+- `agent-router` owns task routing; `orchestrate-agents` owns the optional delegation SOP.
 
 Important paths:
 
 - `.agents/skills/`: project skills
 - `.agents/roles/`: portable multi-agent role contracts
-- `.agents/contracts/`: task and result schemas
 - `docs/references/`: on-demand architecture explanations and decision boundaries
 - `docs/agent/`: short current-state and cross-session handoff
 - `sections/`, `snippets/`, `assets/`, `tailwind/`, `locales/`: theme implementation
@@ -80,8 +79,7 @@ Agent behavior rules:
 - Use Context7 MCP for Tailwind CSS documentation queries. Use Shopify Dev MCP for Shopify API, Liquid, and theme architecture queries. Do not guess framework behavior when MCP is available.
 - Users do not need to manually specify skills. For non-trivial tasks, use `agent-router` first to choose skills, docs, and validation.
 - Use `orchestrate-agents` only after `agent-router` selects it or the user explicitly requests delegation. Parallelize independent read-only work, keep one writer per shared worktree, and keep the primary agent responsible for decisions and user communication.
-- Delegated agents receive bounded task capsules and return structured evidence. They must not receive full conversation history by default, approve their own work, or create more agents; nested delegation is not supported by the initial contract.
-- Where the active client supports lifecycle hooks, validate delegated results against `.agents/contracts/result.schema.json` before accepting them. Permit one format-only correction attempt, then report the delegated task as blocked if its result remains invalid.
+- Delegated agents receive only the context needed for a bounded task and return a concise conclusion, evidence, changed files, validation, and unresolved risks. They must not approve their own work or create more agents.
 - For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
 - If the user asks for review, orientation, or a prompt, do not refactor or implement unless they explicitly ask for implementation.
 - Facts discoverable from the repository must be inspected before asking the user. Ask before editing when the unknown is merchant-owned configuration, product/design preference, architecture direction, or launch-risk tradeoff.
@@ -130,8 +128,8 @@ Read only the matching reference for the current task:
 - i18n keys, locale structure, schema translation, hardcoded copy review: `docs/references/code-review/i18n-checklist.md`
 - Shopify browser matrix, Tailwind build boundary, static compatibility checks, progressive enhancement, and WebKit guardrails: `docs/references/code-review/browser-compatibility.md`
 - Launch readiness, Lighthouse ownership classification, cleanup safety, ignore-file boundaries, review output, and gate validation: `docs/references/code-review/launch-gate.md`
-- Skill/docs routing, non-trivial task definition, and user overrides: `docs/references/agent-workflow/skill-routing.md`
-- Multi-agent context isolation, role boundaries, task/result contracts, concurrency, and vendor adapters: `docs/references/agent-workflow/multi-agent-architecture.md`
+- Agent routing, delivery mode, scope, and validation selection: `.agents/skills/agent-router/SKILL.md`
+- Optional delegation, bounded handoffs, concurrency, and fallback behavior: `.agents/skills/orchestrate-agents/SKILL.md`
 
 Use `agent-router` for broad, ambiguous, multi-step, cleanup, Lighthouse, architecture, rule-setting, third-party skill, governance, or cross-session work.
 
@@ -146,7 +144,7 @@ Project skills live in `.agents/skills/`.
 - User skill names are optional overrides. If the user states intent without naming a skill, `agent-router` chooses the route.
 - Remaining project skills: `agent-router`, `orchestrate-agents`, `build-svg-icons`, `check-theme-architecture`, and `check-i18n`.
 - Use the routed project skill for validation, i18n, or icon work; for implementation, inspect current source and the matching architecture reference.
-- If automatic skill triggering is unavailable, follow `docs/references/agent-workflow/skill-routing.md` and manually open only the routed skill.
+- If automatic skill triggering is unavailable, open `agent-router` manually for non-trivial work and then only the Skill or reference it selects.
 - External skills are not project rule sources until reviewed, adapted, and installed in `.agents/skills/`.
 
 Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks or when `agent-router` classifies the task as skills/governance work.
@@ -158,10 +156,8 @@ Do not create, install, or approve skills during ordinary theme work. Discuss sk
 Default to the smallest command that proves the change. Reserve full `npm.cmd run lint` and `npm.cmd test` for explicit user request or PR, version/release, and Theme Store submission gates. In this Windows PowerShell workspace, run scripts through `npm.cmd`.
 
 ```bash
-npm.cmd run lint          # i18n, theme architecture, agent orchestration, and format checks
+npm.cmd run lint          # i18n, theme architecture, compatibility, and format checks
 npm.cmd run lint:liquid-syntax # strict Liquid output parsing guard
-npm.cmd run lint:agents   # multi-agent skills, roles, contracts, hooks, and vendor adapters
-npm.cmd run test:agent-hooks # runtime result-schema hook acceptance and rejection cases
 npm.cmd run lint:theme    # Liquid, JS architecture, Alpine, HTTP/cart, heading rules
 npm.cmd run lint:i18n     # locale keys, translated strings, schema copy, ARIA copy
 npm.cmd run lint:compat   # CSS, JS, and embedded Liquid browser compatibility checks
@@ -178,7 +174,7 @@ During development, choose the narrowest command for the changed surface. Exampl
 - Liquid, JS, or theme architecture changes: `npm.cmd run lint:theme` or `npm.cmd run test:theme-check`
 - Locale or i18n changes: `npm.cmd run lint:i18n`
 - Tailwind source changes: `npm.cmd run scan:compat` (rebuilds `assets/tailwind.output.css` first)
-- Agent skills, roles, or contracts: `npm.cmd run lint:agents`
+- Agent rules, Skills, roles, or adapters: validate syntax and links for the changed files, then inspect the resulting diff.
 
 Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or before opening a PR, cutting a version/release, or submitting to the Theme Store. Use `npm.cmd run build:tw` only for intermediate Tailwind iteration. Run `npm.cmd run build:svg` only when `icons/` source changed. Do not run rewriting formatters unless the user asks.
 
@@ -186,6 +182,7 @@ Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or
 
 ## Gotchas
 
+- Git tracks `CLAUDE.md` and `.claude/skills` as symlinks. On Windows, enable Developer Mode or equivalent symlink permission and set `git config core.symlinks true` before checkout. If Git materialized them as plain files containing only their target paths, restore those two paths after fixing the local setting; do not replace them with duplicated rules or Skills.
 - Shopify theme assets are flat under `assets/`; do not create nested runtime asset directories.
 - Do not code-fix Lighthouse findings until code ownership is clear.
 - Browserslist config drives static compatibility checks, not Tailwind v4's build target. Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision.

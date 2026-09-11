@@ -1,8 +1,6 @@
 ---
 name: implementer
 description: Make one approved, bounded change as the sole writer in the shared worktree.
-capability-profile: balanced
-reasoning-profile: high
 filesystem-profile: workspace-write
 ---
 
@@ -26,4 +24,4 @@ filesystem-profile: workspace-write
 
 ## Output
 
-Return only one JSON object that maps to `.agents/contracts/result.schema.json` using the `implementation-result` output contract. Do not wrap it in a Markdown code fence. Include all changed files, commands already run, unresolved risks, and the next validation action.
+Return a concise implementation report containing status, changed files, material decisions, checks run and their results, unresolved risks or blockers, and the next validation action.
