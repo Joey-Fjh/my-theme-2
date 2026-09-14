@@ -106,6 +106,14 @@ Keep three separate views: Shopify mandatory compliance, Theme Store optional fe
 - Preserve the tracked `CLAUDE.md -> AGENTS.md` and `.claude/skills -> ../.agents/skills` symlinks as the zero-duplication Claude entry and Skill-discovery adapters. Their current plain-file appearance on this Windows checkout is caused by repository-local `core.symlinks = false`, not by invalid repository link metadata. Document the Windows prerequisite and targeted restore procedure; do not replace the links with copied rules, wrapper Skills, or a second Claude entry file.
 - Retain three thin native Claude subagent adapters under `.claude/agents/`: Scout and Verifier use `permissionMode: plan`; Implementer inherits the parent permission context. All three omit `model` and inherit the active parent model. Do not add Claude adapters for Docs Steward or Validator.
 - Remove project-level WebSearch and Anthropic-document WebFetch pre-approvals from `.claude/settings.json`; ordinary network access follows the active user/session permission policy. Retain the current MCP server enablement list as approved thin Claude configuration.
+- The Skeleton keeps Tailwind, but changes what drives the build. Tailwind stops scanning Liquid files and instead generates an explicitly enumerated utility vocabulary through `@source inline(...)` with `source(none)`. The generated global asset stylesheet therefore has a fixed size that does not grow with the number of sections, and Tailwind becomes an architecture-level vocabulary generator rather than a per-change compile dependency.
+- `npm.cmd run build:tw` is retained but only runs when the vocabulary manifest itself changes. Ordinary section work is buildless: any class in the manifest, including responsive `pc:`/`fw:` variants, is already present in the committed asset, so styles can also be edited in the Shopify admin code editor. Buildless daily editing is a confirmed Skeleton requirement; a zero-build repository is not.
+- Component CSS moves to each section, block, or snippet's own `{% stylesheet %}` tag, which Shopify automatically subsets per render tree. `tailwind.components.css` and `tailwind.snippets.css` are removed as whole layers rather than migrated; they are Ceylune business CSS and are not part of the mother template.
+- The single global asset stylesheet owns: reset and native element defaults, the `@theme inline` token bridge, typography tiers (`heading-h*`, `body-*`, `typo-subtitle`), single-element control primitives (`btn`, `field`, `badge`, `close-button`, `focus-ring`, `icons`, `skip-link`, `links-*`), cross-cutting vocabulary (`surface-*`, `z-layer-*`, `place-*`, `container-page`), the manifest utilities, and only the motion capabilities reused across unrelated files (`panel-motion-*`, `is-open`, `icons-animate-*`). Section-owned motion such as `watermark-marquee__*` and `scrolling-icon-with-text__*` moves to `{% stylesheet %}`.
+- Anything reused by multiple unrelated files must stay in the global asset stylesheet. Subsetting only preserves classes defined in the same file or a rendering ancestor, and asset stylesheets are exempt from subsetting, so cross-file shared classes belong there by platform requirement, not by preference.
+- One boundary rule governs where CSS goes: if the manifest utilities can express it, it must not be written into `{% stylesheet %}`. `{% stylesheet %}` carries only what the manifest cannot express, such as complex selectors, pseudo-elements, keyframes, container queries, `:has()`, grid template areas, and exact one-off values.
+- Duplication risk is handled by naming separation and that boundary rule, not by Theme Check. `ValidScopedCSSClass` detects missing cross-file definitions, not duplicated declarations. A future `lint:theme` rule may flag `{% stylesheet %}` blocks that contain only atomic property declarations, but it is not required now.
+- Measured baseline for this decision, recorded so it need not be re-measured: `assets/tailwind.output.css` is 369 KB raw, 41 KB gzip, 28 KB brotli, loaded as the only theme stylesheet link; its layer split is utilities 166 KB, snippets 106 KB, components 56 KB, base 37 KB including 14 KB vendor Swiper CSS, theme 2 KB. Liquid uses only two breakpoints (`pc` 48rem, `fw` 80rem) with 393 `pc:` and 16 `fw:` usages across 118 Liquid files, and 26 files already carry a `{% stylesheet %}` tag. For scale comparison, Shopify Horizon ships a 44.5 KB `assets/base.css` plus per-section `{% stylesheet %}`, and the official skeleton theme ships only a 2.4 KB `assets/critical.css`. The Skeleton global layer targets the Horizon order of magnitude, not the 2.4 KB one.
 
 ## Implementation Status
 
@@ -130,7 +138,9 @@ Keep three separate views: Shopify mandatory compliance, Theme Store optional fe
 
 ## Current Phase
 
-Active: CSS architecture review of the `tailwind/` source layer and its build boundary. Outer repository mechanical cleanup is complete; theme business/runtime directories remain paused. JavaScript architecture review follows CSS.
+Active: CSS architecture review of the `tailwind/` source layer and its build boundary. The pipeline direction is now confirmed (manifest-driven Tailwind global layer plus subsetted `{% stylesheet %}` component CSS); the utility vocabulary manifest itself is not drafted yet and nothing is implemented. Outer repository mechanical cleanup is complete; theme business/runtime directories remain paused. JavaScript architecture review follows CSS.
+
+`docs/references/style-system/css-architecture.md` still describes the previous contract, where `{% stylesheet %}` was a last-resort exception and `@apply` component layers were the normal home for reusable CSS. It must be rewritten once the vocabulary manifest is approved. The `AGENTS.md` CSS rules need the matching review at the same time.
 
 The current cleanup scope prioritizes files and directories outside Shopify's eight standard theme runtime directories: `assets`, `blocks`, `config`, `layout`, `locales`, `sections`, `snippets`, and `templates`. Being outside those directories is not itself a deletion reason. Classify Agent infrastructure, client adapters, validation/build tooling, documentation, editor/CI configuration, and the `tailwind/` CSS source layer separately, then retain only items with an approved Skeleton purpose.
 
@@ -156,7 +166,11 @@ The audit covers Shopify composition and Theme Editor behavior; layout and setti
 - Exact schemas, presets, allowed parent contexts, and external-input contracts for the four confirmed initial Theme Blocks
 - Whether `image` should ever become a Theme Block after the separate image, video, and product-media contract is reviewed
 - Global page, Section, and Block layout protocol
-- Settings, CSS token, and Tailwind source boundaries
+- The utility vocabulary manifest itself: which utility families, how many steps per scale, and which variants (`pc`, `fw`, `hover`, `focus-visible`, container queries) are enumerated, plus its measured output size
+- Settings and CSS token boundaries
+- Name of the generated global asset stylesheet, currently `assets/tailwind.output.css`
+- Whether the 14 KB `vendor-swiper.min.css` stays compiled into the always-loaded global stylesheet; deferred to the carousel and JavaScript architecture review
+- Rewrite of `docs/references/style-system/css-architecture.md` and the matching `AGENTS.md` CSS rules after the manifest is approved
 - JavaScript core, business modules, ESM, import maps, and on-demand loading
 - Alpine scope and initialization order
 - Image, video, and product-media contracts
@@ -167,8 +181,10 @@ The audit covers Shopify composition and Theme Editor behavior; layout and setti
 ## Machine Setup Notes
 
 - On this machine, Codex has not yet added this repository to user-level trusted projects, so `codex mcp list` shows only the global `node_repl` server and does not load the project's Shopify Dev MCP or Context7 entries from `.codex/config.toml`. This is a local trust configuration gap, not missing repository MCP files. After adding the project to Codex trusted projects, restart Codex and confirm both servers appear in the tool list.
+- In Cursor on this machine, the `shopify-dev-mcp` server failed live tool discovery and its `mcp_auth` call timed out, and `context7` is configured in `.cursor/mcp.json` but is not mounted as an available namespace. The CSS decisions above were therefore grounded in shopify.dev documentation pages, the official `Shopify/skeleton-theme` and `Shopify/horizon` sources through the GitHub API, and tailwindcss.com documentation. Those are degraded sources under the `AGENTS.md` MCP rule; re-verify the platform and Tailwind facts through MCP once the servers load.
+- `node_modules` is still not installed on this machine, so no Tailwind build or size measurement of a manifest prototype has been run yet.
 - This file records current state and machine-specific follow-ups only. It does not replace permanent rules in `AGENTS.md`, project Skills, or `docs/references/`.
 
 ## Next Step
 
-Review the `tailwind/` CSS source layer, build routing, and token boundaries before changing `assets/` runtime output or theme business files. Then review JavaScript architecture. After that, resume the four Theme Block contracts and global layout protocol.
+Draft the utility vocabulary manifest: utility families and scale steps, variant strategy, the global-layer ownership table, and the global-versus-local boundary rule with examples and counter-examples, then measure the real output size before implementing. After the manifest is approved, rewrite `docs/references/style-system/css-architecture.md` and the `AGENTS.md` CSS rules, and only then change `tailwind/` sources or `assets/` output. Then review JavaScript architecture. After that, resume the four Theme Block contracts and global layout protocol.
