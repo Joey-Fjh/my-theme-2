@@ -1,40 +1,42 @@
 ---
 name: check-theme-architecture
-description: Validate Shopify theme architecture and static browser compatibility rules. Use when Liquid, JS, Alpine, cart, CSS compatibility, or WebKit guardrails change.
+description: Validate Shopify theme architecture and static browser compatibility rules. Use when Liquid, embedded stylesheet/javascript blocks, accessibility guardrails, or browser compatibility tooling change.
 when_to_use: >
-  Liquid sections, section schema, Alpine x-data, Components.register, ThemeEvents,
-  ShopifyHttp, cart flows, DOM refresh, heading classes, or npm.cmd run lint:theme.
+  Liquid runtime-name shadowing, tab accessibility, SVG WebKit guardrails,
+  Liquid output syntax, CSS/JS compatibility, or npm.cmd run lint:theme.
 ---
 
 # Check Theme Architecture
 
-Use this skill for repository-specific architecture validation. `AGENTS.md` is authoritative for the rules; this skill owns the deterministic lint script that catches common violations.
+Use this skill for project-level architecture and static compatibility validation. Shopify Theme Check remains the platform authority for schema validity, parser-blocking scripts, and other built-in theme rules. This skill supplements Theme Check with a small set of low-false-positive project contracts.
 
-## Command
+## Command Families
 
-- Run theme architecture lint: `npm.cmd run lint:theme`
-- Run strict Liquid output syntax guard: `npm.cmd run lint:liquid-syntax`
-- Run static browser compatibility lint: `npm.cmd run lint:compat`
-- Rebuild Tailwind and scan compatibility: `npm.cmd run scan:compat`
-- Aggregate gate that includes theme architecture lint: `npm.cmd run lint`
+- `npm.cmd run lint:theme` — slim generic architecture rules only.
+- `npm.cmd run lint:liquid-syntax` — strict Liquid output parsing guard beyond ordinary Theme Check usage.
+- `npm.cmd run lint:compat` — first-party CSS, JS, and embedded Liquid `{% stylesheet %}` / `{% javascript %}` compatibility checks.
+- `npm.cmd run lint:compat:embedded` — embedded Liquid block scan; this is part of `lint:compat`, not `lint:theme`.
+- `npm.cmd run scan:compat` — rebuild Tailwind output, then run all compatibility checks.
+- `npm.cmd run test:theme-architecture` — focused fixture tests for the scripts above.
+- `npm.cmd run lint` — aggregate gate that includes the commands above when a broader check is requested.
 
-`npm.cmd run lint:theme` uses these skill resources:
+## What `lint:theme` Covers
 
-```text
-.agents/skills/check-theme-architecture/scripts/lint-liquid-syntax.js
-.agents/skills/check-theme-architecture/scripts/lint-theme.js
-.agents/skills/check-theme-architecture/scripts/lint-embedded-compat.cjs
-.agents/skills/check-theme-architecture/scripts/lib/liquid-ast.js
-```
+1. Do not `assign` or `capture` over protected Shopify Liquid runtime names.
+2. Static `role="tab"` elements must include `aria-selected` and `aria-controls` (`aria-*`, `:*`, or `x-bind:*` forms).
+3. SVG `<text textLength>` must not contain nested `<tspan>` nodes.
 
-## Selection Rules
+## What This Skill Does Not Enforce Yet
 
-1. Run `npm.cmd run lint:theme` after Liquid, schema, theme JavaScript, Alpine, HTTP/cart, section refresh, heading typography, or project WebKit guardrail changes.
-2. Run `npm.cmd run lint:compat` after first-party CSS, JavaScript, or embedded Liquid stylesheet/javascript changes. Use `scan:compat` when Tailwind source changed.
-3. Treat failures in touched code as blockers unless the user explicitly scopes them out.
-4. Inspect current source and the matching architecture reference when implementation guidance is needed; do not bulk-load unrelated docs for lint-only work.
-5. Do not auto-fix merchant-owned configuration or content while resolving lint failures.
+Rules tied to undecided JS/CSS implementation architecture — such as specific Components, Alpine, HTTP, SectionRefresher, typography token, or CSS layer conventions — are intentionally not part of the current validator. `AGENTS.md` still governs those implementation rules separately.
+
+## When To Run
+
+- After Liquid changes that may shadow protected runtime names, tab markup, or SVG text rendering.
+- After embedded stylesheet/javascript block changes: run `lint:compat`.
+- After Tailwind source changes: run `scan:compat`.
+- Do not auto-fix merchant-owned configuration or content while resolving lint failures.
 
 ## Reporting
 
-Report failures by file, line, and rule family. If a finding is pre-existing, say so and classify it as a warning or follow-up according to `AGENTS.md`.
+Report failures by file, line, and command family. If a finding is pre-existing, say so and classify it as a warning or follow-up according to `AGENTS.md`.

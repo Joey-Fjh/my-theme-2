@@ -1,0 +1,496 @@
+const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { test } = require('node:test');
+
+const { runThemeLint, maskNonExecutableLiquid } = require('./lint-theme.js');
+const {
+    getLiquidSyntaxFailures,
+    isRubyCompatibilityFallback,
+    runLiquidSyntaxLint,
+} = require('./lint-liquid-syntax.js');
+const {
+    extractBlocks,
+    lineAt,
+    runEmbeddedCompatLint,
+    virtualEmbeddedJsPath,
+} = require('./lint-embedded-compat.cjs');
+
+const THEME_LINT_SCRIPT = path.join(__dirname, 'lint-theme.js');
+const LIQUID_SYNTAX_SCRIPT = path.join(__dirname, 'lint-liquid-syntax.js');
+const EMBEDDED_COMPAT_SCRIPT = path.join(__dirname, 'lint-embedded-compat.cjs');
+
+const MATCHING_ESLINT_CONFIG = `module.exports = [{
+  files: ['assets/*.js'],
+  languageOptions: { ecmaVersion: 2022, sourceType: 'script' },
+  rules: { 'no-alert': 'error' }
+}];`;
+
+function writeFile(root, relativePath, content) {
+    const filePath = path.join(root, relativePath);
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, content, 'utf8');
+}
+
+function withTempTheme(fn) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'check-theme-architecture-'));
+
+    try {
+        fn(root);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}
+
+async function withTempThemeAsync(fn) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'check-theme-architecture-'));
+
+    try {
+        await fn(root);
+    } finally {
+        fs.rmSync(root, { recursive: true, force: true });
+    }
+}
+
+function runScript(scriptPath, root) {
+    return spawnSync(process.execPath, [scriptPath, '--root', root], {
+        cwd: path.join(__dirname, '../../../../'),
+        encoding: 'utf8',
+        env: process.env,
+    });
+}
+
+function failureMessages(failures) {
+    return failures.map((entry) => entry.message).join('\n');
+}
+
+test('assign over protected runtime name fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<div>{% assign product = 'override' %}</div>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not assign over protected Shopify Liquid runtime name "product"/,
+        );
+    });
+});
+
+test('liquid block assign over protected runtime name fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            ['{% liquid', "assign product = 'override'", '%}', ''].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not assign over protected Shopify Liquid runtime name "product"/,
+        );
+    });
+});
+
+test('capture over protected runtime name fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<div>{% capture cart %}content{% endcapture %}</div>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not capture over protected Shopify Liquid runtime name "cart"/,
+        );
+    });
+});
+
+test('liquid block capture over protected runtime name fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            ['{% liquid', 'capture cart', '%}', ''].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not capture over protected Shopify Liquid runtime name "cart"/,
+        );
+    });
+});
+
+test('content_for_header shadowing fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `{% assign content_for_header = 'override' %}\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not assign over protected Shopify Liquid runtime name "content_for_header"/,
+        );
+    });
+});
+
+test('metaobjects shadowing fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `{% capture metaobjects %}content{% endcapture %}\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not capture over protected Shopify Liquid runtime name "metaobjects"/,
+        );
+    });
+});
+
+test('comment and doc examples do not fail runtime name lint', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% comment %}',
+                "{% assign product = 'example' %}",
+                '{% endcomment %}',
+                '{% doc %}',
+                '{% capture cart %}example{% endcapture %}',
+                '{% enddoc %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('local assign passes theme lint', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<div>{% assign local_value = 'ok' %}</div>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('tab with literal aria attributes passes', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<button role="tab" aria-selected="false" aria-controls="panel-1">Tab</button>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('tab with x-bind aria attributes passes', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<button role="tab" x-bind:aria-selected="isActive" x-bind:aria-controls="panelId">Tab</button>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('tab missing aria-selected fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<button role="tab" aria-controls="panel-1">Tab</button>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(failureMessages(failures), /role="tab" is missing aria-selected/);
+    });
+});
+
+test('tab missing aria-controls fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<button role="tab" aria-selected="false">Tab</button>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(failureMessages(failures), /role="tab" is missing aria-controls/);
+    });
+});
+
+test('svg textLength with plain text passes', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<svg><text textLength="100">Label</text></svg>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('svg textLength with nested tspan fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `<svg><text textLength="100"><tspan>Label</tspan></text></svg>\n`,
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Do not nest <tspan> inside SVG <text textLength>/,
+        );
+        assert.equal(failures[0].line, 1);
+    });
+});
+
+test('comment and doc svg examples do not fail svg textLength lint', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% comment %}',
+                '<svg><text textLength="100"><tspan>Label</tspan></text></svg>',
+                '{% endcomment %}',
+                '{% doc %}',
+                '<svg><text textLength="100"><tspan>Label</tspan></text></svg>',
+                '{% enddoc %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failures.length, 0);
+    });
+});
+
+test('maskNonExecutableLiquid preserves line breaks and length', () => {
+    const source = ['line1', '{% comment %}', 'hidden', '{% endcomment %}', 'line5', ''].join('\n');
+    const masked = maskNonExecutableLiquid(source);
+
+    assert.equal(masked.split('\n').length, source.split('\n').length);
+    assert.equal(masked.length, source.length);
+});
+
+test('quoted liquid filter argument name fails syntax lint', () => {
+    const invalid = "{{ media | model_viewer_tag: 'camera-controls': true }}";
+    const failures = getLiquidSyntaxFailures(invalid);
+
+    assert.equal(failures.length, 1);
+});
+
+test('hyphenated liquid filter argument name passes syntax lint', () => {
+    const valid = '{{ media | model_viewer_tag: camera-controls: true }}';
+    const failures = getLiquidSyntaxFailures(valid);
+
+    assert.equal(failures.length, 0);
+});
+
+test('ordinary valid liquid passes syntax lint', () => {
+    const valid = `<p>{{ product.title | escape }}</p>`;
+    const failures = getLiquidSyntaxFailures(valid);
+
+    assert.equal(failures.length, 0);
+});
+
+test('ruby compatibility fallback accepts empty append argument', () => {
+    assert.equal(isRubyCompatibilityFallback('product.title | append: '), true);
+    assert.equal(getLiquidSyntaxFailures('{{ product.title | append: }}').length, 0);
+});
+
+test('ruby compatibility fallback accepts trailing comma before next filter', () => {
+    assert.equal(isRubyCompatibilityFallback('value | append: item,'), true);
+    assert.equal(getLiquidSyntaxFailures('{{ value | append: item, }}').length, 0);
+});
+
+test('liquid syntax lint runs against temp theme root', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            `{{ media | model_viewer_tag: 'camera-controls': true }}\n`,
+        );
+
+        const failures = await runLiquidSyntaxLint(root);
+        assert.equal(failures.length, 1);
+    });
+});
+
+test('embedded compat extracts stylesheet and javascript blocks', () => {
+    const source = [
+        '<div>',
+        '{% stylesheet %}',
+        '.ok { color: red; }',
+        '{% endstylesheet %}',
+        '{% javascript %}',
+        'console.log("ok");',
+        '{% endjavascript %}',
+        '</div>',
+        '',
+    ].join('\n');
+
+    assert.equal(extractBlocks(source, 'stylesheet').length, 1);
+    assert.equal(extractBlocks(source, 'javascript').length, 1);
+});
+
+test('embedded js virtual path matches assets/*.js eslint config', () => {
+    assert.equal(
+        virtualEmbeddedJsPath('sections/fixture.liquid', 0),
+        'assets/__embedded-sections-fixture-liquid-0.js',
+    );
+});
+
+test('embedded js lint uses matching eslint config and flags alert', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'eslint.config.cjs', MATCHING_ESLINT_CONFIG);
+        writeFile(root, 'stylelint.config.cjs', `module.exports = { rules: {} };`);
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            ['{% javascript %}', "alert('x');", '{% endjavascript %}', ''].join('\n'),
+        );
+
+        const virtualPath = virtualEmbeddedJsPath('sections/fixture.liquid', 0);
+        assert.equal(fs.existsSync(path.join(root, virtualPath)), false);
+
+        const { issues } = await runEmbeddedCompatLint(root);
+
+        assert.ok(issues.length >= 1);
+        assert.match(issues[0].message, /no-alert/);
+        assert.equal(issues[0].file, 'sections/fixture.liquid');
+        assert.equal(issues[0].line, 2);
+        assert.equal(fs.existsSync(path.join(root, virtualPath)), false);
+    });
+});
+
+test('embedded js lint passes valid code with matching eslint config', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'eslint.config.cjs', MATCHING_ESLINT_CONFIG);
+        writeFile(root, 'stylelint.config.cjs', `module.exports = { rules: {} };`);
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            ['{% javascript %}', 'console.log("ok");', '{% endjavascript %}', ''].join('\n'),
+        );
+
+        const { issues } = await runEmbeddedCompatLint(root);
+        assert.equal(issues.length, 0);
+    });
+});
+
+test('embedded compat maps stylesheet issue lines back to liquid source', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'eslint.config.cjs', MATCHING_ESLINT_CONFIG);
+        writeFile(
+            root,
+            'stylelint.config.cjs',
+            `module.exports = { rules: { 'color-no-invalid-hex': true } };`,
+        );
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '<div>',
+                '{% stylesheet %}',
+                '.bad { color: #zzzzzz; }',
+                '{% endstylesheet %}',
+                '</div>',
+                '',
+            ].join('\n'),
+        );
+
+        const { issues } = await runEmbeddedCompatLint(root);
+        assert.ok(issues.length >= 1);
+        assert.equal(issues[0].file, 'sections/fixture.liquid');
+        assert.equal(issues[0].line, 3);
+    });
+});
+
+test('lineAt helper maps offsets to source lines', () => {
+    const source = 'a\nb\nc\n';
+    assert.equal(lineAt(source, 0), 1);
+    assert.equal(lineAt(source, 2), 2);
+    assert.equal(lineAt(source, 4), 3);
+});
+
+test('theme lint cli accepts --root without auto-running on import', () => {
+    withTempTheme((root) => {
+        writeFile(root, 'sections/fixture.liquid', `<div>{% assign local_value = 'ok' %}</div>\n`);
+
+        const result = runScript(THEME_LINT_SCRIPT, root);
+        const output = `${result.stdout}${result.stderr}`;
+
+        assert.equal(result.status, 0, output);
+        assert.match(output, /Theme architecture lint passed\./);
+    });
+});
+
+test('liquid syntax cli accepts --root without auto-running on import', () => {
+    withTempTheme((root) => {
+        writeFile(root, 'sections/fixture.liquid', `<p>{{ product.title | escape }}</p>\n`);
+
+        const result = runScript(LIQUID_SYNTAX_SCRIPT, root);
+        const output = `${result.stdout}${result.stderr}`;
+
+        assert.equal(result.status, 0, output);
+        assert.match(output, /Liquid syntax lint passed\./);
+    });
+});
+
+test('embedded compat cli accepts --root without auto-running on import', () => {
+    withTempTheme((root) => {
+        writeFile(root, 'eslint.config.cjs', MATCHING_ESLINT_CONFIG);
+        writeFile(root, 'stylelint.config.cjs', `module.exports = { rules: {} };`);
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% stylesheet %}',
+                '.ok { color: #111111; }',
+                '{% endstylesheet %}',
+                '',
+            ].join('\n'),
+        );
+
+        const result = runScript(EMBEDDED_COMPAT_SCRIPT, root);
+        const output = `${result.stdout}${result.stderr}`;
+
+        assert.equal(result.status, 0, output);
+        assert.match(output, /Embedded compatibility lint passed/);
+    });
+});

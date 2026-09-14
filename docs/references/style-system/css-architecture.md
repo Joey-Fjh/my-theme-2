@@ -87,8 +87,8 @@ Exact tier ratios, token math, and lint exceptions live in source and `lint:them
 
 ## SVG Icons
 
-- Source SVGs live in `icons/`; generated assets live in `assets/icon-*.svg`.
-- Regenerate with `npm.cmd run build:svg`; never manually edit generated icon assets.
+- `icons/` is an ignored temporary import directory; committed optimized runtime icons live in `assets/icon-*.svg`.
+- To add or replace an icon, stage its SVG in `icons/`, run `npm.cmd run build:svg`, review the asset result, and clear the staging input. Do not hand-edit optimized icon assets.
 - Render icons through the `icons` snippet from Liquid.
 
 ## Platform Bridge Exceptions

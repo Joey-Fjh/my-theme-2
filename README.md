@@ -1,21 +1,35 @@
-# Ceylune Shopify Theme
+# my-skeleton-theme
 
-Ceylune is a custom Shopify Online Store 2.0 theme built with Liquid, Tailwind CSS v4, Alpine.js, and a small lifecycle-aware JavaScript runtime. The repository is maintained as a Shopify Theme Store candidate.
+Internal Shopify Skeleton Theme mother template for building maintainable and extensible themes.
 
-Project rules and implementation constraints live in [AGENTS.md](AGENTS.md).
+This repository is the engineering baseline for future Shopify themes. It aims to stay minimal, platform-complete, modular, extensible, maintainable, and verifiable. Derived themes own business features, page design, and visual uniqueness.
 
-## Setup
+Project rules and task routing live in [AGENTS.md](AGENTS.md). Short cross-session state lives in [docs/agent/context.md](docs/agent/context.md).
 
-Requirements:
+## Requirements
 
-- Node.js and npm
+- Node.js 22+
+- npm
 - Shopify CLI
 - Access to a Shopify development store
 
-From the repository root:
+## Setup
+
+First install:
 
 ```powershell
-npm.cmd install
+npm.cmd ci
+```
+
+First connect to a store:
+
+```powershell
+npm.cmd run shopify:dev -- --store <store>.myshopify.com
+```
+
+After the local CLI store link exists, start development with:
+
+```powershell
 npm.cmd run dev
 ```
 
@@ -43,36 +57,28 @@ The tracked entries should report Git mode `120000`. Do not copy rules or skills
 ## Commands
 
 ```powershell
-npm.cmd run dev          # Shopify theme dev and Tailwind watch
-npm.cmd run build:tw     # Rebuild generated Tailwind CSS
-npm.cmd run watch:tw     # Watch Tailwind sources
-npm.cmd run build:svg    # Regenerate assets/icon-*.svg from icons/
-npm.cmd run lint         # Repository lint and format checks
-npm.cmd test             # Shopify Theme Check
+npm.cmd run dev                 # Shopify theme dev and Tailwind watch
+npm.cmd run shopify:dev         # Shopify theme dev only
+npm.cmd run build:tw            # Rebuild generated Tailwind CSS
+npm.cmd run watch:tw            # Watch Tailwind sources
+npm.cmd run build:svg           # Regenerate assets/icon-*.svg from icons/
+npm.cmd run lint                # Repository lint and format checks
+npm.cmd run test:validators     # Project validator fixture tests
+npm.cmd test                    # Validators, Liquid syntax guard, Theme Check
+npm.cmd run test:theme-check    # Shopify Theme Check only
 ```
 
-Generated and vendor assets must not be edited manually. See `AGENTS.md` for the source and validation rules.
-
-## Runtime
-
-- Shopify Liquid sections, snippets, JSON templates, and locale files
-- Tailwind CSS v4 with CSS-based configuration
-- Alpine.js 3.15.3 and Alpine Intersect
-- Swiper 12.1.2
-- Project runtime: `Components.register()`, `ThemeEvents`, `ShopifyHttp`, and `ShopifySectionRefresher`
-- Flat files under `assets/`; no bundler or ESM runtime
-
-## Documentation
-
-- [AGENTS.md](AGENTS.md): canonical repository rules and task routing.
-- [Current context](docs/agent/context.md): short current-state and cross-session handoff.
-- [JavaScript runtime](docs/references/architecture/javascript-runtime.md): runtime APIs, lifecycle, and script order.
-- [CSS architecture](docs/references/style-system/css-architecture.md): CSS layers, typography, color/surface, and build routing.
-- [Launch gate](docs/references/code-review/launch-gate.md): review and release checks.
+Use `npm.cmd` for project scripts in this Windows workspace. Default to the smallest relevant validation command while developing; run full `npm.cmd run lint` and `npm.cmd test` before PR, version/release, or Theme Store submission, or when explicitly requested.
 
 ## Repository Boundaries
 
 - Do not edit `config/settings_data.json` or `templates/*.json` without explicit authorization.
 - Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
-- Use `npm.cmd` for project scripts in this Windows workspace.
-- Default to the smallest relevant validation command while developing; run full `npm.cmd run lint` and `npm.cmd test` before PR, version/release, or Theme Store submission, or when explicitly requested.
+- `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
+- `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` records Skeleton construction-phase state only.
+
+## Documentation
+
+- [AGENTS.md](AGENTS.md): canonical repository rules and validation commands
+- [docs/agent/context.md](docs/agent/context.md): short current-state and cross-session handoff
+- [docs/references/](docs/references/): on-demand architecture and review references

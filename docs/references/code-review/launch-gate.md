@@ -40,13 +40,13 @@ Do not redesign sections, rename schema identifiers, change business logic while
 
 ## Repo Safety And Ignore Boundaries
 
-- Never edit minified vendor files, `assets/tailwind.output.css`, or generated `assets/icon-*.svg`.
+- Never edit minified vendor files, `assets/tailwind.output.css`, or optimized `assets/icon-*.svg` directly.
 - Prefer minimal diffs; separate structural refactors from behavior changes.
 - `.shopifyignore` controls Shopify CLI upload scope.
 - `.gitignore` controls version-control scope.
 - `.prettierignore` controls formatting scope only.
 
-Tracked governance files such as `AGENTS.md` and `docs/references/agent-workflow/` must remain in Git, must be excluded from Shopify upload, and should remain Prettier-formatted unless there is a specific formatting risk. Do not add broad ignore patterns that hide source files, runtime files, schemas, locales, sections, snippets, templates, or config from review.
+Tracked governance files such as `AGENTS.md`, `.agents/`, and `docs/references/` must remain in Git and must be excluded from Shopify upload. Formatting scope for these files follows `.prettierignore`; do not add broad ignore patterns that hide source files, runtime files, schemas, locales, sections, snippets, templates, or config from review.
 
 ## Review Output
 
@@ -63,4 +63,4 @@ When reporting a review, use:
 - Tooling enforces many architecture, i18n, and compatibility rules; review-only gaps remain launch blockers when user-facing.
 - Before PR, version/release, or Theme Store submission, run `npm.cmd run lint` and `npm.cmd test`.
 - Run `npm.cmd run scan:compat` when Tailwind source changed.
-- Run `npm.cmd run build:svg` when files in `icons/` changed.
+- Run `npm.cmd run build:svg` when an icon is staged for import or replacement, review the resulting asset, and clear the ignored staging input.

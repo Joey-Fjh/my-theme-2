@@ -8,26 +8,35 @@ when_to_use: >
 
 # Check I18n
 
-Use this skill for translation and locale validation. Read `docs/references/code-review/i18n-checklist.md` when the task involves user-facing copy, schema text, accessibility labels, or launch-readiness review.
+Use this skill for project-level i18n validation. Read `docs/references/code-review/i18n-checklist.md` for locale ownership and review boundaries.
 
-## Command
+## When To Run
 
-- Run i18n lint: `npm.cmd run lint:i18n`
+Run after changes to:
+
+- `locales/**/*.json`
+- Liquid visible text or accessible attributes (`aria-label`, `alt`, `placeholder`, `title`)
+- Section, Theme Block, or theme settings schema copy
+- Preset names or categories
+
+Skip this skill for merchant-owned content, product data, or runtime variables. Do not rewrite theme files just to satisfy the linter.
+
+## Commands
+
+- Fast i18n lint: `npm.cmd run lint:i18n`
+- Focused automated checks: `npm.cmd run test:i18n`
 - Aggregate gate that includes i18n lint: `npm.cmd run lint`
 
-`npm.cmd run lint:i18n` uses this skill resource:
+Shopify Theme Check remains the platform authority. This validator supplements Theme Check with duplicate keys, missing project locale keys, hardcoded user-visible copy, and schema/preset boundary checks.
 
-```text
-.agents/skills/check-i18n/scripts/lint-i18n.js
-```
+## Classification
 
-## Selection Rules
+- Theme code: Liquid `| t`, schema `t:` keys, locale JSON owned by the theme
+- Merchant content: preset instance values, resource titles, uploaded copy, store data
+- Machine values: enum handles, numbers, URLs, color schemes, icon IDs, font identifiers, metafield paths
 
-1. Run `npm.cmd run lint:i18n` after changes to `locales/**/*.json`, Liquid visible text, schema labels/defaults, `aria-label`, `alt`, `placeholder`, or `title` text.
-2. Update locale files when adding user-facing strings.
-3. Classify hardcoded copy findings through `AGENTS.md`; do not silently change merchant-owned content.
-4. Use the checklist reference for review context, not as a replacement for the lint command.
+Preset `settings` and `presets[].blocks[].settings` are merchant instance data. Section schema `default.settings` and `default.blocks[].settings` follow the same rule. They must stay literal and must not use `t:`.
 
 ## Reporting
 
-Report missing keys, duplicate keys, and hardcoded text findings with file and line. State whether failures are new, touched, or pre-existing when that is clear.
+Report missing keys, duplicate keys, hardcoded text, and preset/default instance `t:` misuse with file and line. State whether failures are new, touched, or pre-existing when that is clear.

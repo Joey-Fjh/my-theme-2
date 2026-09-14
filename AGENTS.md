@@ -74,9 +74,19 @@ Do not modify merchant-owned configuration or content unless explicitly authoriz
 
 Classify ambiguous issues before fixing them. If an issue could be code, configuration, content, uploaded asset, Shopify platform/vendor, or measurement noise, do not guess.
 
+### Universal Work Loop
+
+Use the smallest complete loop for every task: problem definition -> decomposition -> selection -> execution -> validation feedback -> correction.
+
+- Start from the observable outcome, current evidence, gap, and acceptance criteria. Inspect available repository and documentation facts before asking the user; ask only for missing intent, preference, architecture, risk, or authority decisions.
+- Select the smallest justified action within the approved boundary. During selection, also choose the execution carrier: primary agent, native delegation, external execution prompt, or user execution. Discussion, prompt-only, review, and execution modes use the same loop but stop at the user-defined delivery boundary.
+- When execution is authorized, do not stop after editing. Validate against the acceptance criteria, use the result as the next iteration's evidence, and correct until the criteria pass, the requested boundary is reached, or a genuine blocker requires new authority or a user decision.
+- Do not repeat a failed action without new evidence or declare completion from implementation alone. Communicate the outcome first, followed only by the evidence, validation, unresolved risk, and next action the user needs; do not mechanically restate the loop or expose verbose internal reasoning.
+
 Agent behavior rules:
 
-- Use Context7 MCP for Tailwind CSS documentation queries. Use Shopify Dev MCP for Shopify API, Liquid, and theme architecture queries. Do not guess framework behavior when MCP is available.
+- Execution carrier: the primary agent defaults to analysis, architecture judgment, plans, external execution prompts, and review. Broad scans, simple bulk work, and mechanical migrations default to a self-contained external execution prompt instead of direct file edits. The primary agent writes files only when the user explicitly requests direct execution.
+- Use Shopify Dev MCP for Shopify API, Liquid, theme architecture, and platform requirements. Use Context7 for third-party library documentation when current-version sources matter, including but not limited to Tailwind, Alpine, GSAP, and Swiper; resolve the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available. If an expected MCP is missing, first check client configuration, project trust, client restart, Node/npm, and network; only after configuration is confirmed may you fall back to the official website and state that degraded source explicitly.
 - Users do not need to manually specify skills. For non-trivial tasks, use `agent-router` first to choose skills, docs, and validation.
 - Use `orchestrate-agents` only after `agent-router` selects it or the user explicitly requests delegation. Parallelize independent read-only work, keep one writer per shared worktree, and keep the primary agent responsible for decisions and user communication.
 - Delegated agents receive only the context needed for a bounded task and return a concise conclusion, evidence, changed files, validation, and unresolved risks. They must not approve their own work or create more agents.
@@ -111,7 +121,7 @@ Generated/vendor file rules:
 
 - Never edit `vendor-*.min.js` or `vendor-*.min.css`.
 - Never manually edit `assets/tailwind.output.css`.
-- Never manually edit `assets/icon-*.svg`; regenerate from `icons/` with `npm.cmd run build:svg`.
+- Treat `icons/` as an ignored temporary import directory, not retained source. To add or replace an icon, stage its SVG there, run `npm.cmd run build:svg`, review the optimized `assets/icon-*.svg` result, and then clear the staging input; do not hand-edit optimized icon assets.
 - Never paste raw SVG into Liquid; render through the `icons` snippet.
 
 ---
@@ -142,8 +152,8 @@ Project skills live in `.agents/skills/`.
 - Use `agent-router` first for non-trivial tasks, broad requests, cross-session continuation, third-party skill evaluation, or when multiple skills/docs might apply.
 - Use `orchestrate-agents` after routing when independent delegation materially improves context isolation, verification, or latency.
 - User skill names are optional overrides. If the user states intent without naming a skill, `agent-router` chooses the route.
-- Remaining project skills: `agent-router`, `orchestrate-agents`, `build-svg-icons`, `check-theme-architecture`, and `check-i18n`.
-- Use the routed project skill for validation, i18n, or icon work; for implementation, inspect current source and the matching architecture reference.
+- Remaining project skills: `agent-router`, `orchestrate-agents`, `check-theme-architecture`, and `check-i18n`.
+- Use the routed project skill for validation or i18n work; for implementation, inspect current source and the matching architecture reference.
 - If automatic skill triggering is unavailable, open `agent-router` manually for non-trivial work and then only the Skill or reference it selects.
 - External skills are not project rule sources until reviewed, adapted, and installed in `.agents/skills/`.
 
@@ -158,31 +168,32 @@ Default to the smallest command that proves the change. Reserve full `npm.cmd ru
 ```bash
 npm.cmd run lint          # i18n, theme architecture, compatibility, and format checks
 npm.cmd run lint:liquid-syntax # strict Liquid output parsing guard
-npm.cmd run lint:theme    # Liquid, JS architecture, Alpine, HTTP/cart, heading rules
+npm.cmd run lint:theme    # protected runtime-name assign/capture, tab a11y, SVG WebKit guardrails
 npm.cmd run lint:i18n     # locale keys, translated strings, schema copy, ARIA copy
 npm.cmd run lint:compat   # CSS, JS, and embedded Liquid browser compatibility checks
 npm.cmd run scan:compat   # rebuild Tailwind output, then run compatibility checks
 npm.cmd test              # strict Liquid syntax guard, then Shopify Theme Check
 npm.cmd run test:theme-check # Shopify Theme Check only
 npm.cmd run build:tw      # rebuild Tailwind output after Tailwind source changes
-npm.cmd run build:svg     # regenerate SVG assets after icons/ changes
+npm.cmd run build:svg     # optimize staged icons into theme assets
 npm.cmd run dev           # Shopify theme dev + Tailwind watch
 ```
 
 During development, choose the narrowest command for the changed surface. Examples:
 
-- Liquid, JS, or theme architecture changes: `npm.cmd run lint:theme` or `npm.cmd run test:theme-check`
+- Liquid, schema, or generic architecture guardrail changes: `npm.cmd run lint:theme` or `npm.cmd run test:theme-check`
 - Locale or i18n changes: `npm.cmd run lint:i18n`
 - Tailwind source changes: `npm.cmd run scan:compat` (rebuilds `assets/tailwind.output.css` first)
 - Agent rules, Skills, roles, or adapters: validate syntax and links for the changed files, then inspect the resulting diff.
 
-Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or before opening a PR, cutting a version/release, or submitting to the Theme Store. Use `npm.cmd run build:tw` only for intermediate Tailwind iteration. Run `npm.cmd run build:svg` only when `icons/` source changed. Do not run rewriting formatters unless the user asks.
+Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or before opening a PR, cutting a version/release, or submitting to the Theme Store. Use `npm.cmd run build:tw` only for intermediate Tailwind iteration. Run `npm.cmd run build:svg` only when an SVG is staged in `icons/` for import or replacement. Do not run rewriting formatters unless the user asks.
 
 ---
 
 ## Gotchas
 
 - Git tracks `CLAUDE.md` and `.claude/skills` as symlinks. On Windows, enable Developer Mode or equivalent symlink permission and set `git config core.symlinks true` before checkout. If Git materialized them as plain files containing only their target paths, restore those two paths after fixing the local setting; do not replace them with duplicated rules or Skills.
+- `icons/` is intentionally Git-ignored and may not exist in a clean checkout. Create it only as temporary input for `npm.cmd run build:svg`; committed optimized icons live in `assets/`.
 - Shopify theme assets are flat under `assets/`; do not create nested runtime asset directories.
 - Do not code-fix Lighthouse findings until code ownership is clear.
 - Browserslist config drives static compatibility checks, not Tailwind v4's build target. Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision.
@@ -190,3 +201,4 @@ Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or
 - Do not mix visual redesign, architecture cleanup, Lighthouse fixes, and configuration changes in one batch.
 - Preserve schema IDs, block types, section types, preset names, template references, and storefront behavior during cleanup.
 - `.shopifyignore`, `.gitignore`, and `.prettierignore` have different scopes. Read `docs/references/code-review/launch-gate.md` before changing ignore rules.
+- Codex loads project-level `.codex/config.toml` only for trusted projects. `trust_level` is a machine-local setting and cannot be replaced by repository files. After configuring a new machine, restart the client and confirm the MCP servers appear in the tool list.

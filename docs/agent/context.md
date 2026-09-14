@@ -2,7 +2,7 @@
 
 Short cross-session state for agents. Record only user-confirmed direction, current status, and unresolved decisions. Detailed architecture belongs in `docs/references/` after discussion.
 
-Last updated: 2026-09-11.
+Last updated: 2026-09-14.
 
 ## Project Identity
 
@@ -43,7 +43,9 @@ Last updated: 2026-09-11.
 
 Undiscussed conclusions must not be treated as decisions. Superseded decisions must be removed or clearly replaced. Do not rely on chat history as the only durable state.
 
-`docs/agent/context.md` is a temporary construction-phase decision ledger, not part of the finished Skeleton Theme. Before the Skeleton is declared complete, migrate every still-valid contract to its permanent rule, architecture, or usage document, verify that no unresolved decision remains, and then remove this file.
+Discussion exists to build the Skeleton, not merely to grow this file. Recording a confirmed decision here does not implement it or complete its batch; place it in its permanent rule, architecture, configuration, or code owner and validate it when that approved scope is executed. This file only prevents repeated context recovery and tracks unresolved dependencies.
+
+`docs/agent/context.md` is a temporary construction-phase decision ledger, not part of the finished Skeleton Theme. Before the Skeleton is declared complete, migrate every still-valid contract to its permanent owner, verify that no unresolved decision remains, and then remove this file.
 
 ## Classification Model
 
@@ -79,7 +81,7 @@ Keep three separate views: Shopify mandatory compliance, Theme Store optional fe
 - Keep that loop operational and concise. Do not require repeated restatement, expose verbose internal reasoning, create abstract methodology layers, or duplicate the same rules across `AGENTS.md`, Router, Skills, references, and vendor adapters. Delivery mode determines where the loop stops: discussion and prompt-only work stop before execution, while authorized execution continues through validation and correction.
 - Keep only a short stable invocation in the always-on rule layer. Store detailed guidance in one on-demand reference only if later examples prove it necessary, and create a dedicated Skill only when a recurring workflow has concrete triggers, tools, outputs, and validation that the Router alone cannot express.
 - Retain `agent-router` as the single lightweight dispatcher, not as an implementation Agent. Invoke it only when a task requires a real routing choice, such as ambiguous or broad scope, cross-session continuation, governance, multiple domains, delegation, or capability selection; skip it for clear single-file changes, fixed commands, and ordinary factual queries.
-- The Router makes five compact decisions: `Intent`, `Mode`, `Boundary`, `Route`, and `Validation`. `Mode` distinguishes discussion, prompt-only, execution, and review; `Boundary` owns risk, permission, and stop conditions; `Route` selects abstract capability level, only the necessary docs or Skills, and whether delegation is justified. Do not encode concrete vendor model names in canonical Router guidance.
+- The Router makes six compact decisions: `Intent`, `Mode`, `Boundary`, `Route`, `Execution carrier`, and `Validation`. `Mode` distinguishes discussion, prompt-only, execution, and review; `Boundary` owns risk, permission, and stop conditions; `Route` selects abstract capability level, only the necessary docs or Skills, and whether delegation is justified; `Execution carrier` chooses `primary`, `native delegation`, `external prompt`, or `user`. Do not encode concrete vendor model names in canonical Router guidance.
 - Routing is internal by default. Do not print a mechanical route report on every task; explain it only when execution mode, authority, risk, architecture direction, or delegation materially affects the user. The Router should not require a second routing reference that merely repeats its own rules.
 - `docs/references/agent-workflow/skill-routing.md` is removed after moving its unique rules to their actual owners. User delivery-mode overrides and the low-risk Router bypass belong in `agent-router`; multi-agent boundaries belong with orchestration; MCP hard rules belong in `AGENTS.md`.
 - Retain a small `orchestrate-agents` Skill as the capability-aware SOP loaded only after the Router decides multi-agent work is justified. Codex multi-agent availability can depend on the active client, exposed tools, root model, and permitted worker models; the Skill guides supported execution and explicit degradation but cannot create a missing native delegation capability.
@@ -95,35 +97,46 @@ Keep three separate views: Shopify mandatory compliance, Theme Store optional fe
 - The whole Agent-system structure linter and its npm script are removed. It validated an exact directory topology, fixed roles and model names, schemas, Hooks, adapters, and documentation links rather than proving an Agent capability or Shopify theme outcome. Do not replace it with another whole-system structure linter.
 - Retain all Shopify-focused deterministic validation. Add a future Agent configuration check only for a concrete, reproducible failure that can be verified mechanically and is not already reported by the active client.
 - `docs/references/agent-workflow/multi-agent-architecture.md` is removed. Its useful rules now live directly in the compact orchestration SOP: pass only necessary task context, parallelize only independent work, keep one writer in a shared worktree, retain final ownership with the primary Agent, and degrade explicitly when native delegation is unavailable. Do not create a replacement reference unless later cross-client behavior develops substantial stable detail that cannot remain concise in the Skill.
-- Retain `.codex/config.toml` as a thin project-scoped Codex adapter. It keeps `agents.max_concurrent_threads_per_session = 3` as a coordination and concurrent-cost guard, while redundant enablement, default subagent model and reasoning, and Hook feature settings are removed. Review the two MCP entries separately before retaining or changing them.
+- Retain `.codex/config.toml` as a thin project-scoped Codex adapter. It keeps `agents.max_concurrent_threads_per_session = 3` as a coordination and concurrent-cost guard, while redundant enablement, default subagent model and reasoning, and Hook feature settings are removed. Retain the two MCP entries as approved project configuration.
 - Retain only `.codex/agents/scout.toml`, `.codex/agents/implementer.toml`, and `.codex/agents/verifier.toml` as thin adapters to the three approved vendor-neutral roles. Keep only the required identity, concise selection description, role-file instruction, and useful sandbox default: `read-only` for Scout and Verifier, `workspace-write` for Implementer. Remove concrete model and reasoning fields, strict result-schema references, and repeated canonical role rules. The sandbox value is a client default, not an absolute security boundary; active parent-session permission overrides still apply.
 - Codex Docs Steward and Validator adapters and their corresponding canonical roles are removed. Approved documentation changes belong to a scope-limited Implementer; command-focused validation and independent acceptance belong to Scout or Verifier as appropriate.
 - Codex model selection is runtime-owned: the user or client selects the parent model, retained custom Agents inherit it by default, and an explicit one-task spawn override is allowed when a concrete cost or capability need justifies it. Do not persist Astra, Sol, Terra, or future model-version mappings in the repository. Selective delegation and the concurrent-thread cap are the stable cost controls; the cap does not limit total task tokens.
 - Retain `.cursor/agents/scout.md`, `.cursor/agents/implementer.md`, and `.cursor/agents/verifier.md` as thin native Cursor adapters rather than relying on undocumented permission translation from Codex TOML compatibility. Keep only identity, concise selection description, one canonical role-file instruction, and explicit `readonly` values; omit `model` so Cursor inherits the parent model. Remove the Cursor `docs-steward` and `validator` adapters.
-- Remove the Cursor `subagentStop` result-format Hook and its adapter. Retain `.cursor/mcp.json` unchanged until the shared MCP capability audit; its location is valid Cursor project configuration, but that does not pre-approve either server entry.
+- Remove the Cursor `subagentStop` result-format Hook and its adapter. Retain `.cursor/mcp.json` as approved thin Cursor MCP configuration.
 - Preserve the tracked `CLAUDE.md -> AGENTS.md` and `.claude/skills -> ../.agents/skills` symlinks as the zero-duplication Claude entry and Skill-discovery adapters. Their current plain-file appearance on this Windows checkout is caused by repository-local `core.symlinks = false`, not by invalid repository link metadata. Document the Windows prerequisite and targeted restore procedure; do not replace the links with copied rules, wrapper Skills, or a second Claude entry file.
 - Retain three thin native Claude subagent adapters under `.claude/agents/`: Scout and Verifier use `permissionMode: plan`; Implementer inherits the parent permission context. All three omit `model` and inherit the active parent model. Do not add Claude adapters for Docs Steward or Validator.
-- Remove project-level WebSearch and Anthropic-document WebFetch pre-approvals from `.claude/settings.json`; ordinary network access follows the active user/session permission policy. Retain only the current MCP server enablement list until the shared MCP audit, without treating the listed servers as pre-approved architecture.
+- Remove project-level WebSearch and Anthropic-document WebFetch pre-approvals from `.claude/settings.json`; ordinary network access follows the active user/session permission policy. Retain the current MCP server enablement list as approved thin Claude configuration.
 
 ## Implementation Status
 
-- The confirmed Codex adapter batch is implemented: `.codex/config.toml` retains only the three-thread Agent cap plus the still-pending MCP entries; concrete subagent model, reasoning, redundant enablement, and Hook feature settings are removed.
+- Execution carrier rules are now permanent in `AGENTS.md`: the primary agent defaults to analysis, plans, prompts, and review; broad scans, simple bulk work, and mechanical tasks default to external execution prompts; direct file edits require explicit user authorization. `agent-router` adds `Execution carrier` as a routing decision without duplicating the full work loop.
+- Shopify Dev MCP and Context7 are approved and retained. Shopify Dev MCP is the authoritative Skeleton entry for Shopify API, Liquid, theme architecture, and platform requirements. Context7 is for current third-party library documentation, including but not limited to Tailwind, Alpine, GSAP, and Swiper.
+- MCP client configuration stays in thin per-client adapters: `.codex/config.toml`, `.cursor/mcp.json`, `.mcp.json`, and `.claude/settings.json`. Do not centralize, generate, or symlink these files; `.shopifyignore` excludes them from theme upload only.
+- The model-independent work loop is now an always-on rule in `AGENTS.md`: problem definition -> decomposition -> selection -> execution -> validation feedback -> correction. It governs both multi-turn discussion and authorized automatic execution without requiring a separate methodology Skill or mechanical response headings.
+- The confirmed Codex adapter batch is implemented: `.codex/config.toml` retains only the three-thread Agent cap plus the approved MCP entries; concrete subagent model, reasoning, redundant enablement, and Hook feature settings are removed.
 - `.codex/agents/scout.toml`, `.codex/agents/implementer.toml`, and `.codex/agents/verifier.toml` are reduced to thin role adapters with sandbox defaults and parent model inheritance. The Codex `docs-steward` and `validator` adapters are removed.
-- `.codex/hooks/validate-agent-result.cjs` is removed. The active Windows Codex process prevented deletion of `.codex/hooks.json`, so it currently contains only `{}` and has no Hook behavior; delete the empty file after the client releases it.
-- The confirmed Cursor adapter batch is implemented: its Scout, Implementer, and Verifier files are thin native Markdown adapters with explicit `readonly` defaults and inherited parent models; its `docs-steward`, `validator`, `hooks.json`, and result-validator Hook adapter are removed. `.cursor/mcp.json` remains unchanged pending MCP review.
+- `.codex/hooks/validate-agent-result.cjs` is removed. The behavior-free `.codex/hooks.json` placeholder and any legacy Hook directory residue are removed as part of the outer mechanical cleanup batch.
+- The confirmed Cursor adapter batch is implemented: its Scout, Implementer, and Verifier files are thin native Markdown adapters with explicit `readonly` defaults and inherited parent models; its `docs-steward`, `validator`, `hooks.json`, and result-validator Hook adapter are removed. `.cursor/mcp.json` remains as approved thin Cursor MCP configuration.
 - The confirmed Claude adapter batch is implemented without changing the two tracked symlinks: Scout, Implementer, and Verifier adapters are added under `.claude/agents/`; broad project Web pre-approvals are removed from `.claude/settings.json`; and `AGENTS.md` now records the Windows symlink prerequisite and recovery path. The local checkout still has `core.symlinks = false`, so restoring real links remains a machine setup action after Windows permits symlink creation.
 - The three retained canonical roles now use concise semantic handoffs without fixed model profiles or strict JSON output. The redundant roles, contracts, Hook validator chain, Agent topology lint, and duplicate Agent workflow references are removed.
-- `agent-router` and `orchestrate-agents` now contain the approved lightweight routing and optional delegation contracts. Remaining Shopify validation Skills, MCP configuration, and theme implementation are unchanged pending their separate reviews.
+- `agent-router` and `orchestrate-agents` now contain the approved lightweight routing and optional delegation contracts. Shopify Dev MCP and Context7 are approved; MCP client adapters remain separate per client.
+- `check-i18n` is approved and retained as an independent Skill with `npm.cmd run lint:i18n` and `npm.cmd run test:i18n`. Shopify Theme Check remains the platform authority; the project validator supplements it with duplicate keys, missing locale keys, Unicode hardcoded copy, schema/preset/default boundary checks, and instance `t:` misuse detection. Automated fixture tests are established and static `node --check` passed; runtime verification on this machine remains pending until `node_modules` is installed.
+- `check-theme-architecture` is approved and retained as the slim generic architecture validation Skill. Theme-specific rules, CSS layer allowlists, and the unused home-motion audit script are removed. Current `lint:theme` covers protected Shopify Liquid runtime-name assign/capture shadowing, static tab accessibility, and the SVG `textLength` WebKit guardrail only. JS/CSS architecture-coupled rules remain deferred until the corresponding implementation architecture is decided. Embedded JS lint uses virtual `assets/*.js` paths so ESLint applies the same config as first-party assets. `lint-liquid-syntax` is retained for strict Liquid output parsing; fixture tests are established via `npm.cmd run test:theme-architecture` and static `node --check` passed; runtime verification on this machine remains pending until `node_modules` is installed.
+- The redundant `build-svg-icons` Skill is removed while the SVG ingestion capability remains as `npm.cmd run build:svg` with root-owned `svgo.config.cjs`. `icons/` remains ignored temporary staging; optimized runtime icons are committed under `assets/`. Existing icon assets are not part of this configuration-only batch and remain pending the later asset inventory cleanup.
+- Root configuration cleanup is implemented: README and package identity now describe the Skeleton mother template; `private: true` is set; build scripts use local `tailwindcss` and `svgo` binaries; `test:validators` is the unified validator entry and is wired into `npm test` and CI; personal `shopify.theme.toml` is removed from the repository and ignored locally; Theme Check returns to `theme-check:recommended`; `svgo.config.cjs` is excluded from Shopify upload; npm lockfile tarball sources use `registry.npmjs.org`; top-level `browserslist` is removed from devDependencies.
+- Outer mechanical cleanup is complete: empty `.codex/hooks.json` is removed; stale `launch-gate.md` governance-path references are corrected.
+- ESLint and Stylelint remain provisional repository configuration pending the separate JS/CSS architecture review. License distribution is still undecided.
+- Validator fixture tests are established and static `node --check` passed; runtime execution remains pending on this machine until `node_modules` is installed.
 
 ## Current Phase
 
-Active: completing the approved Agent-foundation cleanup as a coherent checkpoint. Routing, delivery modes, model inheritance, permissions, delegation fallback, external prompt execution, and verification ownership are now recorded without fixed model names or a duplicated enforcement framework. Theme architecture decisions already confirmed remain valid, but their implementation remains paused.
+Active: CSS architecture review of the `tailwind/` source layer and its build boundary. Outer repository mechanical cleanup is complete; theme business/runtime directories remain paused. JavaScript architecture review follows CSS.
 
 The current cleanup scope prioritizes files and directories outside Shopify's eight standard theme runtime directories: `assets`, `blocks`, `config`, `layout`, `locales`, `sections`, `snippets`, and `templates`. Being outside those directories is not itself a deletion reason. Classify Agent infrastructure, client adapters, validation/build tooling, documentation, editor/CI configuration, and the `tailwind/` CSS source layer separately, then retain only items with an approved Skeleton purpose.
 
 Not started: theme file deletion, page rebuild, CSS or JavaScript refactor, or ESM migration.
 
-The user's minimum problem-solving loop and the lightweight Router contract are approved Agent-system design constraints. Their eventual permanent placement remains part of the rule-layer audit; avoid creating a separate methodology Skill or long always-on prompt by default.
+The user's minimum problem-solving loop and execution carrier rules are permanently owned by `AGENTS.md`; the lightweight Router selects mode, boundary, route, execution carrier, and validation without duplicating that loop. Avoid creating a separate methodology Skill, response-template file, or long always-on prompt.
 
 The audit covers Shopify composition and Theme Editor behavior; layout and settings; CSS and responsive design; images, video, product media, and 3D media; JavaScript lifecycle and loading; commerce capabilities; accessibility, SEO, performance, compatibility, progressive enhancement, i18n, edge cases, testing, documentation, tooling, and governance.
 
@@ -136,7 +149,7 @@ The audit covers Shopify composition and Theme Editor behavior; layout and setti
 - Do not run multi-agent orchestration unless the user explicitly authorizes the specific task.
 - Before retaining an item, explain its path, purpose, trigger, inputs and outputs, dependencies, permissions, repository effects, Skeleton value, maintenance cost, simpler alternatives, removal impact, and validation method.
 - The user does not need to author these systems, but must understand and approve every retained item.
-- The full Agent audit occurs after the theme architecture and validation model are decided.
+- Repository-level Agent, MCP, build, and tooling configuration is reviewed in the current outer-layer phase outside the Shopify business directories. Validation rules that are tightly coupled to theme implementation can be finalized only after the corresponding theme architecture is decided.
 
 ## Open Decisions
 
@@ -148,9 +161,14 @@ The audit covers Shopify composition and Theme Editor behavior; layout and setti
 - Alpine scope and initialization order
 - Image, video, and product-media contracts
 - Accessibility, SEO, performance, compatibility, and testing gates
-- Final tooling, Agent, Skill, rule, and validator architecture
+- License distribution model
 - Remaining cross-client capability and fallback differences for Cursor, Claude, and future clients
+
+## Machine Setup Notes
+
+- On this machine, Codex has not yet added this repository to user-level trusted projects, so `codex mcp list` shows only the global `node_repl` server and does not load the project's Shopify Dev MCP or Context7 entries from `.codex/config.toml`. This is a local trust configuration gap, not missing repository MCP files. After adding the project to Codex trusted projects, restart Codex and confirm both servers appear in the tool list.
+- This file records current state and machine-specific follow-ups only. It does not replace permanent rules in `AGENTS.md`, project Skills, or `docs/references/`.
 
 ## Next Step
 
-Review the remaining Shopify validation Skills and MCP entries as separate decisions. Then resume the four Theme Block contracts and global layout protocol before changing theme runtime code. After this Codex process releases `.codex/hooks.json`, delete that behavior-free empty file as a small cleanup.
+Review the `tailwind/` CSS source layer, build routing, and token boundaries before changing `assets/` runtime output or theme business files. Then review JavaScript architecture. After that, resume the four Theme Block contracts and global layout protocol.
