@@ -6,6 +6,16 @@ This file is the always-on entry point for agents working in this repository. Ke
 
 ---
 
+## Session Start
+
+At the start of each session, read `docs/agent/board.md` for active issues, pending decisions, and work batches. Update `board.md` when discussion produces a conclusion, disagreement, or new pending decision.
+
+Read `docs/agent/context.md` when continuing previous work, recording an implemented and accepted result, or making an architecture decision.
+
+Read other files under `docs/references/` only when the task routing below calls for them.
+
+---
+
 ## Project Context
 
 This is an internal Shopify Skeleton Theme mother template for building future themes. It keeps a minimal, platform-complete architecture and quality baseline; derived themes own their business features, page design, and Theme Store positioning.
@@ -85,7 +95,7 @@ Use the smallest complete loop for every task: problem definition -> decompositi
 
 Agent behavior rules:
 
-- Execution carrier: the primary agent defaults to analysis, architecture judgment, plans, external execution prompts, and review. Broad scans, simple bulk work, and mechanical migrations default to a self-contained external execution prompt instead of direct file edits. The primary agent writes files only when the user explicitly requests direct execution.
+- Execution carrier: the user owns the outcome, priorities, batch boundary, and execution authority. Inside an authorized batch, make the implementation choices and write the files directly; do not ask the user to approve individual implementation details. Use a self-contained external execution prompt only when the user asks for prompt delivery or when the work must run in another session or client. Delivering a prompt does not complete a batch; completion requires an implemented change and acceptance.
 - Use Shopify Dev MCP for Shopify API, Liquid, theme architecture, and platform requirements. Use Context7 for third-party library documentation when current-version sources matter, including but not limited to Tailwind, Alpine, GSAP, and Swiper; resolve the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available. If an expected MCP is missing, first check client configuration, project trust, client restart, Node/npm, and network; only after configuration is confirmed may you fall back to the official website and state that degraded source explicitly.
 - Users do not need to manually specify skills. For non-trivial tasks, use `agent-router` first to choose skills, docs, and validation.
 - Use `orchestrate-agents` only after `agent-router` selects it or the user explicitly requests delegation. Parallelize independent read-only work, keep one writer per shared worktree, and keep the primary agent responsible for decisions and user communication.
@@ -93,7 +103,7 @@ Agent behavior rules:
 - For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
 - If the user asks for review, orientation, or a prompt, do not refactor or implement unless they explicitly ask for implementation.
 - Facts discoverable from the repository must be inspected before asking the user. Ask before editing when the unknown is merchant-owned configuration, product/design preference, architecture direction, or launch-risk tradeoff.
-- Persist durable decisions and cross-session notes in `docs/agent/context.md` or the matching docs reference, not only in chat.
+- Persist in-flight conclusions, disagreements, and pending decisions in `docs/agent/board.md`. Move a conclusion to `docs/agent/context.md` or the matching docs reference only after its batch is implemented and accepted. Do not leave either only in chat.
 - When the user asks to continue previous work, review outstanding tasks, or prepare next-session context, read `docs/agent/context.md`.
 
 Hard implementation rules:
