@@ -1,9 +1,9 @@
 ---
 name: check-theme-architecture
-description: Validate Shopify theme architecture and static browser compatibility rules. Use when Liquid, embedded stylesheet/javascript blocks, accessibility guardrails, or browser compatibility tooling change.
+description: Validate Shopify theme architecture and static browser compatibility rules. Use when Liquid, embedded stylesheet or javascript blocks, tab markup, or browser compatibility tooling change.
 when_to_use: >
   Liquid runtime-name shadowing, tab accessibility, SVG WebKit guardrails,
-  Liquid output syntax, CSS/JS compatibility, or npm.cmd run lint:theme.
+  Liquid output syntax, or CSS/JS compatibility checks changed.
 ---
 
 # Check Theme Architecture

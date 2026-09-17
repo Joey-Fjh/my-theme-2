@@ -1,112 +1,77 @@
 # Work Board
 
-This board holds only active items: discussions, pending decisions, disagreements, agreed conclusions awaiting implementation, and work batches.
+This board is the discussion surface for active issues, evidence, alternatives, disagreements, pending decisions, and proposed work batches.
 
-- Keep agreed conclusions in “Agreed, awaiting implementation” until the change is implemented and accepted. Then move them to `docs/agent/context.md`.
-- Remove an item only after acceptance and transfer to the ledger, or when the user discards it. Remove the row, not this file.
-- **Delivering an execution prompt does not complete a batch.** Completion requires an implemented change and acceptance.
-- This file and `context.md` are construction-phase records. Migrate their lasting rules and remove both when the Skeleton is complete.
+- After the user accepts a direction, record it in `docs/agent/context.md` with its dependencies and authorization state.
+- Recording a plan in `context.md` does not authorize execution. Execution requires explicit user authorization for that batch and resolved dependencies.
+- Keep only evidence needed for an active decision or handoff. Accepted implementation state belongs in `context.md`; durable contracts belong in their permanent rule, reference, configuration, or code owner.
+- Delivering an execution prompt does not complete a batch. Completion requires implementation, validation, and user acceptance.
+- This file and `context.md` are construction-phase records. Migrate lasting rules and remove both when the Skeleton is complete.
 
-Last updated: 2026-09-15.
+Last updated: 2026-09-17.
 
 ---
 
-## Working model
+## Working Model
 
 | Role | Responsibility | Authority |
 | --- | --- | --- |
 | Decision owner | Sets the outcome, priorities, batch boundary, and execution authority. | The user is the sole approval authority. |
-| Coordinator / reviewer | Inspects evidence, evaluates a bounded task, proposes an execution carrier, and prepares a concrete assignment or execution prompt. More than one independent reviewer may be used when useful. | Read-only review and proposals unless the user authorizes implementation. |
-| Implementer | Executes one authorized batch and validates the result. | One writer per shared worktree; no scope expansion. |
-| Verifier | Independently checks the implemented result and its evidence. The user decided on 2026-09-15 that there is no fixed reviewer rotation. | Read-only acceptance review. |
+| Coordinator / reviewer | Inspects evidence, maintains board/context state, proposes a bounded task, and verifies results. | Read-only review and record maintenance unless implementation is authorized. |
+| Implementer | Executes one authorized batch and validates it. | One writer per shared worktree; no scope expansion. |
+| Verifier | Independently checks the diff, acceptance criteria, and fresh evidence. | Read-only acceptance review. |
 
-During discussion, write only to this board. After a batch is implemented and accepted, move its lasting conclusions to `context.md` and remove its rows from the board. Do not update `context.md` during discussion.
-
-For this pilot, the shared board carries handoffs between separate editor sessions. A reviewer’s conclusion is available to the other reviewer only after it is recorded here. This file-based handoff does not require API keys, workflow nodes, or a native delegation channel.
-
-The user chooses the reviewer, implementer, client, and delivery mode in the current request. When the user asks for an execution prompt, review ends with a concrete prompt; implementation and acceptance happen in the subsequent execution batch.
+The execution carrier is whichever client the user is working in for a request. Separate clients may perform proposal, implementation, and verification, but only one writer acts on the shared worktree at a time, and no client starts a subagent to execute a batch.
 
 ---
 
-## Current issues
+## Current Focus
 
-Build the Agent workflow foundation: board, roles, automatic session reading, and batch status fields. The goal is a workflow that can later be extracted from the Skeleton and reused in other programming projects.
+The Agent layer is complete for this phase: P5a, P6, and V1 are accepted and summarised in `context.md`. TB1 is retained as a provisional implementation, not accepted as a Skeleton contract, and will be reworked after the JS/CSS architecture decisions.
 
-Continue the CSS architecture phase after the workflow is usable.
+Next discussion: the always-on entry. `AGENTS.md` should be complete for rules that do not depend on the Skeleton's implementation and should stop encoding current implementation details as permanent contract (see "Always-On Entry Direction" in `context.md`). Research the exact rule set under P1+P5b before the JS/CSS architecture discussion.
 
-The user’s execution priority (2026-09-15): keep the user’s outcome, priorities, and batch boundary central. Do not keep expanding discussion and plans while Skeleton theme code remains untouched. Resolve an issue on the board into a bounded batch and acceptance criteria; once the user settles the direction and carrier, execute directly or hand off a concrete execution prompt, then implement, validate, and accept the result. **Context records accepted results and is not a prerequisite to start work.** Independent batches do not wait for the entire architecture audit.
-
-Documentation language (user choice, 2026-09-15): use English for this board, `context.md`, and the session-start instructions. `context.md` is already English. Keep role names and workflow rules client-neutral; do not record current tool or model assignments as workflow rules. Test the instructions with a small real batch before extracting the workflow. No fixed double-review gate, permanent log, API orchestration, or additional Agent layer is required for this pilot. [AGENTS.md format](https://agents.md/) · [Codex instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md) · [Claude Code guidance](https://code.claude.com/docs/en/best-practices)
+P3 is a ready micro-batch awaiting authorization.
 
 ---
 
-## Pending decisions
+## Pending Decisions
 
-| ID | Question | Needed answer |
+| ID | Question | Current position |
 | --- | --- | --- |
-| D3 | M2: Should `assets/base.css` and the token bridge in `tailwind.input.css` be included in this CSS batch? | **On hold** (user decision, 2026-09-15: revisit after the workflow is usable). |
-
-D1 and D2 are closed; see A9 and A10 under “Agreed, awaiting implementation.”
+| D3 | Should `assets/base.css` and the token bridge in `tailwind.input.css` be included in the CSS manifest batch? | On hold until the JS/CSS architecture discussion. |
+| D17 | Which rules stay in the always-loaded `AGENTS.md`, and which move to a reference owner? | Open; research under P1+P5b. Starting point: the six architecture-independent safeguards recorded in `context.md`. Each of the 18 `Hard implementation rules` and 4 generated/vendor rules needs a keep, move, or merge classification with its destination. Also decide whether the two method prompts lost in P5a (smallest justified action; give delegated work only necessary context) belong in the entry. |
 
 ---
 
-## Cross-review findings
+## Active Evidence And Constraints
 
-Claude reviewed the Codex proposal (G1–G4 accepted, M1–M5 omissions, C1–C2 conflicts). Codex responded to each item on 2026-09-15. M2 remains on hold under D3. M3 and C1 have since converged; A2 and A8 have been revised in the agreed items below. M4 still needs acceptance of the proposed verification boundary.
+| ID | Evidence | Impact |
+| --- | --- | --- |
+| ENTRY-F1 | The always-loaded entry encodes current implementation as permanent contract: runtime names, typography tier names and usage, motion-gate mechanics, and Tailwind placement. Reviewing TB1 found its `text` block conflicting with the entry's body-copy sizing rule, a rule that comes from the current typography implementation rather than an accepted Skeleton decision. | The entry pre-constrains undecided architecture. Slim it before the JS/CSS discussion (D17). |
+| DOC-F1 | TB1 was executed because an earlier `context.md` entry claimed the blocks did not depend on the CSS manifest and could start immediately, and a recorded plan was treated as executable. The independence claim was wrong. | `context.md` now separates recording from authorization and requires every plan to list dependencies. `AGENTS.md` carries the same rule. |
+| TB-F1 | The accepted generic inventory is `group`, `heading`, `text`, and `button`; `image` remains deferred to the media-contract review. | Input for the TB1 rework; do not add convenience blocks. |
+| TB-F2 | TB1 known issues: `text` defaults to `body-md`, 12.5% smaller than global body copy on mobile; `heading` renders an empty heading when blank; `button` renders a role-less `span` with `aria-disabled` when the link is blank; `group` relies on inline custom properties and a local stylesheet. | Resolve in the TB1 rework after the typography, CSS placement, and primitive decisions. |
+| TB-F3 | Semantic heading level and visual typography tier are independent; button is navigation-style; group owns child composition; text owns non-heading rich text. | Preserve these ownership boundaries in the rework. |
+| TB-F4 | Before TB1, no section accepted `@theme` blocks or rendered `content_for 'blocks'`. TB1 added the minimal `custom-content` host without modifying merchant-owned template JSON. | Keep a host section in the rework. |
+| P3-F1 | The `.env` Shopify upload surface has not been proven, but defensive `.shopifyignore` entries are low-cost and accepted in principle. | Describe the risk as unverified; change only `.shopifyignore`. |
+| CSS-F1 | The future CSS batch must classify the old animation layers, reset and token bridge ownership, generated asset name, retained class consumers, and all existing `{% stylesheet %}` placements. | Keep D3 and the manifest work in the JS/CSS discussion; do not mix into other batches. |
 
-| ID | Issue | Claude Code review | Codex response |
+---
+
+## Proposed Work Batches
+
+| Batch | Scope | Acceptance boundary | Status |
 | --- | --- | --- | --- |
-| M1 | `tailwind.animates.css` was omitted from classification. | **Split the layer rather than retain it whole.** Global rules at `tailwind.animates.css:37,518` and section-owned rules at `:1286-1323` share one file. Classify all three old CSS layers, about 4,763 lines. | Agree. Classify reusable cross-file motion, section-owned motion, and capabilities pending the JS/motion review. Do not decide to retain the whole layer in advance. |
-| M2 | Ownership of `assets/base.css` (209 lines) and the token bridge in `tailwind.input.css:18-79` is undecided. | Set their scope before delivering a global-ownership manifest. | Agree that the target contract must explain reset and token-bridge ownership. A draft and two scenario measurements may use explicit scope assumptions. Do not make a final decision while D3 is on hold; resolve D3 before the formal contract and implementation. |
-| M3 | The generated asset filename was missing from the sequence. | **Converged.** Claude confirmed three Liquid references (`layout/theme.liquid:21`, `layout/password.liquid:17`, `templates/gift_card.liquid:7`) and found another in `stylelint.config.cjs:39`. A rename affects these four references plus `build:tw`, `watch:tw`, and `lint:compat:css` in `package.json`. | Decide the name when the user accepts the manifest and the contract is rewritten. Change `.shopifyignore` or README only if their actual references or ignore boundaries change. |
-| M4 | Step 4 lacked a way to detect missing styles. | Theme Check, stylelint, and a Tailwind build cannot prove that retained consumers still have CSS. Run a one-time class-use difference analysis. | Agree. List removed CSS definitions, uses in retained Liquid/JS, and replacements. Dynamic classes and selectors also need a caller inventory plus key-page rendering and interaction checks. A one-time analysis script does not become permanent lint by default. |
-| M5 | The 26 existing `{% stylesheet %}` tags were not inventoried. | The placement rule is changing; current compatibility has not been reviewed. | Agree. Inventory all 26: 24 plain `{% stylesheet %}` tags and two `{%- stylesheet -%}` tags. Decide for each whether it stays local, becomes a manifest utility, or leaves with its caller. |
-| C1 | `context.md` was being updated too often. | **Closed.** `AGENTS.md` now sends in-flight conclusions to the board and implemented, accepted results to context. The board now keeps agreed conclusions pending implementation and says that an execution prompt does not complete a batch. | Agree; this correction originated in the Codex review. |
-| C2 | `abstraction-boundaries.md` had no review owner. | Its `sectionPagination` example belongs to the JS architecture review. | Agree. Keep portable principles and clean or replace the project-specific example during that review. |
+| P3 Upload-surface defense | Add `.env` and `.env.*` to `.shopifyignore` with the risk described as unverified. | Only `.shopifyignore` changes; entries and rationale are verified. | Planned; awaiting authorization. |
+| P1+P5b Always-on entry slimming | Label the five implementation references as current-implementation protections pending mother-template review, and move implementation-specific rules out of `AGENTS.md` to exactly one owner each. | D17 accepted; no runtime or theme behavior change; no rule deleted while existing code depends on it; the entry stays complete for architecture-independent rules. | Research first (D17). |
+| JS/CSS architecture discussion | Utility manifest and D3, CSS placement, typography design, button and surface primitives, JavaScript core and runtime conventions, Alpine scope. | Decisions recorded in `context.md` with dependencies. | Planned after P1+P5b. |
+| TB1 rework | Rework the provisional Theme Blocks against the JS/CSS decisions and resolve TB-F2. | Accepted ownership boundaries preserved; known issues resolved; validation selected from the actual changes. | Blocked by the JS/CSS decisions. |
+| CSS manifest | Define and measure the fixed Tailwind utility vocabulary and global/local CSS ownership. | D3 resolved; isolated measurement does not overwrite the tracked generated stylesheet; retained consumers and local stylesheet placements are inventoried. | Blocked by the JS/CSS decisions. |
+| P4 License | Decide distribution intent, then align `package.json` license. | Distribution intent and package metadata agree. | Not started. |
 
 ---
 
-## Agreed, awaiting implementation
+## Future Extraction Goal
 
-These conclusions were agreed in cross-review or decided by the user. Move them to `context.md` only after the corresponding batch is implemented and accepted.
-
-| ID | Conclusion | Source |
-| --- | --- | --- |
-| A1 | `node_modules` has 229 entries and `tailwindcss@4.1.18` is present. `npm ci` is **not** a required prerequisite on this machine. | Codex found it; Claude confirmed with PowerShell. |
-| A2 | **Verification rule:** If one client’s sandbox hides a path excluded by `.gitignore`, do not infer that the path does not exist. First confirm with another read-only method available to that client; request normal approval only if escalation is genuinely required. Observed difference: Claude’s Bash tool could not see `node_modules/`, while PowerShell could; Codex could read it in the sandbox. | Root cause of A1. The former blanket rule requiring unsandboxed verification was discarded. |
-| A3 | Record MCP availability with the **client and check date**. One connection failure is not a permanent state. | Proposed by Codex; accepted by Claude. |
-| A4 | Record verification by **inspected scope, date, and path or commit evidence**, not a mechanical marker on every ledger assertion. | Proposed by Codex; Claude withdrew its former proposal. |
-| A5 | Describe the `.env` upload surface as **unverified** and add minimal defensive ignore entries. Do not claim upload has been proven. | Proposed by Codex; accepted by Claude. |
-| A6 | B1 boundary: “Do not migrate the old CSS layers as a whole” does not mean “delete every caller.” Classify required Skeleton capabilities separately from Ceylune-specific implementations. | Codex correction to Claude’s earlier wording. |
-| A7 | Measure CSS with an isolated temporary build that does not overwrite tracked `assets/tailwind.output.css`. Report scenarios with and without Swiper, both raw and compressed. **The measurement does not require theme-file deletion first.** | Proposed by Codex; accepted by Claude. |
-| A8 | Working model and writing schedule (above). | User decision, 2026-09-15. |
-| A9 | **D1 implemented:** `AGENTS.md` has a `## Session Start` section. Read `board.md` at session start, write back new conclusions, and read `context.md` when continuing previous work or recording an accepted result. Plain instructions avoid client-specific import syntax. The section is now in English, as requested by the user. | User approved on 2026-09-15; the write-back sentence completes the two-way handoff. |
-| A10 | **D2 discarded:** Do not copy a fixed double-review rule into `AGENTS.md` or `orchestrate-agents`. The user chooses reviewers and implementers in each request; review-only scope and implementation authority are already defined in `AGENTS.md`. | User decision, 2026-09-15; accepted by Claude. |
-
----
-
-## Work batches
-
-Fields: scope, proposer, verifier, acceptance criteria, and status. The user assigns the execution carrier in the current request; record the resulting work and acceptance status here.
-
-| Batch | Scope | Proposer | Verifier | Acceptance criteria | Status |
-| --- | --- | --- | --- | --- | --- |
-| P2 Skill invocation conflict | Resolve the conflict between `.agents/skills/orchestrate-agents/agents/openai.yaml` and the skill invocation rule. | To assign | To assign | The conflict is removed and the skill can still be invoked through the router; verify one real invocation. | Not started |
-| P3 Upload-surface defense | Add `.env` and `.env.*` to `.shopifyignore`. | To assign | To assign | Entries exist; describe the reason as in A5. | Not started |
-| P4 License | Decide the mother template’s distribution intent, then align the `ISC` value in `package.json`. **Do not include CSS lint paths or `--minify` in this batch.** | To assign | To assign | Intent is recorded clearly; `package.json` agrees with it. | Not started |
-| P1 Reference status | Mark `css-architecture.md`, `javascript-runtime.md`, `motion-architecture.md`, and `image-display-contract.md` as existing-implementation references pending mother-template review. Also examine `AGENTS.md` routing and hard rules, distinguishing protections for existing code from confirmed Skeleton contracts. | To assign | To assign | Four references carry the status; conflicts in `AGENTS.md` are resolved and existing-code protections have an explicit owner. That owner is still a prerequisite decision. | Not started |
-| CSS phase | Draft a read-only manifest; run isolated size measurements; after user acceptance rewrite the contract; classify active classes and callers of old layers; implement and validate. | To assign | To assign | Acceptance criteria are defined separately for the five steps. | Not started; remaining review boundaries need closure before the formal contract. |
-
-Dependency: P1–P4 are independent and can be assigned separately. A CSS draft and isolated measurement may proceed while D3 is on hold; the formal CSS contract and implementation wait for D3 and the remaining review boundaries. Keep one writer per shared worktree.
-
----
-
-## Future extraction goal
-
-The Skeleton is the pilot for this file-based workflow. Extract a reusable programming-project workflow only after this pilot proves useful. Constraints for extraction:
-
-- Keep roles and collaboration rules client-neutral and free of Shopify-specific requirements.
-- Keep client adapters thin and removable without changing the canonical role contract.
-- `board.md` and `context.md` are construction-phase records. Extract their **structure and useful rules**, not this project’s contents.
-
-Agent-system changes remain subject to the approval boundary in `context.md`. Discuss and approve each new Agent rule or `.agents/` change before writing it.
+After the workflow is proven through real theme batches, evaluate extracting the portable board/context lifecycle, vendor-neutral roles, and thin client adapters into a reusable development template. Do not extract theme-specific rules, validators, or references as generic workflow infrastructure.

@@ -33,26 +33,57 @@ After the local CLI store link exists, start development with:
 npm.cmd run dev
 ```
 
-This repository tracks two symlink adapters:
+This repository tracks two classes of client adapters. Neither class may be replaced with copied content.
+
+**Entry adapters (must remain symlinks):**
 
 - `CLAUDE.md -> AGENTS.md`
 - `.claude/skills -> ../.agents/skills`
 
-On Windows, enable Developer Mode or use an account allowed to create symbolic links before cloning. Prefer:
+**Role adapters (must remain separate real files):**
+
+- `.claude/agents/{scout,implementer,verifier}.md`
+- `.cursor/agents/{scout,implementer,verifier}.md`
+- `.codex/agents/{scout,implementer,verifier}.toml`
+
+These nine files are per-client permission shims, not duplicates of `.agents/roles/`. Do not symlink them to the canonical roles or merge them across clients.
+
+### Clone on a symlink-capable environment
+
+On a machine that can create symbolic links, clone with symlink checkout enabled:
 
 ```powershell
 git clone -c core.symlinks=true <repo-url>
 ```
 
-Verify the adapters after cloning:
+No system setting change is required.
+
+### Windows repair when adapters materialised as plain files
+
+If `CLAUDE.md` or `.claude/skills` appear as plain files containing only their target paths, repair them from an elevated PowerShell. This changes **no** system setting: an elevated process already holds `SeCreateSymbolicLinkPrivilege`.
 
 ```powershell
-Get-Item CLAUDE.md
-Get-Item .claude\skills
-git ls-files -s CLAUDE.md .claude/skills
+git config core.symlinks true
+Remove-Item CLAUDE.md, .claude\skills -Force
+git checkout -- CLAUDE.md .claude/skills
 ```
 
-The tracked entries should report Git mode `120000`. Do not copy rules or skills into adapter paths.
+### Optional: Windows Developer Mode
+
+Enabling Developer Mode is optional convenience that can avoid needing an elevated shell later. It is **not** a prerequisite for repair or for cloning on a symlink-capable environment.
+
+### Verify the entry adapters
+
+```powershell
+npm.cmd run doctor:agent
+Get-Item CLAUDE.md, .claude\skills | Select-Object Name, LinkType, Target
+```
+
+`doctor:agent` should exit 0 when both entry adapters are real symlinks.
+
+### Automatic warning in Claude Code
+
+`.claude/settings.json` registers a SessionStart hook that runs `doctor-agent.mjs --hook` when an inert entry adapter is detected. Project Hooks run only after the workspace trust dialog is accepted, so the hook is the strongest repository-level warning for Claude Code rather than a guarantee on a fresh clone before trust. README remains the layer that works with no tooling and no trust; the `AGENTS.md` guardrail reaches Cursor and Codex always, and Claude Code whenever `CLAUDE.md` is intact.
 
 ## Commands
 

@@ -1,5 +1,5 @@
 name = "scout"
-description = "Read-only repository explorer that returns concise evidence without proposing unrelated fixes."
+description = "Discover repository facts and return concise, source-linked evidence without editing or deciding remediation."
 sandbox_mode = "read-only"
 developer_instructions = """
 Read and follow .agents/roles/scout.md before acting.

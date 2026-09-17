@@ -1,55 +1,44 @@
 # Project Context
 
-Short cross-session state for agents. Record only user-confirmed direction, current status, and unresolved decisions. Detailed architecture belongs in `docs/references/` after discussion.
+Current cross-session state and execution source for the Skeleton project. Record agreed plans, their dependencies and authorization state, current implementation status, accepted results, and unresolved decisions. Discussion and competing proposals stay in `docs/agent/board.md` until the user accepts a direction.
 
-Last updated: 2026-09-14.
+Last updated: 2026-09-17.
+
+## Record Lifecycle
+
+1. Use `docs/agent/board.md` for discussion, evidence, alternatives, disagreements, and pending decisions.
+2. After the user accepts a direction, record it here with an accurate status such as `planned`, `authorized`, `in progress`, `implemented`, `provisional`, `accepted`, `deferred`, or `blocked`.
+3. **Recording is not authorization.** A planned entry may be executed only when both conditions hold: the user has explicitly authorized that batch for execution, and every dependency listed in the entry is resolved. If either is missing, stop and raise it on the board.
+4. Every planned entry lists its dependencies. A claim that a batch has no dependency on an open decision must name the evidence; an unsupported independence claim is treated as a dependency.
+5. After implementation, record validation and acceptance here, compress the accepted plan into a short result, and remove obsolete discussion from the board.
+6. Move stable architecture and operating contracts to `AGENTS.md`, code, configuration, or the matching document under `docs/references/`. This file tracks current project state; it is not the permanent owner of those contracts.
+
+Chat history is not a durable source of project state. Superseded conclusions must be removed or clearly replaced.
 
 ## Project Identity
 
 `my-skeleton-theme` is an internal Shopify Skeleton Theme mother template for building future themes.
 
 - It is not a finished commercial theme or a direct Theme Store submission.
-- It should be minimal, complete, modular, extensible, maintainable, and verifiable.
+- It should be minimal, platform-complete, modular, extensible, maintainable, and verifiable.
 - It provides stable architecture and quality contracts; derived themes provide page design, business features, and visual or functional uniqueness.
-- Optional Theme Store feature declarations are not default mother-template requirements.
-- Existing custom architecture, tooling, validators, and Agent systems are pending review. Nothing is retained only because it already exists.
+- Shopify Theme Store mandatory capabilities form the platform baseline. Optional feature declarations are not default mother-template requirements.
+- Existing custom architecture, tooling, validators, and Agent infrastructure remain only when they have an approved mother-template purpose.
 
-## Reference Sources
+## Safety And Authority
 
-| Source | Role |
-| --- | --- |
-| Shopify developer documentation and Theme Store requirements | Normative platform requirements, best practices, and test guidance |
-| [Shopify Skeleton Theme](https://github.com/Shopify/skeleton-theme) | Primary reference for a minimal, well-structured starting point |
-| [Shopify Horizon](https://github.com/Shopify/horizon) | Learning reference for current Shopify implementation patterns and organization; do not copy or retain patterns without discussion |
-| [Original commercial theme](https://github.com/Joey-Fjh/my-theme-1) | Read-only source for the existing Ceylune implementation, history, tags, and releases |
-
-## Safety Boundary
-
-- Never modify `my-theme-1`; consult it only when historical implementation evidence is needed.
-- `my-skeleton-theme` is independent and may be structurally reduced or rebuilt after approval.
-- Ceylune appearance, sections, template content, schema IDs, merchant configuration, and storefront behavior do not require compatibility in this repository.
-- Do not retain code "just in case"; each retained part must have an approved mother-template purpose.
-- Implementation may proceed in a narrowly scoped batch after the user confirms that batch; confirmation does not authorize unrelated or still-open decisions.
-
-## Confirmed Workflow
-
-1. Inspect and analyze the repository without changing it.
-2. Present evidence, architecture options, tradeoffs, and open questions to the user.
-3. The user confirms, changes, or rejects each decision.
-4. Only confirmed decisions may be written to documentation or code.
-5. A confirmed, self-contained batch may be implemented immediately when the user asks execution to proceed; otherwise continue the audit until a larger implementation prompt can be produced.
-6. Do not implement unconfirmed or adjacent decisions merely because one batch was approved.
-7. Review and validate every completed implementation batch.
-
-Undiscussed conclusions must not be treated as decisions. Superseded decisions must be removed or clearly replaced. Do not rely on chat history as the only durable state.
-
-Discussion exists to build the Skeleton, not merely to grow this file. Recording a confirmed decision here does not implement it or complete its batch; place it in its permanent rule, architecture, configuration, or code owner and validate it when that approved scope is executed. This file only prevents repeated context recovery and tracks unresolved dependencies.
-
-`docs/agent/context.md` is a temporary construction-phase decision ledger, not part of the finished Skeleton Theme. Before the Skeleton is declared complete, migrate every still-valid contract to its permanent owner, verify that no unresolved decision remains, and then remove this file.
+- Never modify `my-theme-1`; use it only as read-only historical evidence.
+- `my-skeleton-theme` is independent. Ceylune appearance, content, schemas, configuration, and behavior do not require compatibility here.
+- The user owns outcomes, priorities, batch boundaries, architecture and risk decisions, and execution authority.
+- The execution carrier is whichever client the user is working in for that request; it does not need to be named. Keep one writer per shared worktree, and never start a subagent to execute a batch.
+- Once a batch is authorized, the implementer makes in-scope implementation choices, writes the files, validates the result, and corrects failures without asking for approval on each detail.
+- Review, discussion, and prompt-only requests stop before implementation unless the user authorizes execution.
+- Do not modify merchant-owned configuration or content without explicit authorization.
+- Do not retain code or infrastructure merely because it already exists.
 
 ## Classification Model
 
-Classify each reviewed file, feature, or capability as:
+Classify reviewed files and capabilities as one of:
 
 - Platform Required
 - Skeleton Core
@@ -58,137 +47,186 @@ Classify each reviewed file, feature, or capability as:
 - Tooling and Governance
 - Open Decision
 
-Keep three separate views: Shopify mandatory compliance, Theme Store optional feature declarations, and mother-template architecture capabilities.
+Keep Shopify mandatory compliance, Theme Store optional declarations, and mother-template architecture capabilities separate.
 
-## Confirmed Architecture Decisions
+## Accepted Theme Architecture
 
-- The mother template uses the complete Shopify Theme Store mandatory capability set as its platform baseline, even though the mother template itself is not a direct submission theme.
-- Mandatory capabilities remain available through minimal, industry-neutral implementations; retaining a capability does not require retaining its current Ceylune implementation.
-- Required page templates should default to the smallest useful main-section composition rather than demo-rich page compositions.
-- Theme Store optional feature declarations are not part of the default core unless separately approved as a reusable mother-template capability.
-- Ceylune copy, industry positioning, visual composition, and presentation-oriented sections are not part of the mother-template baseline.
-- Shopify official best practices are tracked separately from mandatory requirements and are evaluated as architecture and quality contracts.
-- The mother template should use a small set of semantically distinct, reusable Theme Blocks rather than duplicating similar Section Blocks. Each generic block exposes a limited and stable merchant configuration contract; presets and CSS tokens provide controlled visual variation, parent Sections or Group/Container Blocks own composition and layout, specialized blocks own business semantics, and JavaScript owns interaction behavior.
-- A generic block must not accumulate unrelated behavior modes merely to reuse markup. Appearance differences that preserve semantics belong to the same block; different data ownership, semantics, or behavior require a specialized block or parent composition.
-- The confirmed initial generic Theme Block inventory is `group`, `heading`, `text`, and `button`. Product, cart, search, navigation, media-gallery, and other business blocks are reviewed separately. `image`, `spacer`, `divider`, `icon`, `button-group`, and `custom-liquid` are not part of the initial inventory merely for convenience.
-- `group` owns child composition only; `heading` separates semantic heading level from visual typography; `text` owns non-heading rich text; and `button` owns navigation-style calls to action rather than arbitrary JavaScript actions. Exact schemas, presets, accepted parents, and parameter lists remain under discussion.
-- `image` is deferred from the Theme Block inventory. Do not migrate `snippets/image.liquid` into `blocks/image.liquid`, delete the snippet, or make the Liquid July '26 `{% block %}` preview an image-architecture dependency unless a later discussion reopens and approves that decision. Image, video, and product-media ownership remain part of the separate media-contract review.
-- The Liquid July '26 `{% block %}` and `{% partial %}` tags are useful future-facing capabilities but remain developer-preview features and must not become an undeclared compatibility requirement for the stable mother template.
-- During implementation, `{% partial %}` may be trialed in low-risk, page-bound refresh flows where it clearly reduces Section Rendering API and selector-mapping code. Each trial must be documented and verified for ordinary storefront rendering, Theme Editor behavior, accessibility state, request races, Alpine lifecycle, and the custom `Components` lifecycle.
-- `ShopifySectionRefresher` remains a transitional compatibility mechanism while required flows still depend on Section Rendering API behavior. Do not remove it wholesale, and do not add a permanent `partial`/`section` mode branch to one shared public method. Collection, search, and blog refreshes are preferred future trial candidates; Cart bundled section rendering and special endpoints remain on their existing path until an equivalent Partial path is proven.
-- Remove `ShopifySectionRefresher` only after every retained caller has an approved replacement and its Alpine, custom component, accessibility, error, and history responsibilities have explicit owners.
-- Non-trivial Agent work follows one minimal problem-solving loop: problem -> decomposition -> selection -> execution -> feedback and correction. First-principles reasoning informs the problem definition, pyramid-style structure informs decomposition and communication, and Feynman-style explanation is used to check that a retained decision can be understood plainly; these are embedded behaviors, not separate Agents or Skills.
-- Keep that loop operational and concise. Do not require repeated restatement, expose verbose internal reasoning, create abstract methodology layers, or duplicate the same rules across `AGENTS.md`, Router, Skills, references, and vendor adapters. Delivery mode determines where the loop stops: discussion and prompt-only work stop before execution, while authorized execution continues through validation and correction.
-- Keep only a short stable invocation in the always-on rule layer. Store detailed guidance in one on-demand reference only if later examples prove it necessary, and create a dedicated Skill only when a recurring workflow has concrete triggers, tools, outputs, and validation that the Router alone cannot express.
-- Retain `agent-router` as the single lightweight dispatcher, not as an implementation Agent. Invoke it only when a task requires a real routing choice, such as ambiguous or broad scope, cross-session continuation, governance, multiple domains, delegation, or capability selection; skip it for clear single-file changes, fixed commands, and ordinary factual queries.
-- The Router makes six compact decisions: `Intent`, `Mode`, `Boundary`, `Route`, `Execution carrier`, and `Validation`. `Mode` distinguishes discussion, prompt-only, execution, and review; `Boundary` owns risk, permission, and stop conditions; `Route` selects abstract capability level, only the necessary docs or Skills, and whether delegation is justified; `Execution carrier` chooses `primary`, `native delegation`, `external prompt`, or `user`. Do not encode concrete vendor model names in canonical Router guidance.
-- Routing is internal by default. Do not print a mechanical route report on every task; explain it only when execution mode, authority, risk, architecture direction, or delegation materially affects the user. The Router should not require a second routing reference that merely repeats its own rules.
-- `docs/references/agent-workflow/skill-routing.md` is removed after moving its unique rules to their actual owners. User delivery-mode overrides and the low-risk Router bypass belong in `agent-router`; multi-agent boundaries belong with orchestration; MCP hard rules belong in `AGENTS.md`.
-- Retain a small `orchestrate-agents` Skill as the capability-aware SOP loaded only after the Router decides multi-agent work is justified. Codex multi-agent availability can depend on the active client, exposed tools, root model, and permitted worker models; the Skill guides supported execution and explicit degradation but cannot create a missing native delegation capability.
-- `orchestrate-agents` must detect whether native delegation is available, respect the selected delivery mode and authority, choose bounded native delegation only when useful, otherwise fall back explicitly to sequential work or prompt-only external handoff, keep one writer in a shared worktree, and keep final ownership with the primary Agent. Do not hardcode a permanent model support matrix; use abstract capability levels and transient client/runtime overrides only when a task explicitly needs them.
-- Do not create project Skills merely to wrap general model or client capabilities. A project Skill is justified only by a clear, recurring, project-specific SOP with concrete triggers, required inputs, procedural steps or tools, outputs, boundaries, and a way to verify completion. Prefer built-in capabilities and short routing guidance when those are sufficient.
-- Cross-client portability is an explicit Agent-system goal. Keep reusable role behavior, permissions, and handoff meaning vendor-neutral; client-specific files under `.codex/`, `.cursor/`, `.claude/`, or future adapters should remain thin and removable without changing the canonical project contract.
-- Do not require the user to maintain concrete model names across roles and clients. Canonical routing and role guidance uses abstract capability and reasoning levels. Client adapters should inherit an active/default model when the client reliably supports it, and otherwise keep the smallest centralized mapping required by that client; verify actual inheritance behavior before removing required adapter fields.
-- Retain three vendor-neutral delegated roles: `scout` for efficient read-only discovery, `implementer` for one bounded write scope, and `verifier` for independent high-confidence read-only review. The primary Agent is inherently the orchestrator. Deterministic validation belongs to `scout` or `verifier` as appropriate, and approved governance-document changes belong to a scope-limited `implementer`; the standalone `orchestrator`, `validator`, and `docs-steward` roles and adapters are removed.
-- Preserve approved Agent capabilities and reasoning principles independently from their current files. Every existing implementation file still requires a concrete owner, purpose, dependency, and minimum-value justification; retaining a capability does not grant automatic retention to its current Role, Contract, Hook, validator, adapter, or documentation structure.
-- Strict task/result JSON schemas are removed because no external or theme runtime consumes them. The portable handoff meaning remains in the compact orchestration SOP: a task provides objective, scope and authority, necessary context, acceptance criteria, and stop conditions; a result provides status and conclusion, evidence, changed files, validation, and unresolved risk or blockers.
-- The subagent-result format enforcement chain is removed: client Hook configuration and adapters, the shared validator and Hook test, the npm test script, and its direct AJV dependency. These Hooks validated JSON shape rather than implementation correctness and did not provide an independent permission boundary.
-- Preserve Hook support as a possible client extension point, not as preinstalled Skeleton infrastructure. Add a Hook later only for a concrete event that must be enforced automatically and cannot be handled reliably by the client sandbox, Router, scoped handoff, deterministic theme validation, or independent review.
-- The whole Agent-system structure linter and its npm script are removed. It validated an exact directory topology, fixed roles and model names, schemas, Hooks, adapters, and documentation links rather than proving an Agent capability or Shopify theme outcome. Do not replace it with another whole-system structure linter.
-- Retain all Shopify-focused deterministic validation. Add a future Agent configuration check only for a concrete, reproducible failure that can be verified mechanically and is not already reported by the active client.
-- `docs/references/agent-workflow/multi-agent-architecture.md` is removed. Its useful rules now live directly in the compact orchestration SOP: pass only necessary task context, parallelize only independent work, keep one writer in a shared worktree, retain final ownership with the primary Agent, and degrade explicitly when native delegation is unavailable. Do not create a replacement reference unless later cross-client behavior develops substantial stable detail that cannot remain concise in the Skill.
-- Retain `.codex/config.toml` as a thin project-scoped Codex adapter. It keeps `agents.max_concurrent_threads_per_session = 3` as a coordination and concurrent-cost guard, while redundant enablement, default subagent model and reasoning, and Hook feature settings are removed. Retain the two MCP entries as approved project configuration.
-- Retain only `.codex/agents/scout.toml`, `.codex/agents/implementer.toml`, and `.codex/agents/verifier.toml` as thin adapters to the three approved vendor-neutral roles. Keep only the required identity, concise selection description, role-file instruction, and useful sandbox default: `read-only` for Scout and Verifier, `workspace-write` for Implementer. Remove concrete model and reasoning fields, strict result-schema references, and repeated canonical role rules. The sandbox value is a client default, not an absolute security boundary; active parent-session permission overrides still apply.
-- Codex Docs Steward and Validator adapters and their corresponding canonical roles are removed. Approved documentation changes belong to a scope-limited Implementer; command-focused validation and independent acceptance belong to Scout or Verifier as appropriate.
-- Codex model selection is runtime-owned: the user or client selects the parent model, retained custom Agents inherit it by default, and an explicit one-task spawn override is allowed when a concrete cost or capability need justifies it. Do not persist concrete model names, versions, or mappings in the repository. Selective delegation and the concurrent-thread cap are the stable cost controls; the cap does not limit total task tokens.
-- Retain `.cursor/agents/scout.md`, `.cursor/agents/implementer.md`, and `.cursor/agents/verifier.md` as thin native Cursor adapters rather than relying on undocumented permission translation from Codex TOML compatibility. Keep only identity, concise selection description, one canonical role-file instruction, and explicit `readonly` values; omit `model` so Cursor inherits the parent model. Remove the Cursor `docs-steward` and `validator` adapters.
-- Remove the Cursor `subagentStop` result-format Hook and its adapter. Retain `.cursor/mcp.json` as approved thin Cursor MCP configuration.
-- Preserve the tracked `CLAUDE.md -> AGENTS.md` and `.claude/skills -> ../.agents/skills` symlinks as the zero-duplication Claude entry and Skill-discovery adapters. Their current plain-file appearance on this Windows checkout is caused by repository-local `core.symlinks = false`, not by invalid repository link metadata. Document the Windows prerequisite and targeted restore procedure; do not replace the links with copied rules, wrapper Skills, or a second Claude entry file.
-- Retain three thin native Claude subagent adapters under `.claude/agents/`: Scout and Verifier use `permissionMode: plan`; Implementer inherits the parent permission context. All three omit `model` and inherit the active parent model. Do not add Claude adapters for Docs Steward or Validator.
-- Remove project-level WebSearch and Anthropic-document WebFetch pre-approvals from `.claude/settings.json`; ordinary network access follows the active user/session permission policy. Retain the current MCP server enablement list as approved thin Claude configuration.
-- The Skeleton keeps Tailwind, but changes what drives the build. Tailwind stops scanning Liquid files and instead generates an explicitly enumerated utility vocabulary through `@source inline(...)` with `source(none)`. The generated global asset stylesheet therefore has a fixed size that does not grow with the number of sections, and Tailwind becomes an architecture-level vocabulary generator rather than a per-change compile dependency.
-- `npm.cmd run build:tw` is retained but only runs when the vocabulary manifest itself changes. Ordinary section work is buildless: any class in the manifest, including responsive `pc:`/`fw:` variants, is already present in the committed asset, so styles can also be edited in the Shopify admin code editor. Buildless daily editing is a confirmed Skeleton requirement; a zero-build repository is not.
-- Component CSS moves to each section, block, or snippet's own `{% stylesheet %}` tag, which Shopify automatically subsets per render tree. `tailwind.components.css` and `tailwind.snippets.css` are removed as whole layers rather than migrated; they are Ceylune business CSS and are not part of the mother template.
-- The single global asset stylesheet owns: reset and native element defaults, the `@theme inline` token bridge, typography tiers (`heading-h*`, `body-*`, `typo-subtitle`), single-element control primitives (`btn`, `field`, `badge`, `close-button`, `focus-ring`, `icons`, `skip-link`, `links-*`), cross-cutting vocabulary (`surface-*`, `z-layer-*`, `place-*`, `container-page`), the manifest utilities, and only the motion capabilities reused across unrelated files (`panel-motion-*`, `is-open`, `icons-animate-*`). Section-owned motion such as `watermark-marquee__*` and `scrolling-icon-with-text__*` moves to `{% stylesheet %}`.
-- Anything reused by multiple unrelated files must stay in the global asset stylesheet. Subsetting only preserves classes defined in the same file or a rendering ancestor, and asset stylesheets are exempt from subsetting, so cross-file shared classes belong there by platform requirement, not by preference.
-- One boundary rule governs where CSS goes: if the manifest utilities can express it, it must not be written into `{% stylesheet %}`. `{% stylesheet %}` carries only what the manifest cannot express, such as complex selectors, pseudo-elements, keyframes, container queries, `:has()`, grid template areas, and exact one-off values.
-- Duplication risk is handled by naming separation and that boundary rule, not by Theme Check. `ValidScopedCSSClass` detects missing cross-file definitions, not duplicated declarations. A future `lint:theme` rule may flag `{% stylesheet %}` blocks that contain only atomic property declarations, but it is not required now.
-- Measured baseline for this decision, recorded so it need not be re-measured: `assets/tailwind.output.css` is 369 KB raw, 41 KB gzip, 28 KB brotli, loaded as the only theme stylesheet link; its layer split is utilities 166 KB, snippets 106 KB, components 56 KB, base 37 KB including 14 KB vendor Swiper CSS, theme 2 KB. Liquid uses only two breakpoints (`pc` 48rem, `fw` 80rem) with 393 `pc:` and 16 `fw:` usages across 118 Liquid files, and 26 files already carry a `{% stylesheet %}` tag. For scale comparison, Shopify Horizon ships a 44.5 KB `assets/base.css` plus per-section `{% stylesheet %}`, and the official skeleton theme ships only a 2.4 KB `assets/critical.css`. The Skeleton global layer targets the Horizon order of magnitude, not the 2.4 KB one.
+### Platform and composition
 
-## Implementation Status
+- Mandatory Shopify capabilities remain available through minimal, industry-neutral implementations. Required templates should use the smallest useful main-section composition rather than demo-rich layouts.
+- The accepted initial generic Theme Block **inventory** is `group`, `heading`, `text`, and `button`. Their intended ownership is: `group` owns child composition; `heading` separates semantic level from visual tier; `text` owns non-heading rich text; `button` owns navigation-style calls to action.
+- A generic block may vary appearance while preserving semantics, but it must not collect unrelated data ownership, business semantics, or behavior modes merely to reuse markup.
+- **Correction, 2026-09-17:** an earlier record stated that these blocks "do not depend on the CSS manifest" and could "start immediately". That was wrong. Theme Blocks depend on the undecided CSS placement rules, typography tier design, button and surface primitives, and JavaScript runtime conventions. Block schemas and markup are therefore blocked by the JS/CSS architecture decisions. The current implementation is recorded as provisional under TB1.
+- `image` is deferred pending the separate image, video, and product-media contract. Do not migrate `snippets/image.liquid` or make preview-only Liquid features an undeclared stable requirement.
 
-- Execution carrier rules are now permanent in `AGENTS.md`: the primary agent defaults to analysis, plans, prompts, and review; broad scans, simple bulk work, and mechanical tasks default to external execution prompts; direct file edits require explicit user authorization. `agent-router` adds `Execution carrier` as a routing decision without duplicating the full work loop.
-- Shopify Dev MCP and Context7 are approved and retained. Shopify Dev MCP is the authoritative Skeleton entry for Shopify API, Liquid, theme architecture, and platform requirements. Context7 is for current third-party library documentation, including but not limited to Tailwind, Alpine, GSAP, and Swiper.
-- MCP client configuration stays in thin per-client adapters: `.codex/config.toml`, `.cursor/mcp.json`, `.mcp.json`, and `.claude/settings.json`. Do not centralize, generate, or symlink these files; `.shopifyignore` excludes them from theme upload only.
-- The model-independent work loop is now an always-on rule in `AGENTS.md`: problem definition -> decomposition -> selection -> execution -> validation feedback -> correction. It governs both multi-turn discussion and authorized automatic execution without requiring a separate methodology Skill or mechanical response headings.
-- The confirmed Codex adapter batch is implemented: `.codex/config.toml` retains only the three-thread Agent cap plus the approved MCP entries; concrete subagent model, reasoning, redundant enablement, and Hook feature settings are removed.
-- `.codex/agents/scout.toml`, `.codex/agents/implementer.toml`, and `.codex/agents/verifier.toml` are reduced to thin role adapters with sandbox defaults and parent model inheritance. The Codex `docs-steward` and `validator` adapters are removed.
-- `.codex/hooks/validate-agent-result.cjs` is removed. The behavior-free `.codex/hooks.json` placeholder and any legacy Hook directory residue are removed as part of the outer mechanical cleanup batch.
-- The confirmed Cursor adapter batch is implemented: its Scout, Implementer, and Verifier files are thin native Markdown adapters with explicit `readonly` defaults and inherited parent models; its `docs-steward`, `validator`, `hooks.json`, and result-validator Hook adapter are removed. `.cursor/mcp.json` remains as approved thin Cursor MCP configuration.
-- The confirmed Claude adapter batch is implemented without changing the two tracked symlinks: Scout, Implementer, and Verifier adapters are added under `.claude/agents/`; broad project Web pre-approvals are removed from `.claude/settings.json`; and `AGENTS.md` now records the Windows symlink prerequisite and recovery path. The local checkout still has `core.symlinks = false`, so restoring real links remains a machine setup action after Windows permits symlink creation.
-- The three retained canonical roles now use concise semantic handoffs without fixed model profiles or strict JSON output. The redundant roles, contracts, Hook validator chain, Agent topology lint, and duplicate Agent workflow references are removed.
-- `agent-router` and `orchestrate-agents` now contain the approved lightweight routing and optional delegation contracts. Shopify Dev MCP and Context7 are approved; MCP client adapters remain separate per client.
-- `check-i18n` is approved and retained as an independent Skill with `npm.cmd run lint:i18n` and `npm.cmd run test:i18n`. Shopify Theme Check remains the platform authority; the project validator supplements it with duplicate keys, missing locale keys, Unicode hardcoded copy, schema/preset/default boundary checks, and instance `t:` misuse detection. Automated fixture tests are established and static `node --check` passed; runtime verification has not been run yet, though dependencies are installed.
-- `check-theme-architecture` is approved and retained as the slim generic architecture validation Skill. Theme-specific rules, CSS layer allowlists, and the unused home-motion audit script are removed. Current `lint:theme` covers protected Shopify Liquid runtime-name assign/capture shadowing, static tab accessibility, and the SVG `textLength` WebKit guardrail only. JS/CSS architecture-coupled rules remain deferred until the corresponding implementation architecture is decided. Embedded JS lint uses virtual `assets/*.js` paths so ESLint applies the same config as first-party assets. `lint-liquid-syntax` is retained for strict Liquid output parsing; fixture tests are established via `npm.cmd run test:theme-architecture` and static `node --check` passed; runtime verification has not been run yet, though dependencies are installed.
-- The redundant `build-svg-icons` Skill is removed while the SVG ingestion capability remains as `npm.cmd run build:svg` with root-owned `svgo.config.cjs`. `icons/` remains ignored temporary staging; optimized runtime icons are committed under `assets/`. Existing icon assets are not part of this configuration-only batch and remain pending the later asset inventory cleanup.
-- Root configuration cleanup is implemented: README and package identity now describe the Skeleton mother template; `private: true` is set; build scripts use local `tailwindcss` and `svgo` binaries; `test:validators` is the unified validator entry and is wired into `npm test` and CI; personal `shopify.theme.toml` is removed from the repository and ignored locally; Theme Check returns to `theme-check:recommended`; `svgo.config.cjs` is excluded from Shopify upload; npm lockfile tarball sources use `registry.npmjs.org`; top-level `browserslist` is removed from devDependencies.
-- Outer mechanical cleanup is complete: empty `.codex/hooks.json` is removed; stale `launch-gate.md` governance-path references are corrected.
-- ESLint and Stylelint remain provisional repository configuration pending the separate JS/CSS architecture review. License distribution is still undecided.
-- Validator fixture tests are established and static `node --check` passed; runtime execution has not been run yet, though dependencies are installed.
+### Rendering and runtime transition
 
-## Scope And Boundaries
+- Liquid July '26 `{% block %}` and `{% partial %}` capabilities remain developer-preview features and are not stable mother-template requirements.
+- A `{% partial %}` trial is allowed only in a low-risk page-bound refresh flow and must be verified for ordinary rendering, Theme Editor behavior, accessibility state, request races, Alpine lifecycle, and the custom component lifecycle.
+- `ShopifySectionRefresher` remains a transitional compatibility mechanism while retained flows depend on Section Rendering API behavior. Remove it only after every caller has an approved replacement and explicit lifecycle, accessibility, error, and history ownership.
 
-Active issues, pending decisions, and work batches live in `docs/agent/board.md`, not here. This file records accepted results only.
+### CSS direction
 
-Cleanup scope: classify Agent infrastructure, client adapters, validation and build tooling, documentation, editor and CI configuration, and the `tailwind/` CSS source layer separately from Shopify's eight standard theme runtime directories (`assets`, `blocks`, `config`, `layout`, `locales`, `sections`, `snippets`, `templates`). Being outside those directories is not itself a deletion reason; retain only items with an approved Skeleton purpose.
+- Tailwind remains, but the accepted target is a fixed utility vocabulary generated through `@source inline(...)` with `source(none)` rather than scanning Liquid files.
+- Ordinary section work should be buildless once the manifest is established. `npm.cmd run build:tw` is needed only when the utility vocabulary changes.
+- Component-specific CSS belongs in the owning section, block, or snippet `{% stylesheet %}` tag. Shared cross-file primitives, tokens, typography, surfaces, layout vocabulary, and truly reusable motion remain global.
+- If manifest utilities can express a rule, do not duplicate it in `{% stylesheet %}`. Local styles are for selectors, pseudo-elements, keyframes, container queries, `:has()`, grid templates, and exact one-off values that the manifest cannot express.
+- The manifest contents, token boundary, generated stylesheet name, Swiper CSS ownership, and final reference rewrite remain open. No CSS implementation batch has started.
 
-Not started: theme file deletion, page rebuild, CSS or JavaScript refactor, ESM migration.
+## Always-On Entry Direction
 
-The minimum problem-solving loop and execution carrier rules are permanently owned by `AGENTS.md`; the lightweight Router selects mode, boundary, route, execution carrier, and validation without duplicating that loop. Avoid creating a separate methodology Skill, response-template file, or long always-on prompt.
+Accepted by the user on 2026-09-17; implementation is planned under P1+P5b and has not started.
 
-The audit covers Shopify composition and Theme Editor behavior; layout and settings; CSS and responsive design; images, video, product media, and 3D media; JavaScript lifecycle and loading; commerce capabilities; accessibility, SEO, performance, compatibility, progressive enhancement, i18n, edge cases, testing, documentation, tooling, and governance.
+- `AGENTS.md` is the always-loaded entry. It must be **complete for rules that do not depend on the Skeleton's implementation**: project identity, safety and authority, merchant ownership, launch blockers, the work protocol, record lifecycle, routing, validation selection, adapter guardrails, and architecture-independent implementation safeguards.
+- It must **not** encode the Skeleton's current implementation as permanent contract. Runtime names (`Components.register()`, `ThemeEvents`, `ShopifyHttp`, `ShopifySectionRefresher`, `$store.cart`, `AlpineComponentsFactory`), typography tier names and usage (`heading-h*`, `body-*`, `typo-subtitle`), motion-gate mechanics, and Tailwind placement rules describe current Ceylune-derived code whose mother-template status is undecided.
+- Evidence: reviewing TB1 found its `text` block "violating" the entry rule on body copy sizing. That rule comes from the current typography implementation, yet it sat in the always-loaded entry and pre-constrained a Skeleton design decision that has not been discussed.
+- Target shape, carried from the earlier P5-F20 classification: keep architecture-independent safeguards in the entry — no inline scripts or unmanaged global listeners; Liquid-to-JavaScript values through `data-*`; critical first-viewport content usable without JavaScript or animation completion; user-visible copy through locale keys; semantic, accessible interaction; no manual edits to vendor, generated, or optimized icon assets. Route implementation-specific rules to their reference owners, labelled as current-implementation protections pending mother-template review. Rules move; they are not silently deleted while existing code still depends on them.
+- The exact always-on set still requires research before implementation.
 
-## Agent Approval Gate
+## Agent Infrastructure State
 
-- Existing and future Agents, Skills, Roles, Contracts, Hooks, validators, MCP configuration, adapters, permissions, npm scripts, and multi-agent orchestration are all subject to user review.
-- Existing use or a reference from another file does not grant retention approval.
-- Current Agent files may remain operational during the audit, but their temporary use does not exempt them from later review.
-- Do not add, install, migrate, expand, or refactor Agent-related content without prior discussion and approval.
-- Do not run multi-agent orchestration unless the user explicitly authorizes the specific task.
-- Before retaining an item, explain its path, purpose, trigger, inputs and outputs, dependencies, permissions, repository effects, Skeleton value, maintenance cost, simpler alternatives, removal impact, and validation method.
-- The user does not need to author these systems, but must understand and approve every retained item.
-- Repository-level Agent, MCP, build, and tooling configuration is reviewed in the current outer-layer phase outside the Shopify business directories. Validation rules that are tightly coupled to theme implementation can be finalized only after the corresponding theme architecture is decided.
+### Implemented and retained
+
+- `AGENTS.md` is the canonical repository instruction source. Canonical role contracts live in `.agents/roles/`: `scout`, `implementer`, and `verifier`.
+- Nine client permission shims remain under `.claude/agents/`, `.cursor/agents/`, and `.codex/agents/`. They are separate real files because each client reads a different permission field (`permissionMode`, `readonly`, `sandbox_mode`) and none reads the canonical `filesystem-profile`. Cursor reads `.claude/agents/` for compatibility but does not honour `permissionMode`, so `.cursor/agents/` cannot be removed. Their descriptions match the canonical role descriptions verbatim.
+- `CLAUDE.md -> AGENTS.md` and `.claude/skills -> ../.agents/skills` remain tracked symlinks. Their content is never copied or synchronised; Git stores the link itself.
+- `check-i18n` and `check-theme-architecture` remain because they wrap executable project validation. The prose-only `agent-router` and `orchestrate-agents` Skills were removed. `build:svg` remains a root npm capability.
+- `.codex/config.toml`, `.cursor/mcp.json`, `.mcp.json`, and `.claude/settings.json` remain thin client-owned configuration. Shopify Dev MCP and Context7 are approved project capabilities; live availability is client- and machine-specific.
+- `npm.cmd run doctor:agent` (`.agents/tools/doctor-agent.mjs`) checks the two entry adapters. A healthy symlink passes; a plain file, a missing path, or an inspection error fails. Ordinary mode exits 1 with stderr remediation on failure; `--hook` mode always exits 0 and prints an instruction on stdout on failure. Both modes are silent when healthy. It is not wired into `lint`, `test`, or `scan:compat`.
+- **Superseded, 2026-09-17:** the P6 plan briefly split "missing" from "inert" so that derived themes removing `.claude/` would not be warned (P5-F35). That split was reverted in the implementation. The reversal stands because removing `.claude/` also removes `.claude/settings.json` and therefore the Hook itself; the remaining trigger, a partially removed adapter set, is an inconsistent state worth reporting.
+- `.claude/settings.json` registers a `SessionStart` command Hook with matcher `startup|resume` that runs `node "${CLAUDE_PROJECT_DIR}/.agents/tools/doctor-agent.mjs" --hook`. It exists because an inert `CLAUDE.md` makes every rule in `AGENTS.md` unreadable to Claude Code; Cursor and Codex read root `AGENTS.md` directly and need no Hook.
+- README owns the complete human symlink procedure: symlink-capable clone first, then the elevated-shell Windows repair that changes no system setting, with Developer Mode optional. `AGENTS.md` holds only two guardrail lines.
+
+### Accepted operating model
+
+- Inspect repository evidence before asking for discoverable facts. During authorized implementation, validate against the agreed acceptance criteria and correct failures; do not declare completion from edits alone or retry a failed action without new evidence.
+- A project Skill must wrap a recurring executable project capability. Prose-only routing or delegation guidance belongs in `AGENTS.md`, role contracts, or references.
+- Volatile tooling assertions require current authoritative evidence. Record the client, scope, and check date where availability can change; mark missing evidence as unverified rather than presenting it as fact.
+- The portable workflow remains inside `AGENTS.md`. Do not create `.agents/WORKFLOW.md` or another protocol file until the pilot demonstrates reusable content worth extracting.
+
+### Known limits
+
+- Project Hooks run only after workspace trust is accepted. On a first clone the Hook may not fire; README is the layer that works with no tooling and no trust. The Hook is the strongest repository-level warning, not a guarantee.
+- Whether the model warns unprompted when the first user message is unrelated has not been tested.
+- The P5a compression removed two non-blocking method prompts from `AGENTS.md`: select the smallest justified action, and give a delegated Agent only the necessary context.
+
+## Current Validation Evidence
+
+Independently reproduced on 2026-09-17 after TB1 and V1:
+
+- `npm.cmd run test:validators`: 24 of 24 i18n tests and 31 of 31 theme architecture tests pass.
+- `lint:i18n`, `lint:theme`, `lint:liquid-syntax`, and `lint:compat:embedded` exit 0. Shopify Theme Check inspected 145 files with no offenses.
+- `npm.cmd run doctor:agent` exits 0 on the live checkout. Both entry adapters are real symlinks.
+- The SessionStart Hook was verified end to end in real Claude Code sessions: a non-interactive Claude Code 2.1.273 run and a VS Code extension session, each in a disposable project with inert adapters, received the Hook stop instruction in model context.
+- Full `npm.cmd run lint` and `npm.cmd test` were not run.
+- `lint:theme` enforces only protected Liquid runtime-name assign/capture, static tab accessibility, and the SVG `textLength` WebKit guardrail. Broader CSS, JavaScript, HTTP, and cart contracts are not enforced by any command.
+- As of this record, none of the P5a, P6, TB1, or V1 changes are committed.
+
+## Batch Status
+
+### P5a — Agent infrastructure cleanup — accepted
+
+Removed the prose-only `agent-router` and `orchestrate-agents` Skills and their references; compressed the work loop and Agent behavior rules in `AGENTS.md` (18,362 bytes at HEAD before P5a); narrowed the two validator Skills' discovery text; added `doctor:agent`; corrected the false `lint:theme` capability claim in `css-architecture.md`; repaired the incomplete `{% liquid %}` capture fixture; aligned the board/context lifecycle. Independently cross-reviewed by Codex and Claude.
+
+### P6 — Adapter documentation and failure surfacing — accepted
+
+Reordered the README symlink procedure; reduced the `AGENTS.md` symlink paragraph to two guardrails naming both adapter classes; normalised the nine shim descriptions; added the `--hook` mode and the SessionStart Hook. `AGENTS.md` is 16,035 bytes after P6. Independently verified, including all doctor modes in separate disposable fixtures and end-to-end Hook delivery.
+
+### V1 — Validation baseline cleanup — accepted
+
+Cleared five pre-existing i18n findings and one Theme Check warning exposed by TB1 validation:
+
+- `article` eyebrow and before/after labels use schema locale defaults whose English values equal the previous literals.
+- The newsletter overlay `alignment` setting uses `text_alignment` with the same ID and `left` default.
+- `custom.ingredients` moved from a translatable text-setting default into literal preset instance data.
+- The unused `is_first` filter argument, parameter doc, and assignment were removed; no other references exist.
+
+Saved configuration is unaffected: `templates/article.json` stores eyebrow `"categories"`; `templates/index.json` and `templates/page.about.json` store `"BEFORE"` / `"AFTER"`; `templates/product.json` stores `metafield_key` `"custom.ingredients"`; `sections/overlay-group.json` stores alignment `"left"`, a valid `text_alignment` value.
+
+### TB1 — First generic Theme Blocks — provisional, retained
+
+Status: **implemented and validated, retained as a provisional implementation, not accepted as a Skeleton contract** (user decision, 2026-09-17).
+
+TB1 was executed from a context entry built on the incorrect independence claim corrected above. It added `blocks/group.liquid`, `blocks/heading.liquid`, `blocks/text.liquid`, `blocks/button.liquid`, the `sections/custom-content.liquid` host that accepts `@theme` and `@app` blocks and renders `content_for 'blocks'`, and schema locale keys under `blocks.*` and `sections.custom-content`. No merchant-owned template or configuration changed. Validation passes.
+
+It remains in the repository but must be reworked after the JS/CSS architecture decisions. Known issues to resolve in that rework:
+
+- `text` defaults to `body-md`, which on mobile computes to `--font-body-size-mobile × scale × 0.875`, 12.5% smaller than global body copy (`--font-body-size-mobile × scale`); desktop is identical. Resolve with the typography decision.
+- `heading` renders an empty heading element when its copy is blank.
+- `button` renders `<span aria-disabled="true">` without a role when the link is blank; in WAI-ARIA 1.2 `aria-disabled` is not a global attribute, so assistive technology receives nothing.
+- `group` uses inline CSS custom properties and a local `{% stylesheet %}`; `heading`, `text`, and `button` use the current typography and button primitives. All of these depend on undecided CSS placement and primitive decisions.
+
+Dependencies for the rework: JS/CSS architecture decisions, including D3 and the utility manifest.
+
+## Planned Work
+
+None of the entries below is authorized for execution yet.
+
+### P3 — Upload-surface defense
+
+- Scope: add `.env` and `.env.*` to `.shopifyignore`; describe the upload surface as unverified.
+- Dependencies: none. Only `.shopifyignore` changes.
+- Status: planned; ready for a separate micro-batch when the user authorizes it.
+
+### P1+P5b — Always-on entry slimming
+
+Merged by user decision on 2026-09-17 (D16) and ordered before the JS/CSS architecture discussion, so that discussion is not pre-constrained by current-implementation rules in the entry.
+
+- Scope: research, then implement the direction in "Always-On Entry Direction". Label the implementation references as current-implementation protections pending mother-template review, and move implementation-specific rules from `AGENTS.md` to exactly one owning reference each.
+- Reference set (D15, resolved 2026-09-17): `docs/references/architecture/javascript-runtime.md`, `docs/references/architecture/motion-architecture.md`, `docs/references/architecture/abstraction-boundaries.md`, `docs/references/style-system/css-architecture.md`, and `docs/references/style-system/image-display-contract.md`.
+- Dependencies: a researched always-on rule set proposed on the board and accepted by the user.
+- Boundaries: no runtime or theme behavior change; no rule deleted while existing code depends on it; no CSS manifest or JavaScript refactor.
+- Status: planned; research first.
+
+### JS/CSS architecture discussion
+
+- Scope: board discussion covering the utility manifest (including D3), CSS placement, typography tier design, button and surface primitives, JavaScript core and runtime conventions, and Alpine scope.
+- Dependencies: P1+P5b, so the discussion starts from a slimmed entry.
+- Status: planned discussion.
+
+### TB1 rework
+
+- Scope: rework the provisional Theme Blocks against the accepted JS/CSS decisions and resolve the known issues listed under TB1.
+- Dependencies: JS/CSS architecture decisions.
+- Status: blocked.
+
+### CSS manifest implementation
+
+- Scope: define and measure the fixed Tailwind utility vocabulary and global/local CSS ownership. Prototype in isolation without overwriting the tracked generated stylesheet and report raw, gzip, and brotli sizes with and without Swiper.
+- Dependencies: JS/CSS architecture discussion; D3.
+- Status: blocked.
+
+### P4 — License
+
+- Scope: decide distribution intent, then align the `ISC` value in `package.json`.
+- Dependencies: user decision on distribution intent.
+- Status: not started.
+
+## Machine And Client Notes
+
+- On this Windows machine the entry adapters were repaired on 2026-09-17 from an elevated PowerShell with repository-local `core.symlinks = true`. Windows Developer Mode remains off and is optional.
+- Codex project MCP availability was not proven on this machine because the repository trust configuration had not loaded the project entries. Cursor also failed live Shopify Dev MCP discovery and did not expose Context7 when checked. Both MCP servers resolve through unpinned `npx ...@latest`. Treat these as dated observations and verify live MCP use in Cursor and Codex before relying on them.
+- If a client sandbox hides an ignored path, verify it through another available read-only method before concluding that the path is absent.
 
 ## Open Decisions
 
-- Exact schemas, presets, allowed parent contexts, and external-input contracts for the four confirmed initial Theme Blocks
-- Whether `image` should ever become a Theme Block after the separate image, video, and product-media contract is reviewed
+- The exact always-on rule set for `AGENTS.md` (research under P1+P5b)
+- Theme Block schemas, allowed parents, and external-input contracts beyond the provisional TB1 implementation
+- Image, video, and product-media ownership
 - Global page, Section, and Block layout protocol
-- The utility vocabulary manifest itself: which utility families, how many steps per scale, and which variants (`pc`, `fw`, `hover`, `focus-visible`, container queries) are enumerated, plus its measured output size
-- Settings and CSS token boundaries
-- Name of the generated global asset stylesheet, currently `assets/tailwind.output.css`
-- Whether the 14 KB `vendor-swiper.min.css` stays compiled into the always-loaded global stylesheet; deferred to the carousel and JavaScript architecture review
-- Rewrite of `docs/references/style-system/css-architecture.md` and the matching `AGENTS.md` CSS rules after the manifest is approved
+- Utility manifest families, scale steps, variants, output size, token boundary (D3), stylesheet name, and Swiper CSS ownership
+- Typography tier design and body copy sizing
 - JavaScript core, business modules, ESM, import maps, and on-demand loading
 - Alpine scope and initialization order
-- Image, video, and product-media contracts
-- Accessibility, SEO, performance, compatibility, and testing gates
-- License distribution model
-- Remaining cross-client capability and fallback differences for Cursor, Claude, and future clients
+- Accessibility, SEO, performance, compatibility, and final test gates
+- License and distribution model
+- Remaining cross-client capability and fallback differences, including live MCP availability in Cursor and Codex
 
-## Machine Setup Notes
+## Execution Order
 
-- On this machine, Codex has not yet added this repository to user-level trusted projects, so `codex mcp list` shows only the global `node_repl` server and does not load the project's Shopify Dev MCP or Context7 entries from `.codex/config.toml`. This is a local trust configuration gap, not missing repository MCP files. After adding the project to Codex trusted projects, restart Codex and confirm both servers appear in the tool list.
-- In Cursor on this machine, the `shopify-dev-mcp` server failed live tool discovery and its `mcp_auth` call timed out, and `context7` is configured in `.cursor/mcp.json` but is not mounted as an available namespace. The CSS decisions above were therefore grounded in shopify.dev documentation pages, the official `Shopify/skeleton-theme` and `Shopify/horizon` sources through the GitHub API, and tailwindcss.com documentation. Those are degraded sources under the `AGENTS.md` MCP rule; re-verify the platform and Tailwind facts through MCP once the servers load.
-- Dependencies are installed on this machine (checked 2026-09-15): `node_modules` has 229 entries and `tailwindcss@4.1.18` is present. `npm ci` is not a prerequisite here. No manifest prototype has been built or measured yet, but nothing blocks doing so.
-- Sandbox visibility differs per client (checked 2026-09-15). One client's Bash tool could not see `node_modules/` while PowerShell in the same client could; another client could read it directly. If a client's sandbox hides a path excluded by `.gitignore`, do not infer that the path is missing; confirm with another read-only method available to that client.
-- This file records current state and machine-specific follow-ups only. It does not replace permanent rules in `AGENTS.md`, project Skills, or `docs/references/`.
-
-## Next Step
-
-Skeleton implementation batches and the CSS review run in parallel. Do not hold executable theme work behind the architecture audit.
-
-- Theme Blocks: the four confirmed generic blocks (`group`, `heading`, `text`, `button`) do not depend on the CSS manifest. `blocks/` does not exist yet. Their typography tiers already live in the global layer and stay there under the confirmed CSS ownership, so this batch can start immediately; its schemas and presets are implementation choices inside the batch.
-- CSS: draft the utility vocabulary manifest (utility families, scale steps, variant strategy, global-layer ownership table, and the global-versus-local boundary rule with examples and counter-examples), then measure real output size with an isolated build. Only after the user accepts the manifest, rewrite `docs/references/style-system/css-architecture.md` and the `AGENTS.md` CSS rules, then change `tailwind/` sources and the generated asset.
-- JavaScript architecture review follows the CSS contract rewrite.
-- The global page, Section, and Block layout protocol follows the first Theme Block batch, informed by what that batch proves.
+1. The user reviews these records and commits the current state.
+2. P3 when authorized.
+3. P1+P5b: research the always-on rule set, propose it on the board, obtain acceptance and authorization, then implement.
+4. JS/CSS architecture discussion on the board.
+5. TB1 rework and CSS manifest implementation after those decisions.
+6. P4 separately. Verify live MCP availability in Cursor and Codex at any convenient point.

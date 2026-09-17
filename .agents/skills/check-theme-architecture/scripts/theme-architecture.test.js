@@ -119,7 +119,7 @@ test('liquid block capture over protected runtime name fails', async () => {
         writeFile(
             root,
             'sections/fixture.liquid',
-            ['{% liquid', 'capture cart', '%}', ''].join('\n'),
+            ['{% liquid', 'capture cart', '  content', 'endcapture', '%}'].join('\n'),
         );
 
         const failures = await runThemeLint(root);

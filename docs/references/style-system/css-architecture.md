@@ -132,7 +132,7 @@ Rules:
 
 ## Governance
 
-- `npm.cmd run lint:theme` enforces layer, heading, JS runtime, HTTP/cart, and related architecture rules.
+- `npm.cmd run lint:theme` enforces protected Liquid runtime-name assign/capture, static `role="tab"` accessibility, and the SVG `<text textLength>` nested `<tspan>` guard.
 - CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.
 - Record durable architecture decisions in the relevant reference, not in `context.md` unless it is short cross-session state.
 - Keep optional cleanup ideas out of this contract until repository evidence makes them actionable.

@@ -23,6 +23,7 @@
         "test:theme-check": "shopify theme check",
         "shopify:dev": "shopify theme dev",
         "dev": "concurrently \"npm run shopify:dev\" \"npm run watch:tw\"",
+        "doctor:agent": "node .agents/tools/doctor-agent.mjs",
         "format": "prettier . --write",
         "format:check": "prettier . --check"
     },

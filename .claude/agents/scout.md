@@ -1,6 +1,6 @@
 ---
 name: scout
-description: Read-only repository discovery for narrow source tracing, independent evidence, and concise reports.
+description: Discover repository facts and return concise, source-linked evidence without editing or deciding remediation.
 permissionMode: plan
 ---
 

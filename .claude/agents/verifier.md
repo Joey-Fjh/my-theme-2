@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Independent read-only review of implementation, architecture, and completion claims using fresh evidence.
+description: Independently test implementation and architecture claims against fresh evidence without editing.
 permissionMode: plan
 ---
 

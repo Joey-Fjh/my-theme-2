@@ -10,7 +10,7 @@ This file is the always-on entry point for agents working in this repository. Ke
 
 At the start of each session, read `docs/agent/board.md` for active issues, pending decisions, and work batches. Update `board.md` when discussion produces a conclusion, disagreement, or new pending decision.
 
-Read `docs/agent/context.md` when continuing previous work, recording an implemented and accepted result, or making an architecture decision.
+Read `docs/agent/context.md` when continuing previous work, executing from an agreed plan, or recording current progress and acceptance.
 
 Read other files under `docs/references/` only when the task routing below calls for them.
 
@@ -48,7 +48,6 @@ Runtime constraints:
 - Tool-specific entry points may use relative symlinks to source files or directories. Do not copy rule or skill files into adapter paths.
 - Tool-specific configuration, including MCP, permissions, local settings, and hooks, belongs in tool-owned directories such as `.claude/`, `.codex/`, or `.cursor/`; it does not change the project skill source.
 - `docs/` is the agent-readable knowledge layer. Read referenced docs only when the task needs them.
-- `agent-router` owns task routing; `orchestrate-agents` owns the optional delegation SOP.
 
 Important paths:
 
@@ -86,24 +85,17 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 
 ### Universal Work Loop
 
-Use the smallest complete loop for every task: problem definition -> decomposition -> selection -> execution -> validation feedback -> correction.
-
-- Start from the observable outcome, current evidence, gap, and acceptance criteria. Inspect available repository and documentation facts before asking the user; ask only for missing intent, preference, architecture, risk, or authority decisions.
-- Select the smallest justified action within the approved boundary. During selection, also choose the execution carrier: primary agent, native delegation, external execution prompt, or user execution. Discussion, prompt-only, review, and execution modes use the same loop but stop at the user-defined delivery boundary.
-- When execution is authorized, do not stop after editing. Validate against the acceptance criteria, use the result as the next iteration's evidence, and correct until the criteria pass, the requested boundary is reached, or a genuine blocker requires new authority or a user decision.
-- Do not repeat a failed action without new evidence or declare completion from implementation alone. Communicate the outcome first, followed only by the evidence, validation, unresolved risk, and next action the user needs; do not mechanically restate the loop or expose verbose internal reasoning.
+- Inspect available repository and documentation facts before asking the user; ask only for missing intent, preference, architecture, risk, or authority decisions.
+- When execution is authorized, do not stop after editing. Validate against the acceptance criteria and correct until they pass, the requested boundary is reached, or a genuine blocker requires new authority or a user decision.
+- Do not declare completion from implementation alone and do not repeat a failed action without new evidence. Report the outcome first, then evidence, validation, unresolved risk, and next action.
 
 Agent behavior rules:
 
-- Execution carrier: the user owns the outcome, priorities, batch boundary, and execution authority. Inside an authorized batch, make the implementation choices and write the files directly; do not ask the user to approve individual implementation details. Use a self-contained external execution prompt only when the user asks for prompt delivery or when the work must run in another session or client. Delivering a prompt does not complete a batch; completion requires an implemented change and acceptance.
-- Use Shopify Dev MCP for Shopify API, Liquid, theme architecture, and platform requirements. Use Context7 for third-party library documentation when current-version sources matter, including but not limited to Tailwind, Alpine, GSAP, and Swiper; resolve the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available. If an expected MCP is missing, first check client configuration, project trust, client restart, Node/npm, and network; only after configuration is confirmed may you fall back to the official website and state that degraded source explicitly.
-- Users do not need to manually specify skills. For non-trivial tasks, use `agent-router` first to choose skills, docs, and validation.
-- Use `orchestrate-agents` only after `agent-router` selects it or the user explicitly requests delegation. Parallelize independent read-only work, keep one writer per shared worktree, and keep the primary agent responsible for decisions and user communication.
-- Delegated agents receive only the context needed for a bounded task and return a concise conclusion, evidence, changed files, validation, and unresolved risks. They must not approve their own work or create more agents.
-- For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
+- Execution authority: the user owns the outcome, priorities, batch boundary, and execution authority. Inside an authorized batch, make the implementation choices and write the files directly; do not ask the user to approve individual implementation details. Use a self-contained external execution prompt only when the user asks for prompt delivery or when the work must run in another session or client. Delivering a prompt does not complete a batch; completion requires an implemented change and acceptance.
 - If the user asks for review, orientation, or a prompt, do not refactor or implement unless they explicitly ask for implementation.
-- Facts discoverable from the repository must be inspected before asking the user. Ask before editing when the unknown is merchant-owned configuration, product/design preference, architecture direction, or launch-risk tradeoff.
-- Persist in-flight conclusions, disagreements, and pending decisions in `docs/agent/board.md`. Move a conclusion to `docs/agent/context.md` or the matching docs reference only after its batch is implemented and accepted. Do not leave either only in chat.
+- Facts discoverable from the repository must be inspected before asking the user. Ask before editing when the unknown is merchant-owned configuration, product/design preference, architecture direction, or launch-risk tradeoff. For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
+- Use Shopify Dev MCP for Shopify API, Liquid, theme architecture, and platform requirements. Use Context7 for third-party library documentation when current-version sources matter, including but not limited to Tailwind, Alpine, GSAP, and Swiper; resolve the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available. If an expected MCP is missing, first check client configuration, project trust, client restart, Node/npm, and network; only after configuration is confirmed may you fall back to the official website and state that degraded source explicitly.
+- Persist active discussion, evidence, alternatives, disagreements, and pending decisions in `docs/agent/board.md`. Record an agreed plan, its boundary, and its dependencies in `docs/agent/context.md` before implementation, and keep current progress, validation, and acceptance there; `docs/agent/context.md` is the execution source. A recorded plan is not authorization: execute it only after the user explicitly authorizes that batch and every listed dependency is resolved. Move stable contracts to `AGENTS.md` or the matching docs reference once they are settled. Do not leave either only in chat.
 - When the user asks to continue previous work, review outstanding tasks, or prepare next-session context, read `docs/agent/context.md`.
 
 Hard implementation rules:
@@ -148,26 +140,14 @@ Read only the matching reference for the current task:
 - i18n keys, locale structure, schema translation, hardcoded copy review: `docs/references/code-review/i18n-checklist.md`
 - Shopify browser matrix, Tailwind build boundary, static compatibility checks, progressive enhancement, and WebKit guardrails: `docs/references/code-review/browser-compatibility.md`
 - Launch readiness, Lighthouse ownership classification, cleanup safety, ignore-file boundaries, review output, and gate validation: `docs/references/code-review/launch-gate.md`
-- Agent routing, delivery mode, scope, and validation selection: `.agents/skills/agent-router/SKILL.md`
-- Optional delegation, bounded handoffs, concurrency, and fallback behavior: `.agents/skills/orchestrate-agents/SKILL.md`
-
-Use `agent-router` for broad, ambiguous, multi-step, cleanup, Lighthouse, architecture, rule-setting, third-party skill, governance, or cross-session work.
 
 ---
 
 ## Agent Skills
 
-Project skills live in `.agents/skills/`.
+Project skills live in `.agents/skills/`. This project has two skills — `check-i18n` and `check-theme-architecture` — both wrapping executable validators.
 
-- Use `agent-router` first for non-trivial tasks, broad requests, cross-session continuation, third-party skill evaluation, or when multiple skills/docs might apply.
-- Use `orchestrate-agents` after routing when independent delegation materially improves context isolation, verification, or latency.
-- User skill names are optional overrides. If the user states intent without naming a skill, `agent-router` chooses the route.
-- Remaining project skills: `agent-router`, `orchestrate-agents`, `check-theme-architecture`, and `check-i18n`.
-- Use the routed project skill for validation or i18n work; for implementation, inspect current source and the matching architecture reference.
-- If automatic skill triggering is unavailable, open `agent-router` manually for non-trivial work and then only the Skill or reference it selects.
-- External skills are not project rule sources until reviewed, adapted, and installed in `.agents/skills/`.
-
-Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks or when `agent-router` classifies the task as skills/governance work.
+Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks.
 
 ---
 
@@ -202,7 +182,8 @@ Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or
 
 ## Gotchas
 
-- Git tracks `CLAUDE.md` and `.claude/skills` as symlinks. On Windows, enable Developer Mode or equivalent symlink permission and set `git config core.symlinks true` before checkout. If Git materialized them as plain files containing only their target paths, restore those two paths after fixing the local setting; do not replace them with duplicated rules or Skills.
+- `CLAUDE.md` and `.claude/skills` are symlinks. If they appear as plain files that is a local setup problem; do not replace them with copied rules or Skills. Run `npm.cmd run doctor:agent` and see README.
+- The nine files under `.claude/agents/`, `.cursor/agents/`, and `.codex/agents/` are per-client permission shims, not duplicates. Do not symlink them to `.agents/roles/` and do not merge them across clients: each client reads a different permission field (`permissionMode`, `readonly`, `sandbox_mode`) and none reads the canonical `filesystem-profile`.
 - `icons/` is intentionally Git-ignored and may not exist in a clean checkout. Create it only as temporary input for `npm.cmd run build:svg`; committed optimized icons live in `assets/`.
 - Shopify theme assets are flat under `assets/`; do not create nested runtime asset directories.
 - Do not code-fix Lighthouse findings until code ownership is clear.
