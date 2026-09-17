@@ -47,35 +47,17 @@
 
 {%- case media_type -%}
     {%- when 'image' -%}
-        {%- if magnifier -%}
-            {%- render 'image-magnifier',
-                image: media_image,
-                width: 1200,
-                img_class: img_class,
-                alt: media_image.alt,
-                sizes: sizes,
-                widths: widths,
-                loading: loading,
-                fetchpriority: fetchpriority,
-                zoom_scale: magnifier_zoom_scale,
-                preview_width: magnifier_preview_width,
-                preview_height: magnifier_preview_height,
-                preview_max_width: magnifier_preview_max_width,
-                motion_reveal: product_media_motion_reveal
-            -%}
-        {%- else -%}
-            {%- render 'image',
-                image: media_image,
-                width: 1200,
-                img_class: img_class,
-                alt: media_image.alt,
-                sizes: sizes,
-                widths: widths,
-                loading: loading,
-                fetchpriority: fetchpriority,
-                motion_reveal: product_media_motion_reveal
-            -%}
-        {%- endif -%}
+        {%- render 'image',
+            image: media_image,
+            width: 1200,
+            img_class: img_class,
+            alt: media_image.alt,
+            sizes: sizes,
+            widths: widths,
+            loading: loading,
+            fetchpriority: fetchpriority,
+            motion_reveal: product_media_motion_reveal
+        -%}
 
     {%- when 'video' -%}
         <div

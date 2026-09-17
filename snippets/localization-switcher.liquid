@@ -16,6 +16,7 @@
 
 <div
     x-data="localizationSwitcher"
+    data-module-id="localization-switcher"
     @click.away="close()"
     @keydown.escape.window="if (open) { close(); $nextTick(() => $refs.localizationTrigger?.focus()) }"
     class="localization-switcher"

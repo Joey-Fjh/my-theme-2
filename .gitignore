@@ -28,3 +28,8 @@ icons/*
 .env.*
 !.env.example
 
+# Batch execution scratch files
+.tmp-*
+__pycache__/
+*.pyc
+

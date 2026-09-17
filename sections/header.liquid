@@ -4,8 +4,6 @@
     {%- assign logo_position = 'middle-center' -%}
 {%- endif -%}
 {%- assign mobile_menu_popup_id = 'header-mobile-menu-drawer' -%}
-{%- assign search_overlay_popup_id = 'search-overlay-drawer' -%}
-{%- assign cart_overlay_popup_id = 'cart-overlay-drawer' -%}
 {%- assign is_homepage = false -%}
 {%- if request.page_type == 'index' -%}
     {%- assign is_homepage = true -%}
@@ -23,7 +21,7 @@
         header-section full-width color-{{ section.settings.color_scheme }} surface-section
         {% if is_homepage %}is-homepage{% else %}is-innerpage{% endif %}
     "
-    x-data="stickyHeader"
+    x-data="stickyHeader" data-module-id="sticky-header"
     :class="
         {
           'is-top': isTop,
@@ -38,21 +36,29 @@
         <div class="header__cols header__cols-{{ logo_position }} grid py-5">
             <div class="flex items-center pc:hidden" style="grid-area: mobile-menu">
                 {%- if has_header_menu -%}
-                    {%- render 'header-mobile-menu-drawer',
-                        popup_id: mobile_menu_popup_id,
-                        menu_handle: header_menu.handle,
-                        color_scheme: section.settings.mobile_menu_color_scheme
-                    -%}
-
-                    <button
-                        type="button"
-                        class="header-icon-button"
-                        data-dialog-id="{{ mobile_menu_popup_id }}"
-                        @click="$store.dialog.open($el.dataset.dialogId)"
-                        aria-label="{{ 'accessibility.mobile_menu' | t }}"
-                    >
-                        {%- render 'icons', icon: 'icon-menu', class: 'ms-3' -%}
-                    </button>
+                    <nav aria-label="{{ 'accessibility.mobile_menu' | t }}" class="max-h-[70vh] overflow-y-auto">
+                        <ul class="flex flex-col gap-2 py-2">
+                            {%- for link in header_menu.links -%}
+                                <li>
+                                    {%- render 'link',
+                                        href: link.url,
+                                        text: link.title,
+                                        variant: 'plain'
+                                    -%}
+                                </li>
+                            {%- endfor -%}
+                        </ul>
+                    </nav>
+                {%- endif -%}
+                {%- if section.settings.enable_country_selector -%}
+                    <div class="pc:hidden">
+                        {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
+                    </div>
+                {%- endif -%}
+                {%- if section.settings.enable_language_selector -%}
+                    <div class="pc:hidden">
+                        {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
+                    </div>
                 {%- endif -%}
             </div>
 
@@ -101,11 +107,7 @@
                 style="grid-area: menu"
             >
                 {%- if has_header_menu -%}
-                    {%- if section.settings.menu_type == 'super' -%}
-                        {%- render 'header-dropdown-super-menu' -%}
-                    {%- else -%}
-                        {%- render 'header-dropdown-menu' -%}
-                    {%- endif -%}
+                    {%- render 'header-dropdown-menu' -%}
                 {%- endif -%}
             </div>
 
@@ -113,47 +115,27 @@
                 class="header-navigation flex items-center justify-end gap-3"
                 style="grid-area:navigation"
             >
-                <button
-                    type="button"
+                <a
+                    href="{{ routes.search_url }}"
                     class="header-search__right header-icon-button"
-                    data-dialog-id="{{ search_overlay_popup_id }}"
-                    @click="$store.dialog.open($el.dataset.dialogId)"
                     aria-label="{{ 'accessibility.search' | t }}"
                 >
                     {% render 'icons', icon: 'icon-search', class: size_class %}
-                </button>
+                </a>
 
-                {%- if settings.cart_type == 'drawer' -%}
-                    <button
-                        type="button"
-                        class="header-icon-button relative"
-                        data-dialog-id="{{ cart_overlay_popup_id }}"
-                        @click="$store.dialog.open($el.dataset.dialogId)"
-                        aria-label="{{ 'accessibility.cart' | t }}"
-                    >
-                        {% render 'icons', icon: 'icon-cart', class: size_class %}
-                        <span
-                            x-cloak
-                            x-show="$store.cart && $store.cart.item_count > 0"
-                            class="header__cart-count badge-cart"
-                            x-text="$store.cart.item_count"
-                        ></span>
-                    </button>
-                {%- else -%}
-                    <a
-                        href="{{ routes.cart_url }}"
-                        class="header-icon-button relative"
-                        aria-label="{{ 'accessibility.cart' | t }}"
-                    >
-                        {% render 'icons', icon: 'icon-cart', class: size_class %}
-                        <span
-                            x-cloak
-                            x-show="$store.cart && $store.cart.item_count > 0"
-                            class="header__cart-count badge-cart"
-                            x-text="$store.cart.item_count"
-                        ></span>
-                    </a>
-                {%- endif -%}
+                <a
+                    href="{{ routes.cart_url }}"
+                    class="header-icon-button relative"
+                    aria-label="{{ 'accessibility.cart' | t }}"
+                >
+                    {% render 'icons', icon: 'icon-cart', class: size_class %}
+                    <span
+                        x-cloak
+                        x-show="$store.cart && $store.cart.item_count > 0"
+                        class="header__cart-count badge-cart"
+                        x-text="$store.cart.item_count"
+                    ></span>
+                </a>
 
                 {%- if shop.customer_accounts_enabled -%}
                     <shopify-account
@@ -164,6 +146,18 @@
                             {%- render 'icons', icon: 'icon-account', class: size_class -%}
                         </span>
                     </shopify-account>
+                {%- endif -%}
+
+                {%- if section.settings.enable_country_selector -%}
+                    <div class="max-pc:hidden">
+                        {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
+                    </div>
+                {%- endif -%}
+
+                {%- if section.settings.enable_language_selector -%}
+                    <div class="max-pc:hidden">
+                        {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
+                    </div>
                 {%- endif -%}
             </div>
         </div>
@@ -748,6 +742,28 @@
             "step": 1,
             "default": 6,
             "visible_if": "{{ section.settings.menu_type == 'super' and section.settings.enable_super_menu_series }}"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.header.content.localization_settings"
+        },
+        {
+            "type": "paragraph",
+            "content": "t:sections.header.content.localization_large_screens_only"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_country_selector",
+            "default": true,
+            "label": "t:sections.header.settings.country_region_selector",
+            "info": "t:sections.header.info.manage_countries_regions"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_language_selector",
+            "default": true,
+            "label": "t:sections.header.settings.language_selector",
+            "info": "t:sections.header.info.manage_languages"
         }
     ]
 }

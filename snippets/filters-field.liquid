@@ -51,7 +51,7 @@
 
             {%- if effective_ui_variant == 'panel' -%}
                 <div
-                    x-data="progressiveList()"
+                    x-data="progressiveList()" data-module-id="progressive-list"
                     data-visible-count="{{ show_more_limit }}"
                     data-step-count="{{ show_more_step }}"
                     class="flex flex-col gap-3 pt-1"
@@ -100,14 +100,14 @@
                             data-show-less-label="{{ 'collections.filters.show_less' | t | escape }}"
                             class="filters-field__show-more filters-field__show-more--panel"
                         >
-                            {% render 'show-more-icon' %}
+                            {%- render 'icons', icon: 'icon-plus', size: 'sm' -%}
                             <span x-text="canShowMore({{ sorted_values.size }}) ? $el.parentElement.dataset.showMoreLabel : $el.parentElement.dataset.showLessLabel"></span>
                         </button>
                     {%- endif -%}
                 </div>
             {%- else -%}
                 <div
-                    x-data="progressiveList()"
+                    x-data="progressiveList()" data-module-id="progressive-list"
                     data-visible-count="{{ show_more_limit }}"
                     data-step-count="{{ show_more_step }}"
                     class="flex flex-col gap-2"
@@ -156,7 +156,7 @@
                             data-show-less-label="{{ 'collections.filters.show_less' | t | escape }}"
                             class="filters-field__show-more filters-field__show-more--horizontal"
                         >
-                            {% render 'show-more-icon' %}
+                            {%- render 'icons', icon: 'icon-plus', size: 'sm' -%}
                             <span x-text="canShowMore({{ sorted_values.size }}) ? $el.parentElement.dataset.showMoreLabel : $el.parentElement.dataset.showLessLabel"></span>
                         </button>
                     {%- endif -%}
@@ -179,7 +179,7 @@
                     data-filter-min="{{ current_min }}"
                     data-filter-max="{{ current_max }}"
                     data-filter-ceil="{{ range_max }}"
-                    x-data="collectionFilterField()"
+                    x-data="collectionFilterField()" data-module-id="collection-filter-field"
                 >
                     <div
                         class="filters-field__range-wrapper"

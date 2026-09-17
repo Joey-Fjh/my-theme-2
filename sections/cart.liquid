@@ -5,7 +5,7 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="cartPage()"
+    x-data="cartPage()" data-module-id="cart-page"
     data-shipping-msg-calculating="{{ 'cart.shipping_calculating' | t | escape }}"
     data-shipping-msg-rates="{{ 'cart.shipping_rates' | t | escape }}"
     data-shipping-msg-empty="{{ 'cart.shipping_no_rates' | t | escape }}"
@@ -423,13 +423,22 @@
 
                     {%- assign accordion_title_note = 'cart.order_special_instruction' | t -%}
                     {%- assign accordion_title_shipping = 'cart.estimate_shipping' | t -%}
-                    {% render 'cart-summary-accordion',
-                        id_prefix: section.id,
-                        note_title: accordion_title_note,
-                        note_content: note_html,
-                        shipping_title: accordion_title_shipping,
-                        shipping_content: shipping_html
-                    %}
+                    {%- assign cart_note_accordion_id = section.id | append: '-note' -%}
+                    {%- assign cart_shipping_accordion_id = section.id | append: '-shipping' -%}
+                    {%- render 'accordion',
+                        item_title: accordion_title_note,
+                        item_content: note_html,
+                        id_prefix: cart_note_accordion_id,
+                        icon_type: 'plus',
+                        initial_active: 0
+                    -%}
+                    {%- render 'accordion',
+                        item_title: accordion_title_shipping,
+                        item_content: shipping_html,
+                        id_prefix: cart_shipping_accordion_id,
+                        icon_type: 'plus',
+                        initial_active: 1
+                    -%}
 
                     <div class="mt-10 border-t border-theme-border/20 pt-10">
                         {%- if cart.cart_level_discount_applications.size > 0 -%}
@@ -511,52 +520,52 @@
         },
         {
             "type": "header",
-            "content": "t:sections.slides-show.content.heading"
+            "content": "t:sections.shared_typography.content.heading"
         },
         {
             "type": "select",
             "id": "heading_size",
-            "label": "t:sections.slides-show.settings.heading_size",
+            "label": "t:sections.shared_typography.settings.heading_size",
             "options": [
                 {
                     "value": "heading-4xl",
-                    "label": "t:sections.slides-show.options.heading_4xl"
+                    "label": "t:sections.shared_typography.options.heading_4xl"
                 },
                 {
                     "value": "heading-3xl",
-                    "label": "t:sections.slides-show.options.heading_3xl"
+                    "label": "t:sections.shared_typography.options.heading_3xl"
                 },
                 {
                     "value": "heading-2xl",
-                    "label": "t:sections.slides-show.options.heading_2xl"
+                    "label": "t:sections.shared_typography.options.heading_2xl"
                 },
                 {
                     "value": "heading-xl",
-                    "label": "t:sections.slides-show.options.heading_xl"
+                    "label": "t:sections.shared_typography.options.heading_xl"
                 },
                 {
                     "value": "heading-h1",
-                    "label": "t:sections.slides-show.options.heading_h1"
+                    "label": "t:sections.shared_typography.options.heading_h1"
                 },
                 {
                     "value": "heading-h2",
-                    "label": "t:sections.slides-show.options.heading_h2"
+                    "label": "t:sections.shared_typography.options.heading_h2"
                 },
                 {
                     "value": "heading-h3",
-                    "label": "t:sections.slides-show.options.heading_h3"
+                    "label": "t:sections.shared_typography.options.heading_h3"
                 },
                 {
                     "value": "heading-h4",
-                    "label": "t:sections.slides-show.options.heading_h4"
+                    "label": "t:sections.shared_typography.options.heading_h4"
                 },
                 {
                     "value": "heading-h5",
-                    "label": "t:sections.slides-show.options.heading_h5"
+                    "label": "t:sections.shared_typography.options.heading_h5"
                 },
                 {
                     "value": "heading-h6",
-                    "label": "t:sections.slides-show.options.heading_h6"
+                    "label": "t:sections.shared_typography.options.heading_h6"
                 }
             ],
             "default": "heading-3xl"

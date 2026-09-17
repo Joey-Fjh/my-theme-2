@@ -10,123 +10,55 @@
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
 >
-    {%- comment -%} Search form: always visible, independent of results {%- endcomment -%}
     <div class="layout container-page overflow-visible!{% unless search.performed %} flex min-h-[50vh] flex-col items-center justify-center{% endunless %}">
-        <div
-            class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}"
-            x-data="predictiveSearch"
-            data-predictive-search-enabled="{{ settings.predictive_search_enabled }}"
-            data-search-url="{{ routes.search_url | escape }}"
-            data-predictive-search-url="{{ routes.predictive_search_url | escape }}"
-            data-predictive-search-query="{{ terms | escape }}"
-            data-predictive-search-performed="{{ search.performed }}"
-            data-toast-search-failed="{{ 'toast.search_failed' | t | escape }}"
-        >
+        <div class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}">
             <h1 class="sr-only">{{ 'search.title' | t }}</h1>
 
-            <form
-                action="{{ routes.search_url }}"
-                method="get"
-                @submit.prevent="performSearch()"
-                role="search"
-                class="relative w-full"
-                :class="{ 'is-open': isOpen }"
-                @click.outside="closePanel()"
-            >
+            <form action="{{ routes.search_url }}" method="get" role="search" class="relative w-full">
                 <input type="hidden" name="options[prefix]" value="last">
-                <input type="hidden" name="type" value="product">
                 <div class="mb-1 flex items-center gap-3 border-b border-theme-border pb-3 text-theme-text">
                     {%- render 'icons', icon: 'icon-search', class: 'shrink-0' -%}
                     <label class="sr-only" for="SearchInput-{{ section.id }}">
                         {{ 'search.search' | t }}
                     </label>
-
                     <input
                         id="SearchInput-{{ section.id }}"
                         type="search"
                         name="q"
+                        value="{{ terms | escape }}"
                         class="w-full flex-1 appearance-none border-none bg-transparent body-xl text-theme-text focus-ring outline-none placeholder:text-theme-text/50"
-                        autocomplete="off"
-                        :aria-expanded="isOpen"
                         placeholder="{{ 'search.search' | t }}"
-                        x-model="query"
-                        @input="onInput($event.target.value)"
-                        @compositionend="onInput($event.target.value)"
-                        @focus="openPanel()"
-                        @click="openPanel()"
-                        @keydown.escape.stop="closePanel()"
-                        @keydown.enter.prevent="performSearch()"
                     >
+                    <button type="submit" class="btn-primary shrink-0">
+                        {{ 'search.search' | t }}
+                    </button>
                 </div>
-
-                {% render 'search-predictive-panel',
-                    mobile_card_columns: section.settings.mobile_card_columns,
-                    scope_id: section.id
-                %}
             </form>
         </div>
     </div>
 
-    {%- comment -%} Results tabs: only rendered after a search {%- endcomment -%}
-    {% if search.performed %}
-        <div class="layout container-page overflow-visible!">
-            {%- liquid
-                assign q = search.terms | default: '' | strip | url_encode
+    {%- if search.performed -%}
+        <div class="layout container-page overflow-visible! pb-10">
+            {%- paginate search.results by section.settings.search_per_page -%}
+                {%- if search.results_count == 0 -%}
+                    <p class="py-10 text-center body-lg">{{ 'search.no_results_html' | t: terms: terms }}</p>
+                {%- else -%}
+                    <ul class="flex flex-col gap-4">
+                        {%- for item in search.results -%}
+                            <li>
+                                <a href="{{ item.url }}" class="link-underline body-lg">{{ item.title | escape }}</a>
+                            </li>
+                        {%- endfor -%}
+                    </ul>
+                {%- endif -%}
 
-                # Current result type comes from search.types (driven by the type query param),
-                # not request.params.type, which is unreliable after Section Rendering refreshes.
-                assign param_type = 'product'
-                for search_type in search.types
-                    assign type_candidate = search_type | downcase | strip
-                    if type_candidate == 'product' or type_candidate == 'article' or type_candidate == 'page'
-                        assign param_type = type_candidate
-                        break
-                    endif
-                endfor
-
-                assign active_tab_index = 0
-                if param_type == 'article'
-                    assign active_tab_index = 1
-                elsif param_type == 'page'
-                    assign active_tab_index = 2
-                endif
-
-                assign base_url = routes.search_url | append: '?q=' | append: q | append: '&options%5Bprefix%5D=last'
-                assign products_url = base_url | append: '&type=product'
-                assign articles_url = base_url | append: '&type=article'
-                assign pages_url = base_url | append: '&type=page'
-            -%}
-
-            {%- render 'search-results-tabs',
-                section_id: section.id,
-                active_tab_index: active_tab_index,
-                products_url: products_url,
-                articles_url: articles_url,
-                pages_url: pages_url,
-                param_type: param_type,
-                search_per_page: section.settings.search_per_page,
-                mobile_card_columns: section.settings.mobile_card_columns,
-                color_scheme: section.settings.color_scheme
-            -%}
+                <div class="mt-8">
+                    {%- render 'pagination', paginate_obj: paginate -%}
+                </div>
+            {%- endpaginate -%}
         </div>
-    {% endif %}
+    {%- endif -%}
 </div>
-
-{% stylesheet %}
-    .search-section {
-        .product-grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(var(--product-grid-columns-mobile), minmax(0, 1fr));
-            gap: 3px;
-
-            @media (min-width: 768px) {
-                grid-template-columns: repeat(var(--product-grid-columns), minmax(0, 1fr));
-                gap: 8px;
-            }
-        }
-    }
-{% endstylesheet %}
 
 {% schema %}
 {

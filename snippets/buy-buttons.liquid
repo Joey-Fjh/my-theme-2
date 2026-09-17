@@ -102,7 +102,7 @@
         data-maximum-in-cart-text="{{ 'products.product.maximum_in_cart' | t | escape }}"
         data-unavailable-text="{{ 'products.product.unavailable' | t | escape }}"
         data-request-sections="{% if request_sections == false or request_sections == 'false' %}{% else %}{{ request_sections | join: ',' | escape }}{% endif %}"
-        x-data="BuyButtons()"
+        x-data="BuyButtons()" data-module-id="buy-buttons"
         {{ block.shopify_attributes }}
     >
         {%- form 'product',
@@ -119,23 +119,6 @@
                 :value="variantId"
                 :disabled="!available"
             >
-
-            {%- render 'selling-plan-picker',
-                product: product,
-                section_id: section_id,
-                product_form_id: product_form_id
-            -%}
-
-            {%- if product.gift_card? -%}
-                <div x-cloak>
-                    {%- render 'gift-card-recipient-form',
-                        product: product,
-                        form: form,
-                        section_id: section_id,
-                        product_form_id: product_form_id
-                    -%}
-                </div>
-            {%- endif -%}
 
             <div
                 class="
@@ -268,9 +251,6 @@
                         {%- capture gift_card_fallback_form_id -%}
                             {{- product_form_id -}}-gift-card-fallback-{{- variant.id -}}
                         {%- endcapture -%}
-                        {%- capture gift_card_fallback_section_id -%}
-                            {{- section_id -}}-gift-card-fallback-{{- variant.id -}}
-                        {%- endcapture -%}
                         <details
                             {% if variant.id == current_variant.id %}
                                 open
@@ -292,12 +272,6 @@
                                     name="quantity"
                                     value="{{ gift_card_variant_quantity }}"
                                 >
-                                {%- render 'gift-card-recipient-form',
-                                    product: product,
-                                    form: form,
-                                    section_id: gift_card_fallback_section_id,
-                                    product_form_id: gift_card_fallback_form_id
-                                -%}
                                 <button type="submit" name="add" class="btn-primary w-full">
                                     {{ 'products.product.add_to_cart' | t }}
                                 </button>
@@ -434,12 +408,6 @@
             {%- endif -%}
         </div>
 
-        {%- if context == 'product' and current_variant != blank -%}
-            {%- render 'pickup-availability-inline',
-                section_id: section_id,
-                variant_id: current_variant.id
-            -%}
-        {%- endif -%}
     </div>
 
 {%- elsif context == 'featured' -%}

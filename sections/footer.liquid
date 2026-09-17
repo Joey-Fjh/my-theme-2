@@ -1,7 +1,7 @@
 <footer
     data-section-id="{{ section.id }}"
     class="footer-section full-width relative color-{{ section.settings.color_scheme }}"
-    x-data="motionRevealSection()"
+    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
     data-motion-section
 >
     {%- if section.settings.bg_image -%}
@@ -130,12 +130,9 @@
                 {% endif %}
 
                 {% if section.settings.brand_name != blank %}
-                    {% render 'watermark',
-                        text: section.settings.brand_name,
-                        container_class: 'relative z-10 w-full',
-                        svg_class: 'mx-auto',
-                        text_class: ''
-                    %}
+                    <p class="relative z-10 w-full text-center body-xl">
+                        {{ section.settings.brand_name | escape }}
+                    </p>
                 {% endif %}
             </div>
 
@@ -166,7 +163,7 @@
                 </span>
                 <button
                     type="button"
-                    @click="window.__Theme__.Utils.scrollToTop()"
+                    @click="scrollToTop()"
                     class="footer__back-to-top col-span-2 pc:order-last pc:col-span-1"
                 >
                     <span>{{ 'footer.back_to_top' | t }}</span>

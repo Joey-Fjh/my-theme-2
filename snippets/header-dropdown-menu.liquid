@@ -9,7 +9,7 @@
     aria-label="{{ 'accessibility.main_menu' | t }}"
     class="header-dropdown-menu"
     data-desktop-menu-trigger="{{ desktop_menu_trigger }}"
-    x-data="dropdown"
+    x-data="dropdown" data-module-id="dropdown"
     @mouseenter="onHeaderEnter()"
     @click.capture="onMenuTriggerClickEvent($event)"
     @mouseover="openOnHoverEvent($event)"

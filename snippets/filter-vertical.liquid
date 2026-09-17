@@ -24,16 +24,35 @@
 {%- assign vertical_scope_id = scope_id | default: 'filters' | append: '-vertical' -%}
 {%- assign filters_form_id = form_id | default: 'CollectionFiltersForm' -%}
 
-{% render 'filters-groups',
-    filter_source: filter_host,
-    layout: 'vertical',
-    wrapper_class: wrapper_class,
-    show_more_limit: show_more_limit,
-    show_more_step: show_more_step,
-    divider_class: divider_class,
-    muted_text_class: muted_text_class,
-    filter_label_class: filter_label_class,
-    count_text_class: count_text_class,
-    scope_id: vertical_scope_id,
-    form_id: filters_form_id
-%}
+<div class="{{ wrapper_class }} flex flex-col gap-4">
+    {%- for filter in filter_host.filters -%}
+        {%- capture filter_content -%}
+            {%- render 'filters-field',
+                filter: filter,
+                mode: 'vertical',
+                ui_variant: 'panel',
+                show_more_limit: show_more_limit,
+                show_more_step: show_more_step,
+                divider_class: divider_class,
+                muted_text_class: muted_text_class,
+                filter_label_class: filter_label_class,
+                count_text_class: count_text_class,
+                filter_index: forloop.index0,
+                scope_id: vertical_scope_id,
+                form_id: filters_form_id
+            -%}
+        {%- endcapture -%}
+
+        {% render 'accordion',
+            item_title: filter.label,
+            item_content: filter_content,
+            initial_active: 0,
+            id_prefix: vertical_scope_id,
+            wrapper_class: 'flex flex-col gap-0',
+            item_class: 'py-0',
+            title_active_class: 'text-theme-text',
+            title_inactive_class: 'text-theme-text',
+            content_class: 'pb-4 text-theme-text'
+        %}
+    {%- endfor -%}
+</div>

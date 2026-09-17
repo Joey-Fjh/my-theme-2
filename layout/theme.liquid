@@ -20,46 +20,63 @@
         {% # Load and preload the CSS %}
         {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}
 
-        {% comment %} --- 1. Third-party UI libraries --- {% endcomment %}
-        <script src="{{ 'vendor-swiper.min.js' | asset_url }}" defer></script>
+        {% comment %} --- 1. Module graph ---
+            Every identifier below is a bare specifier. `data-module-id` in Liquid markup
+            names the component entry the core imports on demand; the core itself holds no
+            component manifest.
+        {% endcomment %}
+        <script type="importmap">
+            {
+                "imports": {
+                    "base": "{{ 'base.js' | asset_url }}",
+                    "events": "{{ 'events.js' | asset_url }}",
+                    "utils": "{{ 'utils.js' | asset_url }}",
+                    "https": "{{ 'https.js' | asset_url }}",
+                    "alpine-adapter": "{{ 'alpine.adapter.js' | asset_url }}",
+                    "cart-contract": "{{ 'cart.contract.js' | asset_url }}",
+                    "components/filters": "{{ 'alpine.components.filters.js' | asset_url }}",
+                    "components/header": "{{ 'alpine.components.header.js' | asset_url }}",
+                    "components/overlays": "{{ 'alpine.components.overlays.js' | asset_url }}",
+                    "components/pagination": "{{ 'alpine.components.pagination.js' | asset_url }}",
+                    "components/product": "{{ 'alpine.components.product.js' | asset_url }}",
+                    "components/product-cards": "{{ 'alpine.components.product-cards.js' | asset_url }}",
+                    "components/product-media": "{{ 'alpine.components.product-media.js' | asset_url }}",
+                    "components/search": "{{ 'alpine.components.search.js' | asset_url }}",
+                    "components/ui": "{{ 'alpine.components.ui.js' | asset_url }}",
+                    "accordion": "{{ 'accordion.js' | asset_url }}",
+                    "buy-buttons": "{{ 'buy-buttons.js' | asset_url }}",
+                    "cart-page": "{{ 'cart-page.js' | asset_url }}",
+                    "collection-filter-field": "{{ 'collection-filter-field.js' | asset_url }}",
+                    "collection-filters": "{{ 'collection-filters.js' | asset_url }}",
+                    "collection-navigation-catalog": "{{ 'collection-navigation-catalog.js' | asset_url }}",
+                    "drag-scroll": "{{ 'drag-scroll.js' | asset_url }}",
+                    "dropdown": "{{ 'dropdown.js' | asset_url }}",
+                    "localization-switcher": "{{ 'localization-switcher.js' | asset_url }}",
+                    "motion-reveal-section": "{{ 'motion-reveal-section.js' | asset_url }}",
+                    "product-gallery": "{{ 'product-gallery.js' | asset_url }}",
+                    "product-layout": "{{ 'product-layout.js' | asset_url }}",
+                    "progressive-list": "{{ 'progressive-list.js' | asset_url }}",
+                    "quantity-selector": "{{ 'quantity-selector.js' | asset_url }}",
+                    "section-pagination": "{{ 'section-pagination.js' | asset_url }}",
+                    "sort-by-dropdown": "{{ 'sort-by-dropdown.js' | asset_url }}",
+                    "sticky-header": "{{ 'sticky-header.js' | asset_url }}",
+                    "sticky-viewport-panel": "{{ 'sticky-viewport-panel.js' | asset_url }}",
+                    "tab-control": "{{ 'tab-control.js' | asset_url }}",
+                    "toast-container": "{{ 'toast-container.js' | asset_url }}",
+                    "variant-picker": "{{ 'variant-picker.js' | asset_url }}"
+                }
+            }
+        </script>
 
-        {% comment %} --- 2. Core utility classes (No external dependencies) --- {% endcomment %}
-        <script src="{{ 'utils.js' | asset_url }}" defer></script>
-        <script src="{{ 'quantity-constraints.js' | asset_url }}" defer></script>
-        <script src="{{ 'events.js' | asset_url }}" defer></script>
+        {% comment %}
+            --- 2. Core entry ---
+            Must execute before Alpine: Alpine v3 queues `start()` in a microtask as soon as
+            its own script runs, so the core has to claim component roots and queue store
+            registration first.
+        {% endcomment %}
+        <script type="module" src="{{ 'base.js' | asset_url }}"></script>
 
-        {% comment %} --- 3. Alpine component definitions (Depends on Utils) --- {% endcomment %}
-        <script src="{{ 'alpine.components.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.ui.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.header.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.pagination.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.filters.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.product.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.product-media.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.product-cards.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.search.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.overlays.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.components.registry.js' | asset_url }}" defer></script>
-
-        {% comment %} --- 3b. Performance monitoring (debug only, no dependencies) --- {% endcomment %}
-        <script src="{{ 'performance.js' | asset_url }}" defer></script>
-
-        {% comment %} --- 4. Unified HTTP + section rendering layer --- {% endcomment %}
-        <script src="{{ 'https.js' | asset_url }}" defer></script>
-
-        {% comment %} --- 5. Core dispatcher & entry point (Depends on Utils, AlpineComponents, and third-party libs) --- {% endcomment %}
-        <script src="{{ 'base.js' | asset_url }}" defer></script>
-
-        {% comment %} --- 5b. Alpine global stores -- must run before Alpine --- {% endcomment %}
-        <script src="{{ 'alpine.store.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.store.toast.js' | asset_url }}" defer></script>
-        <script src="{{ 'dialog-motion.js' | asset_url }}" defer></script>
-        <script src="{{ 'drawer-motion.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.store.dialog.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.store.cart.js' | asset_url }}" defer></script>
-        <script src="{{ 'alpine.store.registry.js' | asset_url }}" defer></script>
-
-        {% comment %} --- 6. Alpine.js framework initialization (Must be loaded last) --- {% endcomment %}
+        {% comment %} --- 3. Alpine.js framework initialization --- {% endcomment %}
         <script src="{{ 'vendor-alpine-intersect.min.js' | asset_url }}" defer></script>
         <script src="{{ 'vendor-alpine.min.js' | asset_url }}" defer></script>
 
@@ -84,8 +101,6 @@
         <a class="skip-link" href="#MainContent">
             {{- 'accessibility.skip_to_content' | t -}}
         </a>
-
-        {% sections 'overlay-group' %}
 
         {% sections 'header-group' %}
 

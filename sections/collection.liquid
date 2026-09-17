@@ -9,7 +9,7 @@
     data-pagination-selectors='["[data-collection-dynamic-content]","[data-collection-drawer-shell]"]'
     data-filters-form-id="CollectionFiltersForm-{{ section.id }}"
     data-filters-dialog-id="collection-filters-{{ section.id }}"
-    x-data="collectionFilters()"
+    x-data="collectionFilters()" data-module-id="collection-filters"
 >
     {%- liquid
         assign collection_heading_class = section.settings.heading_size | default: 'heading-4xl'
@@ -141,7 +141,7 @@
         {%- comment -%} Hero: media as cover background; height from content + padding {%- endcomment -%}
         <div
             class="relative mb-8 overflow-hidden rounded-sm color-{{ section.settings.header_color_scheme }} pc:mb-10"
-            x-data="motionRevealSection()"
+            x-data="motionRevealSection()" data-module-id="motion-reveal-section"
             data-motion-section
         >
             <div class="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -175,34 +175,25 @@
                 data-motion-critical
             >
                 <div class="mx-auto w-full max-w-3xl">
-                    {%- render 'listing-page-hero-copy',
-                        setting_header: section.settings.header,
-                        object_title: collection.title,
-                        header_locale_key: 'collections.products',
-                        setting_description: section.settings.description,
-                        object_description: collection.description,
-                        description_locale_key: 'collections.description_html',
-                        heading_class: collection_heading_class,
-                        description_class: collection_subtitle_class
+                    {%- liquid
+                        assign resolved_heading = collection.title
+                        if section.settings.header != blank
+                            assign resolved_heading = section.settings.header
+                        endif
+                        assign resolved_description = collection.description
+                        if section.settings.description != blank
+                            assign resolved_description = section.settings.description
+                        endif
+                        if resolved_description == blank
+                            assign resolved_description = 'collections.description_html' | t
+                        endif
+                    -%}
+                    <h1 class="{{ collection_heading_class }}">{{ resolved_heading }}</h1>
+                    {%- render 'rte-compact-prose',
+                        content: resolved_description,
+                        content_class: collection_subtitle_class
                     -%}
                 </div>
-            </div>
-
-            <div
-                class="absolute end-12 top-12 z-20 pc:end-6 pc:top-6"
-                data-motion-reveal="media"
-                data-motion-critical
-            >
-                {%- render 'rotating-badge',
-                    classes: 'relative',
-                    badge_class: 'text-theme-text',
-                    center_class: 'text-theme-text',
-                    unique_id: section.id,
-                    size: 100,
-                    size_mobile: 72,
-                    badge_text: section.settings.rotate_badge_text,
-                    center_text: section.settings.rotate_badge_percent
-                -%}
             </div>
         </div>
     </div>
@@ -221,18 +212,12 @@
 
             assign enable_filtering = section.settings.enable_filtering
             assign enable_sorting = section.settings.enable_sorting
-            assign filter_type = section.settings.filter_type | default: 'drawer'
 
-            assign is_drawer_filter = false
             assign is_horizontal_filter = false
             assign is_vertical_filter = false
 
-            if filter_type == 'horizontal'
-                assign is_horizontal_filter = true
-            elsif filter_type == 'vertical'
+            if enable_filtering
                 assign is_vertical_filter = true
-            else
-                assign is_drawer_filter = true
             endif
         -%}
 
@@ -322,38 +307,7 @@
                 </div>
             </nav>
 
-            {%- comment -%}
-                Desktop horizontal (max-pc:hidden)
-            {%- endcomment -%}
-            {%- if is_horizontal_filter -%}
-                {%- if enable_filtering or enable_sorting -%}
-                    <div class="hidden pc:flex pc:flex-col pc:gap-4">
-                        <div class="flex items-center justify-between gap-6">
-                            {%- if enable_filtering -%}
-                                {%- render 'filter-horizontal',
-                                    filter_source: collection,
-                                    show_more_limit: section.settings.filter_visible_values_limit,
-                                    wrapper_class: 'min-w-0 flex-1',
-                                    scope_id: section.id,
-                                    form_id: filters_form_id
-                                -%}
-                            {%- else -%}
-                                <div></div>
-                            {%- endif -%}
-
-                            {%- if enable_sorting -%}
-                                {%- capture sort_id_prefix_desktop_h -%}{{ section.id }}-desktop-h{%- endcapture -%}
-                                {%- render 'sort-by-dropdown',
-                                    results: collection,
-                                    form_id: filters_form_id,
-                                    class: 'shrink-0 self-start',
-                                    id_prefix: sort_id_prefix_desktop_h
-                                -%}
-                            {%- endif -%}
-                        </div>
-                    </div>
-                {%- endif -%}
-            {%- endif -%}
+            {%- comment -%} Desktop horizontal layout removed â€?vertical filters only in minimal composition. {%- endcomment -%}
 
             {%- comment -%}
                 Desktop vertical (max-pc:hidden)
@@ -369,7 +323,7 @@
                     <aside class="hidden pc:block">
                         <div
                             class="sticky-viewport-panel border-e border-theme-border/20 pe-6"
-                            x-data="stickyViewportPanel"
+                            x-data="stickyViewportPanel" data-module-id="sticky-viewport-panel"
                         >
                             {%- render 'filter-vertical',
                                 filter_source: collection,
@@ -395,7 +349,7 @@
                     <div class="collection-toolbar flex w-full flex-col items-start gap-6 pc:gap-6">
                         <div class="{{ toolbar_outer_class }}">
                             <div class="shrink-0">
-                                {%- if enable_filtering and is_drawer_filter -%}
+                                {%- if enable_filtering -%}
                                     <div class="hidden pc:flex pc:items-center pc:pb-3">
                                         <button
                                             type="button"
@@ -414,7 +368,7 @@
 
                             <div
                                 class="no-scrollbar min-w-0 overflow-x-auto overscroll-x-contain"
-                                x-data="dragScroll({ axis: 'x' })"
+                                x-data="dragScroll({ axis: 'x' })" data-module-id="drag-scroll"
                             >
                                 <nav
                                     aria-label="{{ 'accessibility.collection_navigation' | t }}"
@@ -485,37 +439,31 @@
                             {% paginate collection.products by section.settings.products_per_page %}
                                 <div
                                     class="grid {{ mobile_grid_class }} {{ desktop_grid_class }} gap-x-4 gap-y-8 pb-10"
-                                    x-data="motionRevealSection()"
+                                    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
                                     data-motion-section
                                     data-motion-cascade
                                 >
                                     {%- for product in collection.products -%}
-                                        {%- if forloop.index <= first_row_count -%}
-                                            {%- if forloop.index == 1 -%}
-                                                {%- assign row_fetchpriority = 'high' -%}
-                                            {%- else -%}
-                                                {%- assign row_fetchpriority = '' -%}
-                                            {%- endif -%}
-                                            <div class="group" data-motion-bound>
-                                                {%- render 'product-card',
-                                                    product: product,
-                                                    hover_mode: 'variants',
-                                                    scope_id: section.id,
-                                                    color_scheme: section.settings.color_scheme,
-                                                    primary_image_loading: 'eager',
-                                                    primary_image_fetchpriority: row_fetchpriority
+                                        <div class="group" data-motion-bound>
+                                            {%- liquid
+                                                assign product_card_alt = product.featured_image.alt | default: product.title
+                                                assign card_loading = 'lazy'
+                                                if forloop.index <= first_row_count
+                                                    assign card_loading = 'eager'
+                                                endif
+                                            -%}
+                                            <a href="{{ product.url }}" class="flex flex-col gap-3">
+                                                {%- render 'image',
+                                                    image: product.featured_image,
+                                                    width: 600,
+                                                    alt: product_card_alt,
+                                                    sizes: '(min-width: 48rem) 25vw, 50vw',
+                                                    loading: card_loading
                                                 -%}
-                                            </div>
-                                        {%- else -%}
-                                            <div class="group" data-motion-bound>
-                                                {%- render 'product-card',
-                                                    product: product,
-                                                    hover_mode: 'variants',
-                                                    scope_id: section.id,
-                                                    color_scheme: section.settings.color_scheme
-                                                -%}
-                                            </div>
-                                        {%- endif -%}
+                                                <span class="heading-h6">{{ product.title }}</span>
+                                                <span>{{ product.price | money }}</span>
+                                            </a>
+                                        </div>
                                     {%- else -%}
                                         <div class="col-span-full py-20 text-center body-lg">
                                             {{ 'collections.no_products' | t }}
@@ -540,13 +488,17 @@
     {%- comment -%} Filters drawer dialog: only when enable_filtering {%- endcomment -%}
     {%- if enable_filtering -%}
         {%- capture drawer_content -%}
-            {%- render 'filters-drawer',
-                filter_source: collection,
-                show_more_limit: section.settings.filter_visible_values_limit,
-                scope_id: section.id,
-                form_id: filters_form_id,
-                dialog_title_id: filters_dialog_title_id
-            -%}
+            <div class="ui-dialog-overlay-header">
+                <h2 id="{{ filters_dialog_title_id }}">{{ 'collections.filter' | t }}</h2>
+            </div>
+            <div class="ui-dialog-overlay-body">
+                {%- render 'filter-vertical',
+                    filter_source: collection,
+                    show_more_limit: section.settings.filter_visible_values_limit,
+                    scope_id: section.id,
+                    form_id: filters_form_id
+                -%}
+            </div>
         {%- endcapture -%}
 
         <div data-collection-drawer-shell>
@@ -578,7 +530,7 @@
             data-load-size="{{ collection_nav_load_more_size }}"
             data-initial-source-offset="{{ collection_nav_initial_source_offset }}"
             data-initial-has-more="{{ collection_nav_initial_has_more }}"
-            x-data="collectionNavigationCatalog()"
+            x-data="collectionNavigationCatalog()" data-module-id="collection-navigation-catalog"
             class="flex h-full min-h-0 flex-col"
         >
             <div class="ui-dialog-overlay-header">
@@ -770,52 +722,52 @@
         },
         {
             "type": "header",
-            "content": "t:sections.slides-show.content.font"
+            "content": "t:sections.shared_typography.content.font"
         },
         {
             "type": "select",
             "id": "heading_size",
-            "label": "t:sections.slides-show.settings.heading_size",
+            "label": "t:sections.shared_typography.settings.heading_size",
             "options": [
                 {
                     "value": "heading-4xl",
-                    "label": "t:sections.slides-show.options.heading_4xl"
+                    "label": "t:sections.shared_typography.options.heading_4xl"
                 },
                 {
                     "value": "heading-3xl",
-                    "label": "t:sections.slides-show.options.heading_3xl"
+                    "label": "t:sections.shared_typography.options.heading_3xl"
                 },
                 {
                     "value": "heading-2xl",
-                    "label": "t:sections.slides-show.options.heading_2xl"
+                    "label": "t:sections.shared_typography.options.heading_2xl"
                 },
                 {
                     "value": "heading-xl",
-                    "label": "t:sections.slides-show.options.heading_xl"
+                    "label": "t:sections.shared_typography.options.heading_xl"
                 },
                 {
                     "value": "heading-h1",
-                    "label": "t:sections.slides-show.options.heading_h1"
+                    "label": "t:sections.shared_typography.options.heading_h1"
                 },
                 {
                     "value": "heading-h2",
-                    "label": "t:sections.slides-show.options.heading_h2"
+                    "label": "t:sections.shared_typography.options.heading_h2"
                 },
                 {
                     "value": "heading-h3",
-                    "label": "t:sections.slides-show.options.heading_h3"
+                    "label": "t:sections.shared_typography.options.heading_h3"
                 },
                 {
                     "value": "heading-h4",
-                    "label": "t:sections.slides-show.options.heading_h4"
+                    "label": "t:sections.shared_typography.options.heading_h4"
                 },
                 {
                     "value": "heading-h5",
-                    "label": "t:sections.slides-show.options.heading_h5"
+                    "label": "t:sections.shared_typography.options.heading_h5"
                 },
                 {
                     "value": "heading-h6",
-                    "label": "t:sections.slides-show.options.heading_h6"
+                    "label": "t:sections.shared_typography.options.heading_h6"
                 }
             ],
             "default": "heading-4xl"
@@ -840,40 +792,40 @@
         },
         {
             "type": "header",
-            "content": "t:sections.scroll-categories.content.subtitle"
+            "content": "t:sections.shared_typography.content.subtitle"
         },
         {
             "type": "select",
             "id": "subtitle_size",
-            "label": "t:sections.scroll-categories.settings.subtitle_size",
+            "label": "t:sections.shared_typography.settings.subtitle_size",
             "options": [
                 {
                     "value": "body-3xl",
-                    "label": "t:sections.scroll-categories.options.body_3xl"
+                    "label": "t:sections.shared_typography.options.body_3xl"
                 },
                 {
                     "value": "body-2xl",
-                    "label": "t:sections.scroll-categories.options.body_2xl"
+                    "label": "t:sections.shared_typography.options.body_2xl"
                 },
                 {
                     "value": "body-xl",
-                    "label": "t:sections.scroll-categories.options.body_xl"
+                    "label": "t:sections.shared_typography.options.body_xl"
                 },
                 {
                     "value": "body-lg",
-                    "label": "t:sections.scroll-categories.options.body_lg"
+                    "label": "t:sections.shared_typography.options.body_lg"
                 },
                 {
                     "value": "body-md",
-                    "label": "t:sections.scroll-categories.options.body_md"
+                    "label": "t:sections.shared_typography.options.body_md"
                 },
                 {
                     "value": "body-sm",
-                    "label": "t:sections.scroll-categories.options.body_sm"
+                    "label": "t:sections.shared_typography.options.body_sm"
                 },
                 {
                     "value": "body-xs",
-                    "label": "t:sections.scroll-categories.options.body_xs"
+                    "label": "t:sections.shared_typography.options.body_xs"
                 }
             ],
             "default": "body-xl"

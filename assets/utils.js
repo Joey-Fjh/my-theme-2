@@ -1,100 +1,74 @@
-(function () {
-    'use strict';
+class Utils {
+    static throttle(func, delay = 300) {
+        let timeoutId;
+        let lastExecTime = 0;
 
-    class Utils {
-        static rafThrottle(fn) {
-            let ticking = false;
-            let lastArgs = null;
-            let rafId = null;
-            const wrapper = function (...args) {
-                lastArgs = args;
-                if (!ticking) {
-                    ticking = true;
-                    rafId = requestAnimationFrame(() => {
-                        fn.apply(this, lastArgs);
-                        ticking = false;
-                    });
-                }
-            };
-            wrapper.dispose = () => {
-                if (rafId) cancelAnimationFrame(rafId);
-                ticking = false;
-                lastArgs = null;
-            };
-            return wrapper;
-        }
+        return function (...args) {
+            const currentTime = Date.now();
 
-        static throttle(func, delay = 300) {
-            let timeoutId;
-            let lastExecTime = 0;
+            if (currentTime - lastExecTime > delay) {
+                func.apply(this, args);
+                lastExecTime = currentTime;
+            } else {
+                clearTimeout(timeoutId);
 
-            return function (...args) {
-                const currentTime = Date.now();
-
-                if (currentTime - lastExecTime > delay) {
-                    func.apply(this, args);
-                    lastExecTime = currentTime;
-                } else {
-                    clearTimeout(timeoutId);
-
-                    timeoutId = setTimeout(
-                        () => {
-                            func.apply(this, args);
-                            lastExecTime = Date.now();
-                        },
-                        delay - (currentTime - lastExecTime),
-                    );
-                }
-            };
-        }
-
-        static prefersReducedMotion() {
-            return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-        }
-
-        static getPageScrollBehavior() {
-            if (document.body?.dataset?.motionEnabled === 'false') return 'auto';
-            if (Utils.prefersReducedMotion()) return 'auto';
-            return 'smooth';
-        }
-
-        static getMicroScrollBehavior() {
-            if (Utils.prefersReducedMotion()) return 'auto';
-            return 'smooth';
-        }
-
-        static scrollToTop() {
-            window.scrollTo({ top: 0, behavior: Utils.getPageScrollBehavior() });
-        }
-
-        static debounce(func, wait = 300, immediate = false) {
-            let timeout;
-
-            const wrapper = function (...args) {
-                const context = this;
-
-                const later = () => {
-                    timeout = null;
-                    if (!immediate) func.apply(context, args);
-                };
-
-                const callNow = immediate && !timeout;
-
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-
-                if (callNow) func.apply(context, args);
-            };
-
-            wrapper.dispose = () => {
-                clearTimeout(timeout);
-                timeout = null;
-            };
-
-            return wrapper;
-        }
+                timeoutId = setTimeout(
+                    () => {
+                        func.apply(this, args);
+                        lastExecTime = Date.now();
+                    },
+                    delay - (currentTime - lastExecTime),
+                );
+            }
+        };
     }
 
-    window.__Theme__ = window.__Theme__ || {};
-    window.__Theme__.Utils = Utils;
-})();
+    static prefersReducedMotion() {
+        return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+    }
+
+    static getPageScrollBehavior() {
+        if (document.body?.dataset?.motionEnabled === 'false') return 'auto';
+        if (Utils.prefersReducedMotion()) return 'auto';
+        return 'smooth';
+    }
+
+    static getMicroScrollBehavior() {
+        if (Utils.prefersReducedMotion()) return 'auto';
+        return 'smooth';
+    }
+
+    static scrollToTop() {
+        window.scrollTo({ top: 0, behavior: Utils.getPageScrollBehavior() });
+    }
+
+    static debounce(func, wait = 300, immediate = false) {
+        let timeout;
+
+        const wrapper = function (...args) {
+            const context = this;
+
+            const later = () => {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+
+            const callNow = immediate && !timeout;
+
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+
+            if (callNow) func.apply(context, args);
+        };
+
+        wrapper.dispose = () => {
+            clearTimeout(timeout);
+            timeout = null;
+        };
+
+        return wrapper;
+    }
+}
+
+export { Utils };
+export default Utils;

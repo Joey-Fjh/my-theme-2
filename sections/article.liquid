@@ -5,7 +5,7 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()"
+    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
     data-motion-section
 >
     {%- liquid
@@ -73,7 +73,7 @@
         <div class="flex flex-col gap-16 pc:flex-row pc:gap-24 fw:gap-32">
             {% comment %} Aside Bar {% endcomment %}
             <aside class="shrink-0 body-xl max-pc:hidden pc:w-72 fw:w-80">
-                <nav class="pc:sticky-viewport-panel" x-data="stickyViewportPanel">
+                <nav class="pc:sticky-viewport-panel" x-data="stickyViewportPanel" data-module-id="sticky-viewport-panel">
                     <ul
                         id="toc-container"
                         class="flex w-fit max-w-full flex-row gap-9 overflow-x-auto pc:w-full pc:flex-col pc:overflow-x-hidden"
@@ -116,7 +116,6 @@
                 </div>
                 <div class="flex flex-col gap-3 border-t border-theme-border/20 pt-3">
                     {%- if section.settings.show_social -%}
-                        {%- render 'social-icons', type: 'icon', class: 'body-xl self-end' -%}
                     {%- endif -%}
                 </div>
 
@@ -495,7 +494,7 @@
         },
         {
             "type": "header",
-            "content": "t:sections.slides-show.content.heading"
+            "content": "t:sections.shared_typography.content.heading"
         },
         {
             "type": "inline_richtext",
@@ -505,47 +504,47 @@
         {
             "type": "select",
             "id": "heading_size",
-            "label": "t:sections.slides-show.settings.heading_size",
+            "label": "t:sections.shared_typography.settings.heading_size",
             "options": [
                 {
                     "value": "heading-4xl",
-                    "label": "t:sections.slides-show.options.heading_4xl"
+                    "label": "t:sections.shared_typography.options.heading_4xl"
                 },
                 {
                     "value": "heading-3xl",
-                    "label": "t:sections.slides-show.options.heading_3xl"
+                    "label": "t:sections.shared_typography.options.heading_3xl"
                 },
                 {
                     "value": "heading-2xl",
-                    "label": "t:sections.slides-show.options.heading_2xl"
+                    "label": "t:sections.shared_typography.options.heading_2xl"
                 },
                 {
                     "value": "heading-xl",
-                    "label": "t:sections.slides-show.options.heading_xl"
+                    "label": "t:sections.shared_typography.options.heading_xl"
                 },
                 {
                     "value": "heading-h1",
-                    "label": "t:sections.slides-show.options.heading_h1"
+                    "label": "t:sections.shared_typography.options.heading_h1"
                 },
                 {
                     "value": "heading-h2",
-                    "label": "t:sections.slides-show.options.heading_h2"
+                    "label": "t:sections.shared_typography.options.heading_h2"
                 },
                 {
                     "value": "heading-h3",
-                    "label": "t:sections.slides-show.options.heading_h3"
+                    "label": "t:sections.shared_typography.options.heading_h3"
                 },
                 {
                     "value": "heading-h4",
-                    "label": "t:sections.slides-show.options.heading_h4"
+                    "label": "t:sections.shared_typography.options.heading_h4"
                 },
                 {
                     "value": "heading-h5",
-                    "label": "t:sections.slides-show.options.heading_h5"
+                    "label": "t:sections.shared_typography.options.heading_h5"
                 },
                 {
                     "value": "heading-h6",
-                    "label": "t:sections.slides-show.options.heading_h6"
+                    "label": "t:sections.shared_typography.options.heading_h6"
                 }
             ],
             "default": "heading-2xl"
@@ -558,40 +557,40 @@
         },
         {
             "type": "header",
-            "content": "t:sections.scroll-categories.content.subtitle"
+            "content": "t:sections.shared_typography.content.subtitle"
         },
         {
             "type": "select",
             "id": "subtitle_size",
-            "label": "t:sections.scroll-categories.settings.subtitle_size",
+            "label": "t:sections.shared_typography.settings.subtitle_size",
             "options": [
                 {
                     "value": "body-3xl",
-                    "label": "t:sections.scroll-categories.options.body_3xl"
+                    "label": "t:sections.shared_typography.options.body_3xl"
                 },
                 {
                     "value": "body-2xl",
-                    "label": "t:sections.scroll-categories.options.body_2xl"
+                    "label": "t:sections.shared_typography.options.body_2xl"
                 },
                 {
                     "value": "body-xl",
-                    "label": "t:sections.scroll-categories.options.body_xl"
+                    "label": "t:sections.shared_typography.options.body_xl"
                 },
                 {
                     "value": "body-lg",
-                    "label": "t:sections.scroll-categories.options.body_lg"
+                    "label": "t:sections.shared_typography.options.body_lg"
                 },
                 {
                     "value": "body-md",
-                    "label": "t:sections.scroll-categories.options.body_md"
+                    "label": "t:sections.shared_typography.options.body_md"
                 },
                 {
                     "value": "body-sm",
-                    "label": "t:sections.scroll-categories.options.body_sm"
+                    "label": "t:sections.shared_typography.options.body_sm"
                 },
                 {
                     "value": "body-xs",
-                    "label": "t:sections.scroll-categories.options.body_xs"
+                    "label": "t:sections.shared_typography.options.body_xs"
                 }
             ],
             "default": "body-xl"

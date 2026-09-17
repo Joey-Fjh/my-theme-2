@@ -1,7 +1,4 @@
-(function () {
-    'use strict';
-
-    window.__Theme__ = window.__Theme__ || {};
+import { DialogMotion } from './dialog-motion.js';
 
     const ENTER_ANIMATION_NAMES = new Set([
         'drawer-motion-slide-right-enter',
@@ -17,10 +14,6 @@
     ]);
 
     const SHEET_MEDIA_QUERY = '(max-width: 47.999rem)';
-
-    function DialogMotion() {
-        return window.__Theme__.DialogMotion;
-    }
 
     function shouldReduceMotion() {
         return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -61,9 +54,8 @@
     }
 
     function lockScroll() {
-        const motion = DialogMotion();
-        if (motion && typeof motion.lockScroll === 'function') {
-            motion.lockScroll();
+        if (DialogMotion && typeof DialogMotion.lockScroll === 'function') {
+            DialogMotion.lockScroll();
             return;
         }
         document.documentElement.style.overflow = 'hidden';
@@ -71,9 +63,8 @@
     }
 
     function unlockScroll() {
-        const motion = DialogMotion();
-        if (motion && typeof motion.unlockScroll === 'function') {
-            motion.unlockScroll();
+        if (DialogMotion && typeof DialogMotion.unlockScroll === 'function') {
+            DialogMotion.unlockScroll();
             return;
         }
         document.documentElement.style.overflow = '';
@@ -262,16 +253,15 @@
             });
     }
 
-    window.__Theme__.DrawerMotion = {
-        shouldReduceMotion,
-        hasMotion,
-        resolveEdge,
-        lockScroll,
-        unlockScroll,
-        playEnter,
-        playExit,
-        getEnterDurationMs,
-        getExitDurationMs,
-        clearMotionState,
-    };
-})();
+export const DrawerMotion = {
+    shouldReduceMotion,
+    hasMotion,
+    resolveEdge,
+    lockScroll,
+    unlockScroll,
+    playEnter,
+    playExit,
+    getEnterDurationMs,
+    getExitDurationMs,
+    clearMotionState,
+};

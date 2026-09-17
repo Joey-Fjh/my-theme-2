@@ -33,7 +33,16 @@
     {%- assign product_form_id = product_form_id | default: 'product-form-' | append: section_id -%}
 
     {%- capture variants_quantity_meta_json -%}
-        {%- render 'product-variants-quantity-json', product: product -%}
+        {
+        {%- for variant in product.variants -%}
+            {%- assign variant_id_key = variant.id | append: '' -%}
+            {{ variant_id_key | json }}:{ "inventory_management":{{ variant.inventory_management | json }},
+            "inventory_policy":{{ variant.inventory_policy | json }}, "inventory_quantity":
+            {{- variant.inventory_quantity | json -}}
+            , "quantity_rule":{{ variant.quantity_rule | json }} }
+            {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+        }
     {%- endcapture -%}
     <div
         id="VariantPicker-{{ section_id }}"
@@ -45,7 +54,7 @@
         data-update-url="{% if update_url_enabled %}true{% else %}false{% endif %}"
         data-variants="{{ product.variants | json | escape }}"
         data-variants-quantity-meta="{{ variants_quantity_meta_json | strip | escape }}"
-        x-data="VariantPicker()"
+        x-data="VariantPicker()" data-module-id="variant-picker"
         {% if block %}
             {{- block.shopify_attributes -}}
         {% endif %}

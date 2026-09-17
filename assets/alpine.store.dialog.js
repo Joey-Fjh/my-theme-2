@@ -1,48 +1,37 @@
-(function () {
-    'use strict';
+import { DialogMotion } from './dialog-motion.js';
+import { DrawerMotion } from './drawer-motion.js';
 
-    window.__Theme__ = window.__Theme__ || {};
-    window.__Theme__.AlpineStoreGroups = window.__Theme__.AlpineStoreGroups || {};
+function getDialogMotion(root) {
+    if (!root) return null;
 
-    const StoreGroups = window.__Theme__.AlpineStoreGroups;
-    const DialogMotion = () => window.__Theme__.DialogMotion;
-    const DrawerMotion = () => window.__Theme__.DrawerMotion;
-
-    function getDialogMotion(root) {
-        if (!root) return null;
-
-        const drawerMotion = DrawerMotion();
-        if (drawerMotion && drawerMotion.hasMotion(root)) {
-            return drawerMotion;
-        }
-
-        const dialogMotion = DialogMotion();
-        if (dialogMotion && dialogMotion.hasMotion(root)) {
-            return dialogMotion;
-        }
-
-        return null;
+    if (DrawerMotion && DrawerMotion.hasMotion(root)) {
+        return DrawerMotion;
     }
 
-    function lockPageScroll() {
-        const motion = DialogMotion();
-        if (motion && typeof motion.lockScroll === 'function') {
-            motion.lockScroll();
-            return;
-        }
-        document.body.style.overflow = 'hidden';
+    if (DialogMotion && DialogMotion.hasMotion(root)) {
+        return DialogMotion;
     }
 
-    function unlockPageScroll() {
-        const motion = DialogMotion();
-        if (motion && typeof motion.unlockScroll === 'function') {
-            motion.unlockScroll();
-            return;
-        }
-        document.body.style.overflow = '';
-    }
+    return null;
+}
 
-    const FOCUSABLE_SELECTOR = [
+function lockPageScroll() {
+    if (DialogMotion && typeof DialogMotion.lockScroll === 'function') {
+        DialogMotion.lockScroll();
+        return;
+    }
+    document.body.style.overflow = 'hidden';
+}
+
+function unlockPageScroll() {
+    if (DialogMotion && typeof DialogMotion.unlockScroll === 'function') {
+        DialogMotion.unlockScroll();
+        return;
+    }
+    document.body.style.overflow = '';
+}
+
+const FOCUSABLE_SELECTOR = [
         'a[href]',
         'button:not([disabled])',
         'input:not([disabled]):not([type="hidden"])',
@@ -51,7 +40,7 @@
         '[tabindex]:not([tabindex="-1"])',
     ].join(', ');
 
-    function isElementVisible(el) {
+function isElementVisible(el) {
         if (!el.offsetParent && el !== document.body) {
             let ancestor = el.parentElement;
             while (ancestor && ancestor !== document.body) {
@@ -59,34 +48,34 @@
                 ancestor = ancestor.parentElement;
             }
         }
-        return getComputedStyle(el).visibility !== 'hidden';
-    }
+    return getComputedStyle(el).visibility !== 'hidden';
+}
 
-    function isFocusable(el) {
+function isFocusable(el) {
         if (el.hasAttribute('disabled')) return false;
         if (el.hasAttribute('inert')) return false;
         if (el.getAttribute('tabindex') === '-1') return false;
         if (!isElementVisible(el)) return false;
-        return true;
-    }
+    return true;
+}
 
-    function getFocusableElements(container) {
-        return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusable);
-    }
+function getFocusableElements(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusable);
+}
 
-    function getDialogRoot(id) {
+function getDialogRoot(id) {
         if (!id) return null;
         return document.querySelector(
             '[data-dialog-root][data-dialog-id="' + CSS.escape(id) + '"]',
-        );
-    }
+    );
+}
 
-    function normalizeDialogId(id) {
+function normalizeDialogId(id) {
         if (typeof id !== 'string' || !id.trim()) return '';
-        return id.trim();
-    }
+    return id.trim();
+}
 
-    function clearDialogMotionState(root) {
+function clearDialogMotionState(root) {
         const motion = getDialogMotion(root);
         if (!motion || !root || typeof motion.clearMotionState !== 'function') return;
 
@@ -96,10 +85,10 @@
         const backdrop =
             root.querySelector('[data-dialog-motion-backdrop]') ||
             root.querySelector('[data-drawer-motion-backdrop]');
-        motion.clearMotionState(target, backdrop);
-    }
+    motion.clearMotionState(target, backdrop);
+}
 
-    StoreGroups.dialog = {
+export const dialogStore = {
         active: null,
         closing: null,
         _returnFocusTo: null,
@@ -340,5 +329,4 @@
                 this._trapHandler = null;
             }
         },
-    };
-})();
+};

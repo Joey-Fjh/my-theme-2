@@ -1,7 +1,3 @@
-(function () {
-    'use strict';
-
-    window.__Theme__ = window.__Theme__ || {};
 
     const ENTER_ANIMATION_NAMES = new Set([
         'dialog-motion-dock-enter',
@@ -313,15 +309,14 @@
             });
     }
 
-    window.__Theme__.DialogMotion = {
-        shouldReduceMotion,
-        hasMotion,
-        lockScroll,
-        unlockScroll,
-        playEnter,
-        playExit,
-        getEnterDurationMs,
-        getExitDurationMs,
-        clearMotionState,
-    };
-})();
+export const DialogMotion = {
+    shouldReduceMotion,
+    hasMotion,
+    lockScroll,
+    unlockScroll,
+    playEnter,
+    playExit,
+    getEnterDurationMs,
+    getExitDurationMs,
+    clearMotionState,
+};

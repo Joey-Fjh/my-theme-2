@@ -1,7 +1,3 @@
-(function (root) {
-    'use strict';
-
-    root.__Theme__ = root.__Theme__ || {};
 
     function toPositiveInt(value, fallback) {
         const n = Number(value);
@@ -201,9 +197,4 @@
         largestValidTotal,
     };
 
-    root.__Theme__.QuantityConstraints = api;
-
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = api;
-    }
-})(typeof window !== 'undefined' ? window : globalThis);
+export default api;
