@@ -102,5 +102,6 @@ Before adding another copy of a motion pattern, inspect whether an existing capa
 
 - Prefer opacity and transform for visual motion; avoid layout-changing animation properties.
 - Critical first-viewport content must render visible without JavaScript or animation completion.
+- Do not hide critical first-viewport content behind GSAP, Alpine, Swiper initialization, delayed transitions, `opacity-0`, `hidden`, `x-show="false"`, off-screen transforms, or callbacks.
 - Reduced motion and `body[data-motion-enabled='false']` must leave content visible and must not break UI state such as `x-show`.
 - Shared observers, timers, listeners, or animation runtimes must be cleaned up through the owning component lifecycle.

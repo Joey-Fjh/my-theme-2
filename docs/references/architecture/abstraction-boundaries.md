@@ -6,6 +6,8 @@ This reference stores shared-abstraction discipline details that are too long fo
 
 Shared abstractions carry a contract that every consumer silently depends on. Extending the contract for a new use case can break existing consumers in ways that surface far from the change.
 
+Before adding a new shared abstraction, inspect existing snippets, components, and utilities. Reuse an existing abstraction only when semantics, invariants, lifecycle, and ownership match.
+
 Before extending any shared abstraction, apply the three-question gate below. If any answer triggers, do not extend the abstraction.
 
 Extension is allowed only when the new use case shares the same core invariants as the existing callers. If you believe the abstraction can be safely extended, explicitly state which invariants remain unchanged in the task summary or code review notes.
@@ -37,6 +39,7 @@ Never add a parameter to an existing public method just to make a divergent new 
 | Add a `data-*` attribute on a shared component root that only one branch reads internally | Pass the value through the call site or scope it to the consumer                             |
 | Reuse a base class because the URL pattern looks similar                                  | Compare invariants, not surface syntax                                                       |
 | Copy a hot snippet of behavior into a shared base class to "make it reusable"             | Wait for a third real consumer before generalizing                                           |
+| Create a renamed near-copy of an existing abstraction instead of extending or splitting intentionally | New dedicated component or explicit extension when invariants match                          |
 
 ## Why This Matters
 

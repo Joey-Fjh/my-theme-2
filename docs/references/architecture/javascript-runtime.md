@@ -1,138 +1,156 @@
 # JavaScript Runtime Reference
 
-This reference stores JavaScript runtime public contracts that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source. Read this file only when implementing or reviewing JavaScript runtime behavior, lifecycle code, Alpine components or stores, ThemeEvents, ShopifyHttp, SectionRefresher, Swiper, explicitly approved narrative motion runtime, or script load order.
+This reference stores JavaScript runtime public contracts that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source. Read this file when implementing or reviewing JavaScript runtime behavior, module loading, lifecycle code, Alpine components or stores, ThemeEvents, ShopifyHttp, SectionRefresher, or script load order.
 
 Inspect current source for exact method lists, tuning constants, and implementation internals.
 
-## Namespace
+## Architecture
 
-All theme runtime objects live under `window.__Theme__`:
+The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares behaviour; the core discovers roots from the DOM and loads modules on demand. Third-party UI libraries are touched only through the adapter.
 
-| Property | Module | Purpose |
+| Layer | Files | Responsibility |
 | --- | --- | --- |
-| `__Theme__.Events` | `events.js` | Typed event bus (`ThemeEvents`) |
-| `__Theme__.Components` | `base.js` | Section/block lifecycle engine |
-| `__Theme__.ThemePerformance` | `performance.js` | Debug-only CWV monitoring |
-| `__Theme__.AlpineComponentsFactory` | `alpine.components.js` | Alpine component registry |
-| `__Theme__.QuantityConstraints` | `quantity-constraints.js` | Pure quantity min/max/step math |
-| `__Theme__.DialogMotion` | `dialog-motion.js` | Shared dialog transition helper |
-| `__Theme__.DrawerMotion` | `drawer-motion.js` | Shared drawer transition helper |
+| Core (always loaded) | `base.js`, `events.js` | Layout measurement, legacy `Components` lifecycle for `{%- javascript -%}` sections, module scanning, store bootstrap |
+| Adapter | `alpine.adapter.js` | Sole Alpine touchpoint: `ready`, `define`, `defer`, `mount`, `unmount`, `store`, `useDisposable` |
+| On-demand modules | `utils.js`, `https.js`, component entry files, `alpine.components.*.js` groups | Shared utilities, HTTP/section refresh, Alpine factories registered through the adapter |
+| Platform state | `cart.contract.js` | Cart API ownership, hydrated from `body.dataset.initialCart` |
+| UI state bridges | `alpine.store.toast.js`, `alpine.store.dialog.js`, `alpine.store.cart.js` | Toast, dialog, and cart UI stores registered by the core through the adapter |
 
-Additional globals:
-
-| Global | Module | Purpose |
-| --- | --- | --- |
-| `window.ShopifyHttp` | `https.js` | HTTP client singleton |
-| `window.ShopifyHttpError` | `https.js` | Error constructor |
-| `window.ShopifySectionRefresher` | `https.js` | Section HTML rendering |
+The core does not import component names. It reads `data-module-id` on DOM roots, resolves the identifier through the import map in `layout/theme.liquid`, and calls dynamic `import()`.
 
 ## Script Load Order
 
-`layout/theme.liquid` loads deferred scripts in dependency order. Invariants:
+`layout/theme.liquid` loads, in order:
 
-- `vendor-alpine.min.js` MUST be last.
-- Registry files (`*.registry.js`) load after their respective groups.
-- `base.js` loads after `https.js` and component definitions.
-- Store files load before `vendor-alpine.min.js`.
+1. Import map — bare specifiers such as `base`, `events`, `utils`, `https`, `alpine-adapter`, `cart-contract`, `components/*`, and one specifier per component entry module.
+2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
+3. Two classic vendor scripts — `vendor-alpine-intersect.min.js`, then `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
 
-Inspect `layout/theme.liquid` for the current ordered list.
+There is no classic path for theme stores, utilities, or component definitions. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
 
-## ThemeEvents API
+## Module Discovery Contract
+
+Component roots declare a module identifier and an Alpine factory name:
+
+```html
+<footer
+    x-data="motionRevealSection()"
+    data-module-id="motion-reveal-section"
+></footer>
+```
+
+Each component entry file (for example `buy-buttons.js`) imports factories from an `alpine.components.*.js` group, calls `define(name, factory)` from `alpine-adapter`, and exports nothing the core reads directly.
+
+The core (`base.js`) scans `[data-module-id]`, imports each identifier once, and calls `adapter.mount(el)` after the module defines its factory. `motion-reveal-section`, `progressive-list`, and `section-pagination` may lazy-load through `IntersectionObserver` until they intersect the viewport.
+
+Pass Liquid-driven runtime values through `data-*`, then read `this.$el.dataset` inside the component factory. Do not embed Liquid JSON or quote-heavy values directly in `x-data`.
+
+## Adapter API
+
+Only `alpine.adapter.js` may call `window.Alpine` APIs.
+
+| Export | Purpose |
+| --- | --- |
+| `ready()` | Resolves when Alpine is available |
+| `define(name, factory)` | Registers `alpine.data(name, …)` before or during startup |
+| `defer(el)` | Sets `x-ignore` until the module has defined its factory |
+| `mount(el)` | Removes deferral and calls `Alpine.initTree(el)` |
+| `unmount(el)` | Calls `Alpine.destroyTree(el)` |
+| `store(name, value)` | Registers a global Alpine store |
+| `useDisposable()` | Helper for listener/observer cleanup in component factories |
+
+Component modules call `define` themselves. The core never holds a manifest of component names.
+
+## ThemeEvents
+
+Cross-section and cross-component communication must use `ThemeEvents`. Import the default export from the `events` import-map specifier:
 
 ```javascript
-const Events = window.__Theme__.Events;
+import ThemeEvents from 'events';
 
-Events.emit(Events.events.PRODUCT_VARIANT_CHANGED, { variant });
+ThemeEvents.emit(ThemeEvents.events.PRODUCT_VARIANT_CHANGED, { variant });
 
-const off = Events.on(Events.events.PRODUCT_VARIANT_CHANGED, (e) => {
+const off = ThemeEvents.on(ThemeEvents.events.PRODUCT_VARIANT_CHANGED, (e) => {
     console.log(e.detail.variant);
 });
 
-const scope = Events.createScope({ target: el });
+const scope = ThemeEvents.createScope({ target: el });
 scope.on('click', handler);
 scope.dispose();
 ```
 
-Predefined events live in `events.js`. When adding new cross-component events, add them to `ThemeEvents.events`.
+Predefined event names live in `ThemeEvents.events` inside `events.js`. When adding new cross-component events, add them there.
 
-## ShopifyHttp API
+Do not use bare `document` listeners in Liquid or ad-hoc globals for cross-component signalling.
+
+## Legacy Components Engine
+
+`base.js` still exports `Components` for `{%- javascript -%}` blocks that register section/block behaviour with `data-component-type` and `data-component-id`. That path is separate from the module system and remains for sections not yet converted to `data-module-id`.
+
+`Components.register(type, handlers, options)` supports `init`, `destroy`, `select`, `deselect`, and optional lazy init via `IntersectionObserver`. Inspect `assets/base.js` and any section still using `{%- javascript -%}` for the current pattern.
+
+New interactive behaviour should use `data-module-id` and a component entry module, not new `Components.register()` calls, unless the section is explicitly retained on the classic path.
+
+## ShopifyHttp And SectionRefresher
+
+Import from the `https` import-map specifier:
 
 ```javascript
-const http = window.ShopifyHttp;
+import ShopifyHttp, { SectionRefresher, HttpError } from 'https';
 
-const data = await http.getJSON('/cart.js');
-const result = await http.postJSON('/cart/add.js', { items: [...] });
-```
+const data = await ShopifyHttp.getJSON('/cart.js');
+const result = await ShopifyHttp.postJSON('/cart/add.js', { items: [...] });
 
-Application HTTP must use `window.ShopifyHttp`; raw `fetch()` belongs only in `assets/https.js` or vendor files.
-
-## SectionRefresher API
-
-```javascript
-window.ShopifySectionRefresher.render(sectionHtmlMap, {
+SectionRefresher.render(sectionHtmlMap, {
     cart: {
         targetSelector: '#shopify-section-cart',
         innerSelectors: ['.cart-items', '.cart-total'],
     },
 });
 
-window.ShopifySectionRefresher.updateText([{ selector: '.cart-count', text: '3' }]);
+SectionRefresher.updateText([{ selector: '.cart-count', text: '3' }]);
 ```
 
-Shopify section HTML replacement must use `window.ShopifySectionRefresher.render()`.
+Application HTTP must use `ShopifyHttp`; raw `fetch()` belongs only in `assets/https.js` or vendor files. Section HTML replacement must use `SectionRefresher.render()`.
 
-## Data Attribute Contract
+After a section refresh, `SectionRefresher` rescans module roots and re-inits legacy `Components` instances inside the updated region.
 
-Pass Liquid values through `data-*`, then read `this.$el.dataset` inside a registered component. Do not embed Liquid JSON or quote-heavy values directly in `x-data`.
+## Cart State Ownership
 
-## Component Engine
+Platform cart state lives in `cart.contract.js`. The contract hydrates from `document.body.dataset.initialCart`, mutates through the Cart API, and notifies subscribers.
 
-JS behavior needing lifecycle management must use `Components.register()` inside `{%- javascript -%}`.
+The Alpine `$store.cart` bridge in `alpine.store.cart.js` mirrors contract state into reactive UI properties and owns merchant-facing error copy and failure toasts. Storefront cart mutations must go through `$store.cart` (which delegates to the contract), not direct Cart API calls from component code.
 
-Required DOM attributes on the component root:
+## Global UI Stores
 
-```html
-<section
-    data-component-kind="section"
-    data-component-type="my-section"
-    data-component-id="{{ section.id }}"
-></section>
-```
+The core registers stores during startup:
 
-`Components.register(type, handlers, options)`:
+| Store | Module | Role |
+| --- | --- | --- |
+| `toast` | `alpine.store.toast.js` | Transient notifications |
+| `dialog` | `alpine.store.dialog.js` | Dialog/drawer open state, focus trap, scroll lock via `dialog-motion.js` / `drawer-motion.js` |
+| `cart` | `alpine.store.cart.js` | UI bridge over `createCartContract()` |
 
-| Param | Type | Required | Description |
-| --- | --- | --- | --- |
-| `type` | `string` | yes | Matches `data-component-type` in the DOM |
-| `handlers.init` | `(el) => state \| void` | yes | Setup and return cleanup state |
-| `handlers.destroy` | `(el, state) => void` | yes | Teardown side effects |
-| `handlers.select` | `(el, state) => void` | no | Theme editor select hook |
-| `handlers.deselect` | `(el, state) => void` | no | Theme editor deselect hook |
-| `options.lazy` | `boolean` | no | If true, init waits for viewport intersection |
+Inspect the store modules for configure/init APIs instead of copying historical examples.
 
-Inspect `assets/base.js` and existing sections for the current registration pattern.
+## Shared Modules
 
-## Alpine Components And Stores
-
-Reusable Alpine behavior must be registered via `AlpineComponentsFactory.register()` in the appropriate `alpine.components.*.js` file. `alpine.components.registry.js` merges groups into `window.__Theme__.AlpineComponents`.
-
-Global stores are defined in `alpine.store.*.js` and registered through `alpine.store.registry.js`. Storefront cart mutations and cart UI state must go through `$store.cart`.
-
-Inspect the grouped `alpine.components.*.js` and `alpine.store.*.js` files for current APIs instead of copying historical examples.
+| Module | Import specifier | Role |
+| --- | --- | --- |
+| `utils.js` | `utils` | `debounce`, scroll-behavior helpers, `prefersReducedMotion`, `scrollToTop` |
+| `quantity-constraints.js` | relative import from component groups | Pure quantity min/max/step math |
+| `dialog-motion.js`, `drawer-motion.js` | relative import from store/component groups | Dialog and drawer transition helpers |
+| `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 
 ## Motion Runtime Boundary
 
 Ordinary motion uses semantic `data-motion-*` hooks, Alpine components such as `motionRevealSection()`, and CSS rules in `tailwind/tailwind.animates.css`.
 
-The current theme has no active GSAP runtime or `__Theme__.Motion` namespace. Do not add GSAP during ordinary motion cleanup. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
+The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary motion work. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
 
-## Swiper Ownership
+## CSS / Alpine Boundary
 
-Swiper instances created in `Components.register()` must be destroyed in `destroy()`. Inspect existing carousel sections for the current pattern.
-
-## CSS / Alpine / GSAP Boundary
-
-- Alpine owns state and trigger behavior.
+- Alpine owns state and trigger behaviour through adapter-registered factories and stores.
 - `tailwind.animates.css` owns animation capability and reveal CSS.
 - GSAP is optional narrative choreography only and must not share `opacity` or `transform` ownership with Alpine/CSS on the same element.
 
@@ -140,14 +158,16 @@ Swiper instances created in `Components.register()` must be destroyed in `destro
 
 | Area | Location |
 | --- | --- |
-| Vendor runtime | `vendor-*.min.js` (never edit) |
-| Utilities | `utils.js` |
-| Events | `events.js` |
-| Alpine components | `alpine.components.js`, `alpine.components.*.js`, `alpine.components.registry.js` |
-| Alpine stores | `alpine.store.js`, `alpine.store.*.js`, `alpine.store.registry.js` |
+| Vendor runtime | `vendor-alpine*.min.js` (never edit) |
+| Core | `base.js`, `events.js` |
+| Adapter | `alpine.adapter.js` |
+| Cart contract | `cart.contract.js` |
+| Alpine component groups | `alpine.components.*.js` |
+| Component entry modules | `accordion.js`, `buy-buttons.js`, … one file per import-map identifier |
+| Alpine stores | `alpine.store.toast.js`, `alpine.store.dialog.js`, `alpine.store.cart.js` |
 | HTTP and section refresh | `https.js` |
-| Component engine and Alpine init | `base.js` |
+| Shared utilities | `utils.js`, `quantity-constraints.js`, motion helpers |
 
 ## Inspection Rule
 
-For section lifecycle, cart flow, HTTP refresh, events, accessibility semantics, and CSS layering, inspect current `sections/`, `snippets/`, and `assets/` implementations instead of deleted cookbook examples.
+For section lifecycle, cart flow, HTTP refresh, events, accessibility semantics, and script loading, inspect current `layout/theme.liquid`, `sections/`, `snippets/`, and `assets/` implementations instead of deleted pre-migration patterns.

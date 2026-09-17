@@ -89,7 +89,7 @@ Exact tier ratios, token math, and lint exceptions live in source and `lint:them
 
 - `icons/` is an ignored temporary import directory; committed optimized runtime icons live in `assets/icon-*.svg`.
 - To add or replace an icon, stage its SVG in `icons/`, run `npm.cmd run build:svg`, review the asset result, and clear the staging input. Do not hand-edit optimized icon assets.
-- Render icons through the `icons` snippet from Liquid.
+- Do not paste raw SVG into Liquid; render icons through the `icons` snippet from Liquid.
 
 ## Platform Bridge Exceptions
 
@@ -133,6 +133,7 @@ Rules:
 ## Governance
 
 - `npm.cmd run lint:theme` enforces protected Liquid runtime-name assign/capture, static `role="tab"` accessibility, and the SVG `<text textLength>` nested `<tspan>` guard.
+- Never edit `vendor-*.min.css` manually.
 - CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.
 - Record durable architecture decisions in the relevant reference, not in `context.md` unless it is short cross-session state.
 - Keep optional cleanup ideas out of this contract until repository evidence makes them actionable.

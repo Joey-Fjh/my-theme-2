@@ -27,14 +27,13 @@ Tech stack:
 - Alpine.js v3 for reactive UI state
 - GSAP + ScrollTrigger (optional choreography tools for complex narrative motion, not the default for ordinary section reveal)
 - Swiper for carousels
-- Custom runtime: `Components.register()`, `ThemeEvents`, `ShopifyHttp`, `ShopifySectionRefresher`
-  See `docs/references/architecture/javascript-runtime.md` for API details and usage patterns.
+- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `mount`, `unmount`, `store`). See `docs/references/architecture/javascript-runtime.md`.
 
 Runtime constraints:
 
 - No bundler is used.
 - Scripts load via `defer` in `layout/theme.liquid`.
-- Do not introduce React, Vue, TypeScript, ESM imports, or nested runtime asset structures unless the user explicitly approves an architecture change.
+- Do not introduce React, Vue, TypeScript, or nested runtime asset structures unless the user explicitly approves an architecture change.
 
 ---
 
@@ -86,8 +85,10 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 ### Universal Work Loop
 
 - Inspect available repository and documentation facts before asking the user; ask only for missing intent, preference, architecture, risk, or authority decisions.
+- Select the smallest justified action.
 - When execution is authorized, do not stop after editing. Validate against the acceptance criteria and correct until they pass, the requested boundary is reached, or a genuine blocker requires new authority or a user decision.
 - Do not declare completion from implementation alone and do not repeat a failed action without new evidence. Report the outcome first, then evidence, validation, unresolved risk, and next action.
+- Give delegated work only the necessary context. A delegated agent may execute an authorized batch; its result is still reviewed against the recorded acceptance boundary by someone other than its author.
 
 Agent behavior rules:
 
@@ -96,35 +97,52 @@ Agent behavior rules:
 - Facts discoverable from the repository must be inspected before asking the user. Ask before editing when the unknown is merchant-owned configuration, product/design preference, architecture direction, or launch-risk tradeoff. For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
 - Use Shopify Dev MCP for Shopify API, Liquid, theme architecture, and platform requirements. Use Context7 for third-party library documentation when current-version sources matter, including but not limited to Tailwind, Alpine, GSAP, and Swiper; resolve the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available. If an expected MCP is missing, first check client configuration, project trust, client restart, Node/npm, and network; only after configuration is confirmed may you fall back to the official website and state that degraded source explicitly.
 - Persist active discussion, evidence, alternatives, disagreements, and pending decisions in `docs/agent/board.md`. Record an agreed plan, its boundary, and its dependencies in `docs/agent/context.md` before implementation, and keep current progress, validation, and acceptance there; `docs/agent/context.md` is the execution source. A recorded plan is not authorization: execute it only after the user explicitly authorizes that batch and every listed dependency is resolved. Move stable contracts to `AGENTS.md` or the matching docs reference once they are settled. Do not leave either only in chat.
+
+### Record Layer Contract
+
+`docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**. `docs/agent/board.md` holds what has not yet become a plan.
+
+This is checkable, not a matter of judgment. Read `context.md`'s headings: a second plan, any narrative of finished work, any decision with no scheduled batch, or any pending-migration list is a violation. Fix it in the same turn you notice it.
+
+**One narrow exception.** More than one plan entry may coexist only when every extra entry is already executed and waiting on a verification step the agent cannot perform — a browser pass, or a review by someone else. Each such entry must name the verification it waits on and who performs it. This does not cover an unexecuted plan, a queued plan, or a plan waiting on anything the agent could finish itself: that is unfinished work, not a pending acceptance, and it does not belong here.
+
+Lifecycle for one plan:
+
+1. Board carries the evidence, alternatives, and open decisions. A board proposal is not executable.
+2. When the user accepts a direction, remove the resolved discussion from the board and write the plan into `context.md` with its scope, dependencies, acceptance boundary, and status.
+3. Recording is not authorization. Execute only after the user authorizes that batch and every recorded dependency is resolved.
+4. A batch may run in this client, through an external prompt, or via a delegated agent. Delivering a prompt is not completion.
+5. During execution keep progress, validation, blockers, and material corrections in `context.md`, not only in chat.
+6. Review the result against the recorded acceptance boundary, by someone other than its author. Mark it accepted only from review evidence plus user acceptance.
+7. **On acceptance, clear it.** Delete the plan entry, migrate any durable contract it produced to `AGENTS.md`, a reference, code, configuration, `README.md`, or a role file, and delete the execution narrative — git already holds it. `context.md` returns to holding one plan or none.
+
+A batch's acceptance boundary names its **implementation surface**: the rule, reference, theme, and configuration files it may change. The two record files are the record layer, maintained alongside every batch; changing them is never a scope violation.
+
+Keep one decision active at a time. A discussion that accumulates several decisions yields research that is sound but unusable, because no single conclusion can be extracted and accepted.
+
+Write an execution spec as checks, not as claims. A criterion asserting what a file contains can be wrong and then silently authorize a deletion; a criterion naming tokens that must resolve cannot.
+
+Chat history and commit messages are evidence, never a substitute for the current execution record.
+
+### Project Identity And Authority
+
+- `my-skeleton-theme` is an internal Shopify Skeleton Theme mother template: minimal, platform-complete, modular, extensible, maintainable, verifiable. Derived themes own business features, page design, and Theme Store positioning.
+- Shopify mandatory capabilities are the platform baseline; optional Theme Store declarations are not mother-template requirements.
+- Never modify `my-theme-1`; it is read-only historical evidence. This project requires no compatibility with Ceylune appearance, content, schemas, configuration, or behavior.
+- Keep one writer per shared worktree.
+- Do not retain code merely because it already exists.
+- Classification vocabulary: Platform Required, Skeleton Core, Optional Capability, Theme-Specific Implementation, Tooling and Governance, Open Decision. Keep mandatory compliance, optional declarations, and mother-template architecture separate.
 - When the user asks to continue previous work, review outstanding tasks, or prepare next-session context, read `docs/agent/context.md`.
 
 Hard implementation rules:
 
 - Do not write inline `<script>` tags or bare global DOM listeners in Liquid.
-- JS behavior needing lifecycle management must use `Components.register()` inside `{%- javascript -%}`.
-- Reusable Alpine behavior must be registered via `AlpineComponentsFactory.register()` in the appropriate `alpine.components.*.js` file.
-- Pass Liquid-driven runtime values through `data-*`; do not embed complex Liquid, JSON, or quote-heavy values directly in `x-data`.
-- Cross-section/component communication must use `ThemeEvents`.
-- Application HTTP must use `window.ShopifyHttp`; raw `fetch()` belongs only in `assets/https.js` or vendor files.
-- Shopify section HTML replacement must use `window.ShopifySectionRefresher.render()`.
-- Storefront cart mutations and cart UI state must go through `$store.cart`.
-- Above-the-fold critical content must render usable and visible without JavaScript or animation completion. Do not hide critical first-viewport content behind GSAP, Alpine, Swiper initialization, delayed transitions, `opacity-0`, `hidden`, `x-show="false"`, off-screen transforms, or callbacks.
-- `motion_enabled` / `body[data-motion-enabled='false']` is the merchant-facing page and brand motion gate for reveal, media reveal, scroll, and narrative motion. Do not use it as a blanket kill switch for hover, focus, dropdown, dialog, drawer, loading, or other state/micro interactions; those interactions must instead respect `prefers-reduced-motion`.
-- Tailwind utility classes first; no ad-hoc `<style>` blocks in Liquid templates.
-- Do not use Tailwind text-size utilities for headings; use project typography tiers from `tailwind/tailwind.typography.css`.
-- Choose semantic `h1`–`h6` level for document outline and visual `heading-h*` tier independently for design size; `heading-h*` classes belong only on semantic heading elements; use display tiers or `typo-subtitle` plus size tiers where the design requires non-default sizing.
-- Use `body-*` tiers only for non-heading body semantics; default body copy inherits global body settings instead of section-level text-size settings.
-- Inspect existing snippets, components, and utilities before adding another; reuse only when semantics, invariants, lifecycle, and ownership match.
-- Do not create renamed duplicate wrappers or add mode/branch parameters to force divergent behavior into shared abstractions.
+- Pass Liquid-driven runtime values to JavaScript through `data-*`.
+- Critical first-viewport content must render usable and visible without JavaScript or animation completion.
+- Tailwind utility classes first; no ad-hoc `<style>` blocks in Liquid templates. *(Holdover — current-implementation protection pending JS/CSS architecture discussion.)*
 - User-visible strings, schema labels, ARIA copy, placeholders, and editor text must use locale keys.
 - Use semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
-
-Generated/vendor file rules:
-
-- Never edit `vendor-*.min.js` or `vendor-*.min.css`.
-- Never manually edit `assets/tailwind.output.css`.
-- Treat `icons/` as an ignored temporary import directory, not retained source. To add or replace an icon, stage its SVG there, run `npm.cmd run build:svg`, review the optimized `assets/icon-*.svg` result, and then clear the staging input; do not hand-edit optimized icon assets.
-- Never paste raw SVG into Liquid; render through the `icons` snippet.
+- Do not manually edit vendor, generated, or optimized icon assets.
 
 ---
 
@@ -188,7 +206,6 @@ Run `npm.cmd run lint` and `npm.cmd test` only when the user explicitly asks, or
 - Shopify theme assets are flat under `assets/`; do not create nested runtime asset directories.
 - Do not code-fix Lighthouse findings until code ownership is clear.
 - Browserslist config drives static compatibility checks, not Tailwind v4's build target. Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision.
-- Do not extend shared abstractions by adding mode flags or branching parameters for divergent behavior. Read `docs/references/architecture/abstraction-boundaries.md`.
 - Do not mix visual redesign, architecture cleanup, Lighthouse fixes, and configuration changes in one batch.
 - Preserve schema IDs, block types, section types, preset names, template references, and storefront behavior during cleanup.
 - `.shopifyignore`, `.gitignore`, and `.prettierignore` have different scopes. Read `docs/references/code-review/launch-gate.md` before changing ignore rules.
