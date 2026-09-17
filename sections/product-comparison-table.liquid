@@ -665,7 +665,6 @@
                     "type": "text",
                     "id": "metafield_key",
                     "label": "t:sections.product-comparison-table.block_settings.metafield_key_namespace_key",
-                    "default": "custom.ingredients",
                     "info": "t:sections.product-comparison-table.block_info.e_g_custom_ingredients"
                 }
             ]
@@ -690,7 +689,10 @@
                     "type": "rating"
                 },
                 {
-                    "type": "metafield_text"
+                    "type": "metafield_text",
+                    "settings": {
+                        "metafield_key": "custom.ingredients"
+                    }
                 },
                 {
                     "type": "availability"

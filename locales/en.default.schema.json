@@ -295,6 +295,89 @@
             "always": "Replay on re-enter"
         }
     },
+    "blocks": {
+        "group": {
+            "name": "Group",
+            "settings": {
+                "direction": "Direction",
+                "alignment": "Alignment",
+                "gap": "Spacing"
+            },
+            "options": {
+                "column": "Column",
+                "row": "Row",
+                "start": "Start",
+                "center": "Center",
+                "end": "End",
+                "stretch": "Stretch"
+            },
+            "presets": {
+                "group": "Group"
+            }
+        },
+        "heading": {
+            "name": "Heading",
+            "settings": {
+                "heading": "Heading",
+                "semantic_level": "Heading level",
+                "visual_size": "Visual size"
+            },
+            "options": {
+                "h1": "H1",
+                "h2": "H2",
+                "h3": "H3",
+                "h4": "H4",
+                "h5": "H5",
+                "h6": "H6"
+            },
+            "defaults": {
+                "heading": "Add a heading"
+            },
+            "presets": {
+                "heading": "Heading"
+            }
+        },
+        "text": {
+            "name": "Text",
+            "settings": {
+                "text": "Text",
+                "text_size": "Text size"
+            },
+            "options": {
+                "3xl": "3XL",
+                "2xl": "2XL",
+                "xl": "XL",
+                "large": "Large",
+                "medium": "Medium",
+                "small": "Small",
+                "xs": "Extra small"
+            },
+            "defaults": {
+                "text": "<p>Add supporting text for this section.</p>"
+            },
+            "presets": {
+                "text": "Text"
+            }
+        },
+        "button": {
+            "name": "Button",
+            "settings": {
+                "label": "Button label",
+                "link": "Button link",
+                "style": "Button style"
+            },
+            "options": {
+                "primary": "Primary",
+                "secondary": "Secondary"
+            },
+            "defaults": {
+                "label": "Shop now"
+            },
+            "presets": {
+                "button": "Button"
+            }
+        }
+    },
     "sections": {
         "404": {
             "settings": {
@@ -408,7 +491,8 @@
                 "padding": "Padding"
             },
             "defaults": {
-                "image_alt": "About Us"
+                "image_alt": "About Us",
+                "eyebrow": "categories"
             }
         },
         "before-after-comparison": {
@@ -436,7 +520,9 @@
             },
             "defaults": {
                 "sub_heading": "Before and after",
-                "heading": "Compare every detail"
+                "heading": "Compare every detail",
+                "before_label": "BEFORE",
+                "after_label": "AFTER"
             },
             "presets": {
                 "before_after_comparison": "Before/after comparison"
@@ -692,6 +778,25 @@
                 "badge_value": "EXPLORE",
                 "heading": "Latest Brand",
                 "description": "Introduce the collections customers can browse on this page."
+            }
+        },
+        "custom-content": {
+            "name": "Custom content",
+            "settings": {
+                "color_scheme": "Color scheme",
+                "section_width": "Section width",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            },
+            "options": {
+                "fixed_width": "Fixed width",
+                "full_width": "Full width"
+            },
+            "presets": {
+                "custom_content": "Custom content"
             }
         },
         "custom-liquid": {

@@ -7,7 +7,6 @@
     @param {string} [filter_index] - Optional index used by horizontal Alpine toggle state.
     @param {string} [scope_id] - Optional unique scope used to generate form control IDs.
     @param {string} [form_id] - Optional external form id for filter controls. Default: CollectionFiltersForm.
-    @param {boolean} [is_first] - Optional. Adds left offset class to the first horizontal item.
     @param {string} [divider_class] - Optional divider class token.
     @param {string} [muted_text_class] - Optional helper text classes.
     @param {string} [filter_label_class] - Optional label text classes.
@@ -20,7 +19,6 @@
 {%- assign field_index = filter_index | default: 0 -%}
 {%- assign field_scope_id = scope_id | default: render_mode -%}
 {%- assign filters_form_id = form_id | default: 'CollectionFiltersForm' -%}
-{%- assign field_is_first = is_first | default: false -%}
 {%- assign effective_ui_variant = ui_variant -%}
 
 {%- if effective_ui_variant == blank -%}

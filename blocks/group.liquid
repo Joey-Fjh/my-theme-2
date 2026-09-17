@@ -1,0 +1,86 @@
+<div
+    class="theme-block-group"
+    style="
+        --theme-block-group-direction: {{ block.settings.direction }};
+        --theme-block-group-alignment: {{ block.settings.alignment }};
+        --theme-block-group-gap: {{ block.settings.gap }}px;
+    "
+    {{ block.shopify_attributes }}
+>
+    {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+    .theme-block-group {
+        display: flex;
+        min-width: 0;
+        flex-flow: var(--theme-block-group-direction) wrap;
+        align-items: var(--theme-block-group-alignment);
+        gap: var(--theme-block-group-gap);
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+    "name": "t:blocks.group.name",
+    "tag": null,
+    "blocks": [{ "type": "@theme" }, { "type": "@app" }],
+    "settings": [
+        {
+            "type": "select",
+            "id": "direction",
+            "label": "t:blocks.group.settings.direction",
+            "options": [
+                {
+                    "value": "column",
+                    "label": "t:blocks.group.options.column"
+                },
+                {
+                    "value": "row",
+                    "label": "t:blocks.group.options.row"
+                }
+            ],
+            "default": "column"
+        },
+        {
+            "type": "select",
+            "id": "alignment",
+            "label": "t:blocks.group.settings.alignment",
+            "options": [
+                {
+                    "value": "flex-start",
+                    "label": "t:blocks.group.options.start"
+                },
+                {
+                    "value": "center",
+                    "label": "t:blocks.group.options.center"
+                },
+                {
+                    "value": "flex-end",
+                    "label": "t:blocks.group.options.end"
+                },
+                {
+                    "value": "stretch",
+                    "label": "t:blocks.group.options.stretch"
+                }
+            ],
+            "default": "stretch"
+        },
+        {
+            "type": "range",
+            "id": "gap",
+            "label": "t:blocks.group.settings.gap",
+            "min": 0,
+            "max": 48,
+            "step": 4,
+            "unit": "px",
+            "default": 16
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.group.presets.group"
+        }
+    ]
+}
+{% endschema %}

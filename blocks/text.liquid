@@ -1,0 +1,38 @@
+<div class="theme-block-text {{ block.settings.text_size }}" {{ block.shopify_attributes }}>
+    {{ block.settings.text }}
+</div>
+
+{% schema %}
+{
+    "name": "t:blocks.text.name",
+    "tag": null,
+    "settings": [
+        {
+            "type": "richtext",
+            "id": "text",
+            "label": "t:blocks.text.settings.text",
+            "default": "t:blocks.text.defaults.text"
+        },
+        {
+            "type": "select",
+            "id": "text_size",
+            "label": "t:blocks.text.settings.text_size",
+            "options": [
+                { "value": "body-3xl", "label": "t:blocks.text.options.3xl" },
+                { "value": "body-2xl", "label": "t:blocks.text.options.2xl" },
+                { "value": "body-xl", "label": "t:blocks.text.options.xl" },
+                { "value": "body-lg", "label": "t:blocks.text.options.large" },
+                { "value": "body-md", "label": "t:blocks.text.options.medium" },
+                { "value": "body-sm", "label": "t:blocks.text.options.small" },
+                { "value": "body-xs", "label": "t:blocks.text.options.xs" }
+            ],
+            "default": "body-md"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.text.presets.text"
+        }
+    ]
+}
+{% endschema %}

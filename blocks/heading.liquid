@@ -1,0 +1,53 @@
+{%- assign heading_tag = block.settings.semantic_level -%}
+
+<{{ heading_tag }} class="{{ block.settings.visual_size }}" {{ block.shopify_attributes }}>
+    {{ block.settings.heading }}
+</{{ heading_tag }}>
+
+{% schema %}
+{
+    "name": "t:blocks.heading.name",
+    "tag": null,
+    "settings": [
+        {
+            "type": "inline_richtext",
+            "id": "heading",
+            "label": "t:blocks.heading.settings.heading",
+            "default": "t:blocks.heading.defaults.heading"
+        },
+        {
+            "type": "select",
+            "id": "semantic_level",
+            "label": "t:blocks.heading.settings.semantic_level",
+            "options": [
+                { "value": "h1", "label": "t:blocks.heading.options.h1" },
+                { "value": "h2", "label": "t:blocks.heading.options.h2" },
+                { "value": "h3", "label": "t:blocks.heading.options.h3" },
+                { "value": "h4", "label": "t:blocks.heading.options.h4" },
+                { "value": "h5", "label": "t:blocks.heading.options.h5" },
+                { "value": "h6", "label": "t:blocks.heading.options.h6" }
+            ],
+            "default": "h2"
+        },
+        {
+            "type": "select",
+            "id": "visual_size",
+            "label": "t:blocks.heading.settings.visual_size",
+            "options": [
+                { "value": "heading-h1", "label": "t:blocks.heading.options.h1" },
+                { "value": "heading-h2", "label": "t:blocks.heading.options.h2" },
+                { "value": "heading-h3", "label": "t:blocks.heading.options.h3" },
+                { "value": "heading-h4", "label": "t:blocks.heading.options.h4" },
+                { "value": "heading-h5", "label": "t:blocks.heading.options.h5" },
+                { "value": "heading-h6", "label": "t:blocks.heading.options.h6" }
+            ],
+            "default": "heading-h2"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.heading.presets.heading"
+        }
+    ]
+}
+{% endschema %}
