@@ -1,7 +1,9 @@
 <footer
     data-section-id="{{ section.id }}"
     class="footer-section full-width relative color-{{ section.settings.color_scheme }}"
-    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+    x-data="motionRevealSection()"
+    data-module-id="motion-reveal-section"
+    data-module-lazy
     data-motion-section
 >
     {%- if section.settings.bg_image -%}

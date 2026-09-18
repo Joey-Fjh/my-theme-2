@@ -1,4 +1,5 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
+import { store } from 'alpine-adapter';
 import { ShopifyHttp, SectionRefresher } from 'https';
 import QuantityConstraints from './quantity-constraints.js';
 
@@ -7,7 +8,7 @@ function toastNewsletterPostedSuccess(successMessage) {
     try {
         const url = new URL(window.location.href);
         if (url.searchParams.get('customer_posted') !== 'true') return false;
-        window.Alpine?.store('toast')?.show?.(successMessage, 'success');
+        store('toast')?.show?.(successMessage, 'success');
         url.searchParams.delete('customer_posted');
 
         // Keep the Shopify form hash (native scroll target). Re-assign it after
@@ -77,8 +78,7 @@ const components = {
                 if (!ds) return;
                 if (ds.newsletterDialogId) this.dialogId = ds.newsletterDialogId;
                 if (ds.newsletterDisplayMode) this.displayMode = ds.newsletterDisplayMode;
-                if (ds.newsletterShowInHome)
-                    this.showInHome = JSON.parse(ds.newsletterShowInHome);
+                if (ds.newsletterShowInHome) this.showInHome = JSON.parse(ds.newsletterShowInHome);
                 if (ds.newsletterShowForVisitor)
                     this.showForVisitor = JSON.parse(ds.newsletterShowForVisitor);
                 if (ds.newsletterIsHomeTemplate)
@@ -86,8 +86,7 @@ const components = {
                 if (ds.newsletterIsVisitor) this.isVisitor = JSON.parse(ds.newsletterIsVisitor);
                 if (ds.newsletterDelay) this.delay = JSON.parse(ds.newsletterDelay);
                 if (ds.newsletterExpired) this.expired = JSON.parse(ds.newsletterExpired);
-                if (ds.newsletterSuccessMessage)
-                    this.successMessage = ds.newsletterSuccessMessage;
+                if (ds.newsletterSuccessMessage) this.successMessage = ds.newsletterSuccessMessage;
                 if (ds.newsletterErrorMessage) this.errorMessage = ds.newsletterErrorMessage;
             },
 
@@ -396,11 +395,7 @@ const components = {
                         return;
                     }
 
-                    this._setShippingState(
-                        'success',
-                        this._shippingMessages.rates || '',
-                        rates,
-                    );
+                    this._setShippingState('success', this._shippingMessages.rates || '', rates);
                 } catch (error) {
                     if (requestId !== this._shippingRequestId) return;
                     if (this._isAbortError(error)) return;
@@ -408,9 +403,7 @@ const components = {
                     if (error?.isShippingTimeout || error?.isTimeout) {
                         this._setShippingState(
                             'error',
-                            this._shippingMessages.timeout ||
-                                this._shippingMessages.error ||
-                                '',
+                            this._shippingMessages.timeout || this._shippingMessages.error || '',
                             [],
                         );
                         return;
@@ -505,8 +498,7 @@ const components = {
                     this.sectionId = this.sections[0];
                 }
 
-                this._unregisterCartSection =
-                    this.cart.registerSection?.(this.sectionId) || null;
+                this._unregisterCartSection = this.cart.registerSection?.(this.sectionId) || null;
 
                 this._readUnitPriceMap();
                 this._readQuantityConstraintsMap();
@@ -531,16 +523,13 @@ const components = {
             },
 
             _mapHost() {
-                return (
-                    this._sectionRoot()?.querySelector?.('[data-cart-unit-price-map]') || null
-                );
+                return this._sectionRoot()?.querySelector?.('[data-cart-unit-price-map]') || null;
             },
 
             _quantityConstraintsHost() {
                 return (
-                    this._sectionRoot()?.querySelector?.(
-                        '[data-cart-quantity-constraints-map]',
-                    ) || null
+                    this._sectionRoot()?.querySelector?.('[data-cart-quantity-constraints-map]') ||
+                    null
                 );
             },
 
@@ -642,7 +631,7 @@ const components = {
                         return data;
                     })
                     .catch((err) => {
-                        const toast = window.Alpine?.store('toast');
+                        const toast = store('toast');
                         const message = this.$store?.cart?._errorMessages?.generic || '';
                         if (toast && message) {
                             toast.show(message, 'error');
@@ -811,11 +800,7 @@ const components = {
 
             publicProperties(item) {
                 const properties = item?.properties;
-                if (
-                    !properties ||
-                    typeof properties !== 'object' ||
-                    Array.isArray(properties)
-                ) {
+                if (!properties || typeof properties !== 'object' || Array.isArray(properties)) {
                     return [];
                 }
 
@@ -939,9 +924,4 @@ const components = {
     },
 };
 
-export const {
-    newsletterBanner,
-    newsletterOverlay,
-    cartPage,
-    cartOverlay,
-} = components;
+export const { newsletterBanner, newsletterOverlay, cartPage, cartOverlay } = components;

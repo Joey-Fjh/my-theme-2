@@ -1,4 +1,5 @@
 import { ShopifyHttp, SectionRefresher } from 'https';
+import { data, store } from 'alpine-adapter';
 import { sectionPagination } from 'components/pagination';
 
 const COLLECTION_FILTERS_FORM_ID = 'CollectionFiltersForm';
@@ -37,7 +38,7 @@ function syncCollectionPriceComponentState(fieldName, nextValue, field) {
     if (!fieldName.endsWith('.gte') && !fieldName.endsWith('.lte')) return;
 
     const componentRoot = field.closest('[x-data*="collectionFilterField"]');
-    const componentData = componentRoot ? window.Alpine?.$data?.(componentRoot) : null;
+    const componentData = componentRoot ? data(componentRoot) : null;
 
     if (!componentData) return;
 
@@ -274,14 +275,7 @@ function buildCollectionNavigationHref(basePath, sortBy) {
     return `${url.pathname}${url.search}`;
 }
 
-function requestCollectionNavigationSectionHtml(
-    Http,
-    pathname,
-    sectionId,
-    page,
-    sortBy,
-    signal,
-) {
+function requestCollectionNavigationSectionHtml(Http, pathname, sectionId, page, sortBy, signal) {
     const url = new URL(pathname, window.location.origin);
     url.searchParams.set('section_id', sectionId);
     url.searchParams.set('page', String(page));
@@ -402,10 +396,7 @@ const components = {
             '[data-search-results-content]',
             '[data-search-drawer-body]',
         ];
-        const TYPE_CHANGE_SELECTORS = [
-            '[data-search-type-shell]',
-            '[data-search-drawer-shell]',
-        ];
+        const TYPE_CHANGE_SELECTORS = ['[data-search-type-shell]', '[data-search-drawer-shell]'];
 
         const base = components.collectionFilters(sectionId, selectors);
 
@@ -452,8 +443,7 @@ const components = {
                 try {
                     const parsed = new URL(url, window.location.origin);
                     const type = (parsed.searchParams.get('type') || 'product').toLowerCase();
-                    if (type === 'article' || type === 'page' || type === 'product')
-                        return type;
+                    if (type === 'article' || type === 'page' || type === 'product') return type;
                 } catch (_) {
                     /* ignore */
                 }
@@ -461,7 +451,7 @@ const components = {
             },
 
             _getSearchDialogStore() {
-                return window.Alpine?.store?.('dialog') || null;
+                return store('dialog') || null;
             },
 
             _isSearchFilterDialogOpen() {
@@ -704,12 +694,10 @@ const components = {
                 this.sourceDone = ds.initialHasMore !== 'true';
                 this.done = this.sourceDone;
 
-                this.$el
-                    .querySelectorAll('[data-collection-navigation-item]')
-                    .forEach((link) => {
-                        const handle = link.getAttribute('data-collection-handle');
-                        if (handle) this.loadedHandles.add(handle);
-                    });
+                this.$el.querySelectorAll('[data-collection-navigation-item]').forEach((link) => {
+                    const handle = link.getAttribute('data-collection-handle');
+                    if (handle) this.loadedHandles.add(handle);
+                });
 
                 this.$watch('$store.dialog.active', (activeId) => {
                     if (activeId !== this.dialogId) return;
@@ -730,19 +718,12 @@ const components = {
             },
 
             syncNavigationLinkHrefs() {
-                this.$el
-                    .querySelectorAll('[data-collection-navigation-item]')
-                    .forEach((link) => {
-                        const basePath = link.getAttribute(
-                            'data-collection-navigation-base-path',
-                        );
-                        if (!basePath) return;
+                this.$el.querySelectorAll('[data-collection-navigation-item]').forEach((link) => {
+                    const basePath = link.getAttribute('data-collection-navigation-base-path');
+                    if (!basePath) return;
 
-                        link.setAttribute(
-                            'href',
-                            buildCollectionNavigationHref(basePath, this.sortBy),
-                        );
-                    });
+                    link.setAttribute('href', buildCollectionNavigationHref(basePath, this.sortBy));
+                });
             },
 
             refreshSortState() {

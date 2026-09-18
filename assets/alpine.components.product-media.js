@@ -1,4 +1,5 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
+import { store } from 'alpine-adapter';
 import ThemeEvents from 'events';
 import Utils from 'utils';
 import { DialogMotion } from './dialog-motion.js';
@@ -79,7 +80,7 @@ const components = {
                             mediaId: Number(mediaId),
                             dialogId,
                         });
-                        window.Alpine.store('dialog').open(dialogId);
+                        store('dialog').open(dialogId);
                     }
                 }
             },
@@ -136,8 +137,7 @@ const components = {
                         break;
                     case 'ArrowLeft':
                         if (orientation === 'horizontal') {
-                            nextIndex =
-                                (this.activeIndex - 1 + this.mediaCount) % this.mediaCount;
+                            nextIndex = (this.activeIndex - 1 + this.mediaCount) % this.mediaCount;
                         }
                         break;
                     case 'ArrowDown':
@@ -147,8 +147,7 @@ const components = {
                         break;
                     case 'ArrowUp':
                         if (orientation === 'vertical') {
-                            nextIndex =
-                                (this.activeIndex - 1 + this.mediaCount) % this.mediaCount;
+                            nextIndex = (this.activeIndex - 1 + this.mediaCount) % this.mediaCount;
                         }
                         break;
                     case 'Home':
@@ -164,9 +163,7 @@ const components = {
                 event.preventDefault();
                 this.setActive(nextIndex);
 
-                const nextThumb = tablist.querySelector(
-                    `[data-gallery-thumbnail="${nextIndex}"]`,
-                );
+                const nextThumb = tablist.querySelector(`[data-gallery-thumbnail="${nextIndex}"]`);
                 if (nextThumb) nextThumb.focus();
             },
 
@@ -230,7 +227,6 @@ const components = {
             },
 
             openLightbox(index = this.lightboxIndex) {
-
                 this._returnFocusTo = document.activeElement;
                 this.lightboxIndex = this._normalizeIndex(index);
                 this.lightboxOpen = true;
@@ -479,8 +475,7 @@ const components = {
                     this.previewHeight,
                 );
                 this.previewMaxWidth =
-                    Math.max(240, Number(this.$el.dataset.previewMaxWidth)) ||
-                    this.previewMaxWidth;
+                    Math.max(240, Number(this.$el.dataset.previewMaxWidth)) || this.previewMaxWidth;
                 this.previewGap =
                     Math.max(0, Number(this.$el.dataset.previewGap)) || this.previewGap;
                 this.zoomImage = this.$el.dataset.zoomImage || '';
@@ -530,8 +525,7 @@ const components = {
                 const x = this._clamp((this._pointer.x - rect.left) / rect.width, 0, 1);
                 const y = this._clamp((this._pointer.y - rect.top) / rect.height, 0, 1);
                 const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-                const viewportHeight =
-                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const width = this.previewWidth
                     ? Math.min(this.previewWidth, viewportWidth - this.previewGap * 2)
                     : Math.min(this.previewMaxWidth, viewportWidth * 0.45);
@@ -801,9 +795,7 @@ const components = {
                 const Events = ThemeEvents;
                 this._eventScope = Events.createScope();
                 this.dialogId =
-                    this._rootEl?.dataset?.dialogId ||
-                    this._rootEl?.dataset?.mediaModalId ||
-                    '';
+                    this._rootEl?.dataset?.dialogId || this._rootEl?.dataset?.mediaModalId || '';
                 this._eventScope.on(Events.events.PRODUCT_MEDIA_MODAL_ACTIVATE, (e) => {
                     const targetDialogId = e.detail?.dialogId;
                     if (targetDialogId && this.dialogId && targetDialogId !== this.dialogId) {
@@ -817,11 +809,11 @@ const components = {
                 if (typeof this.$watch === 'function') {
                     this._dialogUnwatch = this.$watch(
                         () => {
-                            const dialog = window.Alpine?.store?.('dialog');
+                            const dialog = store('dialog');
                             return `${dialog?.active || ''}:${dialog?.closing || ''}`;
                         },
                         () => {
-                            const dialog = window.Alpine?.store?.('dialog');
+                            const dialog = store('dialog');
                             const isOpen =
                                 dialog?.active === this.dialogId &&
                                 dialog?.closing !== this.dialogId;

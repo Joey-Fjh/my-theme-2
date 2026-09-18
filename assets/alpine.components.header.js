@@ -1,4 +1,4 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
 import ThemeEvents from 'events';
 
 const components = {
@@ -97,7 +97,4 @@ const components = {
     },
 };
 
-export const {
-    mobileMenuDrawer,
-    stickyHeader,
-} = components;
+export const { mobileMenuDrawer, stickyHeader } = components;

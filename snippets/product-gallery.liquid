@@ -10,7 +10,8 @@
 {%- assign aspect_ratio = aspect_ratio | default: '3/4' -%}
 
 <div
-    x-data="productGallery" data-module-id="product-gallery"
+    x-data="productGallery"
+    data-module-id="product-gallery"
     data-media-count="{{ gallery_items | size }}"
     class="h-full w-full min-w-0 {% if class %}{{ class }}{% endif %}"
     {% if id %}

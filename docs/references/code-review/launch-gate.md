@@ -21,7 +21,7 @@ Color scheme contrast, merchant copy, collection/product content, uploaded media
 
 ## Accessibility Review Boundary
 
-Accessibility is a hard Theme Store requirement. `AGENTS.md` already requires semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
+Accessibility is a project quality requirement for every retained or explicitly added interaction; it does not depend on Theme Store submission scope. `AGENTS.md` already requires semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
 
 During launch review, verify user-facing controls, navigation, forms, dialogs, drawers, filters, search, cart, product media, and checkout-adjacent flows remain keyboard-operable, named, and understandable. Icon-only controls need translated accessible names. Dynamic status updates need appropriate live-region semantics when needed. Hidden UI must not retain reachable focus. Content access must not depend on animation, hover-only interaction, pointer dragging, or mouse-only controls.
 

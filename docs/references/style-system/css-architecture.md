@@ -109,7 +109,7 @@ Theme setting / token source
   -> css-variables.liquid (`--motion-duration-*`, `--motion-ease-*`)
   -> CSS consumers through direct `var()` usage
   -> tailwind.animates.css owns reveal/keyframe capabilities
-  -> Alpine/Components.register owns trigger state and teardown
+  -> Alpine component factories registered through the adapter own trigger state and teardown
 ```
 
 Rules:

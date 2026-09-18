@@ -1,10 +1,10 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
+import { store } from 'alpine-adapter';
 import Utils from 'utils';
 import { ShopifyHttp } from 'https';
 
 const components = {
     predictiveSearch({ limit = 8, limitScope = 'each' } = {}) {
-
         return {
             ...useDisposable(),
             searchUrl: '',
@@ -187,10 +187,7 @@ const components = {
                 const lim = Math.max(1, Math.min(20, Number(this.resultLimit) || 8));
                 url.searchParams.set('resources[limit]', String(lim));
                 if (this.resultLimitScope) {
-                    url.searchParams.set(
-                        'resources[limit_scope]',
-                        String(this.resultLimitScope),
-                    );
+                    url.searchParams.set('resources[limit_scope]', String(this.resultLimitScope));
                 }
 
                 const Http = ShopifyHttp;
@@ -242,10 +239,7 @@ const components = {
                                 if (!url) return;
                                 imageCandidates.push({
                                     url,
-                                    alt:
-                                        (typeof image === 'object' && image?.alt) ||
-                                        p.title ||
-                                        '',
+                                    alt: (typeof image === 'object' && image?.alt) || p.title || '',
                                 });
                             };
 
@@ -311,7 +305,7 @@ const components = {
                         if (err?.isAbort || err?.name === 'AbortError') return;
                         console.error(err);
                         if (this._searchFailedMsg) {
-                            const toast = this.$store?.toast || window.Alpine?.store?.('toast');
+                            const toast = this.$store?.toast || store('toast');
                             if (toast?.show) {
                                 toast.show(this._searchFailedMsg, 'error');
                             }
@@ -358,10 +352,7 @@ const components = {
 
                 const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const regex = new RegExp(`(${escaped})`, 'ig');
-                return this._escapeHtml(text).replace(
-                    regex,
-                    '<span class=\"font-bold\">$1</span>',
-                );
+                return this._escapeHtml(text).replace(regex, '<span class=\"font-bold\">$1</span>');
             },
 
             _escapeHtml(str) {

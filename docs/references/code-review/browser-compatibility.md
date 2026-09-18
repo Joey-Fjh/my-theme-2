@@ -6,6 +6,8 @@ Static compatibility baseline and guardrails. `AGENTS.md` remains the rule sourc
 
 Follow the current [Shopify Theme Store browser compatibility requirements](https://shopify.dev/docs/storefronts/themes/store/requirements#9-browser-compatibility):
 
+This project adopts that browser matrix as a quality baseline only. It does not adopt the Theme Store storefront feature inventory into the Skeleton mother template.
+
 - Safari: latest two macOS releases
 - Chrome: latest three releases on macOS and Windows
 - Firefox: latest three releases on macOS and Windows

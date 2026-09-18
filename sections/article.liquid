@@ -5,7 +5,9 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+    x-data="motionRevealSection()"
+    data-module-id="motion-reveal-section"
+    data-module-lazy
     data-motion-section
 >
     {%- liquid
@@ -73,7 +75,11 @@
         <div class="flex flex-col gap-16 pc:flex-row pc:gap-24 fw:gap-32">
             {% comment %} Aside Bar {% endcomment %}
             <aside class="shrink-0 body-xl max-pc:hidden pc:w-72 fw:w-80">
-                <nav class="pc:sticky-viewport-panel" x-data="stickyViewportPanel" data-module-id="sticky-viewport-panel">
+                <nav
+                    class="pc:sticky-viewport-panel"
+                    x-data="stickyViewportPanel"
+                    data-module-id="sticky-viewport-panel"
+                >
                     <ul
                         id="toc-container"
                         class="flex w-fit max-w-full flex-row gap-9 overflow-x-auto pc:w-full pc:flex-col pc:overflow-x-hidden"

@@ -72,7 +72,7 @@ Rules:
 
 The current theme has no active GSAP runtime or project consumers. Do not reintroduce GSAP during ordinary motion cleanup.
 
-GSAP remains an explicitly approved future option only for complex narrative choreography. If approved again, use `Components.register()`, scope triggers to the component root, clean up in `destroy()`, respect reduced motion, and keep no-JS critical content visible.
+GSAP remains an explicitly approved future option only for complex narrative choreography. If approved again, register factories through `define()` on a `data-module-id` entry module, scope triggers to the component root, clean up in `destroy()`, respect reduced motion, and keep no-JS critical content visible.
 
 ## Page-Type Policy
 

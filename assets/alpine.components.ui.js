@@ -1,4 +1,5 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
+import { data, store } from 'alpine-adapter';
 import ThemeEvents from 'events';
 import Utils from 'utils';
 
@@ -266,8 +267,8 @@ const components = {
 
             canHoverOpen() {
                 return (
-                    window.matchMedia?.('(any-hover: hover) and (any-pointer: fine)')
-                        ?.matches && this.$el.dataset.desktopMenuTrigger === 'hover'
+                    window.matchMedia?.('(any-hover: hover) and (any-pointer: fine)')?.matches &&
+                    this.$el.dataset.desktopMenuTrigger === 'hover'
                 );
             },
 
@@ -463,8 +464,7 @@ const components = {
                     const count = this.tabs.length;
                     if (count === 0) return;
 
-                    const nextIndex =
-                        this._initialStrategy === 'first' ? 0 : Math.floor(count / 2);
+                    const nextIndex = this._initialStrategy === 'first' ? 0 : Math.floor(count / 2);
                     this.setActive(nextIndex, { centerOnMobile: true, behavior: 'auto' });
                 });
             },
@@ -530,8 +530,7 @@ const components = {
                     return;
                 }
 
-                const orientation =
-                    this.scroller?.getAttribute('aria-orientation') || 'horizontal';
+                const orientation = this.scroller?.getAttribute('aria-orientation') || 'horizontal';
                 let nextIndex = null;
 
                 if (event.key === 'Home') {
@@ -852,10 +851,7 @@ const components = {
 
             showMore(totalCount) {
                 const normalizedTotal = Math.max(0, Number(totalCount) || 0);
-                this.visibleCount = Math.min(
-                    normalizedTotal,
-                    this.visibleCount + this.stepCount,
-                );
+                this.visibleCount = Math.min(normalizedTotal, this.visibleCount + this.stepCount);
             },
 
             showLess() {
@@ -953,6 +949,10 @@ const components = {
 
                 this.alignEnd = this.shouldPreferAlignEnd();
             },
+
+            destroy() {
+                this.dispose();
+            },
         };
     },
 
@@ -981,12 +981,10 @@ const components = {
                 document.querySelectorAll('[data-sort-by-dropdown]').forEach((dropdown) => {
                     if (dropdown.dataset.formId !== this.formId) return;
 
-                    const data = window.Alpine?.$data?.(dropdown);
-                    if (data) data.sortBy = value;
+                    const dataState = data(dropdown);
+                    if (dataState) dataState.sortBy = value;
 
-                    dropdown
-                        .querySelector('[data-sort-by-control]')
-                        ?.setAttribute('value', value);
+                    dropdown.querySelector('[data-sort-by-control]')?.setAttribute('value', value);
                 });
             },
 
@@ -1066,8 +1064,7 @@ const components = {
                 });
 
                 if (ds.toastPreview === 'true') {
-                    const previewDuration =
-                        ds.toastPreviewPersistent === 'true' ? 0 : undefined;
+                    const previewDuration = ds.toastPreviewPersistent === 'true' ? 0 : undefined;
 
                     requestAnimationFrame(() => {
                         this.$store.toast.show(
@@ -1439,8 +1436,7 @@ const components = {
                 const rect = bound.getBoundingClientRect();
                 if (rect.width === 0 && rect.height === 0) return false;
 
-                const viewportHeight =
-                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const bottomInset = viewportHeight * 0.15;
                 const visibleBottom = viewportHeight - bottomInset;
 
@@ -1451,8 +1447,7 @@ const components = {
                 const rect = bound.getBoundingClientRect();
                 if (rect.width === 0 && rect.height === 0) return false;
 
-                const viewportHeight =
-                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
                 return (
@@ -1464,8 +1459,7 @@ const components = {
             },
 
             _isDocumentAtEnd() {
-                const viewportHeight =
-                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
                 const documentHeight = Math.max(
                     document.documentElement.scrollHeight,
@@ -1477,8 +1471,7 @@ const components = {
 
             _isBoundFullyOutside(bound) {
                 const rect = bound.getBoundingClientRect();
-                const viewportHeight =
-                    window.innerHeight || document.documentElement.clientHeight;
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
                 const buffer = MOTION_REVEAL_EXIT_BUFFER_PX;
                 return rect.bottom <= -buffer || rect.top >= viewportHeight + buffer;
             },
@@ -1486,8 +1479,7 @@ const components = {
             _isCascadeBatchOutOfView(batch) {
                 return batch.targets.every((target) => {
                     if (!this._isRevealTargetVisible(target)) return true;
-                    const bound =
-                        batch.boundByTarget.get(target) || this._getMotionBound(target);
+                    const bound = batch.boundByTarget.get(target) || this._getMotionBound(target);
                     return this._isBoundFullyOutside(bound);
                 });
             },
@@ -2107,11 +2099,7 @@ const components = {
              * preserving the normal observer trigger while preventing stuck content.
              */
             _flushPendingInViewport() {
-                if (
-                    this._destroyed ||
-                    this._deferToPageLoadFlush ||
-                    this._shouldSkipAnimation()
-                ) {
+                if (this._destroyed || this._deferToPageLoadFlush || this._shouldSkipAnimation()) {
                     return;
                 }
 
@@ -2330,23 +2318,19 @@ const components = {
                     const el = this.$el;
 
                     const offSelect = ThemeEvents.on(
-                        'shopify:section:select',
-                        function (e) {
-                            if (self._matchesSection(e, el)) {
-                                self._refreshForThemeEditorSelect();
-                            }
+                        ThemeEvents.events.SHOPIFY_SECTION_SELECT,
+                        function () {
+                            self._refreshForThemeEditorSelect();
                         },
-                        { target: document },
+                        { target: el },
                     );
 
                     const offReorder = ThemeEvents.on(
-                        'shopify:section:reorder',
-                        function (e) {
-                            if (self._matchesSection(e, el)) {
-                                self._refreshForThemeEditorSelect();
-                            }
+                        ThemeEvents.events.SHOPIFY_SECTION_REORDER,
+                        function () {
+                            self._refreshForThemeEditorSelect();
                         },
-                        { target: document },
+                        { target: el },
                     );
 
                     this._cleanupEditor = function () {
@@ -2354,25 +2338,10 @@ const components = {
                         offReorder();
                     };
 
-                    this.on(
-                        window,
-                        'scroll',
-                        this._scheduleThemeEditorViewportFlush.bind(this),
-                        { passive: true },
-                    );
+                    this.on(window, 'scroll', this._scheduleThemeEditorViewportFlush.bind(this), {
+                        passive: true,
+                    });
                 }
-            },
-
-            _matchesSection(event, el) {
-                const detail = event.detail;
-                if (detail && detail.sectionId) {
-                    return el.dataset.sectionId === String(detail.sectionId);
-                }
-                const target = event.target;
-                if (target instanceof Node) {
-                    return el.contains(target) || target.contains(el);
-                }
-                return false;
             },
 
             _onOrdinaryEnter(bound, target, entry) {

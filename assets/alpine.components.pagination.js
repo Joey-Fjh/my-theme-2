@@ -1,4 +1,4 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
 import Utils from 'utils';
 import { ShopifyHttp, SectionRefresher } from 'https';
 
@@ -94,8 +94,7 @@ const components = {
 
                 const ids = Array.isArray(this.sectionId) ? this.sectionId : [this.sectionId];
                 const sep = url.includes('?') ? '&' : '?';
-                const fetchUrl =
-                    url + sep + 'sections=' + ids.map(encodeURIComponent).join(',');
+                const fetchUrl = url + sep + 'sections=' + ids.map(encodeURIComponent).join(',');
 
                 Http.getJSON(fetchUrl, {
                     signal: activeController.signal,

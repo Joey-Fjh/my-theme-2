@@ -54,7 +54,8 @@
         data-update-url="{% if update_url_enabled %}true{% else %}false{% endif %}"
         data-variants="{{ product.variants | json | escape }}"
         data-variants-quantity-meta="{{ variants_quantity_meta_json | strip | escape }}"
-        x-data="VariantPicker()" data-module-id="variant-picker"
+        x-data="VariantPicker()"
+        data-module-id="variant-picker"
         {% if block %}
             {{- block.shopify_attributes -}}
         {% endif %}

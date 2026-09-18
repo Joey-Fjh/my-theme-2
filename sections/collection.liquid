@@ -9,7 +9,8 @@
     data-pagination-selectors='["[data-collection-dynamic-content]","[data-collection-drawer-shell]"]'
     data-filters-form-id="CollectionFiltersForm-{{ section.id }}"
     data-filters-dialog-id="collection-filters-{{ section.id }}"
-    x-data="collectionFilters()" data-module-id="collection-filters"
+    x-data="collectionFilters()"
+    data-module-id="collection-filters"
 >
     {%- liquid
         assign collection_heading_class = section.settings.heading_size | default: 'heading-4xl'
@@ -141,7 +142,9 @@
         {%- comment -%} Hero: media as cover background; height from content + padding {%- endcomment -%}
         <div
             class="relative mb-8 overflow-hidden rounded-sm color-{{ section.settings.header_color_scheme }} pc:mb-10"
-            x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+            x-data="motionRevealSection()"
+            data-module-id="motion-reveal-section"
+            data-module-lazy
             data-motion-section
         >
             <div class="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -307,7 +310,7 @@
                 </div>
             </nav>
 
-            {%- comment -%} Desktop horizontal layout removed â€?vertical filters only in minimal composition. {%- endcomment -%}
+            {%- comment -%} Desktop horizontal layout removed ??vertical filters only in minimal composition. {%- endcomment -%}
 
             {%- comment -%}
                 Desktop vertical (max-pc:hidden)
@@ -323,7 +326,8 @@
                     <aside class="hidden pc:block">
                         <div
                             class="sticky-viewport-panel border-e border-theme-border/20 pe-6"
-                            x-data="stickyViewportPanel" data-module-id="sticky-viewport-panel"
+                            x-data="stickyViewportPanel"
+                            data-module-id="sticky-viewport-panel"
                         >
                             {%- render 'filter-vertical',
                                 filter_source: collection,
@@ -368,7 +372,8 @@
 
                             <div
                                 class="no-scrollbar min-w-0 overflow-x-auto overscroll-x-contain"
-                                x-data="dragScroll({ axis: 'x' })" data-module-id="drag-scroll"
+                                x-data="dragScroll({ axis: 'x' })"
+                                data-module-id="drag-scroll"
                             >
                                 <nav
                                     aria-label="{{ 'accessibility.collection_navigation' | t }}"
@@ -439,7 +444,9 @@
                             {% paginate collection.products by section.settings.products_per_page %}
                                 <div
                                     class="grid {{ mobile_grid_class }} {{ desktop_grid_class }} gap-x-4 gap-y-8 pb-10"
-                                    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+                                    x-data="motionRevealSection()"
+                                    data-module-id="motion-reveal-section"
+                                    data-module-lazy
                                     data-motion-section
                                     data-motion-cascade
                                 >

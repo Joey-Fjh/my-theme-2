@@ -1,4 +1,5 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
+import { data, store } from 'alpine-adapter';
 import ThemeEvents from 'events';
 import { ShopifyHttp, SectionRefresher } from 'https';
 import QuantityConstraints from './quantity-constraints.js';
@@ -246,8 +247,7 @@ const components = {
             _mergeQuantityMeta(variants, quantityMeta) {
                 return (variants || []).map((variant) => {
                     if (!variant || typeof variant !== 'object') return variant;
-                    const meta =
-                        quantityMeta?.[String(variant.id)] || quantityMeta?.[variant.id];
+                    const meta = quantityMeta?.[String(variant.id)] || quantityMeta?.[variant.id];
                     if (!meta || typeof meta !== 'object') return { ...variant };
                     return {
                         ...variant,
@@ -390,7 +390,7 @@ const components = {
             },
 
             _cartItems() {
-                return window.Alpine?.store?.('cart')?.items || [];
+                return store('cart')?.items || [];
             },
 
             _parseConstraintsJson(raw) {
@@ -517,16 +517,13 @@ const components = {
 
                 if (this.surface === 'product') {
                     this.$nextTick(() => {
-                        const cart = window.Alpine?.store?.('cart');
+                        const cart = store('cart');
                         if (!cart || typeof this.$watch !== 'function') return;
                         this._cartUnwatch = this.$watch(
                             () => {
-                                const current = window.Alpine.store('cart');
+                                const current = store('cart');
                                 return `${current?.item_count || 0}:${(current?.items || [])
-                                    .map(
-                                        (item) =>
-                                            `${item.variant_id || item.id}:${item.quantity}`,
-                                    )
+                                    .map((item) => `${item.variant_id || item.id}:${item.quantity}`)
                                     .join(',')}`;
                             },
                             () => this._syncFromCart(),
@@ -607,7 +604,7 @@ const components = {
 
             _toast(template, key, value) {
                 const msg = template ? template.replace(key, String(value)) : '';
-                if (msg) window.Alpine?.store('toast')?.show?.(msg, 'info');
+                if (msg) store('toast')?.show?.(msg, 'info');
             },
 
             destroy() {
@@ -781,9 +778,7 @@ const components = {
                 if (field && errorNode?.id) {
                     field.setAttribute('aria-invalid', 'true');
                     const describedBy = new Set(
-                        (field.getAttribute('aria-describedby') || '')
-                            .split(/\s+/)
-                            .filter(Boolean),
+                        (field.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean),
                     );
                     describedBy.add(errorNode.id);
                     field.setAttribute('aria-describedby', Array.from(describedBy).join(' '));
@@ -1075,7 +1070,7 @@ const components = {
                     return;
                 }
 
-                const cartItems = window.Alpine?.store?.('cart')?.items || [];
+                const cartItems = store('cart')?.items || [];
                 const cartQuantity = api.cartQuantityForVariant(variant.id, cartItems);
                 const resolved = api.fromVariant(variant, {
                     surface: 'product',
@@ -1088,9 +1083,7 @@ const components = {
                 const form = document.getElementById(this.productFormId);
                 const qtyInput =
                     form?.querySelector('input[name="quantity"]') ||
-                    document.querySelector(
-                        `input[name="quantity"][form="${this.productFormId}"]`,
-                    );
+                    document.querySelector(`input[name="quantity"][form="${this.productFormId}"]`);
                 return qtyInput ? parseInt(qtyInput.value, 10) || 1 : 1;
             },
 
@@ -1124,8 +1117,8 @@ const components = {
 
             _getRecipientApi() {
                 const root = this.$el?.querySelector?.('[data-gift-card-recipient]');
-                if (!root || typeof window.Alpine?.$data !== 'function') return null;
-                return window.Alpine.$data(root);
+                if (!root) return null;
+                return data(root);
             },
 
             _collectLineItemProperties() {
@@ -1184,7 +1177,7 @@ const components = {
                 }
 
                 this.isLoading = true;
-                const cart = window.Alpine?.store('cart');
+                const cart = store('cart');
                 if (!cart) {
                     this.isLoading = false;
                     return;
@@ -1200,22 +1193,16 @@ const components = {
 
                         if (this.cartType === 'page') {
                             if (this.successMessage) {
-                                window.Alpine?.store('toast')?.show?.(
-                                    this.successMessage,
-                                    'success',
-                                );
+                                store('toast')?.show?.(this.successMessage, 'success');
                             }
                             window.location.assign(this.cartUrl);
                         } else {
                             if (this.openCartOnAdd && this.openDialogId) {
-                                window.Alpine?.store('dialog')?.open?.(this.openDialogId);
+                                store('dialog')?.open?.(this.openDialogId);
                             }
 
                             if (this.successMessage) {
-                                window.Alpine?.store('toast')?.show?.(
-                                    this.successMessage,
-                                    'success',
-                                );
+                                store('toast')?.show?.(this.successMessage, 'success');
                             }
                         }
                     })
@@ -1251,7 +1238,7 @@ const components = {
                 }
 
                 this.isLoading = true;
-                const cart = window.Alpine?.store('cart');
+                const cart = store('cart');
                 if (!cart) {
                     this.isLoading = false;
                     return;
@@ -1260,8 +1247,7 @@ const components = {
                 cart.add([this._buildCartItem()], [])
                     .then(() => {
                         window.location.assign(
-                            (window.Shopify?.routes?.root || '/').replace(/\/+$/, '') +
-                                '/checkout',
+                            (window.Shopify?.routes?.root || '/').replace(/\/+$/, '') + '/checkout',
                         );
                     })
                     .catch((err) => {
@@ -1398,9 +1384,7 @@ const components = {
                         if (this._abortController !== ctrl || ctrl.signal.aborted) return;
 
                         const doc = new DOMParser().parseFromString(html, 'text/html');
-                        const rendered = doc.querySelector(
-                            '[data-pickup-availability-content]',
-                        );
+                        const rendered = doc.querySelector('[data-pickup-availability-content]');
                         const isEmpty = rendered?.dataset?.empty === 'true';
 
                         if (!rendered || isEmpty) {
@@ -1557,9 +1541,7 @@ const components = {
                     parseFloat(rootStyles.getPropertyValue('--announcement-bar-height')) || 0;
                 const headerHeight =
                     parseFloat(rootStyles.getPropertyValue('--header-height')) || 0;
-                const stickyGapValue = rootStyles
-                    .getPropertyValue('--sticky-viewport-gap')
-                    .trim();
+                const stickyGapValue = rootStyles.getPropertyValue('--sticky-viewport-gap').trim();
                 const stickyGapNumber = parseFloat(stickyGapValue) || 0;
                 const stickyGap = stickyGapValue.endsWith('rem')
                     ? stickyGapNumber * (parseFloat(rootStyles.fontSize) || 16)
@@ -1578,10 +1560,7 @@ const components = {
                 // when the product can actually become sticky while it is visible.
                 return Math.max(
                     0,
-                    viewportHeight -
-                        reservedAnnouncementBarHeight -
-                        headerHeight -
-                        stickyGap * 2,
+                    viewportHeight - reservedAnnouncementBarHeight - headerHeight - stickyGap * 2,
                 );
             },
 
@@ -1609,8 +1588,7 @@ const components = {
                 }
 
                 const isScrollable =
-                    hasLimit &&
-                    this._description.scrollHeight > this._description.clientHeight + 1;
+                    hasLimit && this._description.scrollHeight > this._description.clientHeight + 1;
                 this._description.toggleAttribute(
                     'data-product-description-scrollable',
                     isScrollable,
@@ -1643,8 +1621,7 @@ const components = {
                 const styles = window.getComputedStyle(this._infoBlocks);
                 const gap = parseFloat(styles.rowGap || styles.gap) || 0;
                 const paddingY =
-                    (parseFloat(styles.paddingTop) || 0) +
-                    (parseFloat(styles.paddingBottom) || 0);
+                    (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
                 const children = Array.from(this._infoBlocks.children).filter(
                     (child) =>
                         child instanceof HTMLElement &&

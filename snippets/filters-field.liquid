@@ -51,7 +51,7 @@
 
             {%- if effective_ui_variant == 'panel' -%}
                 <div
-                    x-data="progressiveList()" data-module-id="progressive-list"
+                    x-data="progressiveList()" data-module-id="progressive-list" data-module-lazy
                     data-visible-count="{{ show_more_limit }}"
                     data-step-count="{{ show_more_step }}"
                     class="flex flex-col gap-3 pt-1"
@@ -107,7 +107,7 @@
                 </div>
             {%- else -%}
                 <div
-                    x-data="progressiveList()" data-module-id="progressive-list"
+                    x-data="progressiveList()" data-module-id="progressive-list" data-module-lazy
                     data-visible-count="{{ show_more_limit }}"
                     data-step-count="{{ show_more_step }}"
                     class="flex flex-col gap-2"

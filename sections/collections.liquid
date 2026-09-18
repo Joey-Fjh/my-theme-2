@@ -5,7 +5,9 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+    x-data="motionRevealSection()"
+    data-module-id="motion-reveal-section"
+    data-module-lazy
     data-motion-section
 >
     {%- liquid
@@ -37,7 +39,6 @@
                     </p>
                 {%- endif -%}
             </div>
-
         </div>
 
         {%- paginate collections by section.settings.collections_per_page -%}

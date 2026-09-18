@@ -21,7 +21,8 @@
         header-section full-width color-{{ section.settings.color_scheme }} surface-section
         {% if is_homepage %}is-homepage{% else %}is-innerpage{% endif %}
     "
-    x-data="stickyHeader" data-module-id="sticky-header"
+    x-data="stickyHeader"
+    data-module-id="sticky-header"
     :class="
         {
           'is-top': isTop,
@@ -36,7 +37,10 @@
         <div class="header__cols header__cols-{{ logo_position }} grid py-5">
             <div class="flex items-center pc:hidden" style="grid-area: mobile-menu">
                 {%- if has_header_menu -%}
-                    <nav aria-label="{{ 'accessibility.mobile_menu' | t }}" class="max-h-[70vh] overflow-y-auto">
+                    <nav
+                        aria-label="{{ 'accessibility.mobile_menu' | t }}"
+                        class="max-h-[70vh] overflow-y-auto"
+                    >
                         <ul class="flex flex-col gap-2 py-2">
                             {%- for link in header_menu.links -%}
                                 <li>
@@ -57,7 +61,9 @@
                 {%- endif -%}
                 {%- if section.settings.enable_language_selector -%}
                     <div class="pc:hidden">
-                        {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
+                        {%- render 'language-localization',
+                            localPosition: 'HeaderLanguageMobile'
+                        -%}
                     </div>
                 {%- endif -%}
             </div>

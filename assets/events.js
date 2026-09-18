@@ -2,7 +2,11 @@ class ThemeEvents {
     static _globalTarget = window;
 
     static events = {
-        COMPONENT_UNMOUNTED: 'theme:component:unmounted',
+        SHOPIFY_SECTION_SELECT: 'theme:editor:section-select',
+        SHOPIFY_SECTION_DESELECT: 'theme:editor:section-deselect',
+        SHOPIFY_SECTION_REORDER: 'theme:editor:section-reorder',
+        SHOPIFY_BLOCK_SELECT: 'theme:editor:block-select',
+        SHOPIFY_BLOCK_DESELECT: 'theme:editor:block-deselect',
         HEADER_MENU_ACTIVE_CHANGED: 'theme:header:menu:active-changed',
         PRODUCT_VARIANT_SET_REQUEST: 'theme:product:variant:request:set',
         PRODUCT_VARIANT_CHANGED: 'theme:product:variant:changed',

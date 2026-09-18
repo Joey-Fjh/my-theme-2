@@ -2,7 +2,7 @@
 
 Internal Shopify Skeleton Theme mother template for building maintainable and extensible themes.
 
-This repository is the engineering baseline for future Shopify themes. It aims to stay minimal, platform-complete, modular, extensible, maintainable, and verifiable. Derived themes own business features, page design, and visual uniqueness.
+This repository is the engineering baseline for future Shopify themes. Its storefront inventory follows Shopify's official `skeleton-theme`, with only explicitly accepted project additions such as the lifecycle/runtime and Agent configuration. It aims to stay minimal, modular, extensible, maintainable, and verifiable; derived themes own business features, page design, visual uniqueness, and Theme Store submission features.
 
 Project rules and task routing live in [AGENTS.md](AGENTS.md). Short cross-session state lives in [docs/agent/context.md](docs/agent/context.md).
 

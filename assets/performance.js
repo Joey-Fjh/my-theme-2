@@ -1,8 +1,7 @@
 export class ThemePerformance {
     static init() {
         if (!window.PerformanceObserver) return;
-        const isDebug =
-            window.location.search.includes('debug=true') || window.Shopify?.designMode;
+        const isDebug = window.location.search.includes('debug=true') || window.Shopify?.designMode;
         if (!isDebug) return;
 
         this.observeLongTasks();
@@ -13,10 +12,7 @@ export class ThemePerformance {
         try {
             new PerformanceObserver((list) => {
                 list.getEntries().forEach((entry) =>
-                    console.warn(
-                        `[Performance] Long Task: ${entry.duration.toFixed(0)}ms`,
-                        entry,
-                    ),
+                    console.warn(`[Performance] Long Task: ${entry.duration.toFixed(0)}ms`, entry),
                 );
             }).observe({ entryTypes: ['longtask'] });
         } catch (e) {

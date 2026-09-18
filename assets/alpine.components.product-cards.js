@@ -1,4 +1,4 @@
-import { useDisposable } from 'alpine-adapter';
+import { useDisposable } from 'utils';
 import { ShopifyHttp, SectionRefresher } from 'https';
 
 // Ignore synthetic clicks that land on +/X immediately after a scroll gesture.
@@ -204,8 +204,7 @@ const components = {
                 if (dataset.hasVariantPanel !== undefined && dataset.hasVariantPanel !== '') {
                     this.hasVariantPanel = dataset.hasVariantPanel === 'true';
                 }
-                this.quickViewDialogId =
-                    dataset.quickViewDialogId || this.quickViewDialogId || '';
+                this.quickViewDialogId = dataset.quickViewDialogId || this.quickViewDialogId || '';
                 this.cartDialogId = dataset.cartDialogId || this.cartDialogId || '';
                 if (dataset.primaryVariantId !== undefined && dataset.primaryVariantId !== '') {
                     this.primaryVariantId = Number(dataset.primaryVariantId) || 0;
@@ -227,9 +226,7 @@ const components = {
 
                 if (this.isTouchDevice) {
                     ensureProductCardTouchScrollGuard();
-                    this.on(document, 'pointerdown', (event) =>
-                        this._handleTouchOutside(event),
-                    );
+                    this.on(document, 'pointerdown', (event) => this._handleTouchOutside(event));
                 }
             },
 
@@ -514,8 +511,4 @@ const components = {
     },
 };
 
-export const {
-    cardGallery,
-    productCard,
-    relatedProducts,
-} = components;
+export const { cardGallery, productCard, relatedProducts } = components;

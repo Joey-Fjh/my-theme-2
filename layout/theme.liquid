@@ -20,7 +20,8 @@
         {% # Load and preload the CSS %}
         {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}
 
-        {% comment %} --- 1. Module graph ---
+        {% comment %}
+            --- 1. Module graph ---
             Every identifier below is a bare specifier. `data-module-id` in Liquid markup
             names the component entry the core imports on demand; the core itself holds no
             component manifest.

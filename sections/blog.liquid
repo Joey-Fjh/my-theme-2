@@ -7,7 +7,9 @@
     "
     data-pagination-section-id="{{ section.id }}"
     data-pagination-selectors='["[role=&quot;tabpanel&quot;]",".sup-badge"]'
-    x-data="sectionPagination()" data-module-id="section-pagination"
+    x-data="sectionPagination()"
+    data-module-id="section-pagination"
+    data-module-lazy
 >
     {%- liquid
         assign blog_heading_class = section.settings.heading_size | default: 'heading-3xl'
@@ -22,7 +24,9 @@
         {%- comment -%} Hero {%- endcomment -%}
         <div
             class="relative py-20 pc:py-40"
-            x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+            x-data="motionRevealSection()"
+            data-module-id="motion-reveal-section"
+            data-module-lazy
             data-motion-section
         >
             <div class="flex items-start justify-between">
@@ -124,7 +128,7 @@
                         {% paginate blog.articles by section.settings.articles_per_page %}
                             <div
                                 class="grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
-                                x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+                                x-data="motionRevealSection()" data-module-id="motion-reveal-section" data-module-lazy
                                 data-motion-section
                                 data-motion-cascade
                             >

@@ -1,3 +1,5 @@
+import { store } from 'alpine-adapter';
+
 const MIRRORED_KEYS = [
     'items',
     'item_count',
@@ -121,7 +123,7 @@ export function createCartUiStore(contract) {
             }
 
             if (finalMsg) {
-                const toast = window.Alpine?.store('toast');
+                const toast = store('toast');
                 if (toast) {
                     toast.show(finalMsg, 'error');
                 }

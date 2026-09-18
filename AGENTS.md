@@ -18,7 +18,7 @@ Read other files under `docs/references/` only when the task routing below calls
 
 ## Project Context
 
-This is an internal Shopify Skeleton Theme mother template for building future themes. It keeps a minimal, platform-complete architecture and quality baseline; derived themes own their business features, page design, and Theme Store positioning.
+This is an internal Shopify Skeleton Theme mother template for building future themes. Its storefront inventory starts from Shopify's official `skeleton-theme`; this repository adds only explicitly accepted project-owned infrastructure and capabilities, such as the lifecycle/runtime and Agent configuration. Derived themes own business features, page design, and Theme Store positioning.
 
 Tech stack:
 
@@ -27,7 +27,7 @@ Tech stack:
 - Alpine.js v3 for reactive UI state
 - GSAP + ScrollTrigger (optional choreography tools for complex narrative motion, not the default for ordinary section reveal)
 - Swiper for carousels
-- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `mount`, `unmount`, `store`). See `docs/references/architecture/javascript-runtime.md`.
+- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `defer`, `mount`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
 
 Runtime constraints:
 
@@ -61,7 +61,7 @@ Important paths:
 
 ## Core Rules
 
-Launch stability, Shopify Theme Store readiness, accessibility, SEO, maintainability, merchant configurability, and mobile reliability outrank visual novelty and Lighthouse micro-optimizations.
+Launch stability, accessibility, SEO, maintainability, merchant configurability, and mobile reliability outrank visual novelty and Lighthouse micro-optimizations. Theme Store submission completeness is a gate only when the user explicitly scopes a batch or derived theme to Theme Store submission. Theme Store accessibility and browser requirements may still be adopted as quality baselines; doing so does not import the Theme Store feature inventory into the mother template.
 
 Treat these as launch blockers unless the user explicitly scopes them out:
 
@@ -126,12 +126,14 @@ Chat history and commit messages are evidence, never a substitute for the curren
 
 ### Project Identity And Authority
 
-- `my-skeleton-theme` is an internal Shopify Skeleton Theme mother template: minimal, platform-complete, modular, extensible, maintainable, verifiable. Derived themes own business features, page design, and Theme Store positioning.
-- Shopify mandatory capabilities are the platform baseline; optional Theme Store declarations are not mother-template requirements.
+- `my-skeleton-theme` is an internal Shopify Skeleton Theme mother template: minimal, official-Skeleton-aligned, modular, extensible, maintainable, and verifiable. Derived themes own business features, page design, and Theme Store positioning.
+- Shopify's current official `skeleton-theme` defines the default storefront inventory boundary. Shopify best practices govern how retained code and approved additions are implemented; Theme Store submission feature requirements do not expand the mother-template inventory by themselves.
+- Project additions require an explicit accepted decision. Current examples include the project-owned component lifecycle/runtime and Agent/tooling configuration. Do not infer new storefront business features merely because a finished Theme Store theme would require them.
+- In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
 - Never modify `my-theme-1`; it is read-only historical evidence. This project requires no compatibility with Ceylune appearance, content, schemas, configuration, or behavior.
 - Keep one writer per shared worktree.
 - Do not retain code merely because it already exists.
-- Classification vocabulary: Platform Required, Skeleton Core, Optional Capability, Theme-Specific Implementation, Tooling and Governance, Open Decision. Keep mandatory compliance, optional declarations, and mother-template architecture separate.
+- Classification vocabulary: Platform Required, Skeleton Core, Optional Capability, Theme-Specific Implementation, Tooling and Governance, Open Decision. Classify against the official Skeleton inventory plus explicitly accepted project additions; keep platform validity, Theme Store submission scope, and mother-template architecture separate.
 - When the user asks to continue previous work, review outstanding tasks, or prepare next-session context, read `docs/agent/context.md`.
 
 Hard implementation rules:

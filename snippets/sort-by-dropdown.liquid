@@ -30,7 +30,8 @@
 -%}
 
 <div
-    x-data="dropdown" data-module-id="dropdown"
+    x-data="dropdown"
+    data-module-id="dropdown"
     @click.outside="close(0)"
     @keydown.escape.window="if (openEls[0]) { close(0); $nextTick(() => $refs.sortTrigger?.focus()) }"
     {% if wrapper_class != blank %}
@@ -38,7 +39,8 @@
     {% endif %}
 >
     <div
-        x-data="sortByDropdown" data-module-id="sort-by-dropdown"
+        x-data="sortByDropdown"
+        data-module-id="sort-by-dropdown"
         data-current-sort="{{ current_sort | escape }}"
         data-form-id="{{ form_id | default: '' | escape }}"
         data-option-active-class="{{ option_active_class | escape }}"

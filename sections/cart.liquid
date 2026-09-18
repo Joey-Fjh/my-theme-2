@@ -5,7 +5,8 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="cartPage()" data-module-id="cart-page"
+    x-data="cartPage()"
+    data-module-id="cart-page"
     data-shipping-msg-calculating="{{ 'cart.shipping_calculating' | t | escape }}"
     data-shipping-msg-rates="{{ 'cart.shipping_rates' | t | escape }}"
     data-shipping-msg-empty="{{ 'cart.shipping_no_rates' | t | escape }}"

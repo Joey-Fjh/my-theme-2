@@ -5,7 +5,9 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()" data-module-id="motion-reveal-section"
+    x-data="motionRevealSection()"
+    data-module-id="motion-reveal-section"
+    data-module-lazy
     data-motion-section
 >
     <div class="layout container-page flex min-h-[60vh] flex-col justify-center pc:min-h-[80vh]">
@@ -62,7 +64,6 @@
                     %}
                 {%- endif -%}
             </div>
-
         </div>
     </div>
 </div>

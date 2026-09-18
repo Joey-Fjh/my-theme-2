@@ -6,13 +6,7 @@
  * on `window.Alpine`.
  */
 
-import ThemeEvents from 'events';
-
 let alpineRef = null;
-let resolveReady = null;
-const readyPromise = new Promise((resolve) => {
-    resolveReady = resolve;
-});
 
 const pendingTasks = [];
 const definedNames = new Set();
@@ -34,8 +28,6 @@ function flushPendingTasks() {
             console.error('[ThemeAdapter] queued task failed', error);
         }
     }
-
-    resolveReady(alpineRef);
 }
 
 if (typeof document !== 'undefined') {
@@ -63,54 +55,6 @@ function withAlpine(task) {
 }
 
 /**
- * Resolves once the adapter library is available.
- * @returns {Promise<object>}
- */
-export function ready() {
-    return readyPromise;
-}
-
-/**
- * Wrap a component factory so a `destroy`/`dispose` handler also runs when the theme
- * runtime reports the root element was removed from the DOM.
- */
-function withUnmountTeardown(factory) {
-    return function componentFactory(...args) {
-        const definition = factory.apply(this, args);
-        const unmountEvent = ThemeEvents.events.COMPONENT_UNMOUNTED;
-
-        const hasDestroy = typeof definition?.destroy === 'function';
-        const hasDispose = typeof definition?.dispose === 'function';
-
-        if (!definition || (!hasDestroy && !hasDispose)) return definition;
-
-        const originalInit = definition.init;
-
-        definition.init = function init() {
-            if (this.$el && unmountEvent) {
-                const teardown = () => {
-                    if (typeof this.destroy === 'function') {
-                        this.destroy();
-                    } else if (typeof this.dispose === 'function') {
-                        this.dispose();
-                    }
-                };
-
-                if (typeof this.on === 'function') {
-                    this.on(this.$el, unmountEvent, teardown);
-                } else if (typeof this.$el.addEventListener === 'function') {
-                    this.$el.addEventListener(unmountEvent, teardown);
-                }
-            }
-
-            if (originalInit) originalInit.apply(this, arguments);
-        };
-
-        return definition;
-    };
-}
-
-/**
  * Register a component factory under the name its markup declares.
  * @param {string} name
  * @param {Function} factory
@@ -119,11 +63,12 @@ export function define(name, factory) {
     const key = typeof name === 'string' ? name.trim() : '';
 
     if (!key) throw new Error('Adapter define requires a non-empty name');
-    if (typeof factory !== 'function') throw new Error('Adapter define requires a factory function');
+    if (typeof factory !== 'function')
+        throw new Error('Adapter define requires a factory function');
     if (definedNames.has(key)) return;
 
     definedNames.add(key);
-    withAlpine((alpine) => alpine.data(key, withUnmountTeardown(factory)));
+    withAlpine((alpine) => alpine.data(key, factory));
 }
 
 /**
@@ -169,43 +114,52 @@ export function unmount(el) {
 }
 
 /**
- * Register a global UI store. Queued registrations run before the first DOM walk.
+ * Read or register a global UI store.
+ * `store(name)` returns the store, or undefined when Alpine is unavailable.
+ * `store(name, value)` queues registration before the first DOM walk.
  * @param {string} name
- * @param {object} value
+ * @param {object} [value]
+ * @returns {object|undefined}
  */
 export function store(name, value) {
     const key = typeof name === 'string' ? name.trim() : '';
-    if (!key || !value) return;
+    if (!key) return undefined;
 
-    withAlpine((alpine) => {
-        if (typeof alpine.store === 'function') alpine.store(key, value);
-    });
+    if (arguments.length >= 2) {
+        withAlpine((alpine) => {
+            if (typeof alpine.store === 'function') alpine.store(key, value);
+        });
+        return undefined;
+    }
+
+    try {
+        const alpine = alpineRef || resolveAlpine();
+        if (alpine && typeof alpine.store === 'function') {
+            return alpine.store(key);
+        }
+    } catch (_) {
+        /* Alpine not ready */
+    }
+
+    return undefined;
 }
 
 /**
- * Collect listener and observer registrations so a component can release them in one call.
+ * Read reactive state bound to `el`.
+ * @param {Element} el
+ * @returns {object|null}
  */
-export function useDisposable() {
-    const disposers = [];
+export function data(el) {
+    if (!el) return null;
 
-    return {
-        on(target, event, handler, options) {
-            if (!target || typeof target.addEventListener !== 'function') return;
+    try {
+        const alpine = alpineRef || resolveAlpine();
+        if (alpine && typeof alpine.$data === 'function') {
+            return alpine.$data(el);
+        }
+    } catch (_) {
+        /* Alpine not ready */
+    }
 
-            target.addEventListener(event, handler, options);
-            disposers.push(() => target.removeEventListener(event, handler, options));
-        },
-
-        observe(observer, el) {
-            if (!el || !observer?.observe) return;
-
-            observer.observe(el);
-            disposers.push(() => observer.unobserve(el));
-        },
-
-        dispose() {
-            disposers.forEach((disposer) => disposer());
-            disposers.length = 0;
-        },
-    };
+    return null;
 }

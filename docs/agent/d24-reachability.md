@@ -72,24 +72,24 @@ Read-only render-graph analysis for the D20/D24 kept inventory. Generated 2026-0
 | localization-selected-icon | **host it** | `header` | Used inside `localization-option`; no separate section work beyond the header localization move. |
 | localization-switcher | **host it** | `header` | Shared wrapper for both selectors; hosted transitively from `country-localization` / `language-localization`. |
 | meta-tags | **host it** | `layout/theme.liquid` (infrastructure) | SEO head tags belong in layout; already rendered — preserve during inventory batch. |
-| product-variant-picker | **host it** | `product` | Variant selection is Theme Store mandatory; minimal `product` section must render this snippet after `product-info-blocks` is removed. |
+| product-variant-picker | **host it** | `product` | Variant selection belongs to the accepted retained product baseline; the minimal `product` section must render this snippet after `product-info-blocks` is removed. |
 | accordion | **host it** | `cart` and `filter-vertical` | `cart-summary-accordion` inlines duplicate accordion behavior; minimal cart rewrite should render the kept snippet. `filter-vertical` rewrite (replacing cut `filters-groups`) also needs `accordion` for filter panels. |
 | rte-compact-prose | **host it** | `blog` / `collection` / `page` | Replace cut `listing-page-hero-copy` usage in minimal listing/page compositions with direct `rte-compact-prose` renders. |
 | ui-toast | **host it** | `layout/theme.liquid` (infrastructure) | Already rendered at `layout/theme.liquid:109`; not section-reachable but layout is the correct permanent host for global toast UI. |
 | filters-field | **host it** | `filter-vertical` | Cluster survivor rewrite must render `filters-field` directly instead of cut `filters-groups`. |
-| media-video | **cut** | n/a | Not used by kept `product-media` (video is handled inline). Only cut `video-banner` renders this snippet; no mandatory capability loss if product video stays in `product-media`. |
+| media-video | **cut** | n/a | Not used by kept `product-media` (video preview is handled inline). Only cut `video-banner` renders this snippet; no accepted retained-scope loss follows from cutting this separate renderer. |
 | product-media | **host it** | `product-gallery` | Minimal gallery layout must include one retained layout branch that renders `product-media` for all Shopify media types. |
 
-## Table 3 — mandatory capability check
+## Table 3 — accepted retained-capability check
 
 | capability | implementation | reachable | path / blocker |
 | --- | --- | --- | --- |
 | Cart page / line items | section/cart + snippets/quantity-selector, unit-price, product-tax-note | yes | section/cart → snippet/quantity-selector (+ quantity-constraints transitively) (ok) |
-| Product variant selection | snippets/product-variant-picker, buy-buttons | no | NONE — blocked by cut `product-info-blocks` (**LAUNCH BLOCKER**) |
+| Product variant selection | snippets/product-variant-picker, buy-buttons | no | NONE — blocked by cut `product-info-blocks` (**D24 REACHABILITY BLOCKER**) |
 | Quantity rules | snippets/quantity-selector, quantity-constraints | yes | section/cart → snippet/quantity-selector → snippet/quantity-constraints (ok) |
 | Pagination | snippet/pagination | yes | section/collections → snippet/pagination (also article, blog) (ok) |
 | Unit price display | snippet/unit-price | yes | section/cart → snippet/unit-price (ok) |
-| Country / language selection | localization snippet chain (5 files) | no | NONE — blocked by cut `announcement-bar` (**LAUNCH BLOCKER**) |
+| Country / language selection | localization snippet chain (5 files) | no | NONE — blocked by cut `announcement-bar` (**D24 REACHABILITY BLOCKER**) |
 | Product media (incl. video) | snippets/product-gallery, product-media | partial | section/product → snippet/product-gallery is reachable, but `product-media` is not — gallery still depends on cut layout branches (**PARTIAL BLOCKER**) |
 
 ## Section 4 — findings
@@ -173,7 +173,7 @@ The header group still mounts cut `announcement-bar` beside retained `header`. T
 
 - **Counts (Table 1):** 31 reachable, 15 unreachable (46 kept files total).
 - **Seeded cases:** `accordion`, all five localization snippets, and `ui-toast` each show `reachable = no` under section/group closure. Method independently rediscovered all three defect classes.
-- **Mandatory unreachable:** product variant selection (`buy-buttons`, `product-variant-picker`); country/language selection (localization chain). Product media is a partial blocker (`product-gallery` reachable, `product-media` not).
+- **Accepted retained capabilities unreachable:** product variant selection (`buy-buttons`, `product-variant-picker`); country/language selection (localization chain). Product media is a partial blocker (`product-gallery` reachable, `product-media` not).
 - **Retained sections rendering cut files:** 18 direct edges.
 - **Retained kept snippets rendering cut files:** 13 direct edges (notably `filter-vertical` → `filters-groups`, `product-gallery` → layout-variant snippets).
 - **Unresolvable dynamic edges:** 4.

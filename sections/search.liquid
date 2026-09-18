@@ -14,7 +14,12 @@
         <div class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}">
             <h1 class="sr-only">{{ 'search.title' | t }}</h1>
 
-            <form action="{{ routes.search_url }}" method="get" role="search" class="relative w-full">
+            <form
+                action="{{ routes.search_url }}"
+                method="get"
+                role="search"
+                class="relative w-full"
+            >
                 <input type="hidden" name="options[prefix]" value="last">
                 <div class="mb-1 flex items-center gap-3 border-b border-theme-border pb-3 text-theme-text">
                     {%- render 'icons', icon: 'icon-search', class: 'shrink-0' -%}
@@ -41,12 +46,16 @@
         <div class="layout container-page overflow-visible! pb-10">
             {%- paginate search.results by section.settings.search_per_page -%}
                 {%- if search.results_count == 0 -%}
-                    <p class="py-10 text-center body-lg">{{ 'search.no_results_html' | t: terms: terms }}</p>
+                    <p class="py-10 text-center body-lg">
+                        {{ 'search.no_results_html' | t: terms: terms }}
+                    </p>
                 {%- else -%}
                     <ul class="flex flex-col gap-4">
                         {%- for item in search.results -%}
                             <li>
-                                <a href="{{ item.url }}" class="link-underline body-lg">{{ item.title | escape }}</a>
+                                <a href="{{ item.url }}" class="link-underline body-lg">
+                                    {{- item.title | escape -}}
+                                </a>
                             </li>
                         {%- endfor -%}
                     </ul>

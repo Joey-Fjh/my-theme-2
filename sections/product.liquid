@@ -29,7 +29,8 @@
         --section-padding-top: {{ section.settings.padding_top | default: 0 }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
-    x-data="productLayout" data-module-id="product-layout"
+    x-data="productLayout"
+    data-module-id="product-layout"
 >
     <div class="layout container-page overflow-visible!">
         <div
@@ -78,7 +79,10 @@
                                     </div>
                                 {%- when 'vendor' -%}
                                     {%- if product.vendor != blank -%}
-                                        <div class="product-info-blocks__vendor" {{ block.shopify_attributes }}>
+                                        <div
+                                            class="product-info-blocks__vendor"
+                                            {{ block.shopify_attributes }}
+                                        >
                                             {{ product.vendor }}
                                         </div>
                                     {%- endif -%}
@@ -97,11 +101,16 @@
                                         <p class="product-info-blocks__price body-3xl text-theme-text">
                                             {{ current_variant.price | money }}
                                         </p>
-                                        {%- render 'product-tax-note', class: 'mt-2 body-sm text-theme-text/80' -%}
+                                        {%- render 'product-tax-note',
+                                            class: 'mt-2 body-sm text-theme-text/80'
+                                        -%}
                                     </div>
                                 {%- when 'description' -%}
                                     {%- if product.description != blank -%}
-                                        <div class="product-info-blocks__description rte" {{ block.shopify_attributes }}>
+                                        <div
+                                            class="product-info-blocks__description rte"
+                                            {{ block.shopify_attributes }}
+                                        >
                                             {{ product.description }}
                                         </div>
                                     {%- endif -%}
@@ -163,9 +172,15 @@
                                         endif
                                     -%}
                                     {%- if show_inventory_notice -%}
-                                        <div class="product-info-blocks__inventory-notice" {{ block.shopify_attributes }}>
+                                        <div
+                                            class="product-info-blocks__inventory-notice"
+                                            {{ block.shopify_attributes }}
+                                        >
                                             {%- if block.settings.show_stock_number -%}
-                                                {{ 'products.product.only_in_stock_html' | t: quantity: inventory_quantity }}
+                                                {{
+                                                    'products.product.only_in_stock_html'
+                                                    | t: quantity: inventory_quantity
+                                                }}
                                             {%- else -%}
                                                 {{ 'products.product.low_stock' | t }}
                                             {%- endif -%}

@@ -1,5 +1,5 @@
 import { mount, unmount } from 'alpine-adapter';
-import { Components, scanModules } from 'base';
+import { scanModules } from 'base';
 
 class HttpError extends Error {
     constructor(message, options = {}) {
@@ -274,8 +274,7 @@ class SectionRefresher {
             }
 
             const doc = this.domParser.parseFromString(html, 'text/html');
-            const virtualSourceEl =
-                doc.querySelector(targetSelector) || doc.body.firstElementChild;
+            const virtualSourceEl = doc.querySelector(targetSelector) || doc.body.firstElementChild;
 
             if (!virtualSourceEl) {
                 this.debugWarn('Virtual source element not found', { key, targetSelector });
@@ -304,8 +303,6 @@ class SectionRefresher {
                     targetEl.innerHTML = virtualSourceEl.innerHTML;
                 });
             }
-
-            Components.initAll(targetEl);
         }
     }
 
