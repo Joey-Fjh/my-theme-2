@@ -225,6 +225,25 @@ class SectionRefresher {
     }
 
     /**
+     * Carry <style data-section-stylesheet> from the parsed response into the live target.
+     * Keep in sync with .agents/skills/check-theme-architecture/scripts/lib/section-stylesheet-carry.js.
+     */
+    static carryInnerSectionStylesheet(doc, targetEl) {
+        const sectionStyle = doc.querySelector('style[data-section-stylesheet]');
+        if (!sectionStyle) return;
+
+        const existingStyle = targetEl.querySelector('style[data-section-stylesheet]');
+        const nextStyle = sectionStyle.cloneNode(true);
+
+        if (existingStyle) {
+            existingStyle.replaceWith(nextStyle);
+            return;
+        }
+
+        targetEl.insertBefore(nextStyle, targetEl.firstChild);
+    }
+
+    /**
      * Replace a region through the adapter lifecycle: tear the old tree down, swap the
      * markup, let the module runtime claim any component roots the new markup introduces,
      * then initialize what remains.
@@ -286,6 +305,8 @@ class SectionRefresher {
                 : [];
 
             if (innerSelectors.length > 0) {
+                this.carryInnerSectionStylesheet(doc, targetEl);
+
                 for (const sel of innerSelectors) {
                     if (typeof sel !== 'string' || !sel.trim()) continue;
                     const newChild = virtualSourceEl.querySelector(sel);

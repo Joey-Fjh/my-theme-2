@@ -448,6 +448,96 @@ test('lineAt helper maps offsets to source lines', () => {
     assert.equal(lineAt(source, 4), 3);
 });
 
+test('multiple stylesheet tags fail', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% stylesheet %}',
+                '.one { color: #111111; }',
+                '{% endstylesheet %}',
+                '{% stylesheet %}',
+                '.two { color: #222222; }',
+                '{% endstylesheet %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Only one {% stylesheet %} tag is allowed per file \(found 2\)/,
+        );
+    });
+});
+
+test('multiple javascript tags fail', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% javascript %}',
+                "console.log('one');",
+                '{% endjavascript %}',
+                '{% javascript %}',
+                "console.log('two');",
+                '{% endjavascript %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Only one {% javascript %} tag is allowed per file \(found 2\)/,
+        );
+    });
+});
+
+test('liquid inside stylesheet block fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% stylesheet %}',
+                '.ok { color: {{ settings.color }}; }',
+                '{% endstylesheet %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Liquid output tags are not allowed inside {% stylesheet %} blocks/,
+        );
+    });
+});
+
+test('liquid inside javascript block fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '{% javascript %}',
+                "console.log({{ cart.item_count }});",
+                '{% endjavascript %}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.match(
+            failureMessages(failures),
+            /Liquid output tags are not allowed inside {% javascript %} blocks/,
+        );
+    });
+});
+
 test('theme lint cli accepts --root without auto-running on import', () => {
     withTempTheme((root) => {
         writeFile(root, 'sections/fixture.liquid', `<div>{% assign local_value = 'ok' %}</div>\n`);

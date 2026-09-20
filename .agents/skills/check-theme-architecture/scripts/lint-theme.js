@@ -60,6 +60,8 @@ const SVG_TEXT_LENGTH_RE = /<text\b(?=[^>]*\btextLength\s*=)[^>]*>([\s\S]*?)<\/t
 const TAB_ARIA_SELECTED_ATTRS = ['aria-selected', ':aria-selected', 'x-bind:aria-selected'];
 const TAB_ARIA_CONTROLS_ATTRS = ['aria-controls', ':aria-controls', 'x-bind:aria-controls'];
 
+const BUNDLED_ASSET_TAG_NAMES = ['stylesheet', 'javascript'];
+
 function parseRootArg(argv) {
     const index = argv.indexOf('--root');
 
@@ -174,6 +176,65 @@ function collectTabFailures(ast, text, file, failures) {
     });
 }
 
+function collectBundledAssetTagFailures(ast, text, file, failures) {
+    const tagsByName = Object.fromEntries(BUNDLED_ASSET_TAG_NAMES.map((name) => [name, []]));
+
+    walk(ast, (node) => {
+        if (node.type !== 'LiquidRawTag') {
+            return;
+        }
+
+        if (!tagsByName[node.name]) {
+            return;
+        }
+
+        tagsByName[node.name].push(node);
+    });
+
+    for (const tagName of BUNDLED_ASSET_TAG_NAMES) {
+        const tags = tagsByName[tagName];
+
+        for (let index = 1; index < tags.length; index += 1) {
+            const node = tags[index];
+            failures.push({
+                file,
+                line: lineAt(text, node.blockStartPosition?.start ?? node.position?.start ?? 0),
+                message:
+                    `Only one {% ${tagName} %} tag is allowed per file (found ${tags.length}). ` +
+                    'Multiple tags cause a syntax error in the theme editor.',
+            });
+        }
+
+        for (const node of tags) {
+            if (!node.body) {
+                continue;
+            }
+
+            walk(node.body, (inner) => {
+                if (inner.type === 'LiquidVariableOutput') {
+                    failures.push({
+                        file,
+                        line: lineAt(text, inner.position?.start ?? 0),
+                        message:
+                            `Liquid output tags are not allowed inside {% ${tagName} %} blocks. ` +
+                            'Liquid is not rendered in bundled asset tags.',
+                    });
+                }
+
+                if (inner.type === 'LiquidTag') {
+                    failures.push({
+                        file,
+                        line: lineAt(text, inner.position?.start ?? 0),
+                        message:
+                            `Liquid tags are not allowed inside {% ${tagName} %} blocks. ` +
+                            'Liquid is not rendered in bundled asset tags.',
+                    });
+                }
+            });
+        }
+    }
+}
+
 function collectSvgTextLengthFailures(text, file, failures) {
     const masked = maskNonExecutableLiquid(text);
 
@@ -207,6 +268,7 @@ async function runThemeLint(root) {
         }
 
         collectProtectedRuntimeNameFailures(ast, text, file, failures);
+        collectBundledAssetTagFailures(ast, text, file, failures);
         collectSvgTextLengthFailures(text, file, failures);
         collectTabFailures(ast, text, file, failures);
     }
@@ -243,6 +305,7 @@ module.exports = {
     maskNonExecutableLiquid,
     runThemeLint,
     collectProtectedRuntimeNameFailures,
+    collectBundledAssetTagFailures,
     collectSvgTextLengthFailures,
     collectTabFailures,
 };
