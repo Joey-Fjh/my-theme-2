@@ -152,7 +152,7 @@ Hard implementation rules:
 
 Read only the matching reference for the current task:
 
-- JS runtime, lifecycle, events, HTTP, SectionRefresher, Alpine stores/components, Swiper, GSAP setup: `docs/references/architecture/javascript-runtime.md`
+- JS runtime, lifecycle, events, HTTP, SectionRefresher, Alpine stores/components, Swiper, GSAP runtime setup (when an accepted consumer exists): `docs/references/architecture/javascript-runtime.md`
 - Motion policy, choreography, reduced motion, animation ownership, duplication: `docs/references/architecture/motion-architecture.md`
 - Shared abstraction boundaries and whether to extend an existing utility/component: `docs/references/architecture/abstraction-boundaries.md`
 - CSS layer ownership, typography tiers, color/surface rules, token/bridge contract, placement audits: `docs/references/style-system/css-architecture.md`
@@ -165,7 +165,12 @@ Read only the matching reference for the current task:
 
 ## Agent Skills
 
-Project skills live in `.agents/skills/`. This project has two skills — `check-i18n` and `check-theme-architecture` — both wrapping executable validators.
+Project skills live in `.agents/skills/`. Two kinds:
+
+- **Executable validators** (project-owned): `check-i18n` and `check-theme-architecture` wrap recurring validation commands.
+- **Vendored documentation references** (GreenSock official, MIT): `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, and `gsap-performance`. These are agent documentation only; they do not wrap validators, do not vend the GSAP runtime, and add no storefront payload.
+
+**Motion boundary:** Ordinary section reveal uses the native `data-motion-*` protocol and Intersection Observer (`docs/references/architecture/motion-architecture.md`). Read the GSAP documentation skills only after that reference classifies work as explicit complex choreography.
 
 Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks.
 

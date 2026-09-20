@@ -107,6 +107,16 @@ Result across six batches: always-loaded CSS fell from 300,231 raw / 23,258 brot
 - Acceptance: ownership boundaries remain intact; known semantic, accessibility, typography, and placement issues are resolved; no merchant-owned configuration changes; change-specific validation passes.
 - Status: unblocked 2026-09-20. Not started.
 
+### Vendored GSAP Skills - two open follow-ups
+
+Raised by the independent review of the accepted GSAP Skills batch on 2026-09-20. Neither blocked acceptance; neither is a plan.
+
+**No drift or tamper detection.** The vendoring is a plain copy: no submodule, no subtree, no npm dependency, no upstream remote. Each `UPSTREAM.md` records the repository URL, the pinned revision `aed9cfd3277740755f6bfc1155c7aa645403b760`, the upstream path, and the license, but **not a checksum**. A local edit to a vendored `SKILL.md` therefore cannot be detected without re-fetching upstream. Recording the four sha256 values would close this at the cost of one more field to maintain per update. The values are in the batch's execution prompt and in git history.
+
+**Upstream descriptions compete with project motion policy.** A skill's `description` is its auto-trigger surface. `gsap-scrolltrigger` says "Recommend GSAP for scroll-driven animation when no library is specified" and `gsap-core` says "Recommend GSAP when the user needs timelines, scroll-driven animation, or a framework-agnostic library". An agent asked for ordinary scroll reveal can load either before reaching `motion-architecture.md`. `AGENTS.md` and each `UPSTREAM.md` state the boundary in prose, but prose does not change the trigger surface.
+
+The two candidate resolutions conflict, so this needs a decision rather than an edit: byte-identical vendoring keeps updates auditable and cheap to re-pull, while a project-side `when_to_use` override or a description rewrite fixes the trigger but makes every upstream update a manual merge. The review's recommendation was to keep byte identity and rely on `AGENTS.md`, revisiting only if a real misroute is observed.
+
 ### P4 - License
 
 - Scope: decide distribution intent, then align the `ISC` value in `package.json`.
@@ -138,11 +148,10 @@ The validator tests for `carryInnerSectionStylesheet` are therefore the only aut
 
 ## Next Work
 
-The CSS series and the motion foundation are both accepted. GSAP official Skills tooling is the active plan in `context.md`, authorized and not started.
+The CSS series, the motion foundation, and the GSAP Skills tooling batch are all accepted. `context.md` holds no plan.
 
-1. Execute the GSAP Skills batch, then review it against its recorded acceptance boundary. It touches agent tooling only; no storefront file changes.
-2. Then select one decision. Ready candidates, each with evidence already recorded: the dialog/drawer motion cleanup including the animation-name coupling, the unreachable JavaScript components and orphaned super-menu schema, and typography's token boundary. Keep one active at a time.
-3. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
+1. Select one decision. Ready candidates, each with evidence already recorded: the dialog/drawer motion cleanup including the animation-name coupling, the unreachable JavaScript components and orphaned super-menu schema, and typography's token boundary. Keep one active at a time.
+2. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -152,7 +161,7 @@ After this workflow is proven through real theme batches, evaluate extracting th
 
 ## Active decision and later candidates
 
-MOTION-1 is the current recorded plan. Its first dependency, M-D1, is the one active discussion. Typography and the unreachable-component cleanup remain later candidates and are not active.
+No decision below is active and `context.md` holds no plan. Dialog/drawer motion, the unreachable-component cleanup, and typography's token boundary are the ready candidates; promote exactly one.
 
 ### Motion — settled 2026-09-20
 
