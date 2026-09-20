@@ -52,7 +52,9 @@
                     "collection-navigation-catalog": "{{ 'collection-navigation-catalog.js' | asset_url }}",
                     "drag-scroll": "{{ 'drag-scroll.js' | asset_url }}",
                     "dropdown": "{{ 'dropdown.js' | asset_url }}",
+                    "footer-scroll-top": "{{ 'footer-scroll-top.js' | asset_url }}",
                     "localization-switcher": "{{ 'localization-switcher.js' | asset_url }}",
+                    "motion-reveal-batch": "{{ 'motion-reveal-batch.js' | asset_url }}",
                     "motion-reveal-section": "{{ 'motion-reveal-section.js' | asset_url }}",
                     "product-gallery": "{{ 'product-gallery.js' | asset_url }}",
                     "product-layout": "{{ 'product-layout.js' | asset_url }}",
@@ -91,13 +93,6 @@
         {% if settings.motion_enabled == false %}
             data-motion-enabled="false"
         {% endif %}
-        {% if settings.content_reveal_style != blank and settings.content_reveal_style != 'none' %}
-            data-content-reveal-style="{{ settings.content_reveal_style }}"
-        {% endif %}
-        {% if settings.media_reveal_style != blank and settings.media_reveal_style != 'none' %}
-            data-media-reveal-style="{{ settings.media_reveal_style }}"
-        {% endif %}
-        data-reveal-behavior="{{ settings.reveal_behavior | default: 'once' }}"
     >
         <a class="skip-link" href="#MainContent">
             {{- 'accessibility.skip_to_content' | t -}}

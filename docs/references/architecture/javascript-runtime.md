@@ -179,7 +179,7 @@ Inspect the store modules for configure/init APIs instead of copying historical 
 
 ## Motion Runtime Boundary
 
-Ordinary motion uses semantic `data-motion-*` hooks, Alpine components such as `motionRevealSection()`, and CSS rules in `tailwind/tailwind.animates.css`.
+Ordinary motion uses the public `data-motion-*` protocol, the native adapter registered from `motion-reveal-section.js` as `motionRevealSection()`, and CSS rules in `tailwind/tailwind.animates.css` that activate only after runtime state attributes appear.
 
 The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary motion work. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
 
