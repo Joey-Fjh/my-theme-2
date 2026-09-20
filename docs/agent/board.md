@@ -9,7 +9,7 @@ This board is the discussion surface for active and deferred decisions: evidence
 - **One decision is active at a time.** Evidence that several decisions share lives under Shared Evidence, not inside whichever decision happened to surface it. A discussion that accumulates unrelated decisions is split before it grows further.
 - This file and `context.md` are construction-phase records. Migrate lasting rules and remove both when the Skeleton is complete.
 
-Last updated: 2026-09-18.
+Last updated: 2026-09-20.
 
 Decision IDs are labels, not an index. The sequence has gaps: D4 through D14 were never recorded in any committed document and survive only in early chat history, and D18 was assigned and retired within a single session. A missing number means no record exists, not that a record was lost.
 
@@ -50,9 +50,8 @@ Nothing below is a plan. Each item needs a decision before it can become one.
 - A generic block may vary appearance while preserving semantics, but must not collect unrelated ownership, business semantics, or behavior modes merely to reuse markup.
 - Liquid July '26 `{% block %}` and `{% partial %}` features are not stable requirements. Any `{% partial %}` trial must be low risk and verify ordinary rendering, Theme Editor behavior, accessibility state, request races, Alpine lifecycle, and custom component lifecycle.
 - `ShopifySectionRefresher` remains transitional while retained flows depend on Section Rendering API behavior; removal requires approved replacements with explicit lifecycle, accessibility, error, and history ownership.
-- Tailwind remains; see **CSS architecture** for the decision and its evidence. A fixed `@source inline(...)` vocabulary with `source(none)` would make ordinary section work buildless, because the emitted set stops depending on markup and `npm.cmd run build:tw` is then needed only when the vocabulary changes. Measurement puts that lever at 4,934 brotli bytes, so treat it as a build-workflow change rather than the answer to the always-loaded payload.
-- Component-specific CSS belongs with its section, block, or snippet; shared tokens, typography, surfaces, layout vocabulary, and reusable motion remain global. Use manifest utilities before local styles; reserve local styles for selectors, pseudo-elements, keyframes, container queries, `:has()`, grid templates, and exact values outside the manifest.
-- Manifest contents, token boundary, generated stylesheet name, Swiper ownership, and the final reference rewrite remain open. No CSS implementation batch has started.
+- Tailwind remains. The CSS decision and its constraints are now owned by `docs/references/style-system/css-architecture.md`. One lever stays unused: a fixed `@source inline(...)` vocabulary with `source(none)` would make ordinary section work buildless, since the emitted set would stop depending on markup. Measured at 4,934 brotli bytes, so it is a build-workflow question, not a payload one.
+- Token boundary, generated stylesheet name, and Swiper ownership remain later decisions.
 
 ### Pluggable-core direction
 
@@ -73,9 +72,9 @@ Stated and confirmed by the user on 2026-09-17 as the Skeleton's target shape. T
 ### P1+P5b Stage 2 - holdover placement
 
 - Scope: place rules 5 and 11 with their then-decided owners and remove their pending-decision labels from `AGENTS.md`.
-- Dependencies: the accepted JavaScript core and event conventions, plus the CSS placement rule proposed under **CSS architecture**.
+- Dependencies: the accepted JavaScript core and event conventions, plus the CSS placement rule, which is now recorded in `docs/references/style-system/css-architecture.md`. All resolved.
 - Acceptance: both rules have exactly one owner; no protection is lost in transit; `AGENTS.md` ends at 6 implementation rules.
-- Status: blocked by the remaining CSS discussion.
+- Status: unblocked 2026-09-20. Not started.
 
 The earlier D22 and D23 labels referred to documentation-ownership questions. Their actionable content is the migration table below; use that table rather than carrying orphan decision IDs with no standalone definition.
 
@@ -95,74 +94,18 @@ Pending migrations owned by this batch:
 
 Until migrated, retain these machine facts: Windows symlinks were repaired with repository-local `core.symlinks = true`; Developer Mode is optional; project Hooks require workspace trust and may not run on a first clone; and live Shopify Dev MCP/Context7 availability in Codex and Cursor remains unproven and must be rechecked before use.
 
-### CSS architecture
+### CSS architecture — settled 2026-09-20
 
-**Framework decided 2026-09-18 by user statement.** Tailwind stays as the Skeleton's CSS framework, alongside Alpine for JavaScript. It was decided against the alternatives, not by default:
+Tailwind stays as the framework; component CSS lives in `{% stylesheet %}` blocks; shared vocabulary stays in the Tailwind build. The rule, the three placement constraints, the three Shopify bundled-asset tag constraints, the layer ownership table, and the Decision Flow now live in `docs/references/style-system/css-architecture.md`, which is the owner. The measurement that drove the decision is in git history and is not reproduced here.
 
-- Shopify's official `skeleton-theme` ships no CSS framework. Its `assets/` holds one `critical.css` of roughly 2,100 bytes — reset, token references, typography normalisation, the `.shopify-section` grid, form and dialog basics, and a `.full-width` utility — with no build tooling. Everything else lives in per-file `{% stylesheet %}` blocks.
-- Theme Store requirements never mention CSS frameworks. Requirement 10 permits stylesheets that are written **or compiled** into `.css`, and bans only Sass sources and minified first-party files; the compiled Tailwind output is compliant. The performance gate is a Lighthouse average of 60 or better across home, product and collection.
-- The reason for keeping Tailwind is reuse. Plain component CSS has no reuse mechanism on this platform and `.scss` is banned outright, so utility composition is the remaining option, and it tested well in prior theme work.
-- Official practice is a reference, not an authority. Diverging here is a recorded choice with a stated reason, not an oversight.
-
-**Adopted with it:** component-specific CSS moves into `{% stylesheet %}` blocks, so Shopify's stylesheet subsetting carries it per render tree.
-
-**What stays open** is the single question this decision creates: how the existing hand-written CSS is divided between the Tailwind build and `{% stylesheet %}`, and what rule governs CSS written from here on.
-
-#### Evidence, measured 2026-09-18
-
-Measured through an isolated build into a scratch path; the tracked `assets/tailwind.output.css` was not overwritten.
-
-| Source | raw | brotli |
-| --- | ---: | ---: |
-| Hand-written CSS + theme layer + preflight, no markup scanning | 217,675 | 18,324 |
-| Current output, with markup scanning | 300,231 | 23,258 |
-| Contribution of markup-scanned utilities | 82,556 | 4,934 |
-
-The always-loaded payload is dominated by hand-written CSS, not by generated utilities. A fixed `@source inline(...)` vocabulary — the direction recorded earlier — addresses only the 4,934-byte brotli slice.
-
-Most of that hand-written CSS is already dead: D24 deleted 74 files without touching CSS. Two independent checks agree.
-
-- `tailwind.snippets.css` annotates each block with an `Owner:` Liquid file. 48,914 bytes across 16 blocks name a file that no longer exists; 8,857 bytes across 6 blocks name a surviving one.
-- Extracting class selectors, `@utility` names and `--animate-*` tokens from the six hand-written files, then testing each against retained Liquid markup and against `@apply` cross-references:
-
-| File | bytes | selectors | referenced | unreferenced |
-| --- | ---: | ---: | ---: | ---: |
-| `tailwind.snippets.css` | 58,759 | 175 | 11 | 164 |
-| `tailwind.components.css` | 45,995 | 105 | 28 | 77 |
-| `tailwind.animates.css` | 43,105 | 21 | 1 | 20 |
-| `tailwind.elements.css` | 34,342 | 32 | 11 | 21 |
-| `tailwind.typography.css` | 7,416 | 23 | 17 | 6 |
-| `tailwind.utilities.css` | 4,228 | 30 | 8 | 22 |
-| **Total** | **193,845** | **386** | **76** | **310** |
-
-The single referenced selector in `tailwind.animates.css` is `animate-spin`, which Tailwind provides natively; that file's own `--animate-*` tokens have no consumer.
-
-**Treat 310 of 386 as an estimate with a known upward bias.** Liquid builds class names dynamically — `color-{{ section.settings.color_scheme }}`, and captured variables such as `{{ article_heading_class }}` — so a static search under-counts live classes. Deletion must confirm each class individually. The ratio establishes direction, not a delete list.
-
-#### Hard constraints any placement rule must carry
-
-1. **`{% stylesheet %}` blocks are plain CSS.** Tailwind compiles `tailwind/*.css`; Shopify ships `{% stylesheet %}` content as written, so `@apply`, `@utility` and `@variant` never run there. All eight existing blocks already use zero Tailwind directives, but nothing records the constraint and the failure mode is silent.
-2. **Subsetting compatibility.** Shopify's rule is that a file's CSS classes may be used only within that file or files it directly renders. Cross-file use breaks silently once CSS moves into `{% stylesheet %}`. `sections/header.liquid` currently defines 25 classes in its block.
-3. **The shared vocabulary needs a stated boundary and a growth rule**, or `tailwind/*.css` grows back to what it is now.
-
-#### Proposed batch shape — not authorized
-
-1. Delete CSS whose `Owner:` file D24 removed and whose selectors confirm unreferenced, confirming one class at a time rather than by ratio.
-2. Place what survives: shared vocabulary stays in the Tailwind build with `@apply` intact; component-specific CSS moves to `{% stylesheet %}` as plain CSS.
-3. Record the three constraints above in `AGENTS.md` or `docs/references/style-system/css-architecture.md`.
-4. Close two gaps the move exposes. `tailwind/tailwind.input.css` `@source` omits `blocks/`, so under `source(none)` Theme Blocks are never scanned; today the four blocks survive only because sections happen to use the same 14 classes. And `assets/https.js` inserts partial Section Rendering responses (`:291`, `:303`) without extracting `<style data-section-stylesheet>`, which Shopify's subsetting documentation requires; exposure is negligible while CSS sits in the asset stylesheet and grows with every block moved.
-
-- Dependencies: none outstanding. The JavaScript architecture is accepted and the framework question is decided.
-- Acceptance: accept, reject or amend the proposed shape; record the resulting scope, acceptance boundary and unresolved risk before any CSS is edited; keep implementation out of the discussion batch.
-- Status: framework decided; batch shape awaiting user acceptance.
-- **D3 as previously framed is withdrawn.** It asked whether `assets/base.css` and the `@theme inline` token bridge enter a manifest batch. Measurement shows those two are 4,211 and 3,334 bytes of a 193,845-byte problem, and that the manifest was the wrong unit of decision.
+Result across six batches: always-loaded CSS fell from 300,231 raw / 23,258 brotli to 173,783 / 15,778, a 42 percent raw and 32 percent brotli reduction. `lint:theme` now enforces the platform tag constraints that Theme Check does not. A keyboard focus ring that never rendered was fixed. Deletion was governed by a five-probe liveness check iterated to a fixpoint.
 
 ### TB1 rework
 
 - Scope: rework the provisional `group`, `heading`, `text`, and `button` Theme Blocks and the `custom-content` host against the accepted JavaScript contract and the accepted CSS placement rule. Resolve the mobile `body-md` size mismatch, blank heading output, ineffective blank-link `aria-disabled`, and undecided group/style and primitive ownership.
-- Dependencies: accepted JavaScript architecture; the CSS placement rule under **CSS architecture**. The `@source` gap recorded there must be closed first, since `blocks/` is not scanned today.
+- Dependencies: accepted JavaScript architecture and the CSS placement rule, both settled. The `blocks/` `@source` gap is closed.
 - Acceptance: ownership boundaries remain intact; known semantic, accessibility, typography, and placement issues are resolved; no merchant-owned configuration changes; change-specific validation passes.
-- Status: blocked.
+- Status: unblocked 2026-09-20. Not started.
 
 ### P4 - License
 
@@ -171,17 +114,68 @@ The single referenced selector in `tailwind.animates.css` is `animate-spin`, whi
 - Acceptance: the decision is recorded and package metadata agrees with it; no unrelated package changes.
 - Status: not started.
 
+### Post-CSS acceptance cleanup candidates
+
+These are not part of the active CSS acceptance plan and must not be folded into it without a new authorized batch.
+
+- Remove or otherwise resolve the eight dead class symbols that remain inside retained multi-selector rules: `is-open`, `panel-motion-content`, `panel-motion-disclosure`, `panel-motion-popover`, `panel-motion-shell`, `tab-content-underlined`, `tab-control-underlined`, and `tab-header-underlined`.
+### Unreachable JavaScript components, DOM contracts, and orphaned schema (measured 2026-09-20)
+
+**Open question:** should the unreachable JavaScript components, their DOM contracts, and the orphaned schema option be retired or reconnected? Not active while the CSS series is being accepted. Both findings predate CSS-1 and are visible at `21c3ddb`.
+
+**`SectionRefresher` `innerSelectors` path — no reachable flow today.**
+
+- `assets/alpine.components.overlays.js:594` sits in `cartOverlay`, which no Liquid file mounts. Only `cartPage()` is mounted, at `sections/cart.liquid:8`.
+- `sections/collection.liquid:12` calls `collectionFilters()` with no arguments, so `selectors` is null and `buildDomMap()` never sets `innerSelectors`; collection filtering and pagination take the full-section path.
+- `assets/alpine.components.product-cards.js:477` and `assets/alpine.components.product.js:1339` target `data-related-products-content` and `data-pickup-availability-*`, none of which exist in any Liquid file.
+
+The validator tests for `carryInnerSectionStylesheet` are therefore the only automated coverage the production method can have until a flow is reconnected.
+
+**`header-super-menu-*` CSS — no rendering path.**
+
+- `sections/header.liquid` still carries `header-super-menu-*` rules in its `{% stylesheet %}` block.
+- The schema still offers `menu_type = super`, but line 116 always renders `header-dropdown-menu`.
+
 ## Next Work
 
-1. Accept, reject, or amend the proposed batch shape under **CSS architecture**. The framework question is decided; this is the one decision now active.
-2. On acceptance, record the scope, acceptance boundary, and dependencies in `context.md` before any CSS is edited, and authorize the batch separately.
-3. P1+P5b Stage 2 and TB1 rework stay blocked until that CSS placement rule exists. P4 remains an independent later choice.
+The CSS series is complete and accepted. One decision is active at a time; select one of the following.
+
+1. **Select the next decision.** The three candidates recorded below — motion, typography, and the unreachable-component question — are all ready. Motion has the strongest evidence and partly resolves itself; typography's measurement contradicts the intuition that drove it; the unreachable components are a cleanup with no design content.
+2. **Or execute an unblocked plan.** P1+P5b Stage 2 and TB1 rework both unblocked on 2026-09-20 now that the CSS placement rule exists. Each still needs explicit authorization before execution.
+3. P4 (license) remains an independent later choice, waiting only on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
 After this workflow is proven through real theme batches, evaluate extracting the portable board/context lifecycle, vendor-neutral roles, and thin client adapters into a reusable development template. Do not extract theme-specific rules, validators, or references as generic workflow infrastructure.
 
 ---
+
+## Candidate next decisions after CSS-1
+
+Raised by the user on 2026-09-20 while CSS-1 executes. **None of these is active.** They are recorded with the evidence each already has, so the next decision can be selected rather than re-derived. Select exactly one when CSS-1 is accepted.
+
+### Motion — strongest case, and partly self-resolving
+
+`tailwind.animates.css` is 43,105 bytes, 21 selectors, 1 referenced, and that one is `animate-spin`, which Tailwind provides natively. Its remaining selectors name Ceylune-era sections D24 deleted: `watermark-marquee`, `scrolling-icon-with-text__marquee`, `icons-animate-*`. CSS-1 Stage A removes nearly all of it under the liveness check, so this decision does not need to fund the demolition.
+
+What survives the demolition is the real question, already on this board under **Open Evidence**: `dialog-motion.js` and `drawer-motion.js` are 17,320 bytes, 25 percent of the always-loaded module graph, and they couple to CSS by hardcoded animation-name strings compared against `event.animationName`.
+
+A new approach worth evaluating: Shopify's current theme guidance names the **View Transitions API** under its design requirements. That would replace the `animationend` name-matching contract with a platform primitive and could retire both files. Two things must be checked before it is proposed, not assumed: whether it clears the repository browser matrix (`last 2 Safari major versions`, `last 3 Firefox`, `last 2 iOS`), which `npm.cmd run lint:compat` answers directly; and whether the retained dialog and drawer flows can express their motion through it without losing the reduced-motion gate and the `settings.motion_enabled` merchant control.
+
+### Color chain — retain, and it is already protected
+
+Agreed with the user's reading. `color-*` is built dynamically from `color-{{ section.settings.color_scheme }}`, is merchant-driven, and matches the official Skeleton's own color-scheme support. CSS-1 probe P5 already treats the whole family as live, so no deletion pressure reaches it. Nothing to decide unless the token boundary changes.
+
+### Typography — the measurement contradicts the intuition
+
+The user's reading was that fonts need redoing or minimizing. **Minimal is already true, and redoing is the most expensive of the three for the least byte payoff.**
+
+- `tailwind.typography.css` is 7,416 bytes: 3.8 percent of the 193,845-byte hand-written total, the smallest of the six files.
+- It is the most alive: 17 of 23 selectors referenced, 74 percent, against 6 percent for `tailwind.snippets.css`.
+- It is not ad-hoc. `heading-base` carries the shared declarations and each tier adds one `font-size` over `--font-heading-scale`, so the tiers are token-driven rather than duplicated.
+- It is the only one of the three that is **merchant-facing**. Those 17 classes are `{% schema %}` option values reached through `section.settings.heading_size`, so changing the vocabulary changes merchant-selectable settings and requires a `config/settings_data.json` and `templates/*.json` migration decision, which is the boundary this project protects hardest.
+
+If a typography decision is selected, the defensible unit is the **token boundary** — which `--font-*` variables the Skeleton owns and how a derived theme overrides them — not the tier class vocabulary. Rewriting the vocabulary should be argued on merchant-facing grounds, if at all; it cannot be argued on payload.
 
 ## Deferred Discussion Backlog
 
