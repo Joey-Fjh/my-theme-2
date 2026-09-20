@@ -61,6 +61,15 @@ const TAB_ARIA_SELECTED_ATTRS = ['aria-selected', ':aria-selected', 'x-bind:aria
 const TAB_ARIA_CONTROLS_ATTRS = ['aria-controls', ':aria-controls', 'x-bind:aria-controls'];
 
 const BUNDLED_ASSET_TAG_NAMES = ['stylesheet', 'javascript'];
+const CSS_GLOBS = ['tailwind/**/*.css', 'assets/*.css'];
+
+const { extractBlocks } = require('./lint-embedded-compat.cjs');
+
+const MOTION_TARGET_SELECTOR_RE = /\[data-motion-reveal(?:=['"][^'"]*['"])?\]/;
+const MOTION_RUNTIME_STATE_SELECTOR_RE =
+    /\[data-motion-(?:state|resetting|staging|critical-runtime)(?:=|]|$)/;
+const MOTION_HIDING_DECL_RE =
+    /\b(?:opacity\s*:\s*0\b|visibility\s*:\s*hidden\b|display\s*:\s*none\b)/;
 
 function parseRootArg(argv) {
     const index = argv.indexOf('--root');
@@ -235,6 +244,84 @@ function collectBundledAssetTagFailures(ast, text, file, failures) {
     }
 }
 
+function stripCssComments(text) {
+    return text.replace(/\/\*[\s\S]*?\*\//g, (match) => match.replace(/[^\n\r]/g, ' '));
+}
+
+function splitCssRules(text, rangeStart = 0, rangeEnd = text.length) {
+    const segment = text.slice(rangeStart, rangeEnd);
+    const stripped = stripCssComments(segment);
+    const rules = [];
+    let depth = 0;
+    let ruleStart = 0;
+
+    for (let index = 0; index < stripped.length; index += 1) {
+        const char = stripped[index];
+
+        if (char === '{') {
+            depth += 1;
+        } else if (char === '}') {
+            depth -= 1;
+
+            if (depth !== 0) {
+                continue;
+            }
+
+            const chunk = stripped.slice(ruleStart, index + 1);
+            const brace = chunk.indexOf('{');
+
+            if (brace !== -1) {
+                const selectorPart = chunk.slice(0, brace);
+                const selectorTrimmed = selectorPart.trim();
+                const leadingWhitespace = selectorPart.length - selectorPart.trimStart().length;
+                const absoluteOffset = rangeStart + ruleStart + leadingWhitespace;
+
+                if (selectorTrimmed.startsWith('@')) {
+                    const nestedStart = rangeStart + ruleStart + brace + 1;
+                    const nestedEnd = rangeStart + ruleStart + index;
+                    rules.push(...splitCssRules(text, nestedStart, nestedEnd));
+                } else {
+                    rules.push({
+                        selector: selectorTrimmed,
+                        decls: chunk.slice(brace + 1, -1),
+                        offset: absoluteOffset,
+                    });
+                }
+            }
+
+            ruleStart = index + 1;
+        }
+    }
+
+    return rules;
+}
+
+function collectMotionActivationFailures(cssText, file, failures, options = {}) {
+    const { baseOffset = 0, lineText = cssText } = options;
+
+    for (const rule of splitCssRules(cssText)) {
+        if (!MOTION_TARGET_SELECTOR_RE.test(rule.selector)) {
+            continue;
+        }
+
+        if (!MOTION_HIDING_DECL_RE.test(rule.decls)) {
+            continue;
+        }
+
+        if (MOTION_RUNTIME_STATE_SELECTOR_RE.test(rule.selector)) {
+            continue;
+        }
+
+        failures.push({
+            file,
+            line: lineAt(lineText, baseOffset + rule.offset),
+            message:
+                'Motion targets must not be hidden without a runtime state attribute in the selector. ' +
+                'Require [data-motion-state], [data-motion-resetting], [data-motion-staging], or [data-motion-critical-runtime].',
+        });
+    }
+}
+
 function collectSvgTextLengthFailures(text, file, failures) {
     const masked = maskNonExecutableLiquid(text);
 
@@ -271,6 +358,20 @@ async function runThemeLint(root) {
         collectBundledAssetTagFailures(ast, text, file, failures);
         collectSvgTextLengthFailures(text, file, failures);
         collectTabFailures(ast, text, file, failures);
+
+        for (const block of extractBlocks(text, 'stylesheet')) {
+            collectMotionActivationFailures(block.code, file, failures, {
+                baseOffset: block.offset,
+                lineText: text,
+            });
+        }
+    }
+
+    const cssFiles = await fg(CSS_GLOBS, { cwd: root, dot: false, onlyFiles: true });
+
+    for (const file of cssFiles.map(formatPath)) {
+        const text = await fs.readFile(path.join(root, file), 'utf8');
+        collectMotionActivationFailures(text, file, failures);
     }
 
     return failures;
@@ -308,4 +409,7 @@ module.exports = {
     collectBundledAssetTagFailures,
     collectSvgTextLengthFailures,
     collectTabFailures,
+    collectMotionActivationFailures,
+    splitCssRules,
+    stripCssComments,
 };

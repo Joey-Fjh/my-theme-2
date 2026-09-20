@@ -138,11 +138,11 @@ The validator tests for `carryInnerSectionStylesheet` are therefore the only aut
 
 ## Next Work
 
-The CSS series is complete and accepted. One decision is active at a time; select one of the following.
+The CSS series and the motion foundation are both accepted. GSAP official Skills tooling is the active plan in `context.md`, authorized and not started.
 
-1. **Select the next decision.** The three candidates recorded below — motion, typography, and the unreachable-component question — are all ready. Motion has the strongest evidence and partly resolves itself; typography's measurement contradicts the intuition that drove it; the unreachable components are a cleanup with no design content.
-2. **Or execute an unblocked plan.** P1+P5b Stage 2 and TB1 rework both unblocked on 2026-09-20 now that the CSS placement rule exists. Each still needs explicit authorization before execution.
-3. P4 (license) remains an independent later choice, waiting only on a distribution-intent decision.
+1. Execute the GSAP Skills batch, then review it against its recorded acceptance boundary. It touches agent tooling only; no storefront file changes.
+2. Then select one decision. Ready candidates, each with evidence already recorded: the dialog/drawer motion cleanup including the animation-name coupling, the unreachable JavaScript components and orphaned super-menu schema, and typography's token boundary. Keep one active at a time.
+3. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -150,17 +150,22 @@ After this workflow is proven through real theme batches, evaluate extracting th
 
 ---
 
-## Candidate next decisions after CSS-1
+## Active decision and later candidates
 
-Raised by the user on 2026-09-20 while CSS-1 executes. **None of these is active.** They are recorded with the evidence each already has, so the next decision can be selected rather than re-derived. Select exactly one when CSS-1 is accepted.
+MOTION-1 is the current recorded plan. Its first dependency, M-D1, is the one active discussion. Typography and the unreachable-component cleanup remain later candidates and are not active.
 
-### Motion — strongest case, and partly self-resolving
+### Motion — settled 2026-09-20
 
-`tailwind.animates.css` is 43,105 bytes, 21 selectors, 1 referenced, and that one is `animate-spin`, which Tailwind provides natively. Its remaining selectors name Ceylune-era sections D24 deleted: `watermark-marquee`, `scrolling-icon-with-text__marquee`, `icons-animate-*`. CSS-1 Stage A removes nearly all of it under the liveness check, so this decision does not need to fund the demolition.
+The motion baseline, the native reveal mechanism, and the public protocol were decided and implemented. The contract is owned by `docs/references/architecture/motion-architecture.md`: three authored attributes (`data-motion-section`, a valueless `data-motion-reveal`, `data-motion-critical`), one merchant setting (`motion_enabled`), Intersection Observer plus CSS transitions, and the rule that CSS never hides an authored target without a runtime state attribute — which `lint:theme` now enforces across `tailwind/`, `assets/*.css`, and `{% stylesheet %}` blocks.
 
-What survives the demolition is the real question, already on this board under **Open Evidence**: `dialog-motion.js` and `drawer-motion.js` are 17,320 bytes, 25 percent of the always-loaded module graph, and they couple to CSS by hardcoded animation-name strings compared against `event.animationName`.
+Result: the reveal surface fell from roughly 71,232 raw / 8,454 Brotli bytes to a small adapter plus a single CSS block, six authored attributes and four merchant settings retired, and worst-case reveal delay cut from 4,990ms to 1,760ms independent of pagination size.
 
-A new approach worth evaluating: Shopify's current theme guidance names the **View Transitions API** under its design requirements. That would replace the `animationend` name-matching contract with a platform primitive and could retire both files. Two things must be checked before it is proposed, not assumed: whether it clears the repository browser matrix (`last 2 Safari major versions`, `last 3 Firefox`, `last 2 iOS`), which `npm.cmd run lint:compat` answers directly; and whether the retained dialog and drawer flows can express their motion through it without losing the reduced-motion gate and the `settings.motion_enabled` merchant control.
+Still open, and deliberately outside that work:
+
+- Dialog and drawer motion, including the `event.animationName` string coupling between `dialog-motion.js` / `drawer-motion.js` and their stylesheets. See **Open Evidence** above. This is the remaining half of the motion layer.
+- View Transitions, deferred for genuine page and shared-element transitions rather than ordinary reveal or drawers.
+- GSAP runtime vendoring, loading boundary, and licensing records. GSAP is approved as the dynamically loaded engine for explicit complex choreography, but no retained consumer exists, so nothing is vendored. The official documentation Skills are a separate, agent-tooling-only batch now active in `context.md`.
+- Three.js as an optional, consumer-loaded 3D adapter.
 
 ### Color chain — retain, and it is already protected
 
