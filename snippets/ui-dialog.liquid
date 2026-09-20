@@ -1,67 +1,46 @@
-{% comment %}
-    ui-dialog — Reusable dialog shell (modal or drawer) driven by Alpine store.
-    --------------------------------------------------
-    @param {string} id          - Required. Unique dialog identifier (must match open(id)).
-    @param {string} [type]      - 'modal' | 'drawer' (default: 'modal').
-    @param {string} [position]  - For drawer only: 'left' | 'right' (default: 'right').
-    @param {string} [modal_placement] - For modal only: 'center' | 'bottom-left' | 'bottom-right' (default: 'center').
-    @param {string} [dialog_motion_mode] - Modal motion only: 'origin' | 'edge' | 'none'. Auto: edge for bottom-*, origin for center.
-    @param {string} [drawer_motion_mode] - Drawer motion only: 'slide' | 'none'. Default: slide for type drawer.
-    @param {boolean} [drawer_motion_sheet] - Use bottom sheet motion below pc breakpoint (Cart/Filters mobile).
-    @param {boolean} [drawer_desktop_layout] - Apply the shared desktop drawer shell preset (width + top). Horizontal anchor follows `position`.
-    @param {string} [layer]     - Semantic z-index layer: 'drawer' | 'modal' | 'modal-focus' (default: 'modal').
-    @param {string} [top_class] - Viewport top offset class for overlay/wrapper (default: 'top-0').
-    @param {string} [color_scheme] - Optional color scheme id (e.g. 'scheme-1'). Applied on `.ui-dialog-panel` as `color-{id}`.
-    @param {string} [overlay_class] - Tailwind classes for overlay background (default: 'bg-dialog-overlay').
-    @param {boolean} [show_overlay] - Whether to render the overlay (default: true).
-    @param {string} [root_class] - Extra classes for root wrapper (layout/positioning escape hatch).
-    @param {string} [modal_wrapper_class] - Classes for modal outer wrapper.
-    @param {string} [modal_panel_class] - Classes for modal panel.
-    @param {string} [drawer_wrapper_class] - Classes for drawer wrapper, including width/position overrides.
-    @param {string} [drawer_panel_class] - Extra classes for drawer panel.
-    @param {string} [mobile_layout] - Mobile viewport shell preset: 'default' | 'inset' (default: 'default').
-    @param {string} [content]  - HTML content (use capture in parent and pass as content).
-{% endcomment %}
+{% doc %}
+Renders the shared Alpine-driven drawer shell.
 
-{%- assign dialog_type = type | default: 'modal' -%}
+@param {string} id - Unique dialog identifier; must match `$store.dialog.open(id)`.
+@param {string} content - Captured drawer content.
+@param {string} [position] - `left` or `right`. Defaults to `right`.
+@param {string} [top_class] - Viewport top-offset utility. Defaults to `top-0`.
+@param {string} [color_scheme] - Optional color scheme id.
+@param {string} [overlay_class] - Overlay background utilities.
+@param {boolean} [show_overlay] - Whether to render the overlay. Defaults to true.
+@param {string} [root_class] - Extra root classes.
+@param {string} [drawer_wrapper_class] - Extra drawer shell classes.
+@param {string} [drawer_panel_class] - Extra drawer panel classes.
+@param {string} [mobile_layout] - `default` or `inset`.
+@param {string} [drawer_motion_mode] - `slide` or `none`. Defaults to `slide`.
+@param {boolean} [drawer_motion_sheet] - Use bottom-sheet motion below the pc breakpoint.
+@param {boolean} [drawer_desktop_layout] - Apply the shared desktop drawer shell preset.
+@param {boolean} [show_close_button] - Render the corner close button.
+@param {string} [close_label] - Accessible close-button label.
+
+@example
+{% capture drawer_content %}Drawer content{% endcapture %}
+{% render 'ui-dialog', id: 'filters', position: 'left', content: drawer_content %}
+{% enddoc %}
+
 {%- assign dialog_position = position | default: 'right' -%}
-{%- assign dialog_layer = layer | default: 'modal' -%}
 {%- assign dialog_top_class = top_class | default: 'top-0' -%}
 {%- assign overlay_bg = overlay_class | default: 'bg-dialog-overlay' -%}
 {%- assign dialog_show_overlay = show_overlay | default: true -%}
-
 {%- assign root_classes = root_class | default: '' -%}
-{%- assign modal_wrapper_classes = modal_wrapper_class | default: '' -%}
-{%- assign modal_panel_classes = modal_panel_class | default: '' -%}
 {%- assign drawer_wrapper_classes = drawer_wrapper_class | default: '' -%}
 {%- assign drawer_panel_classes = drawer_panel_class | default: '' -%}
 {%- assign dialog_show_close_button = show_close_button | default: false -%}
-{%- assign dialog_close_label = close_label | default: 'accessibility.close_dialog' | t -%}
-
-{%- comment -%} Resolve semantic z-index layer classes {%- endcomment -%}
-{%- case dialog_layer -%}
-    {%- when 'drawer' -%}
-        {%- assign backdrop_z_class = 'z-layer-drawer-backdrop' -%}
-        {%- assign panel_z_class = 'z-layer-drawer' -%}
-    {%- when 'modal-focus' -%}
-        {%- assign backdrop_z_class = 'z-layer-modal-backdrop' -%}
-        {%- assign panel_z_class = 'z-layer-modal-focus' -%}
-    {%- else -%}
-        {%- assign backdrop_z_class = 'z-layer-modal-backdrop' -%}
-        {%- assign panel_z_class = 'z-layer-modal' -%}
-{%- endcase -%}
+{%- assign dialog_close_label = close_label | default: '' -%}
 
 {%- liquid
     assign mobile_layout_value = mobile_layout | default: 'default'
     assign mobile_layout_inset_class = ''
-    assign modal_shell_padding_class = 'p-4'
 
     if mobile_layout_value == 'inset'
         assign mobile_layout_inset_class = 'ui-dialog-mobile-layout-inset'
-        assign modal_shell_padding_class = 'max-pc:p-4'
+        assign drawer_panel_classes = 'ui-dialog-mobile-layout-panel ' | append: drawer_panel_classes | strip
     endif
-
-    assign modal_panel_classes = 'ui-dialog-panel ui-dialog-modal-panel ui-dialog-modal-width-default ui-dialog-modal-height-default ' | append: modal_panel_classes | strip
 
     assign drawer_desktop_layout_enabled = drawer_desktop_layout | default: false
     assign drawer_desktop_shell_classes = ''
@@ -71,10 +50,6 @@
 
     assign drawer_wrapper_classes = 'ui-dialog-drawer-width-default ' | append: drawer_desktop_shell_classes | append: ' ' | append: drawer_wrapper_classes | strip
 
-    if mobile_layout_value == 'inset'
-        assign drawer_panel_classes = 'ui-dialog-mobile-layout-panel ' | append: drawer_panel_classes | strip
-        assign modal_panel_classes = 'ui-dialog-mobile-layout-panel ' | append: modal_panel_classes | strip
-    endif
     assign color_scope_class = color_scheme | default: ''
     if color_scope_class != blank
         assign color_scope_class = 'color-' | append: color_scope_class | append: ' surface-component'
@@ -82,35 +57,9 @@
         assign color_scope_class = ''
     endif
 
-    assign modal_placement_value = modal_placement | default: 'center'
-    assign modal_placement_classes = 'items-center justify-center'
-    case modal_placement_value
-        when 'bottom-left'
-            assign modal_placement_classes = 'items-end justify-start'
-        when 'bottom-right'
-            assign modal_placement_classes = 'items-end justify-end'
-    endcase
-
-    assign dialog_motion_resolved = ''
-    if dialog_type == 'modal'
-        if dialog_motion_mode == 'none'
-            assign dialog_motion_resolved = ''
-        elsif dialog_motion_mode == 'origin' or dialog_motion_mode == 'edge'
-            assign dialog_motion_resolved = dialog_motion_mode
-        elsif modal_placement_value == 'bottom-left' or modal_placement_value == 'bottom-right'
-            assign dialog_motion_resolved = 'edge'
-        else
-            assign dialog_motion_resolved = 'origin'
-        endif
-    endif
-
     assign drawer_motion_resolved = ''
-    if dialog_type == 'drawer'
-        if drawer_motion_mode == 'none'
-            assign drawer_motion_resolved = ''
-        else
-            assign drawer_motion_resolved = 'slide'
-        endif
+    if drawer_motion_mode != 'none'
+        assign drawer_motion_resolved = 'slide'
     endif
 
     assign drawer_motion_sheet_enabled = false
@@ -136,13 +85,10 @@
     x-data="{}"
     x-show="$store.dialog.active === $el.dataset.dialogId || $store.dialog.closing === $el.dataset.dialogId"
     x-cloak
-    class="fixed inset-0 {{ backdrop_z_class }} {{ root_classes }}"
+    class="fixed inset-0 z-layer-drawer-backdrop {{ root_classes }}"
     @keydown.escape.window="$store.dialog.close()"
     data-dialog-root
     data-dialog-id="{{ id | escape }}"
-    {% if dialog_motion_resolved != blank %}
-        data-dialog-motion-mode="{{ dialog_motion_resolved }}"
-    {% endif %}
     {% if drawer_motion_resolved == 'slide' %}
         data-drawer-motion
         data-drawer-motion-slide="{{ dialog_position }}"
@@ -153,76 +99,41 @@
 >
     {%- if dialog_show_overlay -%}
         <div
-            class="fixed inset-x-0 bottom-0 {{ backdrop_z_class }} {{ dialog_top_class }} {{ overlay_bg }}"
+            class="fixed inset-x-0 bottom-0 z-layer-drawer-backdrop {{ dialog_top_class }} {{ overlay_bg }}"
             {% if drawer_motion_resolved == 'slide' %}
                 data-drawer-motion-backdrop
-            {% else %}
-                data-dialog-motion-backdrop
             {% endif %}
             @click="$store.dialog.close()"
         ></div>
     {%- endif -%}
 
-    {%- if dialog_type == 'drawer' -%}
-        <div
-            class="
-                ui-dialog-drawer-shell fixed bottom-0 {{ panel_z_class }} w-full
-                {{ dialog_top_class }}
-                {% if dialog_position == 'left' %}
-                    left-0
-                {% else %}
-                    right-0
-                {% endif %}
-                {{ mobile_layout_inset_class }}
-                {{ drawer_wrapper_classes }}
-            "
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dialog-title-{{ id | escape }}"
-            data-dialog-panel
-            {% if drawer_motion_resolved == 'slide' %}
-                data-drawer-motion-target
+    <div
+        class="
+            ui-dialog-drawer-shell fixed bottom-0 z-layer-drawer w-full
+            {{ dialog_top_class }}
+            {% if dialog_position == 'left' %}
+                left-0
+            {% else %}
+                right-0
             {% endif %}
-            tabindex="-1"
-            @click.stop
-        >
-            <div
-                class="ui-dialog-panel ui-dialog-drawer-panel {{ drawer_panel_classes }}{% if color_scheme != blank %} {{ color_scope_class }}{% endif %}"
-            >
-                {{ dialog_close_button_markup }}
-                {{ content }}
-            </div>
-        </div>
-    {%- else -%}
+            {{ mobile_layout_inset_class }}
+            {{ drawer_wrapper_classes }}
+        "
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dialog-title-{{ id | escape }}"
+        data-dialog-panel
+        {% if drawer_motion_resolved == 'slide' %}
+            data-drawer-motion-target
+        {% endif %}
+        tabindex="-1"
+        @click.stop
+    >
         <div
-            class="
-                pointer-events-none fixed inset-x-0 bottom-0 {{ panel_z_class }} flex {{ modal_shell_padding_class }}
-                {{ dialog_top_class }}
-                {{ modal_placement_classes }}
-                {% if dialog_motion_resolved == 'origin' %}ui-dialog-modal-shell--origin{% endif %}
-                {{ mobile_layout_inset_class }}
-                {{ modal_wrapper_classes }}
-            "
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dialog-title-{{ id | escape }}"
-            data-dialog-panel
-            tabindex="-1"
+            class="ui-dialog-panel ui-dialog-drawer-panel {{ drawer_panel_classes }}{% if color_scheme != blank %} {{ color_scope_class }}{% endif %}"
         >
-            <div
-                class="{{ modal_panel_classes }}{% if color_scheme != blank %} {{ color_scope_class }}{% endif %}"
-                {% if dialog_motion_resolved != blank %}
-                    data-dialog-motion-target
-                    data-dialog-motion-mode="{{ dialog_motion_resolved }}"
-                    {% if dialog_motion_resolved == 'edge' %}
-                        data-dialog-motion-edge="{{ modal_placement_value }}"
-                    {% endif %}
-                {% endif %}
-                @click.stop
-            >
-                {{ dialog_close_button_markup }}
-                {{ content }}
-            </div>
+            {{ dialog_close_button_markup }}
+            {{ content }}
         </div>
-    {%- endif -%}
+    </div>
 </div>

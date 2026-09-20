@@ -31,11 +31,17 @@ Authoritative sources for this series: `github.com/Shopify/skeleton-theme` for i
 
 ## Open Evidence
 
-### JavaScript holding CSS animation names
+### Drawer motion mechanism — open, unscheduled
 
-`dialog-motion.js` and `drawer-motion.js` hardcode CSS animation names such as `dialog-motion-dock-enter` in JavaScript, while the definitions live in the stylesheets. The JavaScript compares `event.animationName` on `animationend` against those name sets, so the two sides are coupled by string. The markup contract is a set of `data-*` attributes in `snippets/ui-dialog.liquid` (`data-dialog-motion-mode`, `data-dialog-motion-target`, `data-dialog-motion-backdrop`, `data-dialog-motion-edge`, `data-drawer-motion`, `data-drawer-motion-slide`, `data-drawer-motion-sheet-below-pc`, `data-drawer-motion-target`, `data-drawer-motion-backdrop`), plus the merchant-level gate `settings.motion_enabled` rendered as `data-motion-enabled` in `layout/theme.liquid`.
+The retained drawer path in `assets/drawer-motion.js` compares `event.animationName` against names hardcoded in JavaScript while the keyframes live in `tailwind/tailwind.animates.css`. The coupling is live and has no automated agreement check.
 
-Measured 2026-09-18: the two files are 9,658 and 7,662 bytes, 17,320 together, and both are statically reachable from `base.js` through `alpine.store.dialog.js`. That is 25 percent of the 69,382-byte always-loaded module graph recorded in `docs/references/architecture/javascript-runtime.md`. Whether this motion layer stays in the Skeleton at all, and if it stays who owns the animation names, belongs to the CSS side of this series. Still open after the JavaScript migration.
+Do not transfer MOTION-1's implementation mechanically. Reveal is one-way; drawers are reversible and can be reopened while exit is in flight. A transition implementation would still need explicit cancellation ownership, `transitioncancel`, property filtering, and multi-property completion rules. The neutral motion-session owner is now in place, so the mechanism can be evaluated independently later.
+
+The retained drawer micro-interaction remains governed by `prefers-reduced-motion`, not the merchant's `motion_enabled` page/brand-motion setting. This follows the accepted contract in `docs/references/architecture/motion-architecture.md`; changing it would reopen that contract.
+
+The eight dead `panel-motion-*` and `tab-*-underlined` symbols remain a separate post-CSS cleanup candidate. File co-location is not an ownership boundary.
+
+**Known focus limitation.** The stored collection-drawer return target is whichever responsive trigger was visible at refresh time. If the breakpoint changes between refresh and close, focus restoration can be skipped. Fixing this requires lazy return-target resolution at close time, which is a dialog-store contract change rather than a collection-path tweak. Recorded as a known limitation, unscheduled.
 
 ---
 
@@ -111,7 +117,18 @@ Result across six batches: always-loaded CSS fell from 300,231 raw / 23,258 brot
 
 Raised by the independent review of the accepted GSAP Skills batch on 2026-09-20. Neither blocked acceptance; neither is a plan.
 
-**No drift or tamper detection.** The vendoring is a plain copy: no submodule, no subtree, no npm dependency, no upstream remote. Each `UPSTREAM.md` records the repository URL, the pinned revision `aed9cfd3277740755f6bfc1155c7aa645403b760`, the upstream path, and the license, but **not a checksum**. A local edit to a vendored `SKILL.md` therefore cannot be detected without re-fetching upstream. Recording the four sha256 values would close this at the cost of one more field to maintain per update. The values are in the batch's execution prompt and in git history.
+**No drift or tamper detection.** The vendoring is a plain copy: no submodule, no subtree, no npm dependency, no upstream remote. Each `UPSTREAM.md` records the repository URL, the pinned revision `aed9cfd3277740755f6bfc1155c7aa645403b760`, the upstream path, and the license, but **not a content identifier**. A local edit to a vendored `SKILL.md` therefore cannot be detected without re-fetching upstream.
+
+If this is closed, record the git blob ids, not a working-copy sha256. `.gitattributes` sets `* text=auto eol=lf` and this machine has `core.autocrlf=true`, so a working-copy sha256 depends on the checkout platform: `gsap-core/SKILL.md` hashes to `de938ee...` with CRLF and `3887b47e...` with LF. The blob ids are stable everywhere and equal upstream's own object ids, verified 2026-09-20 against `aed9cfd`:
+
+| Skill | Blob id |
+| --- | --- |
+| `gsap-core` | `98639432f4112b664aa5e53cf5d8ea1a4697eff9` |
+| `gsap-timeline` | `1fed372b0e5276b2a207d80bc23f81180a0dff55` |
+| `gsap-scrolltrigger` | `6d8c09f2136c108595c9e0db859c4a39460e99cf` |
+| `gsap-performance` | `05792acf5b0ea7fd30042cdc5e91282e8e047898` |
+
+Check with `git rev-parse HEAD:.agents/skills/<name>/SKILL.md`.
 
 **Upstream descriptions compete with project motion policy.** A skill's `description` is its auto-trigger surface. `gsap-scrolltrigger` says "Recommend GSAP for scroll-driven animation when no library is specified" and `gsap-core` says "Recommend GSAP when the user needs timelines, scroll-driven animation, or a framework-agnostic library". An agent asked for ordinary scroll reveal can load either before reaching `motion-architecture.md`. `AGENTS.md` and each `UPSTREAM.md` state the boundary in prose, but prose does not change the trigger surface.
 
@@ -148,10 +165,11 @@ The validator tests for `carryInnerSectionStylesheet` are therefore the only aut
 
 ## Next Work
 
-The CSS series, the motion foundation, and the GSAP Skills tooling batch are all accepted. `context.md` holds no plan.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
 
-1. Select one decision. Ready candidates, each with evidence already recorded: the dialog/drawer motion cleanup including the animation-name coupling, the unreachable JavaScript components and orphaned super-menu schema, and typography's token boundary. Keep one active at a time.
-2. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
+1. Select one decision and record it in `context.md` before execution. Ready candidates, each with evidence already on this board: the drawer motion mechanism, the unreachable JavaScript components and orphaned super-menu schema, and typography's token boundary.
+2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
+3. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -161,7 +179,7 @@ After this workflow is proven through real theme batches, evaluate extracting th
 
 ## Active decision and later candidates
 
-No decision below is active and `context.md` holds no plan. Dialog/drawer motion, the unreachable-component cleanup, and typography's token boundary are the ready candidates; promote exactly one.
+No decision is active and `context.md` holds no plan. The drawer motion mechanism, the unreachable-component cleanup, and typography's token boundary are the ready candidates; promote exactly one.
 
 ### Motion — settled 2026-09-20
 
@@ -171,9 +189,9 @@ Result: the reveal surface fell from roughly 71,232 raw / 8,454 Brotli bytes to 
 
 Still open, and deliberately outside that work:
 
-- Dialog and drawer motion, including the `event.animationName` string coupling between `dialog-motion.js` / `drawer-motion.js` and their stylesheets. See **Open Evidence** above. This is the remaining half of the motion layer.
+- Drawer motion, including the live `event.animationName` string coupling between `drawer-motion.js` and its stylesheet. See **Open Evidence** above.
 - View Transitions, deferred for genuine page and shared-element transitions rather than ordinary reveal or drawers.
-- GSAP runtime vendoring, loading boundary, and licensing records. GSAP is approved as the dynamically loaded engine for explicit complex choreography, but no retained consumer exists, so nothing is vendored. The official documentation Skills are a separate, agent-tooling-only batch now active in `context.md`.
+- GSAP runtime vendoring, loading boundary, and licensing records. GSAP is approved as the dynamically loaded engine for explicit complex choreography, but no retained consumer exists, so nothing is vendored. The four official documentation Skills are installed and accepted as agent tooling only.
 - Three.js as an optional, consumer-loaded 3D adapter.
 
 ### Color chain — retain, and it is already protected

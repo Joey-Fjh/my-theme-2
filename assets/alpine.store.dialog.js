@@ -1,34 +1,24 @@
-import { DialogMotion } from './dialog-motion.js';
 import { DrawerMotion } from './drawer-motion.js';
+import { isElementVisible } from './dom-visibility.js';
+import { invalidateMotionSession } from './motion-session.js';
+import { lockScroll, unlockScroll } from './scroll-lock.js';
 
-function getDialogMotion(root) {
+function getDrawerMotion(root) {
     if (!root) return null;
 
     if (DrawerMotion && DrawerMotion.hasMotion(root)) {
         return DrawerMotion;
     }
 
-    if (DialogMotion && DialogMotion.hasMotion(root)) {
-        return DialogMotion;
-    }
-
     return null;
 }
 
 function lockPageScroll() {
-    if (DialogMotion && typeof DialogMotion.lockScroll === 'function') {
-        DialogMotion.lockScroll();
-        return;
-    }
-    document.body.style.overflow = 'hidden';
+    lockScroll();
 }
 
 function unlockPageScroll() {
-    if (DialogMotion && typeof DialogMotion.unlockScroll === 'function') {
-        DialogMotion.unlockScroll();
-        return;
-    }
-    document.body.style.overflow = '';
+    unlockScroll();
 }
 
 const FOCUSABLE_SELECTOR = [
@@ -39,17 +29,6 @@ const FOCUSABLE_SELECTOR = [
     'textarea:not([disabled])',
     '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
-
-function isElementVisible(el) {
-    if (!el.offsetParent && el !== document.body) {
-        let ancestor = el.parentElement;
-        while (ancestor && ancestor !== document.body) {
-            if (getComputedStyle(ancestor).display === 'none') return false;
-            ancestor = ancestor.parentElement;
-        }
-    }
-    return getComputedStyle(el).visibility !== 'hidden';
-}
 
 function isFocusable(el) {
     if (el.hasAttribute('disabled')) return false;
@@ -73,16 +52,12 @@ function normalizeDialogId(id) {
     return id.trim();
 }
 
-function clearDialogMotionState(root) {
-    const motion = getDialogMotion(root);
+function clearDrawerMotionState(root) {
+    const motion = getDrawerMotion(root);
     if (!motion || !root || typeof motion.clearMotionState !== 'function') return;
 
-    const target =
-        root.querySelector('[data-dialog-motion-target]') ||
-        root.querySelector('[data-drawer-motion-target]');
-    const backdrop =
-        root.querySelector('[data-dialog-motion-backdrop]') ||
-        root.querySelector('[data-drawer-motion-backdrop]');
+    const target = root.querySelector('[data-drawer-motion-target]');
+    const backdrop = root.querySelector('[data-drawer-motion-backdrop]');
     motion.clearMotionState(target, backdrop);
 }
 
@@ -112,7 +87,7 @@ export const dialogStore = {
         if (!cleanId) return;
         if (this.active !== cleanId && this.closing !== cleanId) return;
 
-        clearDialogMotionState(getDialogRoot(cleanId));
+        clearDrawerMotionState(getDialogRoot(cleanId));
         this.forceClose(cleanId);
     },
 
@@ -137,7 +112,7 @@ export const dialogStore = {
         const generation = ++this._openGeneration;
         const root = getDialogRoot(cleanId);
         const trigger = this._returnFocusTo;
-        const motion = getDialogMotion(root);
+        const motion = getDrawerMotion(root);
 
         const focusDialog = () => {
             if (generation !== this._openGeneration) return;
@@ -183,7 +158,7 @@ export const dialogStore = {
         this._detachTrap();
 
         const root = getDialogRoot(cleanId);
-        const motion = getDialogMotion(root);
+        const motion = getDrawerMotion(root);
 
         const finish = () => {
             if (closeGeneration !== this._openGeneration) return;
@@ -223,6 +198,7 @@ export const dialogStore = {
         if (this.active !== cleanId && this.closing !== cleanId) return;
 
         this._openGeneration += 1;
+        invalidateMotionSession(cleanId);
         this._detachTrap();
         this.active = null;
         this.closing = null;
@@ -238,6 +214,8 @@ export const dialogStore = {
     refreshOpenContent(id, { returnFocusTo = null, focusElement = null } = {}) {
         const cleanId = normalizeDialogId(id);
         if (!cleanId || this.active !== cleanId || this.closing === cleanId) return false;
+
+        invalidateMotionSession(cleanId);
 
         if (returnFocusTo && returnFocusTo.isConnected) {
             this._returnFocusTo = returnFocusTo;

@@ -14,24 +14,26 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `defer`, `mount`, `unmount`, `store`, `data` |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
 | UI state bridges | `alpine.store.toast.js`, `alpine.store.dialog.js`, `alpine.store.cart.js` | Static | Toast, dialog, and cart UI stores registered by the core through the adapter |
-| Dialog motion | `dialog-motion.js`, `drawer-motion.js` | Static | Reached from `alpine.store.dialog.js`; owns dialog and drawer enter/exit animation driving |
+| Drawer infrastructure | `drawer-motion.js`, `scroll-lock.js`, `motion-session.js`, `dom-visibility.js` | Static | Reached from `alpine.store.dialog.js`; owns drawer motion, shared scroll locking, interruptible motion sessions, and visibility checks |
 | On-demand modules | `utils.js`, component entry files, `alpine.components.*.js` groups | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
-Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-18:
+Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-20:
 
 | File | Bytes |
 | --- | --- |
 | `base.js` | 10,962 |
-| `events.js` | 3,404 |
+| `events.js` | 3,328 |
 | `alpine.adapter.js` | 4,131 |
 | `cart.contract.js` | 7,086 |
-| `https.js` | 11,058 |
+| `https.js` | 11,837 |
 | `alpine.store.toast.js` | 1,465 |
-| `alpine.store.dialog.js` | 9,689 |
+| `alpine.store.dialog.js` | 8,979 |
 | `alpine.store.cart.js` | 4,267 |
-| `dialog-motion.js` | 9,658 |
-| `drawer-motion.js` | 7,662 |
-| **Always loaded** | **69,382** |
+| `drawer-motion.js` | 7,687 |
+| `dom-visibility.js` | 438 |
+| `motion-session.js` | 872 |
+| `scroll-lock.js` | 745 |
+| **Always loaded** | **61,797** |
 
 D19 Part A classified `https.js` as an on-demand service module because `base.js` referenced `ShopifyHttp` and `SectionRefresher` zero times at decision time. The JS1 implementation moved cart platform state into `cart.contract.js`, which `base.js` imports statically and which imports `https`, so that classification no longer holds. The boundary test D19 Part A set — what must exist before any component can load — is unchanged; only the file list it produced was overtaken by the implementation. Re-measure this table whenever a static import is added to the graph.
 
@@ -163,7 +165,7 @@ The core registers stores during startup:
 | Store | Module | Role |
 | --- | --- | --- |
 | `toast` | `alpine.store.toast.js` | Transient notifications |
-| `dialog` | `alpine.store.dialog.js` | Dialog/drawer open state, focus trap, scroll lock via `dialog-motion.js` / `drawer-motion.js` |
+| `dialog` | `alpine.store.dialog.js` | Drawer open state, focus trap, and orchestration of shared scroll-lock, motion-session, and visibility helpers |
 | `cart` | `alpine.store.cart.js` | UI bridge over `createCartContract()` |
 
 Inspect the store modules for configure/init APIs instead of copying historical examples.
@@ -174,7 +176,10 @@ Inspect the store modules for configure/init APIs instead of copying historical 
 | --- | --- | --- |
 | `utils.js` | `utils` | `debounce`, scroll-behavior helpers, `prefersReducedMotion`, `scrollToTop` |
 | `quantity-constraints.js` | relative import from component groups | Pure quantity min/max/step math |
-| `dialog-motion.js`, `drawer-motion.js` | relative import from store/component groups | Dialog and drawer transition helpers |
+| `drawer-motion.js` | relative import from the dialog store | Interruptible drawer enter/exit animation driving |
+| `scroll-lock.js` | relative import from the dialog store and drawer motion | Reference-counted page scroll locking with exact inline-style restoration |
+| `motion-session.js` | relative import from the dialog store and drawer motion | Per-dialog cancellation generation shared across refresh, reopen, enter, and exit paths |
+| `dom-visibility.js` | relative import from dialog and filter modules | Shared focusability/visibility predicate for live DOM reconciliation |
 | `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 
 ## Motion Runtime Boundary

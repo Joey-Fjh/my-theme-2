@@ -1,4 +1,5 @@
-import { DialogMotion } from './dialog-motion.js';
+import { lockScroll, unlockScroll } from './scroll-lock.js';
+import { beginMotionSession, isMotionSessionCurrent } from './motion-session.js';
 
 const ENTER_ANIMATION_NAMES = new Set([
     'drawer-motion-slide-right-enter',
@@ -51,24 +52,6 @@ function resolveEdge(root) {
         return 'sheet';
     }
     return slide;
-}
-
-function lockScroll() {
-    if (DialogMotion && typeof DialogMotion.lockScroll === 'function') {
-        DialogMotion.lockScroll();
-        return;
-    }
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-}
-
-function unlockScroll() {
-    if (DialogMotion && typeof DialogMotion.unlockScroll === 'function') {
-        DialogMotion.unlockScroll();
-        return;
-    }
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
 }
 
 function clearMotionState(target, backdrop) {
@@ -197,6 +180,7 @@ function playEnter(rootOrId, options) {
 
     const visibilityTarget = root.querySelector('[data-dialog-panel]') || target;
     const shouldLock = options && options.lockScroll !== false;
+    const session = beginMotionSession(rootOrId);
 
     clearMotionState(target, backdrop);
     target.setAttribute('data-drawer-motion-prep', '');
@@ -205,6 +189,8 @@ function playEnter(rootOrId, options) {
 
     return waitForVisible(visibilityTarget)
         .then(function () {
+            if (!isMotionSessionCurrent(rootOrId, session)) return;
+
             if (shouldLock) lockScroll();
 
             beginEnterAnimation(target, backdrop);
@@ -221,6 +207,7 @@ function playEnter(rootOrId, options) {
             return waitForAnimation(target, ENTER_ANIMATION_NAMES, getEnterDurationMs());
         })
         .then(function () {
+            if (!isMotionSessionCurrent(rootOrId, session)) return;
             if (target) target.style.willChange = '';
         });
 }
@@ -234,21 +221,27 @@ function playExit(rootOrId) {
     if (!target) return Promise.resolve();
 
     void resolveEdge(root);
+    const session = beginMotionSession(rootOrId);
 
     return waitForFrame()
         .then(function () {
+            if (!isMotionSessionCurrent(rootOrId, session)) return;
+
             restartAnimation(target, backdrop);
             target.style.willChange = 'transform, opacity';
 
             return waitForFrame();
         })
         .then(function () {
+            if (!isMotionSessionCurrent(rootOrId, session)) return;
+
             if (backdrop) backdrop.setAttribute('data-drawer-motion-state', 'exit');
             target.setAttribute('data-drawer-motion', 'exit');
 
             return waitForAnimation(target, EXIT_ANIMATION_NAMES, getExitDurationMs());
         })
         .then(function () {
+            if (!isMotionSessionCurrent(rootOrId, session)) return;
             clearMotionState(target, backdrop);
         });
 }

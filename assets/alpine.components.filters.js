@@ -1,5 +1,6 @@
 import { ShopifyHttp, SectionRefresher } from 'https';
 import { data, store } from 'alpine-adapter';
+import { isElementVisible } from './dom-visibility.js';
 import { sectionPagination } from 'components/pagination';
 
 const COLLECTION_FILTERS_FORM_ID = 'CollectionFiltersForm';
@@ -310,6 +311,42 @@ const components = {
                 if (ds?.filtersDialogId) this.dialogId = ds.filtersDialogId;
             },
 
+            _getCollectionFilterTrigger() {
+                const dialogId = this.dialogId;
+                if (!dialogId || !this.sectionId) return null;
+
+                const sectionRoot = document.getElementById(`shopify-section-${this.sectionId}`);
+                if (!sectionRoot) return null;
+
+                const matches = sectionRoot.querySelectorAll(
+                    `[data-dialog-id="${CSS.escape(dialogId)}"]`,
+                );
+
+                for (const candidate of matches) {
+                    if (isElementVisible(candidate)) return candidate;
+                }
+
+                return null;
+            },
+
+            _isCollectionFilterDialogOpen() {
+                const dialog = store('dialog');
+                return Boolean(dialog?.isOpen?.(this.dialogId));
+            },
+
+            _reconcileCollectionFilterDialog(dialogWasOpen) {
+                if (!dialogWasOpen) return;
+
+                const dialog = store('dialog');
+                const dialogId = this.dialogId;
+                if (!dialog?.isOpen?.(dialogId)) return;
+
+                const trigger = this._getCollectionFilterTrigger();
+                dialog.refreshOpenContent(dialogId, {
+                    returnFocusTo: trigger,
+                });
+            },
+
             _executeFetch(url, updateHistory) {
                 const Http = ShopifyHttp;
                 if (!Http || !SectionRefresher || !this.sectionId) return;
@@ -317,6 +354,7 @@ const components = {
                 if (this.abortController) this.abortController.abort();
                 this.abortController = new AbortController();
                 const activeController = this.abortController;
+                const dialogWasOpen = this._isCollectionFilterDialogOpen();
 
                 requestCollectionSectionHtml(Http, url, this.sectionId, activeController.signal)
                     .then((html) => {
@@ -329,6 +367,7 @@ const components = {
                         }
 
                         this.syncControlsFromUrl(url);
+                        this._reconcileCollectionFilterDialog(dialogWasOpen);
                     })
                     .catch((err) => {
                         if (err?.isAbort || err?.name === 'AbortError') return;

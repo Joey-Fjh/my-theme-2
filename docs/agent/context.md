@@ -6,6 +6,8 @@ Last updated: 2026-09-20.
 
 ## No plan under execution
 
-The GSAP official Skills tooling batch was implemented, independently reviewed against its recorded acceptance criteria, and accepted by the user on 2026-09-20. Its durable contracts were migrated to `AGENTS.md`: the two-kind skill inventory and the motion boundary between the native reveal protocol and GSAP complex choreography. Per-skill provenance lives in each `.agents/skills/gsap-*/UPSTREAM.md`. The execution narrative is in git history and is not reproduced here.
+MS-1 (dialog and drawer ownership foundation) and MS-2 (unreachable modal chain retirement) were both implemented, independently reviewed against their recorded acceptance criteria, browser-checked, and accepted by the user on 2026-09-20.
+
+Their durable contract lives in `docs/references/architecture/javascript-runtime.md`, which now owns the retained drawer infrastructure: `drawer-motion.js`, `scroll-lock.js`, `motion-session.js`, and `dom-visibility.js`, one responsibility each. The execution narrative is in git history and is not reproduced here.
 
 Select the next decision from `docs/agent/board.md` and record it here before execution. Recording is not authorization.

@@ -70,12 +70,7 @@
     --z-layer-sticky-raised: 101;
     --z-layer-drawer-backdrop: 200;
     --z-layer-drawer: 201;
-    --z-layer-modal-backdrop: 300;
-    --z-layer-modal: 301;
-    --z-layer-modal-focus: 400;
     --z-layer-magnifier: 500;
-    --z-layer-lightbox: 600;
-    --z-layer-lightbox-controls: 601;
     --z-layer-toast: 700;
 }
 

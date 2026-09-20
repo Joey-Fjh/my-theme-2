@@ -512,8 +512,6 @@
             {%- assign close_label = 'accessibility.close_filters_drawer' | t -%}
             {%- render 'ui-dialog',
                 id: filters_dialog_id,
-                type: 'drawer',
-                layer: 'drawer',
                 position: 'left',
                 top_class: 'top-[var(--announcement-bar-height)] pc:top-0',
                 color_scheme: section.settings.color_scheme,
@@ -641,8 +639,6 @@
     -%}
     {%- render 'ui-dialog',
         id: collection_nav_dialog_id,
-        type: 'drawer',
-        layer: 'drawer',
         position: 'right',
         top_class: 'top-[var(--announcement-bar-height)] pc:top-0',
         color_scheme: section.settings.color_scheme,

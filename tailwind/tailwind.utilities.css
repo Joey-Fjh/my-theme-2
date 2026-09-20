@@ -83,28 +83,8 @@ converted to @utility for tree-shaking.
         z-index: var(--z-layer-drawer);
     }
 
-    .z-layer-modal-backdrop {
-        z-index: var(--z-layer-modal-backdrop);
-    }
-
-    .z-layer-modal {
-        z-index: var(--z-layer-modal);
-    }
-
-    .z-layer-modal-focus {
-        z-index: var(--z-layer-modal-focus);
-    }
-
     .z-layer-magnifier {
         z-index: var(--z-layer-magnifier);
-    }
-
-    .z-layer-lightbox {
-        z-index: var(--z-layer-lightbox);
-    }
-
-    .z-layer-lightbox-controls {
-        z-index: var(--z-layer-lightbox-controls);
     }
 
     .z-layer-toast {
