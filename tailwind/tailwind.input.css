@@ -13,6 +13,7 @@
 @source '../layout/**/*.liquid';
 @source '../sections/**/*.liquid';
 @source '../snippets/**/*.liquid';
+@source '../blocks/**/*.liquid';
 @source '../templates/**/*.liquid';
 
 @theme inline {

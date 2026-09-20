@@ -45,10 +45,10 @@ Do not bridge variables that are only consumed inside CSS layer rules. Examples 
 | `tailwind.typography.css` | project typography tiers and custom size tiers | section-specific headings or Tailwind `text-*` heading shortcuts |
 | `tailwind.elements.css` | single-element primitives: `btn`, `field`, `badge`, links, icons, close button, focus ring | composite layouts |
 | `tailwind.components.css` | reusable composite APIs with 2+ unrelated consumers | section-root scoped overrides |
-| `tailwind.snippets.css` | one snippet family or snippet-owned scene deltas | pattern dumps copied across unrelated snippets |
+| `tailwind.snippets.css` | retired import stub only (no class rules) | new component CSS; do not add selectors here |
 | `tailwind.utilities.css` | cross-cutting placement/surface/z-index utilities | business BEM styling |
 | `tailwind.animates.css` | motion capabilities, reveal states, keyframes, reduced-motion kill switches | trigger logic |
-| section `{% stylesheet %}` | last-resort section-only styles Tailwind cannot express | reusable CSS contracts |
+| section/block/snippet `{% stylesheet %}` | primary home for component-owned CSS scoped to one render tree (plain CSS only) | cross-render-tree selectors, Tailwind directives, shared vocabulary |
 
 ## Promotion Thresholds
 
@@ -119,20 +119,40 @@ Rules:
 - Do not hide critical first-viewport content behind animation completion.
 - Use `docs/references/architecture/motion-architecture.md` for motion classification.
 
+## Stylesheet Placement Constraints
+
+Three constraints govern CSS written from here on. Violations fail silently at runtime.
+
+1. **Plain CSS in `{% stylesheet %}`.** Shopify ships `{% stylesheet %}` content as written. `@apply`, `@utility`, and `@variant` never run there. Use plain CSS only: properties, nesting, pseudo-elements, keyframes, container queries, `:has()`, and direct `var()` consumption.
+
+2. **Subsetting compatibility.** A file's `{% stylesheet %}` classes may be used only within that file or files it directly renders. Cross-file use breaks once CSS lives in a subsetted block. Example: `sections/header.liquid` defines header layout classes consumed only by header markup and snippets the header renders.
+
+3. **Shared vocabulary boundary.** The Tailwind build (`tailwind/tailwind.input.css` and imported `tailwind.*.css` layers) owns shared vocabulary: design tokens bridged into `@theme inline`, typography tiers, surfaces, layout vocabulary, reusable motion capabilities, and cross-cutting utilities. Component-specific selectors with a single render-tree owner belong in that owner's `{% stylesheet %}` block. CSS that must survive when the defining file is absent from a subsetted response stays in the Tailwind build. **Growth rule:** new shared-layer entries require either (a) 2+ unrelated consumers, or (b) an explicit accepted architecture decision recorded in this reference or `AGENTS.md`. `tailwind.snippets.css` is retired; do not add new selectors there.
+
+## Bundled Asset Tag Constraints
+
+Three Shopify platform constraints govern `{% stylesheet %}` and `{% javascript %}` tags. Violations pass local Theme Check and CLI validation but fail in the theme editor.
+
+1. **One `{% stylesheet %}` per file.** Each `.liquid` file may contain at most one `{% stylesheet %}` block. More than one is a syntax error when editing theme code.
+2. **One `{% javascript %}` per file.** Each `.liquid` file may contain at most one `{% javascript %}` block. More than one is a syntax error when editing theme code.
+3. **No Liquid inside bundled asset tags.** Liquid output (`{{ }}`) and tags (`{% %}`) are not rendered inside `{% stylesheet %}` or `{% javascript %}` blocks. Including Liquid there can cause syntax errors or prevent styles from applying.
+
+`npm.cmd run lint:theme` enforces all three. Sources: [JavaScript and stylesheet tags](https://shopify.dev/docs/storefronts/themes/best-practices/javascript-and-stylesheet-tags), [`{% stylesheet %}` tag](https://shopify.dev/docs/api/liquid/tags/stylesheet) (verified 2026-09-20).
+
 ## Decision Flow
 
 1. Is this only a token? Use `css-variables.liquid` or scoped inline custom properties.
 2. Is this typography? Use `tailwind.typography.css`.
 3. Is this a single control/primitive? Use `tailwind.elements.css`.
 4. Is this reused by 2+ unrelated consumers? Use `tailwind.components.css`.
-5. Is this owned by one snippet family? Use `tailwind.snippets.css`.
+5. Is this owned by one section, block, or snippet render tree? Use that file's `{% stylesheet %}` block (plain CSS). Classes may be used only in that file or files it directly renders.
 6. Is this cross-cutting layout/surface/z-index? Use `tailwind.utilities.css`.
 7. Is this motion capability/reveal/keyframe CSS? Use `tailwind.animates.css`.
-8. Is it a section-only exception Tailwind cannot express? Use section `{% stylesheet %}` as a last resort.
+8. Must it survive subsetting when the defining Liquid file is absent? Keep it in the Tailwind build (steps 2–4, 6, or 7). Do not place it in a `{% stylesheet %}` block outside its render tree.
 
 ## Governance
 
-- `npm.cmd run lint:theme` enforces protected Liquid runtime-name assign/capture, static `role="tab"` accessibility, and the SVG `<text textLength>` nested `<tspan>` guard.
+- `npm.cmd run lint:theme` enforces protected Liquid runtime-name assign/capture, bundled-asset tag limits and no-Liquid-in-block rules, static `role="tab"` accessibility, and the SVG `<text textLength>` nested `<tspan>` guard.
 - Never edit `vendor-*.min.css` manually.
 - CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.
 - Record durable architecture decisions in the relevant reference, not in `context.md` unless it is short cross-session state.

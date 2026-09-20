@@ -140,9 +140,8 @@ Dropdown
 
         .dropdown-open {
             details[open] > &,
-            [data-dropdown][open] > &,
-            [aria-expanded='true'] > &,
-            .is-open > & {
+[data-dropdown][open] > &,
+[aria-expanded='true'] > & {
                 opacity: 1;
                 visibility: visible;
                 pointer-events: auto;
@@ -221,130 +220,10 @@ Variants:
     }
 
     /* --- Rich attached popover (predictive search) --- */
-    .panel-motion-popover {
-        --panel-motion-dur: var(--panel-motion-duration-popover);
-    }
-
-    details[open] > .panel-motion-popover,
-    [aria-expanded='true'] > .panel-motion-popover,
-    .is-open > .panel-motion-popover,
-    [data-dropdown][open] > .panel-motion-popover {
-        animation: panel-motion-popover-in var(--panel-motion-dur) var(--panel-motion-ease-soft)
-            both;
-    }
 
     /* --- Layered reveal (rich header panel) ---
        Super-menu replay is driven by Alpine via data-panel-motion='enter'.
        This stays independent from scroll/section reveal and global settings. */
-    .panel-motion-layered {
-        --panel-motion-dur: var(--panel-motion-duration-layered);
-        --panel-motion-shell-dur: calc(var(--panel-motion-dur) * 0.85);
-        --panel-motion-layered-shell-scale: 0.45;
-        --panel-motion-layered-content-offset: 12px;
-
-        padding: 0;
-        overflow: hidden;
-        background: transparent;
-        border-color: transparent;
-        box-shadow: none;
-    }
-
-    .panel-motion-layered .panel-motion-shell {
-        overflow: hidden;
-        transform: scaleY(1);
-        transform-origin: top center;
-        animation: none;
-    }
-
-    .panel-motion-layered .panel-motion-content > * {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
-    }
-
-    details:not([open]) > .panel-motion-layered .panel-motion-shell,
-    [data-dropdown]:not([open]) > .panel-motion-layered .panel-motion-shell {
-        transform: scaleY(var(--panel-motion-layered-shell-scale));
-        animation: none;
-    }
-
-    details:not([open]) .panel-motion-layered .panel-motion-content > *,
-    [data-dropdown]:not([open]) .panel-motion-layered .panel-motion-content > * {
-        animation: none;
-        opacity: 0;
-        transform: translateY(var(--panel-motion-layered-content-offset));
-    }
-
-    details[open] > .panel-motion-layered[data-panel-motion='enter'] .panel-motion-shell,
-    [data-dropdown][open] > .panel-motion-layered[data-panel-motion='enter'] .panel-motion-shell {
-        animation: panel-motion-layered-shell-in var(--panel-motion-shell-dur)
-            var(--panel-motion-ease-enter) both;
-    }
-
-    details[open] > .panel-motion-layered[data-panel-motion='enter'],
-    [data-dropdown][open] > .panel-motion-layered[data-panel-motion='enter'] {
-        animation: panel-motion-layered-panel-in var(--panel-motion-dur)
-            var(--panel-motion-ease-enter) both;
-    }
-
-    details[open] .panel-motion-layered[data-panel-motion='enter'] .panel-motion-content > *,
-    [data-dropdown][open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > * {
-        animation: panel-motion-content-in var(--panel-motion-duration-item)
-            var(--panel-motion-ease-enter) both;
-    }
-
-    details[open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(1),
-    [data-dropdown][open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(1) {
-        animation-delay: var(--panel-motion-content-delay-layered);
-    }
-
-    details[open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(2),
-    [data-dropdown][open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(2) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay-layered) + var(--panel-motion-stagger-step, 32ms)
-        );
-    }
-
-    details[open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(3),
-    [data-dropdown][open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(3) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay-layered) + var(--panel-motion-stagger-step, 32ms) * 2
-        );
-    }
-
-    details[open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(4),
-    [data-dropdown][open]
-        .panel-motion-layered[data-panel-motion='enter']
-        .panel-motion-content
-        > *:nth-child(4) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay-layered) + var(--panel-motion-stagger-step, 32ms) * 3
-        );
-    }
 
     /* --- Compact snap (sort / filter / localization) --- */
     .panel-motion-compact {
@@ -401,27 +280,8 @@ Variants:
     }
 
     /* --- Disclosure (details-based panels, e.g. password access) --- */
-    .panel-motion-disclosure {
-        --panel-motion-dur: var(--panel-motion-duration-disclosure);
-
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    details[open] > .panel-motion-disclosure {
-        max-height: var(--panel-motion-disclosure-max-height);
-        pointer-events: auto;
-        animation: panel-motion-disclosure-in var(--panel-motion-dur) var(--panel-motion-ease-soft)
-            both;
-    }
 
     /* Unbounded lists (e.g. pickup store list) — open state must not clip after enter. */
-    details[open] > .panel-motion-disclosure--fluid {
-        max-height: none;
-        overflow: visible;
-    }
 
     /* --- Child item stagger (open-state keyframe animations) --- */
     details[open]
@@ -595,25 +455,6 @@ Active contract: .is-active on trigger (Alpine tabControl).
         @apply cursor-pointer focus-ring;
     }
 
-    .tab-nav-item--search {
-        @apply border-b border-transparent pb-2;
-        color: rgb(var(--color-foreground) / 0.6);
-        transition:
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
-
-        &:hover,
-        &:focus-visible {
-            color: rgb(var(--color-foreground));
-        }
-
-        &.is-active {
-            border-color: rgb(var(--color-foreground));
-            color: rgb(var(--color-foreground));
-            font-weight: 500;
-        }
-    }
-
     .tab-nav-item--search.tab-nav-item--search-border-token.is-active {
         border-color: rgb(var(--color-border));
     }
@@ -643,17 +484,6 @@ Active contract: .is-active on trigger (Alpine tabControl).
             opacity: 0.6;
         }
 
-        &:focus-visible,
-        &.is-active {
-            opacity: 1;
-        }
-    }
-
-    .tab-nav-item--opacity {
-        opacity: 0.4;
-        transition: opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
-
-        &:hover,
         &:focus-visible,
         &.is-active {
             opacity: 1;
@@ -737,44 +567,8 @@ Hybrid pattern — same as pagination: components.css reads vars from snippet in
 Section grid/carousel (.icon-with-text-section__*) and PDP wrappers stay in snippets.css.
 ========================================================= */
 @layer components {
-    .icon-with-text-item {
-        @apply flex min-w-0 text-theme-text;
-        gap: var(--icon-with-text-gap, 0.5rem);
-    }
-
-    .icon-with-text-item--link {
-        @apply no-underline transition-opacity hover:opacity-75;
-    }
-
-    .icon-with-text-item--vertical {
-        @apply flex-col;
-    }
-
-    .icon-with-text-item--horizontal {
-        @apply flex-row;
-    }
-
-    .icon-with-text-item__icon {
-        width: var(--icon-with-text-icon-size-mobile, var(--icon-with-text-icon-size, 24px));
-        height: var(--icon-with-text-icon-size-mobile, var(--icon-with-text-icon-size, 24px));
-    }
-
-    .icon-with-text-item__image {
-        @apply shrink-0 object-contain;
-        width: var(--icon-with-text-icon-size-mobile, var(--icon-with-text-icon-size, 24px));
-        height: var(--icon-with-text-icon-size-mobile, var(--icon-with-text-icon-size, 24px));
-    }
-
-    .icon-with-text-item__title {
-        @apply min-w-0 leading-tight break-words;
-    }
 
     @media (width >= theme(--breakpoint-pc)) {
-        .icon-with-text-item__icon,
-        .icon-with-text-item__image {
-            width: var(--icon-with-text-icon-size, 24px);
-            height: var(--icon-with-text-icon-size, 24px);
-        }
     }
 }
 
@@ -871,18 +665,6 @@ Dialog
 
         @media (width >= theme(--breakpoint-fw)) {
             @apply !max-w-[33vw];
-        }
-    }
-
-    .ui-dialog-desktop-drawer--left {
-        @media (width >= theme(--breakpoint-pc)) {
-            @apply !right-auto !left-0;
-        }
-    }
-
-    .ui-dialog-desktop-drawer--right {
-        @media (width >= theme(--breakpoint-pc)) {
-            @apply !right-0 !left-auto;
         }
     }
 
@@ -1239,19 +1021,6 @@ Product Price
 Shared price primitive used by PDP/featured product-info-blocks and quick view.
 Scene owners can add BEM classes for typography/order/color deltas.
 ========================================================= */
-@layer components {
-    .product-price {
-        @apply flex items-center gap-3;
-    }
-
-    .product-price__main {
-        @apply font-medium text-theme-text;
-    }
-
-    .product-price__compare {
-        @apply text-theme-text/80 line-through;
-    }
-}
 
 /* =========================================================
 Quantity Selector
@@ -1298,8 +1067,12 @@ Consumed via snippets/quantity-selector.liquid and inline in cart sections.
     }
 
     .quantity-selector__input {
-        @apply w-[4ch] appearance-none border-b border-current bg-transparent p-0 text-center text-current tabular-nums focus-ring [-moz-appearance:textfield] focus:ring-0 focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
+        @apply w-[4ch] appearance-none border-b border-current bg-transparent p-0 text-center text-current tabular-nums focus-ring [-moz-appearance:textfield] focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
         font: inherit;
+
+        &:focus:not(:focus-visible) {
+            outline: none;
+        }
 
         &:focus-visible {
             position: relative;
@@ -1497,10 +1270,6 @@ Consumed via snippets/pagination.liquid.
         &:focus-visible {
             text-decoration: underline;
         }
-    }
-
-    .pagination__page--outline {
-        @apply border border-theme-border/20;
     }
 
     .pagination__page--hover-outline {

@@ -189,14 +189,6 @@ Custom size utilities — controlled font-size escape hatch.
 Apply heading-base / body-base stack; override font-size only
 via local CSS variables. Do not add unbounded body-8xl tiers.
 ========================================================= */
-@utility heading-size-custom {
-    @apply heading-base;
-    font-size: var(--heading-size-custom);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: var(--heading-size-custom-pc, var(--heading-size-custom));
-    }
-}
 
 @utility body-size-custom {
     @apply body-base;

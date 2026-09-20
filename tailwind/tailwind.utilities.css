@@ -21,66 +21,6 @@
     font-size: var(--sup-badge-font-size, 0.75em);
 }
 
-.place-top-left,
-.place-top-center,
-.place-top-right {
-    @apply row-start-1 self-start justify-self-center;
-}
-
-.place-center-left,
-.place-center,
-.place-center-right {
-    @apply row-start-2 self-center justify-self-center;
-}
-
-.place-bottom-left,
-.place-bottom-center,
-.place-bottom-right {
-    @apply row-start-3 self-end justify-self-center;
-}
-
-@media (width >= theme(--breakpoint-pc)) {
-    .place-top-left {
-        @apply col-start-1 row-start-1 self-start justify-self-start;
-    }
-
-    .place-top-center {
-        @apply col-start-2 row-start-1 self-start justify-self-center;
-    }
-
-    .place-top-right {
-        @apply col-start-3 row-start-1 self-start justify-self-end;
-    }
-
-    .place-center-left {
-        @apply col-start-1 row-start-2 self-center justify-self-start;
-    }
-
-    .place-center {
-        @apply col-start-2 row-start-2 self-center justify-self-center;
-    }
-
-    .place-center-right {
-        @apply col-start-3 row-start-2 self-center justify-self-end;
-    }
-
-    .place-bottom-left {
-        @apply col-start-1 row-start-3 self-end justify-self-start;
-    }
-
-    .place-bottom-center {
-        @apply col-start-2 row-start-3 self-end justify-self-center;
-    }
-
-    .place-bottom-right {
-        @apply col-start-3 row-start-3 self-end justify-self-end;
-    }
-}
-
-@utility bg-scheme-surface {
-    background-image: var(--gradient-background);
-}
-
 /* =========================================================
 Surface helpers — semantic aliases for repeated color-surface
 combinations. These reduce Liquid class-list noise while

@@ -272,3 +272,131 @@
         {%- endfor -%}
     </div>
 {%- endunless -%}
+
+{% stylesheet %}
+    .variant-picker__swatch {
+        position: relative;
+        display: block;
+        height: 2rem;
+        width: 2rem;
+        cursor: pointer;
+        overflow: hidden;
+        border-width: 1px;
+        border-color: rgb(var(--color-border) / 0.2);
+        transition:
+            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
+            box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
+            transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .variant-picker__swatch:hover {
+            border-color: rgb(var(--color-foreground));
+        }
+    }
+
+    .variant-picker__swatch.is-selected {
+        box-shadow:
+            0 0 0 2px rgb(var(--color-background)),
+            0 0 0 4px rgb(var(--color-foreground));
+    }
+
+    .variant-picker__swatch.is-unavailable {
+        opacity: 0.65;
+    }
+
+    .variant-picker__swatch.is-unavailable::before,
+    .variant-picker__swatch.is-unavailable::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 150%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .variant-picker__swatch.is-unavailable::before {
+        width: 0.3125rem;
+        background-color: rgb(0 0 0 / 0.7);
+    }
+
+    .variant-picker__swatch.is-unavailable::after {
+        width: 0.125rem;
+        background-color: #fff;
+    }
+
+    .peer:focus-visible + .variant-picker__swatch {
+        outline: var(--focus-ring-width) solid
+            rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
+        outline-offset: var(--focus-ring-offset);
+    }
+
+    .peer:active + .variant-picker__swatch {
+        transform: scale(0.96);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .peer:active + .variant-picker__swatch {
+            transform: none;
+        }
+    }
+
+    .variant-picker__swatch--circle {
+        border-radius: 9999px;
+    }
+
+    .variant-picker__swatch--square {
+        border-radius: 0.125rem;
+    }
+
+    .variant-picker__pill {
+        display: block;
+        cursor: pointer;
+        border-radius: 0.125rem;
+        border-width: 1px;
+        padding-inline: 1rem;
+        padding-block: 0.5rem;
+        color: rgb(var(--color-foreground) / 0.8);
+        border-color: rgb(var(--color-border) / 0.2);
+        transition:
+            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
+            background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
+            color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
+            transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .variant-picker__pill:hover {
+            border-color: rgb(var(--color-foreground));
+            color: rgb(var(--color-foreground));
+        }
+    }
+
+    .variant-picker__pill.is-selected {
+        border-color: rgb(var(--color-foreground));
+        background-color: rgb(var(--color-foreground));
+        color: rgb(var(--color-background));
+    }
+
+    .variant-picker__pill.is-unavailable {
+        opacity: 0.4;
+        text-decoration: line-through;
+    }
+
+    .peer:focus-visible + .variant-picker__pill {
+        outline: var(--focus-ring-width) solid
+            rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
+        outline-offset: var(--focus-ring-offset);
+    }
+
+    .peer:active + .variant-picker__pill:not(.is-unavailable) {
+        transform: scale(0.98);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .peer:active + .variant-picker__pill:not(.is-unavailable) {
+            transform: none;
+        }
+    }
+{% endstylesheet %}

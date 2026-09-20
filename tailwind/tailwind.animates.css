@@ -103,10 +103,6 @@
     }
 }
 
-@utility animate-spin-slow {
-    animation: spin 12s linear infinite;
-}
-
 /* Rotating Badge is page/brand motion rather than functional feedback. */
 body[data-motion-enabled='false'] [data-rotating-badge-motion] {
     animation: none !important;
@@ -118,14 +114,6 @@ body[data-motion-enabled='false'] [data-rotating-badge-motion] {
         animation: none !important;
         transform: none !important;
     }
-}
-
-@utility is-paused {
-    animation-play-state: paused !important;
-}
-
-@utility is-running {
-    animation-play-state: running !important;
 }
 
 /* ================================================================
@@ -706,45 +694,7 @@ body[data-motion-enabled='false']
         animation: none !important;
         transition: none !important;
         transform: none !important;
-        clip-path: none !important;
-        max-height: none !important;
-    }
-
-    details[open]
-        > :is(
-            .panel-motion-scale,
-            .panel-motion-popover,
-            .panel-motion-layered,
-            .panel-motion-compact,
-            .panel-motion-flyout,
-            .panel-motion-disclosure
-        ),
-    [data-dropdown][open]
-        > :is(
-            .panel-motion-compact,
-            .panel-motion-scale,
-            .panel-motion-flyout,
-            .panel-motion-layered
-        ),
-    .localization-toggle[aria-expanded='true'] ~ .panel-motion-compact,
-    .is-open > .panel-motion-popover,
-    details[open] > .panel-motion-layered,
-    [data-dropdown][open] > .panel-motion-layered,
-    details[open] > .panel-motion-layered .panel-motion-shell,
-    [data-dropdown][open] > .panel-motion-layered .panel-motion-shell,
-    details[open] .panel-motion-layered .panel-motion-content > *,
-    [data-dropdown][open] .panel-motion-layered .panel-motion-content > *,
-    details[open]
-        > :is(.panel-motion-scale, .panel-motion-compact, .panel-motion-flyout)
-        > :is(li, [role='option'], .localization-item),
-    [data-dropdown][open] > .panel-motion-compact > [role='option'],
-    .localization-toggle[aria-expanded='true'] ~ .panel-motion-compact > .localization-item {
         opacity: 1 !important;
-    }
-
-    details[open] > .panel-motion-layered .panel-motion-shell,
-    [data-dropdown][open] > .panel-motion-layered .panel-motion-shell {
-        transform: none !important;
     }
 }
 
@@ -1277,145 +1227,3 @@ body[data-motion-enabled='false']
    Hiding only activates via target [data-motion-state="pending"]
    which motionRevealSection sets after init.
 */
-
-/* ================================================================
-   Watermark marquee — decorative local loop
-   - Governed by motion_enabled and prefers-reduced-motion
-   - Independent from ordinary section reveal timing/styles
-   ================================================================ */
-@keyframes watermark-marquee-x {
-    from {
-        transform: translate3d(0, 0, 0);
-    }
-
-    to {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
-@keyframes watermark-marquee-bounce {
-    0%,
-    100% {
-        transform: translate3d(0, var(--wm-bounce, 0.18em), 0);
-    }
-
-    50% {
-        transform: translate3d(0, calc(-1 * var(--wm-bounce, 0.18em)), 0);
-    }
-}
-
-.watermark-marquee__track {
-    animation: watermark-marquee-x var(--wm-marquee-duration, 48s) linear infinite;
-}
-
-.watermark-marquee[data-marquee-speed='slow'] {
-    --wm-marquee-duration: 64s;
-}
-
-.watermark-marquee[data-marquee-speed='normal'] {
-    --wm-marquee-duration: 48s;
-}
-
-.watermark-marquee[data-marquee-speed='fast'] {
-    --wm-marquee-duration: 32s;
-}
-
-[data-marquee-direction='left_to_right'] .watermark-marquee__track {
-    animation-direction: reverse;
-}
-
-.watermark-marquee__item-inner {
-    animation: watermark-marquee-bounce var(--wm-bounce-duration, 2.4s) linear infinite;
-    animation-delay: calc(var(--wm-phase, 0) * var(--wm-bounce-duration, 2.4s) / -4);
-}
-
-body[data-motion-enabled='false'] .watermark-marquee__track,
-body[data-motion-enabled='false'] .watermark-marquee__item-inner {
-    animation: none !important;
-    transform: none !important;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    [data-marquee-pause-on-hover='true']:hover .watermark-marquee__track,
-    [data-marquee-pause-on-hover='true']:hover .watermark-marquee__item-inner {
-        animation-play-state: paused;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .watermark-marquee__track,
-    .watermark-marquee__item-inner {
-        animation: none !important;
-        transform: none !important;
-    }
-}
-
-/* ================================================================
-   Scrolling icon with text — promotional marquee loop
-   - Governed by motion_enabled and prefers-reduced-motion
-   - Independent from ordinary section reveal timing/styles
-   - Reuses watermark-marquee-x keyframes (no duplicate keyframes)
-   ================================================================ */
-.scrolling-icon-with-text__track {
-    animation: watermark-marquee-x var(--scrolling-icon-duration, 40s) linear infinite;
-}
-
-.scrolling-icon-with-text__marquee[data-scrolling-speed='slow'] {
-    --scrolling-icon-duration: 64s;
-}
-
-.scrolling-icon-with-text__marquee[data-scrolling-speed='normal'] {
-    --scrolling-icon-duration: 40s;
-}
-
-.scrolling-icon-with-text__marquee[data-scrolling-speed='fast'] {
-    --scrolling-icon-duration: 24s;
-}
-
-.scrolling-icon-with-text__marquee[data-scrolling-direction='left_to_right']
-    .scrolling-icon-with-text__track {
-    animation-direction: reverse;
-}
-
-body[data-motion-enabled='false'] .scrolling-icon-with-text__viewport {
-    height: auto;
-    overflow: visible;
-}
-
-body[data-motion-enabled='false'] .scrolling-icon-with-text__track {
-    animation: none !important;
-    transform: none !important;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: center;
-}
-
-body[data-motion-enabled='false'] .scrolling-icon-with-text__item[aria-hidden='true'] {
-    display: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .scrolling-icon-with-text__marquee[data-scrolling-pause-on-hover='true']:hover
-        .scrolling-icon-with-text__track {
-        animation-play-state: paused;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .scrolling-icon-with-text__viewport {
-        height: auto;
-        overflow: visible;
-    }
-
-    .scrolling-icon-with-text__track {
-        animation: none !important;
-        transform: none !important;
-        flex-wrap: wrap;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .scrolling-icon-with-text__item[aria-hidden='true'] {
-        display: none;
-    }
-}
