@@ -30,7 +30,7 @@
             data-motion-section
         >
             <div class="flex items-start justify-between">
-                <div data-motion-reveal="content" data-motion-critical>
+                <div data-motion-reveal data-motion-critical>
                     {%- liquid
                         assign resolved_heading = blog.title
                         if section.settings.header != blank
@@ -130,7 +130,6 @@
                                 class="grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
                                 x-data="motionRevealSection()" data-module-id="motion-reveal-section" data-module-lazy
                                 data-motion-section
-                                data-motion-cascade
                             >
                                 {% for article in blog.articles %}
                                     {%- liquid
@@ -139,7 +138,7 @@
                                     -%}
                                     <article
                                         class="group"
-                                        data-motion-reveal="content"
+                                        data-motion-reveal
                                     >
                                         <div class="mb-4 block aspect-4/3 overflow-hidden rounded-sm">
                                             {% comment %} Image {% endcomment %}
@@ -165,8 +164,7 @@
                                             -%}
                                         </div>
 
-                                        <div data-motion-copy-bound>
-                                            <div data-motion-copy>
+                                        <div>
                                                 <p class="my-6">
                                                     {{ article.tags | first }}
                                                 </p>
@@ -197,7 +195,6 @@
                                                         class: 'body-xl'
                                                     -%}
                                                 {%- endif -%}
-                                            </div>
                                         </div>
                                     </article>
                                 {% endfor %}

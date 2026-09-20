@@ -20,11 +20,10 @@
             {% comment %} Top Content Area {% endcomment %}
             <div class="z-10 flex flex-col gap-12 pc:mb-24 pc:flex-row pc:justify-between">
                 {%- comment -%} Navigation Link Columns {%- endcomment -%}
-                <div data-motion-bound>
-                    <div
-                        class="grid grid-cols-3 gap-x-4 gap-y-10 pc:flex pc:gap-20 fw:gap-28"
-                        data-motion-reveal="content"
-                    >
+                <div
+                    class="grid grid-cols-3 gap-x-4 gap-y-10 pc:flex pc:gap-20 fw:gap-28"
+                    data-motion-reveal
+                >
                         {% for block in section.blocks %}
                             {% if block.type == 'link_column' %}
                                 <div {{ block.shopify_attributes }}>
@@ -59,7 +58,6 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                    </div>
                 </div>
 
                 {%- comment -%} Right Content Block {%- endcomment -%}
@@ -67,11 +65,10 @@
                     {% if section.settings.content_heading != blank
                         or section.settings.content_text != blank
                     %}
-                        <div data-motion-copy-bound>
-                            <div
-                                class="flex flex-col gap-8 pc:gap-12"
-                                data-motion-copy
-                            >
+                        <div
+                            class="flex flex-col gap-8 pc:gap-12"
+                            data-motion-reveal
+                        >
                                 {% if section.settings.content_heading != blank %}
                                     <h3 class="heading-h2">
                                         {{ section.settings.content_heading }}
@@ -82,7 +79,6 @@
                                         {{ section.settings.content_text }}
                                     </div>
                                 {% endif %}
-                            </div>
                         </div>
                     {% endif %}
                     {% if section.settings.content_link != blank %}
@@ -114,7 +110,7 @@
             {%- comment -%} Large Brand Name with Brush Texture {%- endcomment -%}
             <div
                 class="z-0 mb-8 select-none pc:mb-12"
-                data-motion-reveal="content"
+                data-motion-reveal
             >
                 {%- comment -%} Brush stroke decoration {%- endcomment -%}
                 {% if section.settings.brush_image != blank %}
@@ -165,6 +161,9 @@
                 </span>
                 <button
                     type="button"
+                    x-data="footerScrollTop()"
+                    data-module-id="footer-scroll-top"
+                    data-module-lazy
                     @click="scrollToTop()"
                     class="footer__back-to-top col-span-2 pc:order-last pc:col-span-1"
                 >

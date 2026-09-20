@@ -174,7 +174,7 @@
                     relative z-10 flex flex-col items-center justify-center px-6 py-16 text-center
                     pc:px-10 pc:py-24
                 "
-                data-motion-reveal="content"
+                data-motion-reveal
                 data-motion-critical
             >
                 <div class="mx-auto w-full max-w-3xl">
@@ -448,10 +448,9 @@
                                     data-module-id="motion-reveal-section"
                                     data-module-lazy
                                     data-motion-section
-                                    data-motion-cascade
                                 >
                                     {%- for product in collection.products -%}
-                                        <div class="group" data-motion-bound>
+                                        <div class="group" data-motion-reveal>
                                             {%- liquid
                                                 assign product_card_alt = product.featured_image.alt | default: product.title
                                                 assign card_loading = 'lazy'
@@ -465,7 +464,8 @@
                                                     width: 600,
                                                     alt: product_card_alt,
                                                     sizes: '(min-width: 48rem) 25vw, 50vw',
-                                                    loading: card_loading
+                                                    loading: card_loading,
+                                                    motion_reveal: false
                                                 -%}
                                                 <span class="heading-h6">{{ product.title }}</span>
                                                 <span>{{ product.price | money }}</span>

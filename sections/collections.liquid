@@ -26,7 +26,7 @@
     <div class="layout container-page">
         <div
             class="relative mb-8 pt-14 text-center pc:mb-10 pc:pt-25"
-            data-motion-reveal="content"
+            data-motion-reveal
             data-motion-critical
         >
             <div class="mx-auto flex flex-col gap-3 pc:gap-6">
@@ -47,7 +47,6 @@
                 <div
                     class="grid grid-cols-2 gap-1.5 pb-8 pc:grid-cols-3 pc:gap-2 pc:pb-10 fw:grid-cols-4"
                     data-collection-grid
-                    data-motion-cascade
                 >
                     {%- for collection in collections -%}
                         <a
@@ -58,9 +57,8 @@
                                 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
                                 max-pc:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
                             "
-                            data-motion-bound
+                            data-motion-reveal
                         >
-                            <div data-motion-reveal="content">
                                 {%- comment -%} Image {%- endcomment -%}
                                 <div class="relative aspect-square overflow-hidden bg-theme-bg">
                                     {%- capture sizes -%}
@@ -102,22 +100,16 @@
                                 </div>
 
                                 {%- comment -%} Info {%- endcomment -%}
-                                <div data-motion-copy-bound>
-                                    <div
-                                        class="flex items-center justify-between gap-2 px-2 py-1.5 pc:px-3 pc:py-2"
-                                        data-motion-copy
-                                    >
-                                        <span class="min-w-0 body-lg break-words">
-                                            {{- collection.title -}}
-                                        </span>
+                                <div class="flex items-center justify-between gap-2 px-2 py-1.5 pc:px-3 pc:py-2">
+                                    <span class="min-w-0 body-lg break-words">
+                                        {{- collection.title -}}
+                                    </span>
 
-                                        {% render 'icons',
-                                            icon: 'icon-arrow2',
-                                            class: 'shrink-0 transition-transform duration-300 group-hover:translate-x-1'
-                                        %}
-                                    </div>
+                                    {% render 'icons',
+                                        icon: 'icon-arrow2',
+                                        class: 'shrink-0 transition-transform duration-300 group-hover:translate-x-1'
+                                    %}
                                 </div>
-                            </div>
                         </a>
                     {%- endfor -%}
                 </div>

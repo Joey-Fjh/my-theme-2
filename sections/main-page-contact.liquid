@@ -57,17 +57,17 @@
                     {%- assign heading_fallback = 'sections.main-page-contact.defaults.heading'
                         | t
                     -%}
-                    <div data-motion-sequence>
+                    <div>
                         <h1
                             class="{{ contact_heading_class }} text-center text-(--contact-form-text)"
-                            data-motion-reveal="content"
+                            data-motion-reveal
                             data-motion-critical
                         >
                             {{ section.settings.heading | default: heading_fallback }}
                         </h1>
                         <div
                             class="rte rte--compact mt-3 text-center"
-                            data-motion-reveal="content"
+                            data-motion-reveal
                             data-motion-critical
                         >
                             {%- assign contact_description_fallback = 'contact.description_html'
