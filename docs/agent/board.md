@@ -130,7 +130,6 @@ The two candidate resolutions conflict, so this needs a decision rather than an 
 Each needs its own authorized batch.
 
 - **Unreachable factories with dead dialog calls.** No Liquid file mounts `newsletterBanner` or `newsletterOverlay` (`assets/alpine.components.overlays.js`), or `productCard` and `cardGallery` (`assets/alpine.components.product-cards.js`). Their `$store.dialog` calls (`overlays.js:132,136`, `product-cards.js:299,336`) target a store that no longer exists. This is the same class of finding as UC-1: retire the factories or reconnect them.
-- **Merchant-facing dialog settings with no consumer.** `config/settings_schema.json:847-871` holds the `dialog_*` theme settings (border, radius, shadow). `snippets/css-variables.liquid:156-162` emits them as `--dialog-*`, and no CSS reads them now. Removing them changes the Theme Editor, so it needs an explicit decision.
 - **Dead `scroll-lock` rule.** `assets/base.css:16` (and the generated output) styles `dialog[scroll-lock][open], details[scroll-lock][open]`, but no markup sets a `scroll-lock` attribute.
 
 ### Post-CSS acceptance cleanup candidates
@@ -142,9 +141,9 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. `context.md` holds no plan.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. `context.md` holds no plan.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: typography's token boundary, and the post-DR-1 cleanup candidates above.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: the post-DR-1 cleanup candidates above, the eight dead CSS symbols, and typography's token boundary.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
 3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 

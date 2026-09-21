@@ -130,17 +130,6 @@
             "shadow_vertical_offset": "Button shadow vertical offset",
             "shadow_blur": "Button shadow blur"
         },
-        "dialog": {
-            "name": "Dialog",
-            "border": "Border",
-            "border_thickness": "Dialog border thickness",
-            "radius": "Dialog radius",
-            "shadow": "Shadow",
-            "shadow_opacity": "Dialog shadow opacity",
-            "shadow_horizontal_offset": "Dialog shadow horizontal offset",
-            "shadow_vertical_offset": "Dialog shadow vertical offset",
-            "shadow_blur": "Dialog shadow blur"
-        },
         "product_cards": {
             "name": "Product cards",
             "image": "Image",

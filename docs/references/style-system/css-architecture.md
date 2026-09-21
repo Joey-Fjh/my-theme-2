@@ -34,7 +34,7 @@ Bridge a CSS variable into `@theme inline` only when Liquid markup needs a Tailw
 
 Do not bridge variables that are only consumed inside CSS layer rules. Examples that intentionally stay direct `var()` consumption:
 
-- `--button-*`, `--input-*`, `--dialog-*`, `--toast-*`
+- `--button-*`, `--input-*`, `--toast-*`
 - `--motion-duration-*`, `--motion-ease-*`
 - `--focus-ring-*`
 - snippet-local variables such as `--pagination-*`
