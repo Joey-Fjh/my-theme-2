@@ -89,6 +89,7 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 - When execution is authorized, do not stop after editing. Validate against the acceptance criteria and correct until they pass, the requested boundary is reached, or a genuine blocker requires new authority or a user decision.
 - Do not declare completion from implementation alone and do not repeat a failed action without new evidence. Report the outcome first, then evidence, validation, unresolved risk, and next action.
 - Give delegated work only the necessary context. A delegated agent may execute an authorized batch; its result is still reviewed against the recorded acceptance boundary by someone other than its author.
+- The primary agent — the one the user is talking to — is the coordinator: it carries out the Universal Work Loop, the Agent behavior rules and the Record Layer Contract, prepares bounded batches per Execution authority, and routes review. It may delegate to Scout, Implementer, or Verifier (`.agents/roles/`); delegation does not transfer execution authority, and one-writer and independent-review rules still apply.
 
 Agent behavior rules:
 
