@@ -29,6 +29,8 @@ Tech stack:
 - Swiper for carousels
 - Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `defer`, `mount`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
 
+The technology list describes current project choices. Their detailed contracts belong in the Task Routing references; approved constraints, including Runtime constraints below, remain binding until an explicit architecture decision changes them. An existing implementation alone does not establish a permanent project requirement.
+
 Runtime constraints:
 
 - No bundler is used.
