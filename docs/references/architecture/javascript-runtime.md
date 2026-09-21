@@ -148,6 +148,10 @@ When `innerSelectors` is set, the refresher clones only those descendants from t
 
 The live `innerSelectors` callers are the collection and blog sections. They declare selectors in markup through `data-pagination-selectors`, which `assets/alpine.components.pagination.js` hydrates before `buildDomMap()` passes them to the refresher. Collection pagination mounts `sectionPagination()` at the section root with `data-module-id="section-pagination"`. Before judging this path unused, search for `data-pagination-selectors` and for other dataset-driven configuration, not only for call arguments.
 
+### Transitional status
+
+`SectionRefresher` remains transitional while retained flows depend on Section Rendering API behavior. It is the required mechanism today; removing or replacing it requires an approved alternative with explicit lifecycle, accessibility, error, and history ownership. Transitional status does not authorize removal or schedule a replacement.
+
 ## Cart State Ownership
 
 Platform cart state lives in `cart.contract.js`. The contract hydrates from `document.body.dataset.initialCart`, mutates through the Cart API, and notifies subscribers.
