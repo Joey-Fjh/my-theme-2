@@ -70,6 +70,10 @@ const MOTION_RUNTIME_STATE_SELECTOR_RE =
     /\[data-motion-(?:state|resetting|staging|critical-runtime)(?:=|]|$)/;
 const MOTION_HIDING_DECL_RE =
     /\b(?:opacity\s*:\s*0\b|visibility\s*:\s*hidden\b|display\s*:\s*none\b)/;
+const INVALID_RGB_ALPHA_RE = /rgba?\(\s*var\(--color-[a-z0-9-]+\)\s*\//i;
+const INVALID_RGB_ALPHA_MESSAGE =
+    'Scheme color variables are comma-separated RGB triplets. ' +
+    'Use rgba(var(--color-*), alpha) instead of rgb(var(--color-*) / alpha).';
 
 function parseRootArg(argv) {
     const index = argv.indexOf('--root');
@@ -296,6 +300,26 @@ function splitCssRules(text, rangeStart = 0, rangeEnd = text.length) {
     return rules;
 }
 
+function collectInvalidRgbAlphaFailures(cssText, file, failures, options = {}) {
+    const { baseOffset = 0, lineText = cssText } = options;
+    const lines = cssText.split('\n');
+    let offset = 0;
+
+    for (const line of lines) {
+        const strippedLine = stripCssComments(line);
+
+        if (INVALID_RGB_ALPHA_RE.test(strippedLine)) {
+            failures.push({
+                file,
+                line: lineAt(lineText, baseOffset + offset),
+                message: INVALID_RGB_ALPHA_MESSAGE,
+            });
+        }
+
+        offset += line.length + 1;
+    }
+}
+
 function collectMotionActivationFailures(cssText, file, failures, options = {}) {
     const { baseOffset = 0, lineText = cssText } = options;
 
@@ -360,6 +384,10 @@ async function runThemeLint(root) {
         collectTabFailures(ast, text, file, failures);
 
         for (const block of extractBlocks(text, 'stylesheet')) {
+            collectInvalidRgbAlphaFailures(block.code, file, failures, {
+                baseOffset: block.offset,
+                lineText: text,
+            });
             collectMotionActivationFailures(block.code, file, failures, {
                 baseOffset: block.offset,
                 lineText: text,
@@ -371,6 +399,7 @@ async function runThemeLint(root) {
 
     for (const file of cssFiles.map(formatPath)) {
         const text = await fs.readFile(path.join(root, file), 'utf8');
+        collectInvalidRgbAlphaFailures(text, file, failures);
         collectMotionActivationFailures(text, file, failures);
     }
 
@@ -410,6 +439,7 @@ module.exports = {
     collectSvgTextLengthFailures,
     collectTabFailures,
     collectMotionActivationFailures,
+    collectInvalidRgbAlphaFailures,
     splitCssRules,
     stripCssComments,
 };

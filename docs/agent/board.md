@@ -43,10 +43,6 @@ The eight dead `panel-motion-*` and `tab-*-underlined` symbols remain a separate
 
 **Known focus limitation.** The stored collection-drawer return target is whichever responsive trigger was visible at refresh time. If the breakpoint changes between refresh and close, focus restoration can be skipped. Fixing this requires lazy return-target resolution at close time, which is a dialog-store contract change rather than a collection-path tweak. Recorded as a known limitation, unscheduled.
 
-### Invalid alpha color syntax — open, unscheduled
-
-Found by the TB1 review on 2026-09-21. `snippets/css-variables.liquid:49-51` defines `--color-foreground`, `--color-border` and the other scheme colors as comma-separated triplets (`r, g, b`). 23 committed declarations across `sections/`, `snippets/`, `tailwind/` and `assets/base.css` (counted at `201df93`) use `rgb(var(--color-*) / alpha)`, which expands to `rgb(r, g, b / alpha)`. Browsers reject that mix of legacy and modern syntax, so each such declaration is silently dropped; examples include the product-page scrollbar and muted text colors at `sections/product.liquid:247-299` and `tailwind/tailwind.components.css:78-91`. Declarations written as `rgba(var(--color-*), alpha)` are valid. The fix is either to rewrite these usages or to change the variable format to space-separated, which touches every consumer. It is a visual-fidelity fix and needs its own batch; `lint:compat` does not catch it. Recount with `grep -rnE "rgb\(var\(--color-[a-z-]+\) /"` before planning.
-
 ---
 
 ## Pending decisions and migration work
@@ -148,9 +144,9 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: the invalid alpha color syntax (Open Evidence), the drawer motion mechanism, and typography's token boundary.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: the drawer motion mechanism and typography's token boundary.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
 3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 

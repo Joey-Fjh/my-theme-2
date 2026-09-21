@@ -759,6 +759,124 @@ test('motion activation flags violations in first-party asset css files', async 
     });
 });
 
+test('invalid rgb alpha syntax fails in stylesheet blocks', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                '<section>',
+                '{% stylesheet %}',
+                '.muted {',
+                '    color: rgb(var(--color-foreground) / 0.8);',
+                '}',
+                '{% endstylesheet %}',
+                '</section>',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        const rgbAlphaFailures = failures.filter((failure) =>
+            failure.message.includes('rgba(var(--color-*), alpha)'),
+        );
+
+        assert.equal(rgbAlphaFailures.length, 1);
+        assert.equal(rgbAlphaFailures[0].file, 'sections/fixture.liquid');
+        assert.equal(rgbAlphaFailures[0].line, 4);
+    });
+});
+
+test('invalid rgb alpha syntax fails in first-party css files', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'tailwind/fixture.css',
+            ['.muted {', '    color: rgb(var(--color-border) / 0.2);', '}', ''].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        const rgbAlphaFailures = failures.filter((failure) =>
+            failure.message.includes('rgba(var(--color-*), alpha)'),
+        );
+
+        assert.equal(rgbAlphaFailures.length, 1);
+        assert.equal(rgbAlphaFailures[0].file, 'tailwind/fixture.css');
+        assert.equal(rgbAlphaFailures[0].line, 2);
+    });
+});
+
+test('invalid rgb alpha syntax fails for variable alpha', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'tailwind/fixture.css',
+            [
+                '.muted {',
+                '    color: rgb(var(--color-foreground) / var(--opacity));',
+                '}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        const rgbAlphaFailures = failures.filter((failure) =>
+            failure.message.includes('rgba(var(--color-*), alpha)'),
+        );
+
+        assert.equal(rgbAlphaFailures.length, 1);
+        assert.equal(rgbAlphaFailures[0].file, 'tailwind/fixture.css');
+        assert.equal(rgbAlphaFailures[0].line, 2);
+    });
+});
+
+test('invalid rgb alpha syntax fails for rgba slash spelling', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'tailwind/fixture.css',
+            [
+                '.muted {',
+                '    color: rgba(var(--color-foreground) / 0.5);',
+                '}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        const rgbAlphaFailures = failures.filter((failure) =>
+            failure.message.includes('rgba(var(--color-*), alpha)'),
+        );
+
+        assert.equal(rgbAlphaFailures.length, 1);
+        assert.equal(rgbAlphaFailures[0].file, 'tailwind/fixture.css');
+        assert.equal(rgbAlphaFailures[0].line, 2);
+    });
+});
+
+test('valid rgba scheme color syntax passes rgb alpha lint', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'tailwind/fixture.css',
+            [
+                '.muted {',
+                '    color: rgba(var(--color-foreground), 0.8);',
+                '    border-color: rgba(var(--color-border), 0.2);',
+                '}',
+                '',
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        const rgbAlphaFailures = failures.filter((failure) =>
+            failure.message.includes('rgba(var(--color-*), alpha)'),
+        );
+
+        assert.equal(rgbAlphaFailures.length, 0);
+    });
+});
+
 test('embedded compat cli accepts --root without auto-running on import', () => {
     withTempTheme((root) => {
         writeFile(root, 'eslint.config.cjs', MATCHING_ESLINT_CONFIG);

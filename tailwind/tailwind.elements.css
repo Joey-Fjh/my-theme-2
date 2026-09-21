@@ -694,7 +694,7 @@ Consumers: quantity-selector (default size).
 
     @media (hover: hover) and (pointer: fine) {
         &:hover:not(:disabled):not([aria-disabled='true']) {
-            background-color: rgb(var(--color-foreground) / 0.08);
+            background-color: rgba(var(--color-foreground), 0.08);
         }
     }
 
@@ -706,7 +706,7 @@ Consumers: quantity-selector (default size).
 
     &:active:not(:disabled):not([aria-disabled='true']) {
         transform: scale(0.96);
-        background-color: rgb(var(--color-foreground) / 0.12);
+        background-color: rgba(var(--color-foreground), 0.12);
     }
 
     &:disabled,

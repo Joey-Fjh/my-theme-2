@@ -75,7 +75,7 @@ Localization Switcher
             max-width: min(24rem, calc(100vw - 1rem));
             max-height: min(24rem, calc(100dvh - var(--announcement-bar-height, 0px) - 1rem));
             scrollbar-width: thin;
-            scrollbar-color: rgb(var(--color-foreground) / 0.35) transparent;
+            scrollbar-color: rgba(var(--color-foreground), 0.35) transparent;
             scrollbar-gutter: stable;
 
             &::-webkit-scrollbar {
@@ -88,7 +88,7 @@ Localization Switcher
 
             &::-webkit-scrollbar-thumb {
                 border-radius: 999px;
-                background-color: rgb(var(--color-foreground) / 0.35);
+                background-color: rgba(var(--color-foreground), 0.35);
             }
 
             &.localization-menu--align-end {
@@ -1029,15 +1029,15 @@ Consumed via snippets/quantity-selector.liquid and inline in cart sections.
 
         @media (hover: hover) and (pointer: fine) {
             &:hover:not(:disabled):not([aria-disabled='true']) {
-                border-color: rgb(var(--color-foreground) / 0.16);
-                background-color: rgb(var(--color-foreground) / 0.1);
-                box-shadow: inset 0 0 0 1px rgb(var(--color-background) / 0.28);
+                border-color: rgba(var(--color-foreground), 0.16);
+                background-color: rgba(var(--color-foreground), 0.1);
+                box-shadow: inset 0 0 0 1px rgba(var(--color-background), 0.28);
             }
         }
 
         &:active:not(:disabled):not([aria-disabled='true']) {
-            border-color: rgb(var(--color-foreground) / 0.22);
-            background-color: rgb(var(--color-foreground) / 0.16);
+            border-color: rgba(var(--color-foreground), 0.22);
+            background-color: rgba(var(--color-foreground), 0.16);
         }
 
         &:disabled,
@@ -1170,7 +1170,7 @@ Consumed via snippets/pagination.liquid.
     .pagination__button--hover-default {
         @media (hover: hover) and (pointer: fine) {
             &:hover:not(.pagination__button--disabled) {
-                background-color: rgb(var(--color-foreground) / 0.08);
+                background-color: rgba(var(--color-foreground), 0.08);
             }
         }
     }
@@ -1196,7 +1196,7 @@ Consumed via snippets/pagination.liquid.
 
         @media (hover: hover) and (pointer: fine) {
             &:hover:not(.pagination__button--disabled) {
-                background-color: rgb(var(--color-foreground) / 0.08);
+                background-color: rgba(var(--color-foreground), 0.08);
             }
         }
     }
@@ -1237,7 +1237,7 @@ Consumed via snippets/pagination.liquid.
     .pagination__page--hover-default {
         @media (hover: hover) and (pointer: fine) {
             &:hover {
-                background-color: rgb(var(--color-foreground) / 0.08);
+                background-color: rgba(var(--color-foreground), 0.08);
             }
         }
     }
@@ -1259,7 +1259,7 @@ Consumed via snippets/pagination.liquid.
 
         @media (hover: hover) and (pointer: fine) {
             &:hover {
-                background-color: rgb(var(--color-foreground) / 0.08);
+                background-color: rgba(var(--color-foreground), 0.08);
             }
         }
     }

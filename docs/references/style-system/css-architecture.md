@@ -79,7 +79,7 @@ Exact tier ratios, token math, and lint exceptions live in source and `lint:them
 ## Color, Surface, And Inline Style
 
 - Merchant color schemes produce RGB custom properties through `snippets/css-variables.liquid`.
-- Those properties are comma-separated triplets (`r, g, b`). Write alpha as `rgba(var(--color-foreground), 0.55)`. The form `rgb(var(--color-foreground) / 0.55)` expands to `rgb(r, g, b / 0.55)`, which browsers reject and drop silently; no current lint catches it. Existing legacy usages are tracked on `docs/agent/board.md`.
+- Those properties are comma-separated triplets (`r, g, b`). Write alpha as `rgba(var(--color-foreground), 0.55)`. The form `rgb(var(--color-foreground) / 0.55)` expands to `rgb(r, g, b / 0.55)`, which browsers reject and drop silently. `lint:theme` fails `rgb(var(--color-*) / alpha)` in `{% stylesheet %}` blocks and first-party CSS (`tailwind/**/*.css`, `assets/*.css`).
 - The first configured color scheme is the `:root` token fallback; it is not the implicit visible page-canvas decision.
 - `settings.page_canvas_color_scheme` explicitly owns the visible `<body>` canvas behind sections, during overscroll, and in areas without their own color-scheme scope.
 - Section, overlay, drawer, modal, and component color-scheme scopes override the body canvas normally.
