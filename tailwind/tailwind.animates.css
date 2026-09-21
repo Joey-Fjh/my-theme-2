@@ -225,10 +225,8 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
     --panel-motion-stagger-step: 32ms;
     --panel-motion-stagger-step-compact: 24ms;
     --panel-motion-content-delay: 70ms;
-    --panel-motion-content-delay-layered: 120ms;
     --panel-motion-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
     --panel-motion-ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-    --panel-motion-disclosure-max-height: 24rem;
 }
 
 @keyframes panel-motion-scale-in {
@@ -240,22 +238,6 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes panel-motion-popover-in {
-    from {
-        opacity: 0;
-        transform: translateY(-16px) scale(0.94);
-        box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        box-shadow:
-            0 14px 36px rgb(0 0 0 / 0.14),
-            0 4px 10px rgb(0 0 0 / 0.08);
     }
 }
 
@@ -307,40 +289,6 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
     }
 }
 
-@keyframes panel-motion-layered-panel-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes panel-motion-layered-shell-in {
-    from {
-        transform: scaleY(var(--panel-motion-layered-shell-scale, 0.45));
-    }
-
-    to {
-        transform: scaleY(1);
-    }
-}
-
-@keyframes panel-motion-disclosure-in {
-    from {
-        opacity: 0;
-        clip-path: inset(0 0 100% 0 round var(--style-border-radius-inputs, 0.6rem));
-    }
-
-    to {
-        opacity: 1;
-        clip-path: inset(0 0 0 0 round var(--style-border-radius-inputs, 0.6rem));
-    }
-}
-
 @keyframes panel-motion-item-in {
     from {
         opacity: 0;
@@ -377,23 +325,10 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
     }
 }
 
-@keyframes panel-motion-content-in {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Panel motion — prefers-reduced-motion only (see policy note above) */
 @media (prefers-reduced-motion: reduce) {
     :is(
         .panel-motion-scale,
-        .panel-motion-layered,
         .panel-motion-compact,
         .panel-motion-flyout,
         :is(.panel-motion-scale, .panel-motion-compact, .panel-motion-flyout)

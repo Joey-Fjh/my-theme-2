@@ -31,7 +31,7 @@ Authoritative sources for this series: `github.com/Shopify/skeleton-theme` for i
 
 ## Open Evidence
 
-None open. Findings from reviews that are not yet decisions are listed under the cleanup candidates below.
+None open.
 
 ---
 
@@ -125,20 +125,12 @@ The two candidate resolutions conflict, so this needs a decision rather than an 
 - Acceptance: the decision is recorded and package metadata agrees with it; no unrelated package changes.
 - Status: not started.
 
-### Post-DR-1 cleanup candidates (found in the DR-1 review, 2026-09-21)
-
-Each needs its own authorized batch.
-
-- **`panel-motion-layered` JS lookup with no markup.** `assets/alpine.components.ui.js:261,280,290` query `:scope > .panel-motion-layered`, but no Liquid renders that class, so those branches never find a panel. Found while planning DC-1 (2026-09-21); DC-1 leaves it alone.
-- **Orphaned panel-motion keyframes and tokens.** Found in the DC-1 review (2026-09-21). In `tailwind/tailwind.animates.css`, three `@keyframes` have no `animation` user (`panel-motion-popover-in`, `panel-motion-disclosure-in` and `panel-motion-content-in`), and two properties are never read (`--panel-motion-disclosure-max-height` and `--panel-motion-content-delay-layered`). This naturally pairs with the `panel-motion-layered` item above.
-
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan. PC-1 (unreachable super-menu panel-motion chain retired from the header dropdown and the Tailwind sources) is accepted as of 2026-09-21. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: P1+P5b Stage 2, and the panel-motion cleanup (the `panel-motion-layered` JS lookup plus the orphaned keyframes and tokens, listed together under the post-DR-1 candidates).
-2. The panel-motion cleanup candidates are small and can be one batch.
-3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
+1. Select one decision and record it in `context.md` before execution. Ready candidate: P1+P5b Stage 2.
+2. P1+P5b Stage 2 remains unblocked but unscheduled. P4 waits on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -148,7 +140,7 @@ After this workflow is proven through real theme batches, evaluate extracting th
 
 ## Active decision and later candidates
 
-No decision is active and `context.md` holds no plan. Promote exactly one ready candidate.
+No decision is active and `context.md` holds no plan. Later candidates: P1+P5b Stage 2; P4 License after distribution intent is decided.
 
 ### Motion — settled 2026-09-20
 

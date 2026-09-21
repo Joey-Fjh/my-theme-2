@@ -178,9 +178,9 @@ const components = {
                     const stillOpen = this.openEls[deep];
 
                     if (stillOpen && stillOpen !== current) {
-                        this.switchOpen(current, deep, { replayMotion: false });
+                        this.switchOpen(current, deep);
                     } else {
-                        this.open(current, deep, { replayMotion: true });
+                        this.open(current, deep);
                     }
 
                     this.hoverOpened = true;
@@ -209,23 +209,17 @@ const components = {
                 this.scheduleHoverOpen(trigger.parentElement);
             },
 
-            open(current, deep, { replayMotion = true } = {}) {
+            open(current, deep) {
                 if (this.openEls[deep] !== current) {
                     this.closeFromDepth(deep);
                 }
 
                 current.setAttribute('open', '');
 
-                if (replayMotion) {
-                    this.replayLayeredPanelMotion(current);
-                } else {
-                    this.ensureLayeredPanelVisible(current);
-                }
-
                 this.openEls[deep] = current;
             },
 
-            switchOpen(current, deep, { replayMotion = false } = {}) {
+            switchOpen(current, deep) {
                 const previous = this.openEls[deep];
 
                 if (previous === current) return;
@@ -234,7 +228,6 @@ const components = {
                     const el = this.openEls[i];
 
                     if (el) {
-                        this.resetLayeredPanelMotion(el);
                         el.removeAttribute('open');
                     }
                 }
@@ -243,26 +236,11 @@ const components = {
 
                 current.setAttribute('open', '');
 
-                if (replayMotion) {
-                    this.replayLayeredPanelMotion(current);
-                } else {
-                    this.ensureLayeredPanelVisible(current);
-                }
-
                 this.openEls[deep] = current;
 
                 if (previous && previous !== current) {
-                    this.resetLayeredPanelMotion(previous);
                     previous.removeAttribute('open');
                 }
-            },
-
-            ensureLayeredPanelVisible(target) {
-                const panel = target.querySelector(':scope > .panel-motion-layered');
-
-                if (!panel) return;
-
-                panel.removeAttribute('data-panel-motion');
             },
 
             canHoverOpen() {
@@ -276,24 +254,6 @@ const components = {
                 return this.$el.dataset.desktopMenuTrigger === 'click';
             },
 
-            replayLayeredPanelMotion(target) {
-                const panel = target.querySelector(':scope > .panel-motion-layered');
-
-                if (!panel) return;
-
-                panel.removeAttribute('data-panel-motion');
-                void panel.offsetWidth;
-                panel.setAttribute('data-panel-motion', 'enter');
-            },
-
-            resetLayeredPanelMotion(target) {
-                const panel = target.querySelector(':scope > .panel-motion-layered');
-
-                if (!panel) return;
-
-                panel.removeAttribute('data-panel-motion');
-            },
-
             close(from = 0) {
                 this.cancelHoverOpen();
                 this.closeFromDepth(from);
@@ -305,7 +265,6 @@ const components = {
                     const el = this.openEls[i];
 
                     if (el) {
-                        this.resetLayeredPanelMotion(el);
                         el.removeAttribute('open');
                     }
                 }

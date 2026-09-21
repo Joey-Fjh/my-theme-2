@@ -218,13 +218,7 @@ Variants:
         animation: panel-motion-scale-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
     }
 
-    /* --- Rich attached popover (predictive search) --- */
-
-    /* --- Layered reveal (rich header panel) ---
-       Super-menu replay is driven by Alpine via data-panel-motion='enter'.
-       This stays independent from scroll/section reveal and global settings. */
-
-    /* --- Compact snap (sort / filter / localization) --- */
+    /* --- Compact snap (localization) --- */
     .panel-motion-compact {
         --panel-motion-dur: var(--panel-motion-duration-compact);
         --panel-motion-stagger-step: var(--panel-motion-stagger-step-compact);
