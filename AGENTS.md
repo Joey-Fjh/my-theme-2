@@ -31,7 +31,7 @@ Tech stack:
 
 The technology list describes current project choices. Their detailed contracts belong in the Task Routing references; approved constraints, including Runtime constraints below, remain binding until an explicit architecture decision changes them. An existing implementation alone does not establish a permanent project requirement.
 
-Third-party libraries are vendored files behind project adapters, not npm runtime packages, so they stay swappable. Splits follow high cohesion and low coupling. A selected library is vendored only when an accepted consumer exists.
+Third-party libraries are vendored files behind project adapters, not npm runtime packages, so they stay swappable. Splits follow high cohesion and low coupling. A selected library is vendored only when an accepted consumer exists. Every vendored library has an entry in `THIRD_PARTY_NOTICES.md`, updated in the same change that adds, replaces, or upgrades it.
 
 Runtime constraints:
 
@@ -133,7 +133,7 @@ Chat history and commit messages are evidence, never a substitute for the curren
 
 - `my-skeleton-theme` is an internal Shopify Skeleton Theme mother template: minimal, official-Skeleton-aligned, modular, extensible, maintainable, and verifiable. Derived themes own business features, page design, and Theme Store positioning.
 - Shopify's current official `skeleton-theme` defines the default storefront inventory boundary. Shopify best practices govern how retained code and approved additions are implemented; Theme Store submission feature requirements do not expand the mother-template inventory by themselves.
-- Project additions require an explicit accepted decision. Current examples include the project-owned component lifecycle/runtime and Agent/tooling configuration. Do not infer new storefront business features merely because a finished Theme Store theme would require them.
+- Project additions require an explicit accepted decision. Current examples include the project-owned component lifecycle/runtime, native section motion, Agent/tooling configuration, and these generic storefront primitives (accepted 2026-09-21): cart page, quantity selector, variant picker with shared dropdown, buy buttons, product media gallery, pagination with section refresh, localization switcher, toast, accordion, header nested-menu dropdown, and header search entry. Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes. Do not infer new storefront business features merely because a finished Theme Store theme would require them.
 - In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
 - Never modify `my-theme-1`; it is read-only historical evidence. This project requires no compatibility with Ceylune appearance, content, schemas, configuration, or behavior.
 - Keep one writer per shared worktree.
