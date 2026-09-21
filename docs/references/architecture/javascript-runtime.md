@@ -1,6 +1,6 @@
 # JavaScript Runtime Reference
 
-This reference stores JavaScript runtime public contracts that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source. Read this file when implementing or reviewing JavaScript runtime behavior, module loading, lifecycle code, Alpine components or stores, ThemeEvents, ShopifyHttp, SectionRefresher, or script load order.
+This reference stores JavaScript runtime public contracts that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source. Read this file when implementing or reviewing JavaScript runtime behavior, module loading, lifecycle code, Alpine components or stores, ThemeEvents, ShopifyHttp, SectionRefresher, Liquid rendering features, or script load order.
 
 Inspect current source for exact method lists, tuning constants, and implementation internals.
 
@@ -151,6 +151,19 @@ The live `innerSelectors` callers are the collection and blog sections. They dec
 ### Transitional status
 
 `SectionRefresher` remains transitional while retained flows depend on Section Rendering API behavior. It is the required mechanism today; removing or replacing it requires an approved alternative with explicit lifecycle, accessibility, error, and history ownership. Transitional status does not authorize removal or schedule a replacement.
+
+## Liquid Rendering Features
+
+The Liquid `{% block %}` and `{% partial %}` tags are not required baseline dependencies of this project. Adopting either requires a separately approved decision. This stance does not affect the existing Theme Blocks inventory or their `{% content_for 'blocks' %}` contract, which is owned by `theme-blocks.md`.
+
+Any approved `{% partial %}` trial must be low risk and verify:
+
+- ordinary rendering
+- Theme Editor behavior
+- accessibility state
+- request races
+- Alpine lifecycle
+- custom component lifecycle
 
 ## Cart State Ownership
 

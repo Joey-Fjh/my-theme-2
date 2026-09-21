@@ -15,8 +15,8 @@ Inspect current source for exact settings, schema shape, and markup.
 
 **Out of scope (still undecided or owned elsewhere):**
 
-- Liquid July '26 `{% partial %}` stance — on the board, not decided
-- `ShopifySectionRefresher` transitional ownership — on the board; see `javascript-runtime.md` when a retained flow depends on it
+- Liquid `{% block %}` / `{% partial %}` adoption stance — see `javascript-runtime.md` (Liquid Rendering Features)
+- `SectionRefresher` transitional status — see `javascript-runtime.md` (Transitional status)
 - New block types, schemas, and allowed parents beyond TB1
 - Media behavior, including a Container `background_image` setting — deferred; see `../style-system/image-display-contract.md`
 - Global page, Section, and Block layout protocol
