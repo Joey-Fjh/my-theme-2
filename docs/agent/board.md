@@ -66,30 +66,18 @@ Stated and confirmed by the user on 2026-09-17 as the Skeleton's target shape. T
 - Current runtime names, typography tiers, motion-gate mechanics, and Tailwind placement rules must not be presented as settled mother-template contracts before review.
 - The retained safeguard set is no longer listed here. `AGENTS.md` now carries it directly, so a copy in this file would be a second unowned source of the same rules, which is the defect D17 was raised to remove.
 
-### P1+P5b Stage 2 - holdover placement
+### Remaining governance migrations — next decision
 
-- Scope: place rules 5 and 11 with their then-decided owners and remove their pending-decision labels from `AGENTS.md`.
-- Dependencies: the accepted JavaScript core and event conventions, plus the CSS placement rule, which is now recorded in `docs/references/style-system/css-architecture.md`. All resolved.
-- Acceptance: both rules have exactly one owner; no protection is lost in transit; `AGENTS.md` ends at 6 implementation rules.
-- Status: unblocked 2026-09-20. Not started.
+P1+P5b Stage 2 was accepted as ST-2 on 2026-09-21: the rule 11 holdover now lives in `docs/references/style-system/css-architecture.md` (constraint 4), and `AGENTS.md` has six hard rules. The old migration table was pruned on 2026-09-21: five rows were already carried by `AGENTS.md` and `README.md` (classification vocabulary; `my-theme-1`, Ceylune independence, one writer and independent review; machine setup; record lifecycle steps 6 and 7; implementation surface versus record layer and checks-not-claims). The four rows below each need a content decision, not a move:
 
-The earlier D22 and D23 labels referred to documentation-ownership questions. Their actionable content is the migration table below; use that table rather than carrying orphan decision IDs with no standalone definition.
-
-Pending migrations owned by this batch:
-
-| Content still carried here | Intended destination |
+| Content still carried here | Question to decide |
 | --- | --- |
-| Accepted Skeleton architecture | A matching existing or newly approved `docs/references/` owner |
-| Classification vocabulary | `AGENTS.md` or a matching reference |
-| `my-theme-1` read-only, Ceylune independence, one writer per worktree, and independent review of any executed batch regardless of who executed it | `AGENTS.md` |
-| Coordinator/reviewer: inspect evidence, maintain records, propose bounded tasks, and verify results; read-only unless implementation is authorized | `.agents/roles/` or `AGENTS.md` |
-| Project Skills wrap recurring executable capabilities; volatile tooling claims require dated authoritative evidence; the portable workflow stays in `AGENTS.md` rather than a new protocol file | `AGENTS.md` or a matching reference |
-| Machine setup and client availability notes | `README.md` |
-| Record lifecycle steps 6 and 7: accept only from review evidence and explicit user acceptance; after acceptance compress transient detail, remove obsolete board discussion, migrate stable contracts, and delete completed context entries | `AGENTS.md`, whose board/context rule currently carries recording and authorization but not the post-acceptance cleanup discipline. These two record files are construction-phase artifacts, so the discipline is lost when they are removed. |
-| The implementation-surface versus record-layer distinction, and the rule that an execution spec states checks rather than claims | `AGENTS.md`. Both are architecture-independent method rules earned from P1+P5b Stage 1, and both currently live only in the Record Lifecycle of a file scheduled for removal. |
-| The always-on entry principle: `AGENTS.md` stays complete for implementation-independent rules, and current runtime names, typography tiers, motion mechanics, and Tailwind placement are never presented as settled mother-template contract before review | `AGENTS.md`. Stage 1 applied this principle but did not state it anywhere, so nothing currently prevents the entry from re-accumulating implementation detail. |
+| Accepted Skeleton architecture: the bullets under **Accepted architecture awaiting permanent ownership** above (block inventory, blank-content rule, generic-block rule, `{% partial %}` stance, `SectionRefresher` as transitional) | Which `docs/references/` file owns them: an existing one, or a new Theme Block reference |
+| Coordinator/reviewer: inspect evidence, maintain records, propose bounded tasks, verify results; read-only unless implementation is authorized | Whether a coordinator contract is wanted at all, beside Scout, Implementer and Verifier in `.agents/roles/` |
+| Skills policy: volatile tooling claims require dated authoritative evidence | Wording and placement in the `AGENTS.md` Agent Skills section; `AGENTS.md` already says the validators wrap recurring commands |
+| Always-on entry principle: current runtime names, typography tiers, motion mechanics and Tailwind placement are never presented as settled mother-template contract before review | Wording in `AGENTS.md`; line 3 already says "keep it lean" |
 
-Until migrated, retain these machine facts: Windows symlinks were repaired with repository-local `core.symlinks = true`; Developer Mode is optional; project Hooks require workspace trust and may not run on a first clone; and live Shopify Dev MCP/Context7 availability in Codex and Cursor remains unproven and must be rechecked before use.
+Machine fact not stated elsewhere: live Shopify Dev MCP/Context7 availability in Codex and Cursor remains unproven and must be rechecked before use (`AGENTS.md` covers the recheck procedure). The other machine facts now live in `README.md`.
 
 ### CSS architecture — settled 2026-09-20
 
@@ -127,10 +115,10 @@ The two candidate resolutions conflict, so this needs a decision rather than an 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan. PC-1 (unreachable super-menu panel-motion chain retired from the header dropdown and the Tailwind sources) is accepted as of 2026-09-21. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan. ST-2 (P1+P5b Stage 2: the Tailwind holdover moved from `AGENTS.md` to `css-architecture.md`) is accepted as of 2026-09-21. PC-1 (unreachable super-menu panel-motion chain retired from the header dropdown and the Tailwind sources) is accepted as of 2026-09-21. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidate: P1+P5b Stage 2.
-2. P1+P5b Stage 2 remains unblocked but unscheduled. P4 waits on a distribution-intent decision.
+1. Select one decision and record it in `context.md` before execution. Ready candidate: the remaining governance migrations (four rows, each needing a content decision).
+2. P4 waits on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -140,7 +128,7 @@ After this workflow is proven through real theme batches, evaluate extracting th
 
 ## Active decision and later candidates
 
-No decision is active and `context.md` holds no plan. Later candidates: P1+P5b Stage 2; P4 License after distribution intent is decided.
+No decision is active and `context.md` holds no plan. Next: the remaining governance migrations; P4 License after distribution intent is decided.
 
 ### Motion — settled 2026-09-20
 

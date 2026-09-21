@@ -141,7 +141,6 @@ Hard implementation rules:
 - Do not write inline `<script>` tags or bare global DOM listeners in Liquid.
 - Pass Liquid-driven runtime values to JavaScript through `data-*`.
 - Critical first-viewport content must render usable and visible without JavaScript or animation completion.
-- Tailwind utility classes first; no ad-hoc `<style>` blocks in Liquid templates. *(Holdover — current-implementation protection pending JS/CSS architecture discussion.)*
 - User-visible strings, schema labels, ARIA copy, placeholders, and editor text must use locale keys.
 - Use semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
 - Do not manually edit vendor, generated, or optimized icon assets.
