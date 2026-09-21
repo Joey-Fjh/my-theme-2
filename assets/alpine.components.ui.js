@@ -1,5 +1,5 @@
 import { useDisposable } from 'utils';
-import { data, store } from 'alpine-adapter';
+import { store } from 'alpine-adapter';
 import ThemeEvents from 'events';
 import Utils from 'utils';
 
@@ -956,55 +956,6 @@ const components = {
         };
     },
 
-    sortByDropdown() {
-        return {
-            sortBy: '',
-            optionActiveClass: '',
-            optionInactiveClass: '',
-            formId: '',
-
-            init() {
-                const ds = this.$el?.dataset;
-                if (!ds) return;
-
-                this.sortBy = ds.currentSort || '';
-                this.formId = ds.formId || '';
-                this.optionActiveClass = ds.optionActiveClass || '';
-                this.optionInactiveClass = ds.optionInactiveClass || '';
-            },
-
-            isSelected(value) {
-                return this.sortBy === value;
-            },
-
-            syncPeers(value) {
-                document.querySelectorAll('[data-sort-by-dropdown]').forEach((dropdown) => {
-                    if (dropdown.dataset.formId !== this.formId) return;
-
-                    const dataState = data(dropdown);
-                    if (dataState) dataState.sortBy = value;
-
-                    dropdown.querySelector('[data-sort-by-control]')?.setAttribute('value', value);
-                });
-            },
-
-            select(value) {
-                this.sortBy = value;
-
-                if (this.formId) {
-                    this.syncPeers(value);
-                    this.$nextTick(() => {
-                        document
-                            .getElementById(this.formId)
-                            ?.dispatchEvent(new Event('change', { bubbles: true }));
-                    });
-                } else {
-                    this.$dispatch('sort-change', this.sortBy);
-                }
-            },
-        };
-    },
-
     accordion() {
         return {
             active: null,
@@ -1138,7 +1089,6 @@ export const {
     countdownTimer,
     progressiveList,
     localizationSwitcher,
-    sortByDropdown,
     accordion,
     toastContainer,
     flipDigit,

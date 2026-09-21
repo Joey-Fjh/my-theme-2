@@ -131,37 +131,12 @@
         "title": "Collections",
         "products": "Products",
         "all": "All",
-        "filter": "Filter",
         "no_products": "No products found.",
         "view_all": "View All",
         "description_html": "<p>Describe the products and purpose of this collection.</p>",
         "latest_brand": "Latest Brand",
         "latest_brand_description": "Introduce the collections customers can browse on this page.",
-        "filters": {
-            "active_label": "Filter:",
-            "clear_all": "Clear all",
-            "remove_filter": "Remove {{ filter }}",
-            "show_more": "Show more",
-            "show_less": "Show less",
-            "from": "From",
-            "to": "To",
-            "min": "Min",
-            "max": "Max",
-            "filters": "Filters",
-            "view_result": "View Result"
-        },
-        "sort_by": "Sort by",
-        "popular_countries": "Popular countries/regions",
-        "navigation": {
-            "more": "More",
-            "drawer_title": "Collections",
-            "current_collection": "Current collection",
-            "all_collections": "All collections",
-            "load_more": "Load more collections",
-            "loading": "Loading collections…",
-            "error": "Could not load collections.",
-            "retry": "Retry"
-        }
+        "popular_countries": "Popular countries/regions"
     },
     "footer": {
         "follow_on_shop": "Follow on Shop",
@@ -375,9 +350,6 @@
         "dismiss": "Dismiss",
         "menu": "Menu",
         "account": "Account",
-        "close_filters_drawer": "Close filters drawer",
-        "close_collection_navigation_drawer": "Close collections drawer",
-        "collection_navigation": "Collection navigation",
         "close_quick_view": "Close quick view",
         "carousel": "Carousel",
         "hero_slides": "Hero slides",

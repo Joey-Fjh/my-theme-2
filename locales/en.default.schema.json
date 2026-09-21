@@ -188,13 +188,6 @@
             "name": "Cart",
             "cart_type": "Cart type"
         },
-        "collection_navigation": {
-            "name": "Collection navigation",
-            "batch_size": "Initially visible collections",
-            "batch_size_info": "Controls how many collections appear in the quick navigation row and when the drawer first opens.",
-            "load_more_size": "Collections per load",
-            "load_more_size_info": "Controls how many additional collections the drawer loads each time."
-        },
         "search": {
             "name": "Search",
             "predictive_search_enabled": "Enable predictive search"
@@ -472,23 +465,15 @@
                 "rotate_badge_text": "Rotating badge text",
                 "rotate_badge_percent": "Badge center text",
                 "products_per_page": "Products per page",
-                "enable_filtering": "Enable filtering",
-                "desktop_filter_layout": "Desktop filter layout",
-                "visible_filter_values_before_show_more": "Visible filter values before show more",
-                "enable_sorting": "Enable sorting",
                 "desktop_product_card_columns": "Desktop product card columns",
                 "mobile_product_card_columns": "Mobile product card columns",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "info": {
-                "customize_filters_with_the_search_discov": "Customize filters in the Search & Discovery app.",
                 "fallback_image": "Used when the All collection or a collection has no image."
             },
             "options": {
-                "horizontal": "Horizontal",
-                "vertical": "Vertical",
-                "drawer": "Drawer",
                 "3_columns": "3 columns",
                 "4_columns": "4 columns",
                 "1_column": "1 column",
@@ -503,9 +488,6 @@
                 "rotate_badge_text": "FEATURED • COLLECTION •",
                 "rotate_badge_percent": "SHOP"
             }
-        },
-        "collection-navigation-items": {
-            "name": "Collection nav items"
         },
         "collections": {
             "settings": {

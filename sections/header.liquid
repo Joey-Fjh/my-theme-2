@@ -3,7 +3,6 @@
 {%- if logo_position == 'middle-left' -%}
     {%- assign logo_position = 'middle-center' -%}
 {%- endif -%}
-{%- assign mobile_menu_popup_id = 'header-mobile-menu-drawer' -%}
 {%- assign is_homepage = false -%}
 {%- if request.page_type == 'index' -%}
     {%- assign is_homepage = true -%}
@@ -16,7 +15,6 @@
 
 <header
     data-section-id="{{ section.id }}"
-    data-mobile-menu-popup-id="{{ mobile_menu_popup_id }}"
     class="
         header-section full-width color-{{ section.settings.color_scheme }} surface-section
         {% if is_homepage %}is-homepage{% else %}is-innerpage{% endif %}
@@ -28,8 +26,7 @@
           'is-top': isTop,
           'is-hidden' : isHidden,
           'is-scrolled': !isTop,
-          'is-menu-active': isMenuActive,
-          'is-mobile-menu-active': $store.dialog?.active === $el.dataset.mobileMenuPopupId
+          'is-menu-active': isMenuActive
         }
     "
 >
@@ -195,23 +192,21 @@
 
     .site-header > header.is-scrolled,
     .site-header > header.is-menu-active,
-    .site-header > header.is-mobile-menu-active,
     .site-header > header:has(.header-menu details.dropdown[open]) {
         box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
     }
 
     .site-header
         > header.is-homepage.is-top:not(:hover):not(:focus-within):not(.is-menu-active):not(
-            .is-mobile-menu-active
-        ):not(:has(.header-menu details.dropdown[open])) {
+            :has(.header-menu details.dropdown[open])
+        ) {
         background-color: transparent;
         background-image: none;
     }
 
     .site-header > header.is-homepage.is-top:hover,
     .site-header > header.is-homepage.is-top:focus-within,
-    .site-header > header.is-homepage.is-top.is-menu-active,
-    .site-header > header.is-homepage.is-top.is-mobile-menu-active {
+    .site-header > header.is-homepage.is-top.is-menu-active {
         box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
     }
 

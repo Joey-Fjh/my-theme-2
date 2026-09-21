@@ -13,8 +13,7 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | Core | `base.js`, `events.js` | Static | Layout measurement, module scanning and lazy loading, DOM teardown coordination, Theme Editor event forwarding, store bootstrap |
 | Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `defer`, `mount`, `unmount`, `store`, `data` |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
-| UI state bridges | `alpine.store.toast.js`, `alpine.store.dialog.js`, `alpine.store.cart.js` | Static | Toast, dialog, and cart UI stores registered by the core through the adapter |
-| Drawer infrastructure | `drawer-motion.js`, `scroll-lock.js`, `motion-session.js`, `dom-visibility.js` | Static | Reached from `alpine.store.dialog.js`; owns drawer motion, shared scroll locking, interruptible motion sessions, and visibility checks |
+| UI state bridges | `alpine.store.toast.js`, `alpine.store.cart.js` | Static | Toast and cart UI stores registered by the core through the adapter |
 | On-demand modules | `utils.js`, component entry files, `alpine.components.*.js` groups | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
 Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-20:
@@ -27,13 +26,8 @@ Every file marked Static is reached from `base.js` through a static `import`, so
 | `cart.contract.js` | 7,086 |
 | `https.js` | 11,837 |
 | `alpine.store.toast.js` | 1,465 |
-| `alpine.store.dialog.js` | 8,979 |
 | `alpine.store.cart.js` | 4,267 |
-| `drawer-motion.js` | 7,687 |
-| `dom-visibility.js` | 438 |
-| `motion-session.js` | 872 |
-| `scroll-lock.js` | 745 |
-| **Always loaded** | **61,797** |
+| **Always loaded** | **42,136** |
 
 D19 Part A classified `https.js` as an on-demand service module because `base.js` referenced `ShopifyHttp` and `SectionRefresher` zero times at decision time. The JS1 implementation moved cart platform state into `cart.contract.js`, which `base.js` imports statically and which imports `https`, so that classification no longer holds. The boundary test D19 Part A set — what must exist before any component can load — is unchanged; only the file list it produced was overtaken by the implementation. Re-measure this table whenever a static import is added to the graph.
 
@@ -152,7 +146,7 @@ After a section refresh, `SectionRefresher` rescans module roots inside the repl
 
 When `innerSelectors` is set, the refresher clones only those descendants from the Section Rendering response. Shopify nests `<style data-section-stylesheet>` inside the `#shopify-section-<id>` wrapper; the `innerSelectors` path carries that style node from the parsed Section Rendering document into the live section when the response includes one. The lookup is document-scoped (`doc.querySelector('style[data-section-stylesheet]')`) and does not depend on `targetSelector` shape, so callers that pass an inner element as `targetSelector` receive the stylesheet the same way as wrapper-target callers. The full-section path (`innerSelectors` empty) already copies the wrapper `innerHTML` and carries the style; do not extend the document-scoped lookup to that path.
 
-The live `innerSelectors` callers are the collection and blog sections. They declare selectors in markup through `data-pagination-selectors`, which `assets/alpine.components.pagination.js` hydrates before `buildDomMap()` passes them to the refresher. A factory called with no arguments, such as `collectionFilters()` or `sectionPagination()`, can therefore still use the partial path. Before judging this path unused, search for `data-pagination-selectors` and for other dataset-driven configuration, not only for call arguments.
+The live `innerSelectors` callers are the collection and blog sections. They declare selectors in markup through `data-pagination-selectors`, which `assets/alpine.components.pagination.js` hydrates before `buildDomMap()` passes them to the refresher. Collection pagination mounts `sectionPagination()` at the section root with `data-module-id="section-pagination"`. Before judging this path unused, search for `data-pagination-selectors` and for other dataset-driven configuration, not only for call arguments.
 
 ## Cart State Ownership
 
@@ -167,7 +161,6 @@ The core registers stores during startup:
 | Store | Module | Role |
 | --- | --- | --- |
 | `toast` | `alpine.store.toast.js` | Transient notifications |
-| `dialog` | `alpine.store.dialog.js` | Drawer open state, focus trap, and orchestration of shared scroll-lock, motion-session, and visibility helpers |
 | `cart` | `alpine.store.cart.js` | UI bridge over `createCartContract()` |
 
 Inspect the store modules for configure/init APIs instead of copying historical examples.
@@ -178,10 +171,6 @@ Inspect the store modules for configure/init APIs instead of copying historical 
 | --- | --- | --- |
 | `utils.js` | `utils` | `debounce`, scroll-behavior helpers, `prefersReducedMotion`, `scrollToTop` |
 | `quantity-constraints.js` | relative import from component groups | Pure quantity min/max/step math |
-| `drawer-motion.js` | relative import from the dialog store | Interruptible drawer enter/exit animation driving |
-| `scroll-lock.js` | relative import from the dialog store and drawer motion | Reference-counted page scroll locking with exact inline-style restoration |
-| `motion-session.js` | relative import from the dialog store and drawer motion | Per-dialog cancellation generation shared across refresh, reopen, enter, and exit paths |
-| `dom-visibility.js` | relative import from dialog and filter modules | Shared focusability/visibility predicate for live DOM reconciliation |
 | `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 
 ## Motion Runtime Boundary
@@ -206,7 +195,7 @@ The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary 
 | Cart contract | `cart.contract.js` |
 | Alpine component groups | `alpine.components.*.js` |
 | Component entry modules | `accordion.js`, `buy-buttons.js`, … one file per import-map identifier |
-| Alpine stores | `alpine.store.toast.js`, `alpine.store.dialog.js`, `alpine.store.cart.js` |
+| Alpine stores | `alpine.store.toast.js`, `alpine.store.cart.js` |
 | HTTP and section refresh | `https.js` |
 | Shared utilities | `utils.js`, `quantity-constraints.js`, motion helpers |
 

@@ -2,7 +2,6 @@ import ThemeEvents from 'events';
 import * as adapter from 'alpine-adapter';
 import { createCartContract } from 'cart-contract';
 import { toastStore } from './alpine.store.toast.js';
-import { dialogStore } from './alpine.store.dialog.js';
 import { createCartUiStore } from './alpine.store.cart.js';
 
 /**
@@ -338,7 +337,6 @@ function unmountModuleRoots(container) {
 
 function setupStores() {
     adapter.store('toast', toastStore);
-    adapter.store('dialog', dialogStore);
 
     const contract = createCartContract();
     const cartStore = createCartUiStore(contract);

@@ -31,17 +31,7 @@ Authoritative sources for this series: `github.com/Shopify/skeleton-theme` for i
 
 ## Open Evidence
 
-### Drawer motion mechanism — open, unscheduled
-
-The retained drawer path in `assets/drawer-motion.js` compares `event.animationName` against names hardcoded in JavaScript while the keyframes live in `tailwind/tailwind.animates.css`. The coupling is live and has no automated agreement check.
-
-Do not transfer MOTION-1's implementation mechanically. Reveal is one-way; drawers are reversible and can be reopened while exit is in flight. A transition implementation would still need explicit cancellation ownership, `transitioncancel`, property filtering, and multi-property completion rules. The neutral motion-session owner is now in place, so the mechanism can be evaluated independently later.
-
-The retained drawer micro-interaction remains governed by `prefers-reduced-motion`, not the merchant's `motion_enabled` page/brand-motion setting. This follows the accepted contract in `docs/references/architecture/motion-architecture.md`; changing it would reopen that contract.
-
-The eight dead `panel-motion-*` and `tab-*-underlined` symbols remain a separate post-CSS cleanup candidate. File co-location is not an ownership boundary.
-
-**Known focus limitation.** The stored collection-drawer return target is whichever responsive trigger was visible at refresh time. If the breakpoint changes between refresh and close, focus restoration can be skipped. Fixing this requires lazy return-target resolution at close time, which is a dialog-store contract change rather than a collection-path tweak. Recorded as a known limitation, unscheduled.
+None open. Findings from reviews that are not yet decisions are listed under the cleanup candidates below.
 
 ---
 
@@ -135,6 +125,14 @@ The two candidate resolutions conflict, so this needs a decision rather than an 
 - Acceptance: the decision is recorded and package metadata agrees with it; no unrelated package changes.
 - Status: not started.
 
+### Post-DR-1 cleanup candidates (found in the DR-1 review, 2026-09-21)
+
+Each needs its own authorized batch.
+
+- **Unreachable factories with dead dialog calls.** No Liquid file mounts `newsletterBanner` or `newsletterOverlay` (`assets/alpine.components.overlays.js`), or `productCard` and `cardGallery` (`assets/alpine.components.product-cards.js`). Their `$store.dialog` calls (`overlays.js:132,136`, `product-cards.js:299,336`) target a store that no longer exists. This is the same class of finding as UC-1: retire the factories or reconnect them.
+- **Merchant-facing dialog settings with no consumer.** `config/settings_schema.json:847-871` holds the `dialog_*` theme settings (border, radius, shadow). `snippets/css-variables.liquid:156-162` emits them as `--dialog-*`, and no CSS reads them now. Removing them changes the Theme Editor, so it needs an explicit decision.
+- **Dead `scroll-lock` rule.** `assets/base.css:16` (and the generated output) styles `dialog[scroll-lock][open], details[scroll-lock][open]`, but no markup sets a `scroll-lock` attribute.
+
 ### Post-CSS acceptance cleanup candidates
 
 The CSS series is accepted. These candidates were left out of it and need their own authorized batch.
@@ -144,9 +142,9 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. `context.md` holds no plan.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: the drawer motion mechanism and typography's token boundary.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: typography's token boundary, and the post-DR-1 cleanup candidates above.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
 3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 
@@ -168,7 +166,7 @@ Result: the reveal surface fell from roughly 71,232 raw / 8,454 Brotli bytes to 
 
 Still open, and deliberately outside that work:
 
-- Drawer motion, including the live `event.animationName` string coupling between `drawer-motion.js` and its stylesheet. See **Open Evidence** above.
+- Drawer motion: retired with the drawer by DR-1. `docs/references/architecture/motion-architecture.md` states that a derived theme adding a drawer owns its motion under the `prefers-reduced-motion` policy.
 - View Transitions, deferred for genuine page and shared-element transitions rather than ordinary reveal or drawers.
 - GSAP runtime vendoring, loading boundary, and licensing records. GSAP is approved as the dynamically loaded engine for explicit complex choreography, but no retained consumer exists, so nothing is vendored. The four official documentation Skills are installed and accepted as agent tooling only.
 - Three.js as an optional, consumer-loaded 3D adapter.

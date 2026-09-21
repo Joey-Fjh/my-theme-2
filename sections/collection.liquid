@@ -6,128 +6,15 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
     data-pagination-section-id="{{ section.id }}"
-    data-pagination-selectors='["[data-collection-dynamic-content]","[data-collection-drawer-shell]"]'
-    data-filters-form-id="CollectionFiltersForm-{{ section.id }}"
-    data-filters-dialog-id="collection-filters-{{ section.id }}"
-    x-data="collectionFilters()"
-    data-module-id="collection-filters"
+    data-pagination-selectors='["[data-collection-dynamic-content]"]'
+    x-data="sectionPagination()"
+    data-module-id="section-pagination"
+    data-module-lazy
 >
     {%- liquid
         assign collection_heading_class = section.settings.heading_size | default: 'heading-4xl'
         assign collection_subtitle_class = section.settings.subtitle_size | default: 'body-xl'
-        assign filters_form_id = 'CollectionFiltersForm-' | append: section.id
-        assign filters_dialog_id = 'collection-filters-' | append: section.id
-        assign filters_dialog_title_id = 'dialog-title-' | append: filters_dialog_id
-        assign collection_nav_dialog_id = 'collection-navigation-' | append: section.id
-        assign collection_nav_dialog_title_id = 'dialog-title-' | append: collection_nav_dialog_id
-        assign collection_nav_batch_size = settings.collection_navigation_batch_size | default: 8
-        assign collection_nav_load_more_size = settings.collection_navigation_load_more_size | default: 12
-        assign all_products_collection = collections.all
-        assign collection_nav_sort_by = collection.sort_by
-        assign is_all_products_collection = false
-        if all_products_collection != blank and collection.handle == all_products_collection.handle
-            assign is_all_products_collection = true
-        endif
     -%}
-    {%- capture all_products_nav_href -%}
-        {%- if collection_nav_sort_by != blank -%}
-            {{ all_products_collection.url | default: routes.all_products_collection_url }}?sort_by={{ collection_nav_sort_by | url_param_escape }}
-        {%- else -%}
-            {{ all_products_collection.url | default: routes.all_products_collection_url }}
-        {%- endif -%}
-    {%- endcapture -%}
-    {%- unless is_all_products_collection -%}
-        {%- capture current_collection_nav_href -%}
-            {%- if collection_nav_sort_by != blank -%}
-                {{ collection.url }}?sort_by={{ collection_nav_sort_by | url_param_escape }}
-            {%- else -%}
-                {{ collection.url }}
-            {%- endif -%}
-        {%- endcapture -%}
-    {%- endunless -%}
-    {%- liquid
-        assign nav_sequence_index = 0
-        assign current_in_first_n = false
-        assign collection_nav_initial_source_offset = 0
-        assign collection_nav_initial_has_more = false
-
-        for nav_collection in collections
-            if nav_collection == blank or nav_collection.handle == 'all'
-                continue
-            endif
-
-            assign nav_sequence_index = nav_sequence_index | plus: 1
-
-            if nav_sequence_index > collection_nav_batch_size
-                assign collection_nav_initial_has_more = true
-                break
-            endif
-
-            assign collection_nav_initial_source_offset = forloop.index
-
-            if nav_collection.handle == collection.handle
-                assign current_in_first_n = true
-            endif
-        endfor
-    -%}
-    {%- capture collection_quick_nav_links -%}
-        {%- assign nav_sequence_index = 0 -%}
-        {%- for nav_collection in collections -%}
-            {%- if nav_collection == blank or nav_collection.handle == 'all' -%}
-                {%- continue -%}
-            {%- endif -%}
-
-            {%- assign nav_sequence_index = nav_sequence_index | plus: 1 -%}
-
-            {%- if nav_sequence_index > collection_nav_batch_size -%}
-                {%- break -%}
-            {%- endif -%}
-
-            <a
-                href="{% if collection_nav_sort_by != blank %}{{ nav_collection.url }}?sort_by={{ collection_nav_sort_by | url_param_escape }}{% else %}{{ nav_collection.url }}{% endif %}"
-                class="collection__nav-link tab-nav-item tab-nav-item--underline-opacity flex shrink-0 items-start whitespace-nowrap{% if nav_collection.handle == collection.handle %} is-active{% endif %}"
-                {% if nav_collection.handle == collection.handle %}
-                    aria-current="page"
-                {% endif %}
-            >
-                <span>
-                    {{- nav_collection.title | escape -}}
-                    <sup class="sup-badge">({{ nav_collection.all_products_count | default: 0 }})</sup>
-                </span>
-            </a>
-        {%- endfor -%}
-    {%- endcapture -%}
-    {%- capture collection_drawer_initial_links -%}
-        {%- assign nav_sequence_index = 0 -%}
-        {%- for nav_collection in collections -%}
-            {%- if nav_collection == blank or nav_collection.handle == 'all' -%}
-                {%- continue -%}
-            {%- endif -%}
-
-            {%- assign nav_sequence_index = nav_sequence_index | plus: 1 -%}
-
-            {%- if nav_sequence_index > collection_nav_batch_size -%}
-                {%- break -%}
-            {%- endif -%}
-
-            <a
-                href="{% if collection_nav_sort_by != blank %}{{ nav_collection.url }}?sort_by={{ collection_nav_sort_by | url_param_escape }}{% else %}{{ nav_collection.url }}{% endif %}"
-                class="block py-2 body-md text-theme-text"
-                data-collection-navigation-item
-                data-collection-handle="{{ nav_collection.handle }}"
-                data-collection-navigation-base-path="{{ nav_collection.url }}"
-                {% if nav_collection.handle == collection.handle %}
-                    aria-current="page"
-                {% endif %}
-            >
-                <span class="text-pretty break-words">
-                    <span{% if nav_collection.handle == collection.handle %} class="border-b border-current"{% endif %}>
-                        {{- nav_collection.title | escape -}}
-                    </span><sup class="sup-badge">({{ nav_collection.all_products_count | default: 0 }})</sup>
-                </span>
-            </a>
-        {%- endfor -%}
-    {%- endcapture -%}
     <div class="layout layout-no-pb container-page pb-0">
         {%- liquid
             assign collection_hero_image = collection.image
@@ -139,7 +26,6 @@
                 assign collection_hero_has_media = true
             endif
         -%}
-        {%- comment -%} Hero: media as cover background; height from content + padding {%- endcomment -%}
         <div
             class="relative mb-8 overflow-hidden rounded-sm color-{{ section.settings.header_color_scheme }} pc:mb-10"
             x-data="motionRevealSection()"
@@ -212,482 +98,69 @@
             if section.settings.desktop_card_columns == '3'
                 assign desktop_grid_class = 'pc:grid-cols-3'
             endif
-
-            assign enable_filtering = section.settings.enable_filtering
-            assign enable_sorting = section.settings.enable_sorting
-
-            assign is_horizontal_filter = false
-            assign is_vertical_filter = false
-
-            if enable_filtering
-                assign is_vertical_filter = true
-            endif
         -%}
 
         <div data-collection-dynamic-content class="flex flex-col gap-6 pc:gap-6">
-            {%- comment -%} Hidden form all filter/sort controls {%- endcomment -%}
-            <form id="{{ filters_form_id }}" class="hidden" @change="onChange()"></form>
+            <div class="relative w-full">
+                {% render 'loading', overlay: true, size: 'large' %}
 
-            {%- comment -%}
-                Mobile-only (pc:hidden)
-            {%- endcomment -%}
-            {%- if enable_filtering or enable_sorting -%}
-                <div class="flex items-center justify-between gap-4 pc:hidden">
-                    {%- if enable_filtering -%}
-                        <button
-                            type="button"
-                            @click="$store.dialog.open($el.dataset.dialogId)"
-                            data-dialog-id="{{ filters_dialog_id }}"
-                            class="collection-toolbar__action flex shrink-0 cursor-pointer items-center gap-3"
-                        >
-                            {% render 'icons', icon: 'icon-filter' %}
-                            <span>{{ 'collections.filter' | t }}</span>
-                        </button>
-                    {%- endif -%}
-
-                    {%- if enable_sorting -%}
-                        {%- capture sort_id_prefix_mobile -%}{{ section.id }}-mobile{%- endcapture -%}
-
-                        {%- render 'sort-by-dropdown',
-                            results: collection,
-                            form_id: filters_form_id,
-                            class: 'shrink-0',
-                            id_prefix: sort_id_prefix_mobile
-                        -%}
-                    {%- endif -%}
-                </div>
-            {%- endif -%}
-
-            <nav
-                aria-label="{{ 'accessibility.collection_navigation' | t }}"
-                class="collection-toolbar-nav border-b border-theme-border/20 body-3xl pc:hidden"
-            >
-                <div class="flex min-w-0 flex-nowrap items-end gap-4 pb-3">
-                    <a
-                        href="{{ all_products_nav_href }}"
-                        class="collection__nav-link tab-nav-item tab-nav-item--underline-opacity flex shrink-0 items-start{% if is_all_products_collection %} is-active{% endif %}"
-                        {% if is_all_products_collection %}
-                            aria-current="page"
-                        {% endif %}
+                {%- liquid
+                    assign first_row_count = section.settings.mobile_card_columns | default: '2' | plus: 0
+                -%}
+                {% paginate collection.products by section.settings.products_per_page %}
+                    <div
+                        class="grid {{ mobile_grid_class }} {{ desktop_grid_class }} gap-x-4 gap-y-8 pb-10"
+                        x-data="motionRevealSection()"
+                        data-module-id="motion-reveal-section"
+                        data-module-lazy
+                        data-motion-section
                     >
-                        <span>
-                            {{- 'collections.all' | t -}}
-                            <sup class="sup-badge"
-                                >(
-                                {{- all_products_collection.all_products_count | default: 0 -}}
-                                )</sup
-                            >
-                        </span>
-                    </a>
-
-                    {%- unless is_all_products_collection -%}
-                        <a
-                            href="{{ current_collection_nav_href }}"
-                            class="collection__nav-link tab-nav-item tab-nav-item--underline-opacity is-active flex min-w-0 flex-1 items-start"
-                            aria-current="page"
-                        >
-                            <span class="flex min-w-0 items-start">
-                                <span class="min-w-0 truncate">
-                                    {{- collection.title | escape -}}
-                                </span>
-                                <sup class="sup-badge shrink-0"
-                                    >({{ collection.all_products_count | default: 0 }})</sup
-                                >
-                            </span>
-                        </a>
-                    {%- endunless -%}
-
-                    <button
-                        type="button"
-                        class="collection-toolbar__action collection__nav-more shrink-0 cursor-pointer"
-                        data-dialog-id="{{ collection_nav_dialog_id | escape }}"
-                        @click="$store.dialog.open($el.dataset.dialogId)"
-                        aria-haspopup="dialog"
-                        aria-label="{{ 'collections.navigation.more' | t }}"
-                    >
-                        {{ 'collections.navigation.more' | t }}
-                    </button>
-                </div>
-            </nav>
-
-            {%- comment -%} Desktop horizontal layout removed ??vertical filters only in minimal composition. {%- endcomment -%}
-
-            {%- comment -%}
-                Desktop vertical (max-pc:hidden)
-            {%- endcomment -%}
-            <div
-                class="
-                    {% if enable_filtering and is_vertical_filter %}
-                        pc:grid pc:grid-cols-[30rem_minmax(0,1fr)] pc:gap-10
-                    {% endif %}
-                "
-            >
-                {%- if enable_filtering and is_vertical_filter -%}
-                    <aside class="hidden pc:block">
-                        <div
-                            class="sticky-viewport-panel border-e border-theme-border/20 pe-6"
-                            x-data="stickyViewportPanel"
-                            data-module-id="sticky-viewport-panel"
-                        >
-                            {%- render 'filter-vertical',
-                                filter_source: collection,
-                                show_more_limit: section.settings.filter_visible_values_limit,
-                                scope_id: section.id,
-                                form_id: filters_form_id
-                            -%}
-                        </div>
-                    </aside>
-                {%- endif -%}
-
-                <div class="min-w-0">
-                    {%- liquid
-                        assign toolbar_outer_class = 'w-full pc:grid pc:grid-cols-[max-content_minmax(0,1fr)_max-content_max-content] pc:items-end pc:gap-12'
-                        assign toolbar_nav_class = 'body-3xl gap-6 pc:gap-12 max-pc:border-b max-pc:border-theme-border/20'
-                        if is_horizontal_filter == false
-                            assign toolbar_outer_class = toolbar_outer_class | append: ' pc:border-b pc:border-theme-border/20'
-                        else
-                            assign toolbar_nav_class = toolbar_nav_class | append: ' pc:border-0'
-                        endif
-                    -%}
-
-                    <div class="collection-toolbar flex w-full flex-col items-start gap-6 pc:gap-6">
-                        <div class="{{ toolbar_outer_class }}">
-                            <div class="shrink-0">
-                                {%- if enable_filtering -%}
-                                    <div class="hidden pc:flex pc:items-center pc:pb-3">
-                                        <button
-                                            type="button"
-                                            @click="$store.dialog.open($el.dataset.dialogId)"
-                                            data-dialog-id="{{ filters_dialog_id }}"
-                                            class="collection-toolbar__action flex shrink-0 cursor-pointer items-center gap-2.5"
-                                        >
-                                            {% render 'icons', icon: 'icon-filter' %}
-                                            <span>{{ 'collections.filter' | t }}</span>
-                                        </button>
-                                    </div>
-                                {%- else -%}
-                                    <div class="hidden pc:block"></div>
-                                {%- endif -%}
+                        {%- for product in collection.products -%}
+                            <div class="group" data-motion-reveal>
+                                {%- liquid
+                                    assign product_card_alt = product.featured_image.alt | default: product.title
+                                    assign card_loading = 'lazy'
+                                    if forloop.index <= first_row_count
+                                        assign card_loading = 'eager'
+                                    endif
+                                -%}
+                                <a href="{{ product.url }}" class="flex flex-col gap-3">
+                                    {%- render 'image',
+                                        image: product.featured_image,
+                                        width: 600,
+                                        alt: product_card_alt,
+                                        sizes: '(min-width: 48rem) 25vw, 50vw',
+                                        loading: card_loading,
+                                        motion_reveal: false
+                                    -%}
+                                    <span class="heading-h6">{{ product.title }}</span>
+                                    <span>{{ product.price | money }}</span>
+                                </a>
                             </div>
-
-                            <div
-                                class="no-scrollbar min-w-0 overflow-x-auto overscroll-x-contain"
-                                x-data="dragScroll({ axis: 'x' })"
-                                data-module-id="drag-scroll"
-                            >
-                                <nav
-                                    aria-label="{{ 'accessibility.collection_navigation' | t }}"
-                                    class="collection-toolbar-nav hidden min-w-max pc:block"
-                                >
-                                    <div class="flex min-w-max flex-nowrap items-end pt-2 pb-3 {{ toolbar_nav_class }}">
-                                        <a
-                                            href="{{ all_products_nav_href }}"
-                                            class="collection__nav-link tab-nav-item tab-nav-item--underline-opacity flex shrink-0 items-start whitespace-nowrap{% if is_all_products_collection %} is-active{% endif %}"
-                                            {% if is_all_products_collection %}
-                                                aria-current="page"
-                                            {% endif %}
-                                        >
-                                            <span>
-                                                {{- 'collections.all' | t -}}
-                                                <sup class="sup-badge"
-                                                    >(
-                                                    {{-
-                                                        all_products_collection.all_products_count
-                                                        | default: 0
-                                                    -}}
-                                                    )</sup
-                                                >
-                                            </span>
-                                        </a>
-
-                                        {{ collection_quick_nav_links }}
-                                    </div>
-                                </nav>
+                        {%- else -%}
+                            <div class="col-span-full py-20 text-center body-lg">
+                                {{ 'collections.no_products' | t }}
                             </div>
-
-                            <div class="hidden shrink-0 pc:flex pc:items-center pc:pb-3">
-                                <button
-                                    type="button"
-                                    class="collection-toolbar__action collection__nav-more tab-nav-item tab-nav-item--underline-opacity shrink-0 cursor-pointer whitespace-nowrap{% unless is_all_products_collection or current_in_first_n %} is-active{% endunless %}"
-                                    data-dialog-id="{{ collection_nav_dialog_id | escape }}"
-                                    @click="$store.dialog.open($el.dataset.dialogId)"
-                                    aria-haspopup="dialog"
-                                    aria-label="{{ 'collections.navigation.more' | t }}"
-                                >
-                                    {{ 'collections.navigation.more' | t }}
-                                </button>
-                            </div>
-
-                            <div class="shrink-0">
-                                {%- if enable_sorting and is_horizontal_filter == false -%}
-                                    {%- capture sort_id_prefix_desktop_v -%}{{ section.id }}-desktop-v{%- endcapture -%}
-                                    <div class="hidden pc:flex pc:items-center pc:justify-end pc:pb-3">
-                                        {%- render 'sort-by-dropdown',
-                                            results: collection,
-                                            form_id: filters_form_id,
-                                            class: 'shrink-0',
-                                            id_prefix: sort_id_prefix_desktop_v
-                                        -%}
-                                    </div>
-                                {%- else -%}
-                                    <div class="hidden pc:block"></div>
-                                {%- endif -%}
-                            </div>
-                        </div>
-
-                        <div class="collection-toolbar-products relative w-full">
-                            {% render 'loading', overlay: true, size: 'large' %}
-
-                            {%- liquid
-                                assign first_row_count = section.settings.mobile_card_columns | default: '2' | plus: 0
-                            -%}
-                            {% paginate collection.products by section.settings.products_per_page %}
-                                <div
-                                    class="grid {{ mobile_grid_class }} {{ desktop_grid_class }} gap-x-4 gap-y-8 pb-10"
-                                    x-data="motionRevealSection()"
-                                    data-module-id="motion-reveal-section"
-                                    data-module-lazy
-                                    data-motion-section
-                                >
-                                    {%- for product in collection.products -%}
-                                        <div class="group" data-motion-reveal>
-                                            {%- liquid
-                                                assign product_card_alt = product.featured_image.alt | default: product.title
-                                                assign card_loading = 'lazy'
-                                                if forloop.index <= first_row_count
-                                                    assign card_loading = 'eager'
-                                                endif
-                                            -%}
-                                            <a href="{{ product.url }}" class="flex flex-col gap-3">
-                                                {%- render 'image',
-                                                    image: product.featured_image,
-                                                    width: 600,
-                                                    alt: product_card_alt,
-                                                    sizes: '(min-width: 48rem) 25vw, 50vw',
-                                                    loading: card_loading,
-                                                    motion_reveal: false
-                                                -%}
-                                                <span class="heading-h6">{{ product.title }}</span>
-                                                <span>{{ product.price | money }}</span>
-                                            </a>
-                                        </div>
-                                    {%- else -%}
-                                        <div class="col-span-full py-20 text-center body-lg">
-                                            {{ 'collections.no_products' | t }}
-                                        </div>
-                                    {%- endfor -%}
-                                </div>
-
-                                <div
-                                    class="collection-pagination-wrapper mt-8"
-                                    @click="onPaginate($event)"
-                                >
-                                    {% render 'pagination', paginate_obj: paginate %}
-                                </div>
-                            {% endpaginate %}
-                        </div>
+                        {%- endfor -%}
                     </div>
-                </div>
+
+                    <div
+                        class="collection-pagination-wrapper mt-8"
+                        @click="
+                            let link = $event.target.closest('[data-pagination-nav] a');
+                            if (link) {
+                                $event.preventDefault();
+                                loadUrl(link.href);
+                            }
+                        "
+                    >
+                        {% render 'pagination', paginate_obj: paginate %}
+                    </div>
+                {% endpaginate %}
             </div>
         </div>
     </div>
-
-    {%- comment -%} Filters drawer dialog: only when enable_filtering {%- endcomment -%}
-    {%- if enable_filtering -%}
-        {%- capture drawer_content -%}
-            <div class="ui-dialog-overlay-header">
-                <h2 id="{{ filters_dialog_title_id }}">{{ 'collections.filter' | t }}</h2>
-            </div>
-            <div class="ui-dialog-overlay-body">
-                {%- render 'filter-vertical',
-                    filter_source: collection,
-                    show_more_limit: section.settings.filter_visible_values_limit,
-                    scope_id: section.id,
-                    form_id: filters_form_id
-                -%}
-            </div>
-        {%- endcapture -%}
-
-        <div data-collection-drawer-shell>
-            {%- assign close_label = 'accessibility.close_filters_drawer' | t -%}
-            {%- render 'ui-dialog',
-                id: filters_dialog_id,
-                position: 'left',
-                top_class: 'top-[var(--announcement-bar-height)] pc:top-0',
-                color_scheme: section.settings.color_scheme,
-                drawer_motion_sheet: true,
-                mobile_layout: 'inset',
-                drawer_desktop_layout: true,
-                show_close_button: false,
-                close_label: close_label,
-                content: drawer_content
-            -%}
-        </div>
-    {%- endif -%}
-
-    {%- capture collection_nav_drawer_content -%}
-        <div
-            data-collection-navigation-root
-            data-endpoint-path="{{ request.path }}"
-            data-section-id="collection-navigation-items"
-            data-dialog-id="{{ collection_nav_dialog_id }}"
-            data-sort-by="{{ collection_nav_sort_by | escape }}"
-            data-load-size="{{ collection_nav_load_more_size }}"
-            data-initial-source-offset="{{ collection_nav_initial_source_offset }}"
-            data-initial-has-more="{{ collection_nav_initial_has_more }}"
-            x-data="collectionNavigationCatalog()" data-module-id="collection-navigation-catalog"
-            class="flex h-full min-h-0 flex-col"
-        >
-            <div class="ui-dialog-overlay-header">
-                <h2 id="{{ collection_nav_dialog_title_id }}">
-                    {{ 'collections.navigation.drawer_title' | t }}
-                </h2>
-            </div>
-
-            <div class="ui-dialog-overlay-body flex flex-col gap-6 overflow-hidden">
-                <nav
-                    aria-label="{{ 'accessibility.collection_navigation' | t }}"
-                    class="flex min-h-0 flex-1 flex-col gap-6"
-                >
-                    {%- unless is_all_products_collection or current_in_first_n -%}
-                        <div class="shrink-0">
-                            <p class="mb-2 body-sm tracking-wide uppercase opacity-60">
-                                {{ 'collections.navigation.current_collection' | t }}
-                            </p>
-                            <a
-                                href="{{ current_collection_nav_href }}"
-                                class="block py-2 body-lg text-theme-text"
-                                data-collection-navigation-item
-                                data-collection-handle="{{ collection.handle }}"
-                                data-collection-navigation-base-path="{{ collection.url }}"
-                                aria-current="page"
-                            >
-                                <span class="text-pretty break-words">
-                                    <span class="border-b border-current">
-                                        {{- collection.title | escape -}}
-                                    </span><sup class="sup-badge">({{ collection.all_products_count | default: 0 }})</sup>
-                                </span>
-                            </a>
-                        </div>
-                    {%- endunless -%}
-
-                    <div class="flex min-h-0 flex-1 flex-col gap-3{% unless is_all_products_collection or current_in_first_n %} border-t border-theme-border/20 pt-5{% endunless %}">
-                        <h3 class="shrink-0 body-sm tracking-wide uppercase opacity-60">
-                            {{ 'collections.navigation.all_collections' | t }}
-                        </h3>
-                        <div class="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-y-contain pe-1 pt-2">
-                            <div
-                                data-collection-navigation-list
-                                class="grid grid-cols-1 gap-x-8 gap-y-1 pc:grid-cols-2"
-                            >
-                                {{ collection_drawer_initial_links }}
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-
-            <div
-                class="ui-dialog-overlay-footer flex flex-col gap-3"
-                x-show="!done || error || loading"
-            >
-                <p
-                    x-show="error"
-                    x-cloak
-                    class="body-sm text-theme-text"
-                    role="status"
-                >
-                    {{ 'collections.navigation.error' | t }}
-                </p>
-
-                <p
-                    x-show="loading"
-                    x-cloak
-                    class="body-sm opacity-80"
-                    role="status"
-                    aria-live="polite"
-                >
-                    {{ 'collections.navigation.loading' | t }}
-                </p>
-
-                <button
-                    type="button"
-                    class="btn-primary w-full cursor-pointer surface-inverted hover:opacity-90"
-                    x-show="error"
-                    x-cloak
-                    @click="retry()"
-                >
-                    {{ 'collections.navigation.retry' | t }}
-                </button>
-
-                <button
-                    type="button"
-                    class="btn-primary w-full cursor-pointer surface-inverted hover:opacity-90"
-                    x-show="!done && !error"
-                    x-cloak
-                    :disabled="loading"
-                    @click="loadMore()"
-                >
-                    {{ 'collections.navigation.load_more' | t }}
-                </button>
-            </div>
-        </div>
-    {%- endcapture -%}
-
-    {%- assign collection_nav_close_label = 'accessibility.close_collection_navigation_drawer'
-        | t
-    -%}
-    {%- render 'ui-dialog',
-        id: collection_nav_dialog_id,
-        position: 'right',
-        top_class: 'top-[var(--announcement-bar-height)] pc:top-0',
-        color_scheme: section.settings.color_scheme,
-        drawer_motion_sheet: true,
-        mobile_layout: 'inset',
-        drawer_desktop_layout: true,
-        show_close_button: true,
-        close_label: collection_nav_close_label,
-        content: collection_nav_drawer_content
-    -%}
 </div>
-
-{% stylesheet %}
-    .collection-section .collection-toolbar__action,
-    .collection-section .filters-field__summary,
-    .collection-section .sort-by-dropdown__trigger {
-        font-family: var(--font-body-family);
-        font-style: var(--font-body-style);
-        line-height: var(--font-body-line-height);
-        letter-spacing: var(--font-body-letter-spacing);
-        text-transform: var(--font-body-text-transform);
-        word-break: break-word;
-        font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 1.375);
-    }
-
-    @media (width >= 48rem) {
-        .collection-section .collection-toolbar__action,
-        .collection-section .filters-field__summary,
-        .collection-section .sort-by-dropdown__trigger {
-            font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.5);
-        }
-    }
-
-    .collection-section .sort-by-dropdown__option {
-        font-family: var(--font-body-family);
-        font-style: var(--font-body-style);
-        line-height: var(--font-body-line-height);
-        letter-spacing: var(--font-body-letter-spacing);
-        text-transform: var(--font-body-text-transform);
-        word-break: break-word;
-        font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
-    }
-
-    @media (width >= 48rem) {
-        .collection-section .sort-by-dropdown__option {
-            font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.125);
-        }
-    }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -840,48 +313,6 @@
             "step": 3,
             "default": 12,
             "label": "t:sections.collection.settings.products_per_page"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_filtering",
-            "default": true,
-            "label": "t:sections.collection.settings.enable_filtering",
-            "info": "t:sections.collection.info.customize_filters_with_the_search_discov"
-        },
-        {
-            "type": "select",
-            "id": "filter_type",
-            "label": "t:sections.collection.settings.desktop_filter_layout",
-            "default": "horizontal",
-            "options": [
-                {
-                    "value": "horizontal",
-                    "label": "t:sections.collection.options.horizontal"
-                },
-                {
-                    "value": "vertical",
-                    "label": "t:sections.collection.options.vertical"
-                },
-                {
-                    "value": "drawer",
-                    "label": "t:sections.collection.options.drawer"
-                }
-            ]
-        },
-        {
-            "type": "range",
-            "id": "filter_visible_values_limit",
-            "min": 3,
-            "max": 12,
-            "step": 1,
-            "default": 6,
-            "label": "t:sections.collection.settings.visible_filter_values_before_show_more"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_sorting",
-            "default": true,
-            "label": "t:sections.collection.settings.enable_sorting"
         },
         {
             "type": "select",

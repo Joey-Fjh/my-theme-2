@@ -926,8 +926,6 @@ const components = {
         productFormId,
         available = true,
         variantId = null,
-        openCartOnAdd = false,
-        openDialogId = '',
         successMessage = '',
         requestSections = '',
         showBuyNow = false,
@@ -940,8 +938,6 @@ const components = {
             productFormId,
             available,
             variantId,
-            openCartOnAdd,
-            openDialogId,
             successMessage,
             requestSections,
             showBuyNow,
@@ -985,14 +981,6 @@ const components = {
 
                 if (dataset.variantId !== undefined && dataset.variantId !== '') {
                     this.variantId = Number(dataset.variantId) || null;
-                }
-
-                if (dataset.openCartOnAdd !== undefined && dataset.openCartOnAdd !== '') {
-                    this.openCartOnAdd = dataset.openCartOnAdd === 'true';
-                }
-
-                if (dataset.openDialogId !== undefined) {
-                    this.openDialogId = dataset.openDialogId || '';
                 }
 
                 if (dataset.successMessage !== undefined) {
@@ -1196,10 +1184,6 @@ const components = {
                             }
                             window.location.assign(this.cartUrl);
                         } else {
-                            if (this.openCartOnAdd && this.openDialogId) {
-                                store('dialog')?.open?.(this.openDialogId);
-                            }
-
                             if (this.successMessage) {
                                 store('toast')?.show?.(this.successMessage, 'success');
                             }

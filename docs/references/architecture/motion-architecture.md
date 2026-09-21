@@ -95,6 +95,10 @@ Ordinary reveal imports neither GSAP nor ScrollTrigger.
 
 `footer-scroll-top.js` owns `scrollToTop()` independently of the reveal adapter. Do not fold navigation behavior back into `motionRevealSection()`.
 
+## Drawer And Overlay Motion
+
+The mother template ships no drawer or dialog overlay. Derived themes that add one own its motion under the existing `prefers-reduced-motion` policy and must not rely on removed drawer infrastructure from this repository.
+
 ## Motion Hook Ownership
 
 - Media primitives such as `snippets/image.liquid` may own valueless `data-motion-reveal` internally by default.

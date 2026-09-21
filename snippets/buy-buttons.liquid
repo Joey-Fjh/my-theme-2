@@ -14,8 +14,6 @@
     @param {string} [context] - Rendering context: 'product' or 'featured' (default: 'featured')
     @param {boolean} [show_buy_now] - Show "Buy it now" button; when true with context 'product', Add to Cart becomes secondary (default: false)
     @param {boolean} [show_dynamic_checkout] - Show Shopify dynamic checkout buttons; falls back to block.settings.show_dynamic_checkout (default: false)
-    @param {boolean} [open_cart_on_add] - Open cart drawer on successful add (default: false)
-    @param {string} [open_dialog_id] - Dialog ID to open on successful add (default: '')
     @param {string} [success_message] - Toast message on successful add (default: localized 'Added to cart!')
     @param [request_sections] - Section IDs to refresh via SRA after add; false to skip (default: standard SRA)
     @param {string} [cart_type] - Cart type override; defaults to settings.cart_type.
@@ -30,8 +28,6 @@
 {%- assign section_id = section_id | default: '' -%}
 {%- assign product_form_id = product_form_id | default: 'product-form-' | append: section_id -%}
 {%- assign context = context | default: 'featured' -%}
-{%- assign open_cart_on_add = open_cart_on_add | default: false -%}
-{%- assign open_dialog_id = open_dialog_id | default: '' -%}
 {%- assign cart_type = cart_type | default: settings.cart_type -%}
 {%- if success_message == null -%}
     {%- assign success_message = 'toast.added_to_cart' | t -%}
@@ -91,8 +87,6 @@
         data-product-form-id="{{ product_form_id }}"
         data-available="{{ current_variant.available | default: false }}"
         data-variant-id="{{ current_variant.id | default: '' }}"
-        data-open-cart-on-add="{{ open_cart_on_add | json | escape }}"
-        data-open-dialog-id="{{ open_dialog_id | escape }}"
         data-success-message="{{ success_message | escape }}"
         data-cart-type="{{ cart_type | escape }}"
         data-cart-url="{{ routes.cart_url | escape }}"

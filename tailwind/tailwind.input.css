@@ -32,7 +32,6 @@
 
     --color-theme-border: rgb(var(--color-border));
 
-    --color-dialog-overlay: rgba(0, 0, 0, 0.45);
 
     /* Colors: Field */
     --color-field: rgb(var(--color-input-background));
