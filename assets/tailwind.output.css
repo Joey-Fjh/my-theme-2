@@ -1898,15 +1898,6 @@
       font-size: calc(var(--font-body-size) * var(--font-body-scale) * 0.75);
     }
   }
-  .typo-subtitle {
-    font-family: var(--font-subtitle-family);
-    font-style: var(--font-subtitle-style);
-    font-weight: var(--font-subtitle-weight);
-    line-height: var(--font-subtitle-line-height);
-    letter-spacing: var(--font-subtitle-letter-spacing);
-    text-transform: var(--font-subtitle-text-transform);
-    word-break: break-word;
-  }
   .body-base {
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
@@ -2622,10 +2613,8 @@
 :lang(ar), :lang(fa), :lang(ur) {
   --font-body-letter-spacing: 0em;
   --font-heading-letter-spacing: 0em;
-  --font-subtitle-letter-spacing: 0em;
   --font-body-text-transform: none;
   --font-heading-text-transform: none;
-  --font-subtitle-text-transform: none;
 }
 @property --btn-reverse-fill-pct {
   syntax: '<percentage>';

@@ -48,7 +48,7 @@ Nothing below is a plan. Each item needs a decision before it can become one.
 - Liquid July '26 `{% block %}` and `{% partial %}` features are not stable requirements. Any `{% partial %}` trial must be low risk and verify ordinary rendering, Theme Editor behavior, accessibility state, request races, Alpine lifecycle, and custom component lifecycle.
 - `ShopifySectionRefresher` remains transitional while retained flows depend on Section Rendering API behavior; removal requires approved replacements with explicit lifecycle, accessibility, error, and history ownership.
 - Tailwind remains. The CSS decision and its constraints are now owned by `docs/references/style-system/css-architecture.md`. One lever stays unused: a fixed `@source inline(...)` vocabulary with `source(none)` would make ordinary section work buildless, since the emitted set would stop depending on markup. Measured at 4,934 brotli bytes, so it is a build-workflow question, not a payload one.
-- Token boundary, generated stylesheet name, and Swiper ownership remain later decisions.
+- The typography token boundary was settled by TY-1 and is owned by `docs/references/style-system/css-architecture.md`. The generated stylesheet name and Swiper ownership remain later decisions.
 
 ### Pluggable-core direction
 
@@ -140,9 +140,9 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. `context.md` holds no plan.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: the dead `scroll-lock` rule and the eight dead CSS symbols (small cleanups), and typography's token boundary.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: the dead `scroll-lock` rule and the eight dead CSS symbols (small cleanups), and P1+P5b Stage 2.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
 3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 
@@ -172,17 +172,6 @@ Still open, and deliberately outside that work:
 ### Color chain — retain, and it is already protected
 
 Agreed with the user's reading. `color-*` is built dynamically from `color-{{ section.settings.color_scheme }}`, is merchant-driven, and matches the official Skeleton's own color-scheme support. CSS-1 probe P5 already treats the whole family as live, so no deletion pressure reaches it. Nothing to decide unless the token boundary changes.
-
-### Typography — the measurement contradicts the intuition
-
-The user's reading was that fonts need redoing or minimizing. **Minimal is already true, and redoing is the most expensive of the three for the least byte payoff.**
-
-- `tailwind.typography.css` is 7,416 bytes: 3.8 percent of the 193,845-byte hand-written total, the smallest of the six files.
-- It is the most alive: 17 of 23 selectors referenced, 74 percent, against 6 percent for `tailwind.snippets.css`.
-- It is not ad-hoc. `heading-base` carries the shared declarations and each tier adds one `font-size` over `--font-heading-scale`, so the tiers are token-driven rather than duplicated.
-- It is the only one of the three that is **merchant-facing**. Those 17 classes are `{% schema %}` option values reached through `section.settings.heading_size`, so changing the vocabulary changes merchant-selectable settings and requires a `config/settings_data.json` and `templates/*.json` migration decision, which is the boundary this project protects hardest.
-
-If a typography decision is selected, the defensible unit is the **token boundary** — which `--font-*` variables the Skeleton owns and how a derived theme overrides them — not the tier class vocabulary. Rewriting the vocabulary should be argued on merchant-facing grounds, if at all; it cannot be argued on payload.
 
 ## Deferred Discussion Backlog
 

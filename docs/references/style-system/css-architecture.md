@@ -65,9 +65,11 @@ These thresholds are complementary. A pattern can be promoted to the components 
 
 Typography tier CSS lives in `tailwind/tailwind.typography.css`. Native heading defaults live in `assets/base.css`. Liquid must not use Tailwind `text-*` utilities for headings.
 
+The Skeleton's stable typography interface is `--font-body-*` and `--font-heading-*`, emitted from theme settings by `snippets/css-variables.liquid`. Derived themes change the values through settings or by redefining the properties, and add further roles (such as a subtitle or eyebrow style) themselves.
+
 - Semantic `h1`–`h6` level is chosen for document outline; visual `heading-h*` tier is chosen independently for design size. Example: `<h3 class="heading-h2">` when outline needs `h3` but the visual target is a larger tier.
 - `heading-h*` classes remain restricted to semantic heading elements; lint bans them on non-heading elements only.
-- Display tiers such as `heading-4xl` through `heading-xl` and `typo-subtitle` plus size-tier composition remain valid where intended.
+- Display tiers such as `heading-4xl` through `heading-xl` remain valid where intended. Section subtitles use a `body-*` size tier alone and inherit body font settings.
 - `body-*` tiers are for non-heading body semantics only; do not put them on headings.
 - Default body copy inherits global body settings; do not add section-level body text-size settings for ordinary paragraphs.
 - `heading-size-custom` and `body-size-custom` require their scoped CSS variables.

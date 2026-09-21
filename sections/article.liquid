@@ -13,7 +13,7 @@
     {%- liquid
         assign article_heading_class = section.settings.heading_size | default: 'heading-2xl'
         assign article_subtitle_size = section.settings.subtitle_size | default: 'body-xl'
-        assign article_subtitle_class = 'typo-subtitle ' | append: article_subtitle_size
+        assign article_subtitle_class = article_subtitle_size
         assign article_title_text = article.title | strip_html | strip
         assign article_heading_override = section.settings.heading | strip_html | strip
     -%}

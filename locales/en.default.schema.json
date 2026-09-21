@@ -28,17 +28,11 @@
             "body_font_size": "Font size (desktop)",
             "body_font_size_mobile": "Font size (mobile)",
             "body_scale": "Body scale",
-            "subtitle": "Subtitle",
-            "subtitle_font_source": "Font family",
             "weight": "Weight",
             "line_height": "Line height",
             "letter_spacing": "Letter spacing",
             "text_transform": "Text transform",
             "options": {
-                "font_source": {
-                    "heading": "Heading font",
-                    "body": "Body font"
-                },
                 "weight": {
                     "light": "Light",
                     "regular": "Regular",
