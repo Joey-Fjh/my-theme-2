@@ -40,13 +40,13 @@
             "settings": {
                 "color_scheme": "scheme-1",
                 "bg_image": "",
-                "brand_name": "Ceylune",
+                "brand_name": "",
                 "brush_image": "",
-                "location": "Chiba, JP",
-                "content_heading": "Thoughtful care for everyday rituals",
-                "content_text": "<p>Explore skincare and beauty essentials designed to make every routine feel considered.</p>",
-                "content_link": "/collections",
-                "content_link_text": "See Our New Product"
+                "location": "",
+                "content_heading": "",
+                "content_text": "",
+                "content_link": "",
+                "content_link_text": ""
             }
         }
     },

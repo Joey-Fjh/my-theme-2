@@ -624,7 +624,6 @@
             "content": {
                 "header": "Header",
                 "color": "Color",
-                "menu_type": "Menu type",
                 "localization_settings": "Public settings",
                 "localization_large_screens_only": "Only displayed on large screens"
             },
@@ -633,16 +632,7 @@
                 "color_scheme": "Color scheme",
                 "menu_color_scheme": "Menu color scheme",
                 "mobile_menu_color_scheme": "Mobile menu color scheme",
-                "menu_type": "Menu type",
                 "desktop_menu_trigger": "Desktop menu trigger",
-                "super_menu_watermark": "Super menu watermark",
-                "enable_product_series_tabs": "Enable product series tabs",
-                "super_menu_series_layout": "Product series layout",
-                "super_menu_left_column_width": "Super menu left column width",
-                "series_collection_1": "Series collection 1",
-                "series_collection_2": "Series collection 2",
-                "series_collection_3": "Series collection 3",
-                "products_per_series": "Products per series",
                 "country_region_selector": "Country/region selector",
                 "language_selector": "Language selector"
             },
@@ -655,15 +645,8 @@
                 "left": "Left",
                 "middle": "Middle",
                 "middle_center": "Middle center",
-                "dropdown_menu": "Dropdown menu",
-                "super_menu": "Super menu",
                 "hover": "Hover",
-                "click": "Click",
-                "left_right": "Left / Right",
-                "top_bottom": "Top / Bottom"
-            },
-            "defaults": {
-                "super_menu_watermark_text": "Your brand"
+                "click": "Click"
             }
         },
         "main-page-contact": {

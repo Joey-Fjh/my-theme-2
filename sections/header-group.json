@@ -19,16 +19,7 @@
                 "menu_color_scheme": "scheme-1",
                 "mobile_menu_color_scheme": "scheme-1",
                 "menu": "main-menu",
-                "menu_type": "dropdown",
                 "desktop_menu_trigger": "hover",
-                "super_menu_watermark_text": "Ceylune",
-                "enable_super_menu_series": false,
-                "super_menu_series_layout": "left-right",
-                "super_menu_primary_width": 42,
-                "super_collection_1": "",
-                "super_collection_2": "",
-                "super_collection_3": "",
-                "super_series_products_limit": 6,
                 "enable_country_selector": true,
                 "enable_language_selector": true
             }
