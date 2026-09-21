@@ -348,6 +348,7 @@
                 "2xl": "2XL",
                 "xl": "XL",
                 "large": "Large",
+                "base": "Default body size",
                 "medium": "Medium",
                 "small": "Small",
                 "xs": "Extra small"
@@ -527,6 +528,20 @@
                 "badge_value": "EXPLORE",
                 "heading": "Latest Brand",
                 "description": "Introduce the collections customers can browse on this page."
+            }
+        },
+        "custom-section": {
+            "name": "Container",
+            "content": {
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "name": "Container"
             }
         },
         "custom-liquid": {

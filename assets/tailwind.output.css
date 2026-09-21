@@ -2019,6 +2019,14 @@
     text-transform: var(--font-subtitle-text-transform);
     word-break: break-word;
   }
+  .body-base {
+    font-family: var(--font-body-family);
+    font-style: var(--font-body-style);
+    line-height: var(--font-body-line-height);
+    letter-spacing: var(--font-body-letter-spacing);
+    text-transform: var(--font-body-text-transform);
+    word-break: break-word;
+  }
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
@@ -2033,9 +2041,6 @@
   }
   .text-pretty {
     text-wrap: pretty;
-  }
-  .text-wrap {
-    text-wrap: wrap;
   }
   .break-words {
     overflow-wrap: break-word;

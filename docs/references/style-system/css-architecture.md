@@ -17,6 +17,8 @@ config/settings_schema.json + config/settings_data.json
   -> npm.cmd run lint:theme architecture checks
 ```
 
+Tailwind scans every token in the `@source` Liquid files, including `{% schema %}` JSON and `t:` locale-key paths. A key segment that matches a utility name, such as `presets.container`, emits that utility into the generated stylesheet. Name schema and locale keys so their segments are not utility names, and check the generated diff after a rebuild.
+
 ## Token Sources
 
 | Source | Owns | Notes |
@@ -77,6 +79,7 @@ Exact tier ratios, token math, and lint exceptions live in source and `lint:them
 ## Color, Surface, And Inline Style
 
 - Merchant color schemes produce RGB custom properties through `snippets/css-variables.liquid`.
+- Those properties are comma-separated triplets (`r, g, b`). Write alpha as `rgba(var(--color-foreground), 0.55)`. The form `rgb(var(--color-foreground) / 0.55)` expands to `rgb(r, g, b / 0.55)`, which browsers reject and drop silently; no current lint catches it. Existing legacy usages are tracked on `docs/agent/board.md`.
 - The first configured color scheme is the `:root` token fallback; it is not the implicit visible page-canvas decision.
 - `settings.page_canvas_color_scheme` explicitly owns the visible `<body>` canvas behind sections, during overscroll, and in areas without their own color-scheme scope.
 - Section, overlay, drawer, modal, and component color-scheme scopes override the body canvas normally.

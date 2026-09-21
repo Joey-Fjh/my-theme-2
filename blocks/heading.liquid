@@ -1,8 +1,22 @@
 {%- assign heading_tag = block.settings.semantic_level -%}
 
-<{{ heading_tag }} class="{{ block.settings.visual_size }}" {{ block.shopify_attributes }}>
-    {{ block.settings.heading }}
-</{{ heading_tag }}>
+{%- if block.settings.heading != blank -%}
+    <{{ heading_tag }} class="{{ block.settings.visual_size }}" {{ block.shopify_attributes }}>
+        {{ block.settings.heading }}
+    </{{ heading_tag }}>
+{%- elsif request.design_mode -%}
+    <div class="theme-block-heading theme-block-heading--placeholder" {{ block.shopify_attributes }}>
+        {{ 'blocks.heading.placeholders.empty' | t }}
+    </div>
+{%- endif -%}
+
+{% stylesheet %}
+    .theme-block-heading--placeholder {
+        min-height: 2.5rem;
+        padding: 0.5rem 0;
+        color: rgba(var(--color-foreground), 0.55);
+    }
+{% endstylesheet %}
 
 {% schema %}
 {

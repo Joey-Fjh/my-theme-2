@@ -5,19 +5,28 @@
     endif
 -%}
 
-<div class="theme-block-button" {{ block.shopify_attributes }}>
-    {%- if block.settings.label != blank -%}
-        {%- if block.settings.link != blank -%}
-            <a class="{{ button_class }}" href="{{ block.settings.link }}">
-                {{- block.settings.label | escape -}}
-            </a>
-        {%- else -%}
-            <span class="{{ button_class }}" aria-disabled="true">
-                {{- block.settings.label | escape -}}
-            </span>
-        {%- endif -%}
-    {%- endif -%}
-</div>
+{%- if block.settings.label != blank and block.settings.link != blank -%}
+    <div class="theme-block-button" {{ block.shopify_attributes }}>
+        <a class="{{ button_class }}" href="{{ block.settings.link }}">
+            {{- block.settings.label | escape -}}
+        </a>
+    </div>
+{%- elsif request.design_mode -%}
+    <div class="theme-block-button theme-block-button--placeholder" {{ block.shopify_attributes }}>
+        {{ 'blocks.button.placeholders.empty' | t }}
+    </div>
+{%- endif -%}
+
+{% stylesheet %}
+    .theme-block-button--placeholder {
+        display: inline-flex;
+        min-height: 2.75rem;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border: 1px dashed rgba(var(--color-border), 0.45);
+        color: rgba(var(--color-foreground), 0.55);
+    }
+{% endstylesheet %}
 
 {% schema %}
 {

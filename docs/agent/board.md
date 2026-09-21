@@ -43,6 +43,10 @@ The eight dead `panel-motion-*` and `tab-*-underlined` symbols remain a separate
 
 **Known focus limitation.** The stored collection-drawer return target is whichever responsive trigger was visible at refresh time. If the breakpoint changes between refresh and close, focus restoration can be skipped. Fixing this requires lazy return-target resolution at close time, which is a dialog-store contract change rather than a collection-path tweak. Recorded as a known limitation, unscheduled.
 
+### Invalid alpha color syntax — open, unscheduled
+
+Found by the TB1 review on 2026-09-21. `snippets/css-variables.liquid:49-51` defines `--color-foreground`, `--color-border` and the other scheme colors as comma-separated triplets (`r, g, b`). 23 committed declarations across `sections/`, `snippets/`, `tailwind/` and `assets/base.css` (counted at `201df93`) use `rgb(var(--color-*) / alpha)`, which expands to `rgb(r, g, b / alpha)`. Browsers reject that mix of legacy and modern syntax, so each such declaration is silently dropped; examples include the product-page scrollbar and muted text colors at `sections/product.liquid:247-299` and `tailwind/tailwind.components.css:78-91`. Declarations written as `rgba(var(--color-*), alpha)` are valid. The fix is either to rewrite these usages or to change the variable format to space-separated, which touches every consumer. It is a visual-fidelity fix and needs its own batch; `lint:compat` does not catch it. Recount with `grep -rnE "rgb\(var\(--color-[a-z-]+\) /"` before planning.
+
 ---
 
 ## Pending decisions and migration work
@@ -53,6 +57,7 @@ Nothing below is a plan. Each item needs a decision before it can become one.
 
 - The official Skeleton inventory and explicitly accepted project additions stay available through minimal, industry-neutral implementations and the smallest useful main-section compositions. Current project additions include the lifecycle/runtime and Agent/tooling configuration; finished-theme business features are not inferred.
 - The accepted initial Theme Block inventory is `group`, `heading`, `text`, and `button`: group owns child composition; heading separates semantic level from visual tier; text owns non-heading rich text; button owns navigation-style calls to action. `image` remains deferred to the media contract; do not migrate `snippets/image.liquid` or turn preview-only Liquid features into undeclared stable requirements.
+- Blank-content rule, accepted with TB1 on 2026-09-21: a Theme Block whose required content is blank renders nothing in the storefront, and only in the editor (`request.design_mode`) a non-semantic placeholder that carries `block.shopify_attributes`, so the block stays selectable. `blocks/heading.liquid` and `blocks/button.liquid` implement it. The host for the four blocks is `sections/custom-section.liquid`, shown in the editor as Container.
 - A generic block may vary appearance while preserving semantics, but must not collect unrelated ownership, business semantics, or behavior modes merely to reuse markup.
 - Liquid July '26 `{% block %}` and `{% partial %}` features are not stable requirements. Any `{% partial %}` trial must be low risk and verify ordinary rendering, Theme Editor behavior, accessibility state, request races, Alpine lifecycle, and custom component lifecycle.
 - `ShopifySectionRefresher` remains transitional while retained flows depend on Section Rendering API behavior; removal requires approved replacements with explicit lifecycle, accessibility, error, and history ownership.
@@ -106,13 +111,6 @@ Tailwind stays as the framework; component CSS lives in `{% stylesheet %}` block
 
 Result across six batches: always-loaded CSS fell from 300,231 raw / 23,258 brotli to 173,783 / 15,778, a 42 percent raw and 32 percent brotli reduction. `lint:theme` now enforces the platform tag constraints that Theme Check does not. A keyboard focus ring that never rendered was fixed. Deletion was governed by a five-probe liveness check iterated to a fixpoint.
 
-### TB1 rework
-
-- Scope: rework the provisional `group`, `heading`, `text`, and `button` Theme Blocks and the `custom-content` host against the accepted JavaScript contract and the accepted CSS placement rule. Resolve the mobile `body-md` size mismatch, blank heading output, ineffective blank-link `aria-disabled`, and undecided group/style and primitive ownership.
-- Dependencies: accepted JavaScript architecture and the CSS placement rule, both settled. The `blocks/` `@source` gap is closed.
-- Acceptance: ownership boundaries remain intact; known semantic, accessibility, typography, and placement issues are resolved; no merchant-owned configuration changes; change-specific validation passes.
-- Status: unblocked 2026-09-20. Not started.
-
 ### Vendored GSAP Skills - two open follow-ups
 
 Raised by the independent review of the accepted GSAP Skills batch on 2026-09-20. Neither blocked acceptance; neither is a plan.
@@ -150,11 +148,11 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: TB1 rework, the drawer motion mechanism, and typography's token boundary.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: the invalid alpha color syntax (Open Evidence), the drawer motion mechanism, and typography's token boundary.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
-3. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
+3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 
 ## Deferred Extraction Goal
 
@@ -198,8 +196,8 @@ If a typography decision is selected, the defensible unit is the **token boundar
 
 These topics are not active yet. Promote one only when its prerequisites are satisfied and it is selected as the sole current decision.
 
-- Theme Block schemas, allowed parents, and external-input contracts beyond provisional TB1.
-- Image, video, and product-media ownership.
+- Theme Block schemas, allowed parents, and external-input contracts beyond TB1.
+- Image, video, and product-media ownership. When decided, revisit whether the Container host (`sections/custom-section.liquid`) gains the official Skeleton's `background_image` setting, which TB1 deliberately omitted.
 - Global page, Section, and Block layout protocol.
 - Accessibility, SEO, performance, compatibility, and final test gates.
 - Remaining cross-client capability and fallback differences, including live MCP availability in Cursor and Codex.

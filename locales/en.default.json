@@ -102,6 +102,18 @@
             "default_center_text": "NEW"
         }
     },
+    "blocks": {
+        "heading": {
+            "placeholders": {
+                "empty": "Add a heading"
+            }
+        },
+        "button": {
+            "placeholders": {
+                "empty": "Add button label and link"
+            }
+        }
+    },
     "contact": {
         "description_html": "<p>Tell customers how and when your team can help.</p>",
         "first_name": "First name",
