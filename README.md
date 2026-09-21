@@ -106,6 +106,7 @@ Use `npm.cmd` for project scripts in this Windows workspace. Default to the smal
 - Do not edit `config/settings_data.json` or `templates/*.json` without explicit authorization.
 - Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
 - `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
+- `theme_info` in `config/settings_schema.json` identifies this private internal mother template, and its links resolve only for repository collaborators. Before release, each derived theme replaces the name, author, version, documentation URL, and support destination with its own real values that merchants can reach.
 - `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` records Skeleton construction-phase state only.
 
 ## Documentation

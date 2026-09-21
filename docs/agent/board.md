@@ -150,9 +150,9 @@ The CSS series is accepted. These candidates were left out of it and need their 
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) is accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. `context.md` holds no plan. The retained drawer contract is owned by `docs/references/architecture/javascript-runtime.md`.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: the drawer motion mechanism, typography's token boundary, and the theme metadata decision below.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: TB1 rework, the drawer motion mechanism, and typography's token boundary.
 2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
 3. P1+P5b Stage 2 and TB1 rework are unblocked but unscheduled; each needs explicit authorization. P4 waits only on a distribution-intent decision.
 
@@ -165,10 +165,6 @@ After this workflow is proven through real theme batches, evaluate extracting th
 ## Active decision and later candidates
 
 No decision is active and `context.md` holds no plan. Promote exactly one ready candidate.
-
-### Theme metadata — open, unscheduled
-
-Raised by the UC-1 review on 2026-09-21. `config/settings_schema.json` sets `theme_name` to `Skeleton`, but `theme_author` is still `"ESEN"` and `theme_documentation_url` still points to `docs.esentheme.com`; both are Ceylune-era vendor metadata. Decide what the mother template carries in `theme_info`, and whether derived themes are expected to overwrite it.
 
 ### Motion — settled 2026-09-20
 

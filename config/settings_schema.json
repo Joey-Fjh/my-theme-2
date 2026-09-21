@@ -3,9 +3,9 @@
         "name": "theme_info",
         "theme_name": "Skeleton",
         "theme_version": "1.0.0",
-        "theme_author": "ESEN",
-        "theme_documentation_url": "https://docs.esentheme.com/",
-        "theme_support_url": "https://esentheme.com/"
+        "theme_author": "JoeyFan",
+        "theme_documentation_url": "https://github.com/Joey-Fjh/my-skeleton-theme#readme",
+        "theme_support_url": "https://github.com/Joey-Fjh/my-skeleton-theme/issues"
     },
     {
         "name": "t:config.logo.name",
