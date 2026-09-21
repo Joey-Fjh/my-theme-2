@@ -39,9 +39,9 @@ The core does not import component names. It reads `data-module-id` on DOM roots
 
 1. Import map — bare specifiers such as `base`, `events`, `utils`, `https`, `alpine-adapter`, `cart-contract`, `components/*`, and one specifier per component entry module.
 2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
-3. Two classic vendor scripts — `vendor-alpine-intersect.min.js`, then `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
+3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
 
-There is no classic path for theme stores, utilities, or component definitions. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
+There is no classic path for theme stores, utilities, or component definitions. GSAP and Swiper are selected libraries; vendored files are added only when an accepted consumer exists, with the version recorded at vendoring time. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
 
 ## Module Discovery Contract
 

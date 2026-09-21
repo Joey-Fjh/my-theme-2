@@ -1,143 +1,53 @@
 # Work Board
 
-This board is the discussion surface for active and deferred decisions: evidence, alternatives, disagreements, and questions that have not yet reached an accepted direction.
-
-- `context.md` holds exactly one selected current plan, including its dependencies, authorization, execution, validation, and acceptance status, or no plan. Unselected and unscheduled work remains here.
-- Selecting and recording a plan does not authorize execution. Execution requires explicit user authorization for that batch and resolved dependencies.
-- On acceptance, clear the completed plan from `context.md`, migrate durable contracts to `AGENTS.md`, code, configuration, or the matching reference, and remove obsolete discussion from this board.
-- Delivering an execution prompt does not complete a batch. Completion requires implementation, validation, independent review, and user acceptance.
-- **One decision is active at a time.** Evidence that several decisions share lives under Shared Evidence, not inside whichever decision happened to surface it. A discussion that accumulates unrelated decisions is split before it grows further.
-- This file and `context.md` are construction-phase records. Migrate lasting rules and remove both when the Skeleton is complete.
+This board holds the one active decision, evidence that has not become a plan, and deferred ideas. `docs/agent/context.md` holds exactly one accepted plan during execution, or no plan. Recording a plan does not authorize implementation. Accepted contracts belong in `AGENTS.md`, a routed reference, code, or configuration; completed execution history belongs in Git.
 
 Last updated: 2026-09-21.
 
-Decision IDs are labels, not an index. The sequence has gaps: D4 through D14 were never recorded in any committed document and survive only in early chat history, and D18 was assigned and retired within a single session. A missing number means no record exists, not that a record was lost.
+## Current position
 
----
+- The mother template follows Shopify's official `skeleton-theme` storefront inventory plus explicitly accepted project additions. Derived themes own business features, visual identity, and Theme Store positioning. The implementation and reference files describe what exists; they do not expand the target inventory by themselves.
+- The CSS, motion, dialog/drawer, unreachable-code, Theme Block, governance, and P4 license batches recorded through commit `83ff2d7` are accepted. `context.md` holds no plan.
+- Completion has not been established by those earlier batches. Remaining assets have not had one final reachability and ownership audit, and the final release validation/browser pass has not been recorded. This is a finite closeout problem, not a reason to execute every deferred idea.
 
-## How these decisions are made
+## Closeout — accepted direction
 
-Stated by the user on 2026-09-17 and applied from here on.
+Accepted by the user on 2026-09-21: option A, focused closeout. The mother template is ready when the official Skeleton inventory and accepted additions are intact, no confirmed code-owned launch blocker remains, the asset and license audit is resolved, `npm.cmd run lint` and `npm.cmd test` pass, and retained storefront flows pass a desktop and mobile browser review. Missing browser evidence is handed off and readiness stays unconfirmed. No new storefront capability is added to close the project.
 
-The files under `docs/references/` describe the current Ceylune-derived implementation. They are **evidence of what exists, never authority over what should be built**. Quoting a reference as a constraint argues from the artifact this project is replacing, and is not a valid objection to a proposed architecture.
+CL-1 (principle migration, Alpine Intersect, Swiper and 17 icons removed, read-only inventory) is accepted as of 2026-09-21. `context.md` holds no plan. Later batches: fixes from the CL-1 inventory, the Alpine license notice, then the release gate and browser review.
 
-The Skeleton's architecture is decided from two sources only: **Shopify's current official sources**, and **the user's stated intent**. Source roles are not interchangeable: the official `skeleton-theme` defines the default storefront inventory, best-practice documentation governs implementation quality, and Theme Store submission requirements apply only when the user explicitly puts that scope into the mother template or a derived theme. Once a decision is accepted, the references are rewritten to match it; they are an output of the decision, not an input to it.
+## Evidence and likely closeout findings
 
-One caveat does bind: the real constraint is the code, not the documentation. Deleting a rule does not delete the runtime JavaScript or the 27 classic script tags that implement it. Existing code is measured as migration debt against the accepted target, and is never a reason to lower the target.
+- `assets/tailwind.output.css` is generated and loaded by both `layout/theme.liquid` and `layout/password.liquid`: 140,983 raw / 12,956 Brotli bytes on 2026-09-21. Its source is `tailwind/tailwind.input.css` plus imported layers and Liquid class scanning. `tailwind.components.css` is 33,742 raw bytes and `tailwind.elements.css` is 26,596; size alone does not establish unused rules. The earlier CSS series reduced measured always-loaded CSS by 42% raw / 32% Brotli at its acceptance point.
+- Swiper vendor files and the unreachable Swiper branch in `assets/alpine.components.product-media.js` were removed in CL-1. Swiper remains the selected carousel library, vendored only when an accepted consumer exists.
+- The P4 review found no Alpine license header in `assets/vendor-alpine.min.js`, and no Alpine notice file. CL-1 removed the unused Intersect plugin. This remains an open third-party notice issue. The decision is whether to restore an upstream notice through proper re-vendoring or carry it in a third-party notices file; verify the exact upstream license and distribution contents before implementing.
 
-Authoritative sources for this series: `github.com/Shopify/skeleton-theme` for inventory, `shopify.dev/docs/storefronts/themes/best-practices` for implementation quality, and `.../theme-features` / `.../store` only for an explicitly accepted feature or submission scope. A feature's Theme Store status alone never makes it Skeleton Core.
+## Closeout findings from the CL-1 inventory
 
----
+Re-derived by Claude with `git grep` on 2026-09-21 and verified against the worktree. Every non-Skeleton file has at least one reference; reachability was followed through import-map specifiers to `data-module-id` / `x-data` mount points, and through exported component factories to consumers outside their own file. Candidates for the next closeout batch:
 
-## Open Evidence
+| Item | Classification | Evidence |
+| --- | --- | --- |
+| `assets/drag-scroll.js`, import-map entry `drag-scroll`, factory `dragScroll` in `alpine.components.ui.js` | dead | No `data-module-id="drag-scroll"`, no `x-data="dragScroll"`; the wrapper module is the only importer |
+| `assets/progressive-list.js`, import-map entry `progressive-list`, factory `progressiveList` in `alpine.components.ui.js` | dead | Same pattern: no mount point, wrapper is the only importer |
+| `countdownTimer`, `flipDigit` in `alpine.components.ui.js` | dead | Zero references outside the file; no intra-file use |
+| `imageMagnifier`, `beforeAfterComparison`, `mediaVideo` in `alpine.components.product-media.js` | dead | Zero references outside the file; no intra-file use |
+| `ProductPrice`, `ProductPaymentTerms`, `GiftCardRecipient`, `SellingPlanPicker` in `alpine.components.product.js` | dead | Zero references outside the file; no intra-file use |
+| `sections/article.liquid` `show_social` | undecided | `{%- if section.settings.show_social -%}{%- endif -%}` renders nothing; removal is a merchant-facing schema change |
+| `eslint.config.cjs` `Swiper: 'readonly'` | stale | Swiper removed by CL-1; outside CL-1 surface |
 
-None open.
+Retained and live: every other import-map module has a mount point (`accordion`, `buy-buttons`, `cart-page`, `dropdown`, `footer-scroll-top`, `localization-switcher`, `motion-reveal-section`, `product-gallery`, `product-layout`, `quantity-selector`, `section-pagination`, `sticky-header`, `sticky-viewport-panel`, `tab-control`, `toast-container`, `variant-picker`) or a static importer (`motion-reveal-batch` from `motion-reveal-section.js`; `quantity-constraints.js` from `alpine.components.product.js`; `performance.js` dynamically from `base.js`); `gift-card.js`/`.css` load from `templates/gift_card.liquid`; all remaining icons resolve through literal `icon:` arguments or `sections/product.liquid` schema values.
 
----
+## Deferred after focused closeout unless the audit finds a blocker
 
-## Pending decisions and migration work
+- **GSAP documentation Skills:** The vendored skills are pinned to upstream revision `aed9cfd3277740755f6bfc1155c7aa645403b760`. A plain copy has no drift check. The stable upstream Git blob IDs are `98639432f4112b664aa5e53cf5d8ea1a4697eff9` (core), `1fed372b0e5276b2a207d80bc23f81180a0dff55` (timeline), `6d8c09f2136c108595c9e0db859c4a39460e99cf` (scrolltrigger), and `05792acf5b0ea7fd30042cdc5e91282e8e047898` (performance). Upstream skill descriptions can suggest GSAP for ordinary scroll reveal despite the project's native-motion policy. Keeping byte-identical vendoring is preferred until an actual misroute justifies a project override.
+- **Build and library choices:** A fixed Tailwind `@source inline(...)` vocabulary with `source(none)` measured 4,934 Brotli bytes and could make routine section work buildless; it is a workflow choice. Generated stylesheet naming and Swiper ownership remain future decisions if those capabilities survive the audit. GSAP runtime and Three.js stay unloaded without an accepted consumer; View Transitions remain optional.
+- **Future storefront design:** Theme Block schemas and allowed parents beyond TB1; image/video/product-media contract and possible Container `background_image`; global page/Section/Block layout protocol. These are future capability decisions unless a retained flow is broken. The accepted initial Theme Block contract lives in `docs/references/architecture/theme-blocks.md`.
+- **Tooling and extraction:** Recheck live Shopify Dev MCP/Context7 availability in a client before using it. Consider extracting portable agent workflow only after real theme batches prove it. Neither is a storefront completion gate.
 
-Nothing below is a plan. Each item needs a decision before it can become one.
+## Closed decisions relevant to scope
 
-### Accepted architecture awaiting permanent ownership
-
-- The official Skeleton inventory and explicitly accepted project additions stay available through minimal, industry-neutral implementations and the smallest useful main-section compositions. Current project additions include the lifecycle/runtime and Agent/tooling configuration; finished-theme business features are not inferred.
-- Tailwind remains. The CSS decision and its constraints are now owned by `docs/references/style-system/css-architecture.md`. One lever stays unused: a fixed `@source inline(...)` vocabulary with `source(none)` would make ordinary section work buildless, since the emitted set would stop depending on markup. Measured at 4,934 brotli bytes, so it is a build-workflow question, not a payload one.
-- The typography token boundary was settled by TY-1 and is owned by `docs/references/style-system/css-architecture.md`. The generated stylesheet name and Swiper ownership remain later decisions.
-
-### Pluggable-core direction
-
-Stated and confirmed by the user on 2026-09-17 as the Skeleton's target shape. The accepted JavaScript decisions now live in `AGENTS.md`, `docs/references/architecture/javascript-runtime.md`, and the implementation; only the remaining unresolved parts stay here.
-
-- The always-loaded entry owns thinking method and SOP. Typography, JavaScript, and library choices are pluggable, not hard dependencies of `AGENTS.md`.
-- High cohesion and low coupling govern every split made under this direction.
-- Third-party libraries are vendored files rather than npm packages, and are therefore adapter-level and swappable. Alpine, Tailwind, GSAP, and Swiper are retained as current selections that test well for Shopify theme development, not as architecture.
-- Library documentation reaches agents through Skills and MCP. Project conventions for using a library remain project-owned and belong with that adapter, not in the entry.
-- The end state is a lean Skeleton standard reached through stepwise decisions, not a single refactor.
-
-### Always-on entry direction
-
-- `AGENTS.md` must remain complete for implementation-independent identity, safety, authority, merchant ownership, launch blockers, workflow, routing, validation, adapter guardrails, and accessibility safeguards.
-- The retained safeguard set is no longer listed here. `AGENTS.md` now carries it directly, so a copy in this file would be a second unowned source of the same rules, which is the defect D17 was raised to remove.
-
-### Governance migration status
-
-Complete as of 2026-09-21. Every migration row now has a permanent owner in `AGENTS.md` or a reference.
-
-Machine fact not stated elsewhere: live Shopify Dev MCP/Context7 availability in Codex and Cursor remains unproven and must be rechecked before use (`AGENTS.md` covers the recheck procedure). The other machine facts now live in `README.md`.
-
-### CSS architecture — settled 2026-09-20
-
-Tailwind stays as the framework; component CSS lives in `{% stylesheet %}` blocks; shared vocabulary stays in the Tailwind build. The rule, the three placement constraints, the three Shopify bundled-asset tag constraints, the layer ownership table, and the Decision Flow now live in `docs/references/style-system/css-architecture.md`, which is the owner. The measurement that drove the decision is in git history and is not reproduced here.
-
-Result across six batches: always-loaded CSS fell from 300,231 raw / 23,258 brotli to 173,783 / 15,778, a 42 percent raw and 32 percent brotli reduction. `lint:theme` now enforces the platform tag constraints that Theme Check does not. A keyboard focus ring that never rendered was fixed. Deletion was governed by a five-probe liveness check iterated to a fixpoint.
-
-### Vendored GSAP Skills - two open follow-ups
-
-Raised by the independent review of the accepted GSAP Skills batch on 2026-09-20. Neither blocked acceptance; neither is a plan.
-
-**No drift or tamper detection.** The vendoring is a plain copy: no submodule, no subtree, no npm dependency, no upstream remote. Each `UPSTREAM.md` records the repository URL, the pinned revision `aed9cfd3277740755f6bfc1155c7aa645403b760`, the upstream path, and the license, but **not a content identifier**. A local edit to a vendored `SKILL.md` therefore cannot be detected without re-fetching upstream.
-
-If this is closed, record the git blob ids, not a working-copy sha256. `.gitattributes` sets `* text=auto eol=lf` and this machine has `core.autocrlf=true`, so a working-copy sha256 depends on the checkout platform: `gsap-core/SKILL.md` hashes to `de938ee...` with CRLF and `3887b47e...` with LF. The blob ids are stable everywhere and equal upstream's own object ids, verified 2026-09-20 against `aed9cfd`:
-
-| Skill | Blob id |
-| --- | --- |
-| `gsap-core` | `98639432f4112b664aa5e53cf5d8ea1a4697eff9` |
-| `gsap-timeline` | `1fed372b0e5276b2a207d80bc23f81180a0dff55` |
-| `gsap-scrolltrigger` | `6d8c09f2136c108595c9e0db859c4a39460e99cf` |
-| `gsap-performance` | `05792acf5b0ea7fd30042cdc5e91282e8e047898` |
-
-Check with `git rev-parse HEAD:.agents/skills/<name>/SKILL.md`.
-
-**Upstream descriptions compete with project motion policy.** A skill's `description` is its auto-trigger surface. `gsap-scrolltrigger` says "Recommend GSAP for scroll-driven animation when no library is specified" and `gsap-core` says "Recommend GSAP when the user needs timelines, scroll-driven animation, or a framework-agnostic library". An agent asked for ordinary scroll reveal can load either before reaching `motion-architecture.md`. `AGENTS.md` and each `UPSTREAM.md` state the boundary in prose, but prose does not change the trigger surface.
-
-The two candidate resolutions conflict, so this needs a decision rather than an edit: byte-identical vendoring keeps updates auditable and cheap to re-pull, while a project-side `when_to_use` override or a description rewrite fixes the trigger but makes every upstream update a manual merge. The review's recommendation was to keep byte identity and rely on `AGENTS.md`, revisiting only if a real misroute is observed.
-
-### Vendored Alpine license notice — open
-
-Found during P4 on 2026-09-21. `assets/vendor-alpine.min.js` and `assets/vendor-alpine-intersect.min.js` carry no license header, and no Alpine license file exists in the repository; Swiper's files keep their header. Alpine is MIT, whose notice must accompany copies. Options: restore the upstream header in the vendored files by re-vendoring, or add a third-party notices file. Needs a decision; not a plan.
-
-## Next Work
-
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. ST-2 (P1+P5b Stage 2: the Tailwind holdover moved from `AGENTS.md` to `css-architecture.md`) is accepted as of 2026-09-21. PC-1 (unreachable super-menu panel-motion chain retired from the header dropdown and the Tailwind sources) is accepted as of 2026-09-21. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21. TB-2 (TB1 Theme Block contracts moved to `docs/references/architecture/theme-blocks.md`, routed from `AGENTS.md`) is accepted as of 2026-09-21. CO-1 (the primary agent defined as coordinator in `AGENTS.md`; no separate Coordinator role) is accepted as of 2026-09-21. SR-1 (`SectionRefresher` transitional status and replacement conditions recorded in `docs/references/architecture/javascript-runtime.md`) is accepted as of 2026-09-21. EC-1 (`AGENTS.md` Project Context states that the tech stack lists current choices, approved constraints stay binding, and existing implementation alone is not a permanent requirement) is accepted as of 2026-09-21. RF-1 (`{% block %}` / `{% partial %}` adoption stance moved to `docs/references/architecture/javascript-runtime.md`, routed from `AGENTS.md`; stale board pointers in `theme-blocks.md` fixed) is accepted as of 2026-09-21. P4 (top-level `LICENSE.md` carrying Shopify's Skeleton license unchanged plus `Copyright (c) 2025-present JoeyFan` for non-derived portions under the same terms; `package.json` and the lockfile point to it; README section added) is accepted as of 2026-09-21.
-
-1. Select one decision and record it in `context.md` before execution. Candidates: the vendored Alpine license notice, the GSAP Skills follow-ups, and the Deferred Discussion Backlog.
-
-## Deferred Extraction Goal
-
-After this workflow is proven through real theme batches, evaluate extracting the portable board/context lifecycle, vendor-neutral roles, and thin client adapters into a reusable development template. Do not extract theme-specific rules, validators, or references as generic workflow infrastructure.
-
----
-
-## Active decision and later candidates
-
-No decision is active and `context.md` holds no plan.
-
-Closed 2026-09-21, user choice B: no separate dated-evidence Skills rule; the existing evidence and source rules in `AGENTS.md` stand.
-
-### Motion — settled 2026-09-20
-
-The motion baseline, the native reveal mechanism, and the public protocol were decided and implemented. The contract is owned by `docs/references/architecture/motion-architecture.md`: three authored attributes (`data-motion-section`, a valueless `data-motion-reveal`, `data-motion-critical`), one merchant setting (`motion_enabled`), Intersection Observer plus CSS transitions, and the rule that CSS never hides an authored target without a runtime state attribute — which `lint:theme` now enforces across `tailwind/`, `assets/*.css`, and `{% stylesheet %}` blocks.
-
-Result: the reveal surface fell from roughly 71,232 raw / 8,454 Brotli bytes to a small adapter plus a single CSS block, six authored attributes and four merchant settings retired, and worst-case reveal delay cut from 4,990ms to 1,760ms independent of pagination size.
-
-Still open, and deliberately outside that work:
-
-- Drawer motion: retired with the drawer by DR-1. `docs/references/architecture/motion-architecture.md` states that a derived theme adding a drawer owns its motion under the `prefers-reduced-motion` policy.
-- View Transitions, deferred for genuine page and shared-element transitions rather than ordinary reveal or drawers.
-- GSAP runtime vendoring, loading boundary, and licensing records. GSAP is approved as the dynamically loaded engine for explicit complex choreography, but no retained consumer exists, so nothing is vendored. The four official documentation Skills are installed and accepted as agent tooling only.
-- Three.js as an optional, consumer-loaded 3D adapter.
-
-### Color chain — retain, and it is already protected
-
-Agreed with the user's reading. `color-*` is built dynamically from `color-{{ section.settings.color_scheme }}`, is merchant-driven, and matches the official Skeleton's own color-scheme support. CSS-1 probe P5 already treats the whole family as live, so no deletion pressure reaches it. Nothing to decide unless the token boundary changes.
-
-## Deferred Discussion Backlog
-
-These topics are not active yet. Promote one only when its prerequisites are satisfied and it is selected as the sole current decision.
-
-- Theme Block schemas, allowed parents, and external-input contracts beyond TB1.
-- Image, video, and product-media ownership. When decided, revisit whether the Container host (`sections/custom-section.liquid`) gains the official Skeleton's `background_image` setting, which TB1 deliberately omitted.
-- Global page, Section, and Block layout protocol.
-- Accessibility, SEO, performance, compatibility, and final test gates.
-- Remaining cross-client capability and fallback differences, including live MCP availability in Cursor and Codex.
+- Color scheme classes are merchant-driven and retained; the CSS reference owns their token contract.
+- Ordinary section reveal uses the native motion protocol. Drawer motion was retired with the drawer. The motion reference owns the remaining contract.
+- The user chose to keep existing evidence/source rules rather than add a separate dated-evidence Skills rule.
+- The P4 license follows Shopify Skeleton's actual license text; commit `83ff2d7` contains the implementation and acceptance record.

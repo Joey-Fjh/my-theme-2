@@ -19,7 +19,7 @@ This project adopts that browser matrix as a quality baseline only. It does not 
 
 ## Build Boundary
 
-The runtime architecture remains Liquid, Tailwind CSS v4 CLI, classic deferred scripts, Alpine, and Swiper.
+The runtime architecture remains Liquid, Tailwind CSS v4 CLI, classic deferred scripts, and Alpine.
 
 Tailwind CSS v4 handles imports and vendor prefixes and targets modern browsers. Browserslist does not change Tailwind's compilation target. Do not add Vite, Autoprefixer, Babel, or broad polyfill bundles solely for this policy.
 

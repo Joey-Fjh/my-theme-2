@@ -10,7 +10,6 @@ const components = {
             mediaCount: 0,
             _galleryRoot: null,
             _thumbnailMediaQuery: null,
-            _swiper: null,
             _eventScope: null,
 
             init() {
@@ -21,7 +20,6 @@ const components = {
                     this._syncThumbnailOrientation(),
                 );
                 this._syncThumbnailOrientation();
-                this.$nextTick(() => this._initSwiper());
                 const Events = ThemeEvents;
                 const events = Events.events;
                 this._eventScope = Events.createScope();
@@ -45,8 +43,6 @@ const components = {
                 index = Math.max(0, Math.min(index, this.mediaCount - 1));
                 this._pauseActiveVideo();
                 this.activeIndex = index;
-                if (this._swiper) this._swiper.slideTo(index);
-                this._syncSlideInert();
             },
 
             next() {
@@ -62,20 +58,6 @@ const components = {
             _pauseActiveVideo() {
                 this._galleryRoot?.querySelectorAll('video').forEach((video) => {
                     if (!video.paused) video.pause();
-                });
-            },
-
-            _syncSlideInert() {
-                const swiperRoot = this._galleryRoot?.querySelector('[data-gallery-swiper]');
-                if (!swiperRoot) return;
-                swiperRoot.querySelectorAll('.swiper-slide').forEach((slide, index) => {
-                    const isActive = index === this.activeIndex;
-                    slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
-                    if (isActive) {
-                        slide.removeAttribute('inert');
-                    } else {
-                        slide.setAttribute('inert', '');
-                    }
                 });
             },
 
@@ -141,33 +123,9 @@ const components = {
                 if (nextThumb) nextThumb.focus();
             },
 
-            _initSwiper() {
-                if (typeof Swiper === 'undefined') return;
-
-                const mainEl = this._galleryRoot?.querySelector('[data-gallery-swiper]');
-                if (!mainEl) return;
-
-                this._swiper = new Swiper(mainEl, {
-                    slidesPerView: 1,
-                    spaceBetween: 0,
-                    pagination: {
-                        el: mainEl.querySelector('.swiper-pagination'),
-                        clickable: true,
-                    },
-                    on: {
-                        slideChange: (s) => {
-                            this.activeIndex = s.activeIndex;
-                            this._syncSlideInert();
-                        },
-                    },
-                });
-                this._syncSlideInert();
-            },
-
             destroy() {
                 this._eventScope?.dispose?.();
                 this._eventScope = null;
-                if (this._swiper?.destroy) this._swiper.destroy(true, true);
                 this._thumbnailMediaQuery = null;
                 this._galleryRoot = null;
                 this.dispose();

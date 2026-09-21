@@ -1,6 +1,6 @@
 # Agent Entry Guide
 
-This file is the always-on entry point for agents working in this repository. Keep it lean: project identity, hard rules, routing, skills, validation commands, and gotchas only.
+This file is the always-on entry point for agents working in this repository. Keep it lean: project identity, hard rules, routing, skills, validation commands, and gotchas only. Within that scope it stays complete for implementation-independent identity, safety, authority, merchant ownership, launch blockers, workflow, routing, validation, adapter guardrails, and accessibility safeguards.
 
 `AGENTS.md` is the canonical repository rule source. Supporting docs under `docs/references/` provide details and examples. If a supporting doc conflicts with this file, follow this file.
 
@@ -26,10 +26,12 @@ Tech stack:
 - Tailwind CSS v4 with CSS-based config and `@theme inline`
 - Alpine.js v3 for reactive UI state
 - GSAP + ScrollTrigger (optional choreography tools for complex narrative motion, not the default for ordinary section reveal)
-- Swiper for carousels
+- Swiper as the selected carousel library, vendored when an accepted consumer exists (like GSAP)
 - Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `defer`, `mount`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
 
 The technology list describes current project choices. Their detailed contracts belong in the Task Routing references; approved constraints, including Runtime constraints below, remain binding until an explicit architecture decision changes them. An existing implementation alone does not establish a permanent project requirement.
+
+Third-party libraries are vendored files behind project adapters, not npm runtime packages, so they stay swappable. Splits follow high cohesion and low coupling. A selected library is vendored only when an accepted consumer exists.
 
 Runtime constraints:
 
@@ -138,6 +140,7 @@ Chat history and commit messages are evidence, never a substitute for the curren
 - Do not retain code merely because it already exists.
 - Classification vocabulary: Platform Required, Skeleton Core, Optional Capability, Theme-Specific Implementation, Tooling and Governance, Open Decision. Classify against the official Skeleton inventory plus explicitly accepted project additions; keep platform validity, Theme Store submission scope, and mother-template architecture separate.
 - When the user asks to continue previous work, review outstanding tasks, or prepare next-session context, read `docs/agent/context.md`.
+- The files under `docs/references/` describe what exists; they are evidence, not authority over what should be built. Architecture is decided from Shopify's current official sources and the user's stated intent; references are rewritten to match accepted decisions.
 
 Hard implementation rules:
 
@@ -154,7 +157,7 @@ Hard implementation rules:
 
 Read only the matching reference for the current task:
 
-- JS runtime, lifecycle, events, HTTP, SectionRefresher, `{% block %}` / `{% partial %}` adoption, Alpine stores/components, Swiper, GSAP runtime setup (when an accepted consumer exists): `docs/references/architecture/javascript-runtime.md`
+- JS runtime, lifecycle, events, HTTP, SectionRefresher, `{% block %}` / `{% partial %}` adoption, Alpine stores/components, Swiper/GSAP adoption: `docs/references/architecture/javascript-runtime.md`
 - Motion policy, choreography, reduced motion, animation ownership, duplication: `docs/references/architecture/motion-architecture.md`
 - Shared abstraction boundaries and whether to extend an existing utility/component: `docs/references/architecture/abstraction-boundaries.md`
 - Theme Block inventory, Container host, blank-content and editor placeholder behavior, generic-block responsibility: `docs/references/architecture/theme-blocks.md`
