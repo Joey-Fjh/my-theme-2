@@ -213,7 +213,6 @@ Variants:
 
     details[open] > .panel-motion-scale,
     [aria-expanded='true'] > .panel-motion-scale,
-    .is-open > .panel-motion-scale,
     [data-dropdown][open] > .panel-motion-scale,
     .localization-toggle[aria-expanded='true'] ~ .panel-motion-scale {
         animation: panel-motion-scale-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
@@ -239,7 +238,6 @@ Variants:
 
     details[open] > .panel-motion-compact,
     [aria-expanded='true'] > .panel-motion-compact,
-    .is-open > .panel-motion-compact,
     [data-dropdown][open] > .panel-motion-compact,
     .localization-toggle[aria-expanded='true'] ~ .panel-motion-compact {
         opacity: 1;
@@ -272,7 +270,6 @@ Variants:
 
     details[open] > .panel-motion-flyout:not([class*='inset-s-full']),
     [aria-expanded='true'] > .panel-motion-flyout:not([class*='inset-s-full']),
-    .is-open > .panel-motion-flyout:not([class*='inset-s-full']),
     [data-dropdown][open] > .panel-motion-flyout:not([class*='inset-s-full']) {
         animation: panel-motion-flyout-down-in var(--panel-motion-dur)
             var(--panel-motion-ease-enter) both;
@@ -365,8 +362,7 @@ Variants:
 Tab Control
 ========================================================= */
 @layer components {
-    .tab-control-default,
-    .tab-control-underlined {
+    .tab-control-default {
         position: relative;
         display: flex;
         flex-direction: column;
@@ -374,8 +370,7 @@ Tab Control
         width: 100%;
     }
 
-    .tab-control-default > *,
-    .tab-control-underlined > * {
+    .tab-control-default > * {
         width: 100%;
         min-width: 0;
     }
@@ -387,8 +382,7 @@ Tab Control
         }
     }
 
-    .tab-control-default .tab-header-default,
-    .tab-control-underlined .tab-header-underlined {
+    .tab-control-default .tab-header-default {
         display: flex;
         flex-wrap: nowrap;
         white-space: nowrap;
@@ -421,23 +415,8 @@ Tab Control
         }
     }
 
-    /* 2. Underlined (Common for pages with section dividers) */
-    .tab-control-underlined {
-        align-items: flex-start;
-    }
-
-    .tab-control-underlined .tab-header-underlined {
-        gap: 2.4rem;
-        @apply border-b border-theme-border/20;
-
-        @media (width >= theme(--breakpoint-pc)) {
-            gap: 4rem;
-        }
-    }
-
     /* Tab content layout */
-    .tab-content-default,
-    .tab-content-underlined {
+    .tab-content-default {
         @apply relative w-full overflow-hidden;
     }
 }
@@ -446,7 +425,7 @@ Tab Control
 Tab Nav Item
 
 Trigger chrome for role="tab" inside tab-control.
-Shell/layout: tab-control-default | tab-control-underlined (unchanged).
+Shell/layout: tab-control-default (unchanged).
 Layout (flex, gap, uppercase, tracking): tab-header header_class or legacy owner delta.
 Active contract: .is-active on trigger (Alpine tabControl).
 ========================================================= */
@@ -908,7 +887,7 @@ Scene owners can add BEM classes for typography/order/color deltas.
 /* =========================================================
 Quantity Selector
 
-Reusable across: product, cart, featured-product, cart-overlay.
+Reusable across: product, cart, featured-product.
 Consumed via snippets/quantity-selector.liquid and inline in cart sections.
 ========================================================= */
 @layer components {

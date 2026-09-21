@@ -129,21 +129,15 @@ The two candidate resolutions conflict, so this needs a decision rather than an 
 
 Each needs its own authorized batch.
 
-- **Dead `scroll-lock` rule.** `assets/base.css:16` (and the generated output) styles `dialog[scroll-lock][open], details[scroll-lock][open]`, but no markup sets a `scroll-lock` attribute.
-
-### Post-CSS acceptance cleanup candidates
-
-The CSS series is accepted. These candidates were left out of it and need their own authorized batch.
-
-- Remove or otherwise resolve the eight dead class symbols that remain inside retained multi-selector rules: `is-open`, `panel-motion-content`, `panel-motion-disclosure`, `panel-motion-popover`, `panel-motion-shell`, `tab-content-underlined`, `tab-control-underlined`, and `tab-header-underlined`.
-- Update the stale `cart-overlay` mention in the `tailwind/tailwind.components.css:1010` comment. The cart overlay was retired by UC-1.
+- **`panel-motion-layered` JS lookup with no markup.** `assets/alpine.components.ui.js:261,280,290` query `:scope > .panel-motion-layered`, but no Liquid renders that class, so those branches never find a panel. Found while planning DC-1 (2026-09-21); DC-1 leaves it alone.
+- **Orphaned panel-motion keyframes and tokens.** Found in the DC-1 review (2026-09-21). In `tailwind/tailwind.animates.css`, three `@keyframes` have no `animation` user (`panel-motion-popover-in`, `panel-motion-disclosure-in` and `panel-motion-content-in`), and two properties are never read (`--panel-motion-disclosure-max-height` and `--panel-motion-content-delay-layered`). This naturally pairs with the `panel-motion-layered` item above.
 
 ## Next Work
 
-The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan.
+The CSS series, the motion foundation, the GSAP Skills tooling, and the dialog/drawer work (MS-1 ownership foundation, MS-2 modal-chain retirement) are all accepted. UC-1 (retirement of the unreachable cart overlay, related-products, pickup and super-menu implementations, plus Ceylune content) and TM-1 (theme metadata pointed at this repository) are accepted as of 2026-09-21. TB1 (the Container host and the four-block rework) is accepted as of 2026-09-21. AC-1 (invalid alpha color syntax corrected and guarded by `lint:theme`) is accepted as of 2026-09-21. DR-1 (drawer retired together with collection filtering, sorting and navigation; collection pagination now uses `sectionPagination`) is accepted as of 2026-09-21. DS-1 (inert dialog settings and `--dialog-*` tokens removed) is accepted as of 2026-09-21. FA-1 (unreachable newsletter and product-card factories retired) is accepted as of 2026-09-21. TY-1 (subtitle typography role retired; body/heading token interface recorded in `docs/references/style-system/css-architecture.md`) is accepted as of 2026-09-21. `context.md` holds no plan. DC-1 (unreferenced CSS removed: the `scroll-lock` rule, eight dead class symbols, two stale comments) is accepted as of 2026-09-21.
 
-1. Select one decision and record it in `context.md` before execution. Ready candidates: the dead `scroll-lock` rule and the eight dead CSS symbols (small cleanups), and P1+P5b Stage 2.
-2. The eight dead `panel-motion-*` / `tab-*-underlined` symbols remain a small separate cleanup candidate.
+1. Select one decision and record it in `context.md` before execution. Ready candidates: P1+P5b Stage 2, and the panel-motion cleanup (the `panel-motion-layered` JS lookup plus the orphaned keyframes and tokens, listed together under the post-DR-1 candidates).
+2. The panel-motion cleanup candidates are small and can be one batch.
 3. P1+P5b Stage 2 is unblocked but unscheduled and needs explicit authorization. P4 waits only on a distribution-intent decision.
 
 ## Deferred Extraction Goal

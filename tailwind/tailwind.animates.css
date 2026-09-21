@@ -393,13 +393,9 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
 @media (prefers-reduced-motion: reduce) {
     :is(
         .panel-motion-scale,
-        .panel-motion-popover,
         .panel-motion-layered,
         .panel-motion-compact,
         .panel-motion-flyout,
-        .panel-motion-disclosure,
-        .panel-motion-layered .panel-motion-shell,
-        .panel-motion-layered .panel-motion-content > *,
         :is(.panel-motion-scale, .panel-motion-compact, .panel-motion-flyout)
             > :is(li, [role='option'], .localization-item)
     ) {

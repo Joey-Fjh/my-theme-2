@@ -13,10 +13,6 @@ html {
     );
 }
 
-html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
-    overflow: hidden;
-}
-
 html:has(.site-header > header.is-hidden) {
     --sticky-viewport-top: calc(var(--announcement-bar-height, 0px) + var(--sticky-viewport-gap));
 }
