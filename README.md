@@ -114,3 +114,7 @@ Use `npm.cmd` for project scripts in this Windows workspace. Default to the smal
 - [AGENTS.md](AGENTS.md): canonical repository rules and validation commands
 - [docs/agent/context.md](docs/agent/context.md): short current-state and cross-session handoff
 - [docs/references/](docs/references/): on-demand architecture and review references
+
+## License
+
+This repository is derived from Shopify's Skeleton Theme and carries Shopify's license terms, including the restriction to developing themes for Shopify. See [LICENSE.md](LICENSE.md). Vendored third-party files keep their own licenses.

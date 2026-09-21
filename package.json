@@ -31,7 +31,7 @@
     },
     "keywords": [],
     "author": "JoeyFan",
-    "license": "ISC",
+    "license": "SEE LICENSE IN LICENSE.md",
     "engines": {
         "node": ">=22"
     },
