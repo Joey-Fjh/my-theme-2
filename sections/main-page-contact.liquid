@@ -10,241 +10,177 @@
     data-module-lazy
     data-motion-section
 >
-    {%- liquid
-        assign contact_heading_class = section.settings.heading_size | default: 'heading-xl'
-    -%}
     <div class="layout container-page">
-        {%- comment -%} Main Content: Image + Form {%- endcomment -%}
-        <div class="relative z-1 mx-auto w-full max-w-full pc:max-w-5/6">
-            <div class="grid grid-cols-1 gap-0 overflow-hidden pc:grid-cols-2">
-                {%- comment -%} Left: Image {%- endcomment -%}
-                <div
-                    class="relative hidden aspect-528/582 overflow-hidden pc:block pc:aspect-auto"
-                >
-                    {% capture sizes %}
-                        (max-width: 768px) 100vw, 50vw    
-                    {% endcapture %}
-
-                    {% capture widths %}
-                        400,600,800
-                    {% endcapture %}
-
-                    {%- assign image_alt_fallback = 'sections.main-page-contact.defaults.image_alt'
-                        | t
-                    -%}
-                    {%- assign image_alt = section.settings.image_alt
-                        | default: section.settings.image.alt
-                        | default: image_alt_fallback
-                        | escape
-                    -%}
-                    {% render 'image',
-                        image: section.settings.image,
-                        alt: image_alt,
-                        width: section.settings.image.width,
-                        sizes: sizes,
-                        widths: widths,
-                        loading: 'eager',
-                        motion_reveal: false
-                    %}
+        <div class="mx-auto w-full max-w-2xl py-10">
+            <div class="flex flex-col gap-6">
+                {%- assign heading_fallback = 'sections.main-page-contact.defaults.heading' | t -%}
+                <div>
+                    <h1
+                        class="text-center heading-xl"
+                        data-motion-reveal
+                        data-motion-critical
+                    >
+                        {{ section.settings.heading | default: heading_fallback }}
+                    </h1>
+                    <div
+                        class="rte rte--compact mt-3 text-center"
+                        data-motion-reveal
+                        data-motion-critical
+                    >
+                        {%- assign contact_description_fallback = 'contact.description_html' | t -%}
+                        {{ section.settings.description | default: contact_description_fallback }}
+                    </div>
                 </div>
-                {%- comment -%} Right: Form {%- endcomment -%}
-                {%- assign form_bg = section.settings.form_background_color | default: '#ffffff' -%}
-                {%- assign form_text = section.settings.form_text_color | default: '#1a1a1a' -%}
-                <div
-                    class="flex flex-col justify-center bg-(--contact-form-bg) px-6 py-8 text-(--contact-form-text) pc:px-10 pc:py-10 fw:px-12"
-                    style="--contact-form-bg: {{ form_bg }}; --contact-form-text: {{ form_text }};"
-                >
-                    {%- assign heading_fallback = 'sections.main-page-contact.defaults.heading'
+
+                {%- form 'contact',
+                    return_to: 'back',
+                    data-shopify-captcha: 'true',
+                    class: 'mt-6 flex flex-col gap-5 pc:mt-8 pc:gap-6'
+                -%}
+                    {%- assign success_message_fallback = 'sections.main-page-contact.defaults.success_message'
                         | t
                     -%}
-                    <div>
-                        <h1
-                            class="{{ contact_heading_class }} text-center text-(--contact-form-text)"
-                            data-motion-reveal
-                            data-motion-critical
-                        >
-                            {{ section.settings.heading | default: heading_fallback }}
-                        </h1>
+                    {%- assign success_message = section.settings.success_message
+                        | default: success_message_fallback
+                    -%}
+                    {%- if form.posted_successfully? -%}
                         <div
-                            class="rte rte--compact mt-3 text-center"
-                            data-motion-reveal
-                            data-motion-critical
+                            class="rounded p-4 text-center"
+                            role="status"
+                            data-success-message="{{ success_message | escape }}"
+                            x-data
+                            x-init="
+                                const message = $el.dataset.successMessage;
+                                if (!message || !$store.toast) return;
+                                $nextTick(() => {
+                                    $store.toast.show(message, 'success');
+                                    $el.hidden = true;
+                                });
+                            "
                         >
-                            {%- assign contact_description_fallback = 'contact.description_html'
-                                | t
-                            -%}
-                            {{
-                                section.settings.description
-                                | default: contact_description_fallback
-                            }}
+                            {{ success_message }}
+                        </div>
+                    {%- endif -%}
+
+                    {%- if form.errors -%}
+                        <div
+                            id="ContactFormErrors-{{ section.id }}"
+                            class="rounded p-4 text-error-text"
+                            role="alert"
+                        >
+                            {{ form.errors | default_errors }}
+                        </div>
+                    {%- endif -%}
+
+                    {%- comment -%} First name & Last name {%- endcomment -%}
+                    <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
+                        <div class="flex flex-col gap-1.5">
+                            <label
+                                for="ContactFirstName-{{ section.id }}"
+                            >
+                                {{- 'contact.first_name' | t -}}
+                            </label>
+                            <input
+                                type="text"
+                                id="ContactFirstName-{{ section.id }}"
+                                name="contact[first_name]"
+                                placeholder="{{ 'contact.first_name_placeholder' | t }}"
+                                autocomplete="given-name"
+                                class="field"
+                            >
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label
+                                for="ContactLastName-{{ section.id }}"
+                            >
+                                {{- 'contact.last_name' | t -}}
+                            </label>
+                            <input
+                                type="text"
+                                id="ContactLastName-{{ section.id }}"
+                                name="contact[last_name]"
+                                placeholder="{{ 'contact.last_name_placeholder' | t }}"
+                                autocomplete="family-name"
+                                class="field"
+                            >
                         </div>
                     </div>
 
-                    {%- form 'contact',
-                        return_to: 'back',
-                        data-shopify-captcha: 'true',
-                        class: 'mt-6 flex flex-col gap-5 pc:mt-8 pc:gap-6'
-                    -%}
-                        {%- assign success_message_fallback = 'sections.main-page-contact.defaults.success_message'
-                            | t
-                        -%}
-                        {%- assign success_message = section.settings.success_message
-                            | default: success_message_fallback
-                        -%}
-                        {%- if form.posted_successfully? -%}
-                            <div
-                                class="rounded p-4 text-center"
-                                role="status"
-                                data-success-message="{{ success_message | escape }}"
-                                x-data
-                                x-init="
-                                    const message = $el.dataset.successMessage;
-                                    if (!message || !$store.toast) return;
-                                    $nextTick(() => {
-                                        $store.toast.show(message, 'success');
-                                        $el.hidden = true;
-                                    });
-                                "
-                            >
-                                {{ success_message }}
-                            </div>
-                        {%- endif -%}
-
-                        {%- if form.errors -%}
-                            <div
-                                id="ContactFormErrors-{{ section.id }}"
-                                class="rounded p-4 text-error-text"
-                                role="alert"
-                            >
-                                {{ form.errors | default_errors }}
-                            </div>
-                        {%- endif -%}
-
-                        {%- comment -%} First name & Last name {%- endcomment -%}
-                        <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
-                            <div class="flex flex-col gap-1.5">
-                                <label
-                                    for="ContactFirstName-{{ section.id }}"
-                                >
-                                    {{- 'contact.first_name' | t -}}
-                                </label>
-                                <input
-                                    type="text"
-                                    id="ContactFirstName-{{ section.id }}"
-                                    name="contact[first_name]"
-                                    placeholder="{{ 'contact.first_name_placeholder' | t }}"
-                                    autocomplete="given-name"
-                                    class="field"
-                                >
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label
-                                    for="ContactLastName-{{ section.id }}"
-                                >
-                                    {{- 'contact.last_name' | t -}}
-                                </label>
-                                <input
-                                    type="text"
-                                    id="ContactLastName-{{ section.id }}"
-                                    name="contact[last_name]"
-                                    placeholder="{{ 'contact.last_name_placeholder' | t }}"
-                                    autocomplete="family-name"
-                                    class="field"
-                                >
-                            </div>
-                        </div>
-
-                        {%- comment -%} Email & Phone {%- endcomment -%}
-                        <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
-                            <div class="flex flex-col gap-1.5">
-                                <label
-                                    for="ContactEmail-{{ section.id }}"
-                                >
-                                    {{- 'contact.email' | t -}}
-                                    <span aria-hidden="true">*</span>
-                                    <span class="sr-only">{{ 'accessibility.required' | t }}</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    id="ContactEmail-{{ section.id }}"
-                                    name="contact[email]"
-                                    placeholder="{{ 'contact.email_placeholder' | t }}"
-                                    autocomplete="email"
-                                    required
-                                    aria-required="true"
-                                    class="field"
-                                    {% if form.errors contains 'email' %}
-                                        aria-invalid="true"
-                                        aria-describedby="ContactFormErrors-{{ section.id }}"
-                                    {% endif %}
-                                >
-                            </div>
-                            <div class="hidden flex-col gap-1.5 pc:flex">
-                                <label
-                                    for="ContactPhone-{{ section.id }}"
-                                >
-                                    {{- 'contact.phone' | t -}}
-                                </label>
-                                <input
-                                    type="tel"
-                                    id="ContactPhone-{{ section.id }}"
-                                    name="contact[phone]"
-                                    placeholder="{{ 'contact.phone_placeholder' | t }}"
-                                    autocomplete="tel"
-                                    class="field"
-                                >
-                            </div>
-                        </div>
-
-                        {%- comment -%} Message {%- endcomment -%}
+                    {%- comment -%} Email & Phone {%- endcomment -%}
+                    <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
                         <div class="flex flex-col gap-1.5">
-                            <label for="ContactMessage-{{ section.id }}">
-                                {{- 'contact.message' | t -}}
+                            <label
+                                for="ContactEmail-{{ section.id }}"
+                            >
+                                {{- 'contact.email' | t -}}
+                                <span aria-hidden="true">*</span>
+                                <span class="sr-only">{{ 'accessibility.required' | t }}</span>
                             </label>
-                            <textarea
-                                id="ContactMessage-{{ section.id }}"
-                                name="contact[body]"
-                                placeholder="{{ 'contact.message_placeholder' | t }}"
-                                rows="4"
-                                class="min-h-24 field resize-none pc:min-h-28"
-                                {% if form.errors contains 'body' %}
+                            <input
+                                type="email"
+                                id="ContactEmail-{{ section.id }}"
+                                name="contact[email]"
+                                placeholder="{{ 'contact.email_placeholder' | t }}"
+                                autocomplete="email"
+                                required
+                                aria-required="true"
+                                class="field"
+                                {% if form.errors contains 'email' %}
                                     aria-invalid="true"
                                     aria-describedby="ContactFormErrors-{{ section.id }}"
                                 {% endif %}
-                            ></textarea>
+                            >
                         </div>
+                        <div class="hidden flex-col gap-1.5 pc:flex">
+                            <label
+                                for="ContactPhone-{{ section.id }}"
+                            >
+                                {{- 'contact.phone' | t -}}
+                            </label>
+                            <input
+                                type="tel"
+                                id="ContactPhone-{{ section.id }}"
+                                name="contact[phone]"
+                                placeholder="{{ 'contact.phone_placeholder' | t }}"
+                                autocomplete="tel"
+                                class="field"
+                            >
+                        </div>
+                    </div>
 
-                        {%- assign button_text_fallback = 'sections.main-page-contact.defaults.button_text'
-                            | t
-                        -%}
-                        {%- comment -%} Submit {%- endcomment -%}
-                        <button
-                            type="submit"
-                            class="btn-primary w-full body-xl"
-                        >
-                            {{ section.settings.button_text | default: button_text_fallback }}
-                        </button>
-                    {%- endform -%}
-                </div>
+                    {%- comment -%} Message {%- endcomment -%}
+                    <div class="flex flex-col gap-1.5">
+                        <label for="ContactMessage-{{ section.id }}">
+                            {{- 'contact.message' | t -}}
+                        </label>
+                        <textarea
+                            id="ContactMessage-{{ section.id }}"
+                            name="contact[body]"
+                            placeholder="{{ 'contact.message_placeholder' | t }}"
+                            rows="4"
+                            class="min-h-24 field resize-none pc:min-h-28"
+                            {% if form.errors contains 'body' %}
+                                aria-invalid="true"
+                                aria-describedby="ContactFormErrors-{{ section.id }}"
+                            {% endif %}
+                        ></textarea>
+                    </div>
+
+                    {%- assign button_text_fallback = 'sections.main-page-contact.defaults.button_text'
+                        | t
+                    -%}
+                    {%- comment -%} Submit {%- endcomment -%}
+                    <button
+                        type="submit"
+                        class="btn-primary w-full body-xl"
+                    >
+                        {{ section.settings.button_text | default: button_text_fallback }}
+                    </button>
+                {%- endform -%}
             </div>
         </div>
     </div>
 </div>
-
-{% stylesheet %}
-    .main-page-contact-section .rte :is(h1, h2, h3, h4, h5, h6) {
-        color: var(--contact-form-text);
-    }
-    .main-page-contact-section .rte blockquote {
-        color: var(--contact-form-text);
-    }
-    .main-page-contact-section .rte figcaption {
-        color: var(--contact-form-text);
-    }
-    .main-page-contact-section .rte :is(code, pre) {
-        color: var(--contact-form-text);
-    }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -262,85 +198,10 @@
             "default": "scheme-2"
         },
         {
-            "type": "color",
-            "id": "form_background_color",
-            "label": "t:sections.main-page-contact.settings.form_background_color",
-            "default": "#ffffff"
-        },
-        {
-            "type": "color",
-            "id": "form_text_color",
-            "label": "t:sections.main-page-contact.settings.form_text_color",
-            "default": "#1a1a1a"
-        },
-        {
-            "type": "image_picker",
-            "id": "image",
-            "label": "t:sections.main-page-contact.settings.image"
-        },
-        {
-            "type": "text",
-            "id": "image_alt",
-            "default": "t:sections.main-page-contact.defaults.image_alt",
-            "label": "t:sections.main-page-contact.settings.image_alt_text"
-        },
-        {
             "type": "inline_richtext",
             "id": "heading",
             "default": "t:sections.main-page-contact.defaults.heading",
             "label": "t:sections.main-page-contact.settings.heading"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.heading"
-        },
-        {
-            "type": "select",
-            "id": "heading_size",
-            "label": "t:sections.shared_typography.settings.heading_size",
-            "options": [
-                {
-                    "value": "heading-4xl",
-                    "label": "t:sections.shared_typography.options.heading_4xl"
-                },
-                {
-                    "value": "heading-3xl",
-                    "label": "t:sections.shared_typography.options.heading_3xl"
-                },
-                {
-                    "value": "heading-2xl",
-                    "label": "t:sections.shared_typography.options.heading_2xl"
-                },
-                {
-                    "value": "heading-xl",
-                    "label": "t:sections.shared_typography.options.heading_xl"
-                },
-                {
-                    "value": "heading-h1",
-                    "label": "t:sections.shared_typography.options.heading_h1"
-                },
-                {
-                    "value": "heading-h2",
-                    "label": "t:sections.shared_typography.options.heading_h2"
-                },
-                {
-                    "value": "heading-h3",
-                    "label": "t:sections.shared_typography.options.heading_h3"
-                },
-                {
-                    "value": "heading-h4",
-                    "label": "t:sections.shared_typography.options.heading_h4"
-                },
-                {
-                    "value": "heading-h5",
-                    "label": "t:sections.shared_typography.options.heading_h5"
-                },
-                {
-                    "value": "heading-h6",
-                    "label": "t:sections.shared_typography.options.heading_h6"
-                }
-            ],
-            "default": "heading-xl"
         },
         {
             "type": "richtext",
@@ -359,12 +220,6 @@
             "id": "success_message",
             "default": "t:sections.main-page-contact.defaults.success_message",
             "label": "t:sections.main-page-contact.settings.success_message"
-        },
-        {
-            "type": "text",
-            "id": "watermark_text",
-            "default": "t:sections.main-page-contact.defaults.watermark_text",
-            "label": "t:sections.main-page-contact.settings.watermark_text"
         },
         {
             "type": "header",

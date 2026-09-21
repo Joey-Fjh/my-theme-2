@@ -4,13 +4,13 @@
 
 <div
     data-section-id="{{ section.id }}"
-    class="search-section full-width min-h-[50vh] color-{{ section.settings.color_scheme }} surface-section"
+    class="search-section full-width color-{{ section.settings.color_scheme }} surface-section"
     style="
         --section-padding-top: {{ section.settings.padding_top | default: 0 }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
 >
-    <div class="layout container-page overflow-visible!{% unless search.performed %} flex min-h-[50vh] flex-col items-center justify-center{% endunless %}">
+    <div class="layout container-page overflow-visible!{% unless search.performed %} py-16 pc:py-20{% endunless %}">
         <div class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}">
             <h1 class="sr-only">{{ 'search.title' | t }}</h1>
 
@@ -92,22 +92,6 @@
             "step": 3,
             "default": 12,
             "label": "t:sections.search.settings.search_per_page"
-        },
-        {
-            "type": "select",
-            "id": "mobile_card_columns",
-            "label": "t:sections.search.settings.mobile_product_card_columns",
-            "default": "2",
-            "options": [
-                {
-                    "value": "1",
-                    "label": "t:sections.collection.options.1_column"
-                },
-                {
-                    "value": "2",
-                    "label": "t:sections.collection.options.2_columns"
-                }
-            ]
         },
         {
             "type": "header",

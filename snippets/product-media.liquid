@@ -10,11 +10,6 @@
     @param {string} [fetchpriority] - Optional fetchpriority ('high', 'low', 'auto')
     @param {string} [class] - Optional wrapper CSS classes
     @param {string} [img_class] - Optional image CSS classes
-    @param {boolean} [magnifier] - Use image magnifier (default: false)
-    @param {number} [magnifier_zoom_scale] - Magnifier zoom scale
-    @param {number} [magnifier_preview_width] - Magnifier preview width
-    @param {number} [magnifier_preview_height] - Magnifier preview height
-    @param {number} [magnifier_preview_max_width] - Magnifier max preview width
     @param {boolean} [motion_reveal] - Allow the rendered image/poster to own ordinary media reveal (default: true)
 
     @example
@@ -37,11 +32,6 @@
     assign fetchpriority = fetchpriority | default: 'auto'
     assign class = class | default: ''
     assign img_class = img_class | default: 'w-full h-full object-cover'
-    assign magnifier = magnifier | default: false
-    assign magnifier_zoom_scale = magnifier_zoom_scale | default: 2
-    assign magnifier_preview_width = magnifier_preview_width | default: 0
-    assign magnifier_preview_height = magnifier_preview_height | default: 0
-    assign magnifier_preview_max_width = magnifier_preview_max_width | default: 560
     assign product_media_motion_reveal = motion_reveal | default: true, allow_false: true
 -%}
 

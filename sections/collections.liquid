@@ -11,17 +11,8 @@
     data-motion-section
 >
     {%- liquid
-        assign collections_heading_class = section.settings.heading_size | default: 'heading-2xl'
-        assign collections_subtitle_size = section.settings.subtitle_size | default: 'body-xl'
-        assign collections_subtitle_class = collections_subtitle_size
         assign collections_heading = section.settings.heading
-        if collections_heading == blank
-            assign collections_heading = 'collections.latest_brand' | t
-        endif
         assign collections_description = section.settings.description
-        if collections_description == blank
-            assign collections_description = 'collections.latest_brand_description' | t
-        endif
     -%}
     <div class="layout container-page">
         <div
@@ -30,11 +21,13 @@
             data-motion-critical
         >
             <div class="mx-auto flex flex-col gap-3 pc:gap-6">
-                <h1 class="{{ collections_heading_class }}">
-                    {{ collections_heading }}
-                </h1>
+                {%- if collections_heading != blank -%}
+                    <h1 class="heading-2xl">
+                        {{ collections_heading }}
+                    </h1>
+                {%- endif -%}
                 {%- if collections_description != blank -%}
-                    <p class="{{ collections_subtitle_class }}">
+                    <p class="body-xl">
                         {{ collections_description }}
                     </p>
                 {%- endif -%}
@@ -51,65 +44,55 @@
                     {%- for collection in collections -%}
                         <a
                             href="{{ collection.url }}"
-                            class="
-                                collections-section__card group media-interaction block overflow-hidden
-                                bg-theme-bg
-                                hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
-                                max-pc:shadow-[0_8px_30px_rgba(0,0,0,0.08)]
-                            "
+                            class="block overflow-hidden bg-theme-bg"
                             data-motion-reveal
                         >
-                                {%- comment -%} Image {%- endcomment -%}
-                                <div class="relative aspect-square overflow-hidden bg-theme-bg">
-                                    {%- capture sizes -%}
+                            {%- comment -%} Image {%- endcomment -%}
+                            <div class="relative aspect-square overflow-hidden bg-theme-bg">
+                                {%- capture sizes -%}
                                         (max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw
                                     {%- endcapture -%}
 
-                                    {%- capture widths -%}
+                                {%- capture widths -%}
                                         300,450,600
                                     {%- endcapture -%}
 
-                                    {%- assign image_loading = 'lazy' -%}
-                                    {%- if forloop.index <= 4 -%}
-                                        {%- assign image_loading = 'eager' -%}
-                                    {%- endif -%}
+                                {%- assign image_loading = 'lazy' -%}
+                                {%- if forloop.index <= 4 -%}
+                                    {%- assign image_loading = 'eager' -%}
+                                {%- endif -%}
 
-                                    {%- assign collection_card_image = collection.featured_image -%}
-                                    {%- assign collection_placeholder_index = forloop.index0
-                                        | modulo: 6
-                                        | plus: 1
-                                    -%}
-                                    {%- assign collection_placeholder_key = 'collection-'
-                                        | append: collection_placeholder_index
-                                    -%}
-                                    {%- assign image_alt = collection_card_image.alt
-                                        | default: collection.title
-                                        | escape
-                                    -%}
-                                    {%- render 'image',
-                                        image: collection_card_image,
-                                        placeholder_key: collection_placeholder_key,
-                                        alt: image_alt,
-                                        width: collection_card_image.width,
-                                        sizes: sizes,
-                                        widths: widths,
-                                        loading: image_loading,
-                                        wrapper_class: 'h-full w-full',
-                                        motion_reveal: false
-                                    -%}
-                                </div>
+                                {%- assign collection_card_image = collection.featured_image -%}
+                                {%- assign collection_placeholder_index = forloop.index0
+                                    | modulo: 6
+                                    | plus: 1
+                                -%}
+                                {%- assign collection_placeholder_key = 'collection-'
+                                    | append: collection_placeholder_index
+                                -%}
+                                {%- assign image_alt = collection_card_image.alt
+                                    | default: collection.title
+                                    | escape
+                                -%}
+                                {%- render 'image',
+                                    image: collection_card_image,
+                                    placeholder_key: collection_placeholder_key,
+                                    alt: image_alt,
+                                    width: collection_card_image.width,
+                                    sizes: sizes,
+                                    widths: widths,
+                                    loading: image_loading,
+                                    wrapper_class: 'h-full w-full',
+                                    motion_reveal: false
+                                -%}
+                            </div>
 
-                                {%- comment -%} Info {%- endcomment -%}
-                                <div class="flex items-center justify-between gap-2 px-2 py-1.5 pc:px-3 pc:py-2">
-                                    <span class="min-w-0 body-lg break-words">
-                                        {{- collection.title -}}
-                                    </span>
-
-                                    {% render 'icons',
-                                        icon: 'icon-arrow2',
-                                        class: 'shrink-0 transition-transform duration-300 group-hover:translate-x-1'
-                                    %}
-                                </div>
+                            {%- comment -%} Info {%- endcomment -%}
+                            <div class="px-2 py-1.5 pc:px-3 pc:py-2">
+                                <span class="min-w-0 body-lg break-words">
+                                    {{- collection.title -}}
+                                </span>
+                            </div>
                         </a>
                     {%- endfor -%}
                 </div>
@@ -120,12 +103,6 @@
         {% endpaginate %}
     </div>
 </div>
-
-{% stylesheet %}
-    .collections-section__card {
-        transition: box-shadow var(--motion-duration-base, 300ms) var(--motion-ease-default, ease);
-    }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -143,112 +120,16 @@
             "default": "scheme-2"
         },
         {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.font"
-        },
-        {
             "type": "inline_richtext",
             "id": "heading",
             "label": "t:sections.collections.settings.heading",
             "default": "t:sections.collections.defaults.heading"
         },
         {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.heading"
-        },
-        {
-            "type": "select",
-            "id": "heading_size",
-            "label": "t:sections.shared_typography.settings.heading_size",
-            "options": [
-                {
-                    "value": "heading-4xl",
-                    "label": "t:sections.shared_typography.options.heading_4xl"
-                },
-                {
-                    "value": "heading-3xl",
-                    "label": "t:sections.shared_typography.options.heading_3xl"
-                },
-                {
-                    "value": "heading-2xl",
-                    "label": "t:sections.shared_typography.options.heading_2xl"
-                },
-                {
-                    "value": "heading-xl",
-                    "label": "t:sections.shared_typography.options.heading_xl"
-                },
-                {
-                    "value": "heading-h1",
-                    "label": "t:sections.shared_typography.options.heading_h1"
-                },
-                {
-                    "value": "heading-h2",
-                    "label": "t:sections.shared_typography.options.heading_h2"
-                },
-                {
-                    "value": "heading-h3",
-                    "label": "t:sections.shared_typography.options.heading_h3"
-                },
-                {
-                    "value": "heading-h4",
-                    "label": "t:sections.shared_typography.options.heading_h4"
-                },
-                {
-                    "value": "heading-h5",
-                    "label": "t:sections.shared_typography.options.heading_h5"
-                },
-                {
-                    "value": "heading-h6",
-                    "label": "t:sections.shared_typography.options.heading_h6"
-                }
-            ],
-            "default": "heading-2xl"
-        },
-        {
             "type": "inline_richtext",
             "id": "description",
             "label": "t:sections.collections.settings.description",
             "default": "t:sections.collections.defaults.description"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.subtitle"
-        },
-        {
-            "type": "select",
-            "id": "subtitle_size",
-            "label": "t:sections.shared_typography.settings.subtitle_size",
-            "options": [
-                {
-                    "value": "body-3xl",
-                    "label": "t:sections.shared_typography.options.body_3xl"
-                },
-                {
-                    "value": "body-2xl",
-                    "label": "t:sections.shared_typography.options.body_2xl"
-                },
-                {
-                    "value": "body-xl",
-                    "label": "t:sections.shared_typography.options.body_xl"
-                },
-                {
-                    "value": "body-lg",
-                    "label": "t:sections.shared_typography.options.body_lg"
-                },
-                {
-                    "value": "body-md",
-                    "label": "t:sections.shared_typography.options.body_md"
-                },
-                {
-                    "value": "body-sm",
-                    "label": "t:sections.shared_typography.options.body_sm"
-                },
-                {
-                    "value": "body-xs",
-                    "label": "t:sections.shared_typography.options.body_xs"
-                }
-            ],
-            "default": "body-xl"
         },
         {
             "type": "range",
@@ -258,24 +139,6 @@
             "step": 4,
             "default": 12,
             "label": "t:sections.collections.settings.collections_per_page"
-        },
-        {
-            "type": "checkbox",
-            "id": "show_badge",
-            "label": "t:sections.collections.settings.show_badge",
-            "default": true
-        },
-        {
-            "type": "text",
-            "id": "badge_text",
-            "label": "t:sections.collections.settings.badge_text",
-            "default": "t:sections.collections.defaults.badge_text"
-        },
-        {
-            "type": "text",
-            "id": "badge_value",
-            "label": "t:sections.collections.settings.badge_value",
-            "default": "t:sections.collections.defaults.badge_value"
         },
         {
             "type": "header",

@@ -1,12 +1,4 @@
 {%- assign size_class = 'xl' -%}
-{%- assign logo_position = section.settings.logo_position -%}
-{%- if logo_position == 'middle-left' -%}
-    {%- assign logo_position = 'middle-center' -%}
-{%- endif -%}
-{%- assign is_homepage = false -%}
-{%- if request.page_type == 'index' -%}
-    {%- assign is_homepage = true -%}
-{%- endif -%}
 {%- assign header_menu = section.settings.menu -%}
 {%- assign has_header_menu = false -%}
 {%- if header_menu != blank and header_menu.links != blank -%}
@@ -15,23 +7,10 @@
 
 <header
     data-section-id="{{ section.id }}"
-    class="
-        header-section full-width color-{{ section.settings.color_scheme }} surface-section
-        {% if is_homepage %}is-homepage{% else %}is-innerpage{% endif %}
-    "
-    x-data="stickyHeader"
-    data-module-id="sticky-header"
-    :class="
-        {
-          'is-top': isTop,
-          'is-hidden' : isHidden,
-          'is-scrolled': !isTop,
-          'is-menu-active': isMenuActive
-        }
-    "
+    class="header-section full-width color-{{ section.settings.color_scheme }} surface-section"
 >
     <div class="container-page">
-        <div class="header__cols header__cols-{{ logo_position }} grid py-5">
+        <div class="header__cols grid py-5">
             <div class="flex items-center pc:hidden" style="grid-area: mobile-menu">
                 {%- if has_header_menu -%}
                     <nav
@@ -168,45 +147,7 @@
 </header>
 
 {% stylesheet %}
-    .site-header {
-        position: fixed;
-        left: 0;
-        right: 0;
-        top: var(--announcement-bar-height);
-        z-index: var(--z-layer-sticky);
-        pointer-events: none;
-    }
-
-    .site-header > header {
-        box-shadow: none;
-        pointer-events: auto;
-        transition:
-            background-color 0.24s ease,
-            box-shadow 0.24s ease,
-            transform 0.24s ease;
-    }
-
-    .site-header > header.is-hidden {
-        transform: translateY(calc(-100% - var(--announcement-bar-height)));
-    }
-
-    .site-header > header.is-scrolled,
-    .site-header > header.is-menu-active,
     .site-header > header:has(.header-menu details.dropdown[open]) {
-        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
-    }
-
-    .site-header
-        > header.is-homepage.is-top:not(:hover):not(:focus-within):not(.is-menu-active):not(
-            :has(.header-menu details.dropdown[open])
-        ) {
-        background-color: transparent;
-        background-image: none;
-    }
-
-    .site-header > header.is-homepage.is-top:hover,
-    .site-header > header.is-homepage.is-top:focus-within,
-    .site-header > header.is-homepage.is-top.is-menu-active {
         box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
     }
 
@@ -248,68 +189,6 @@
                 grid-template-areas: 'logo menu navigation';
                 grid-template-columns: repeat(3, minmax(0, 1fr));
                 column-gap: 0;
-            }
-
-            .header__cols-middle {
-                grid-template-areas: 'menu logo navigation';
-                grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-            }
-
-            .header__cols-middle > .header-logo {
-                justify-content: center;
-                justify-self: center;
-                width: max-content;
-                max-width: 100%;
-            }
-
-            .header__cols-middle > .header-logo .header-logo__text {
-                width: auto;
-                max-width: 100%;
-            }
-
-            .header__cols-middle > .header-menu {
-                justify-content: start;
-                justify-self: start;
-            }
-
-            .header__cols-middle-center {
-                grid-template-areas:
-                    '. logo navigation'
-                    'menu menu menu';
-                grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-                row-gap: 10px;
-            }
-
-            .header__cols-middle-center > .header-navigation {
-                justify-self: end;
-            }
-
-            .header__cols-middle-center > .header-logo {
-                justify-content: center;
-                justify-self: center;
-                width: max-content;
-                max-width: 100%;
-            }
-
-            .header__cols-middle-center > .header-logo .header-logo__text {
-                width: auto;
-                max-width: 100%;
-            }
-
-            .header__cols-middle-center > .header-menu {
-                justify-content: center;
-                justify-self: stretch;
-                width: 100%;
-                max-width: 100%;
-            }
-
-            .header__cols-middle-center .header-menu > nav {
-                width: 100%;
-            }
-
-            .header__cols-middle-center .header-menu > nav > ul {
-                flex-wrap: wrap;
-                justify-content: center;
             }
         }
     }
@@ -385,50 +264,9 @@
     },
     "settings": [
         {
-            "type": "header",
-            "content": "t:sections.header.content.header"
-        },
-        {
-            "type": "select",
-            "id": "logo_position",
-            "options": [
-                {
-                    "value": "left",
-                    "label": "t:sections.header.options.left"
-                },
-                {
-                    "value": "middle",
-                    "label": "t:sections.header.options.middle"
-                },
-                {
-                    "value": "middle-center",
-                    "label": "t:sections.header.options.middle_center"
-                }
-            ],
-            "label": "t:sections.header.settings.logo_position",
-            "default": "left",
-            "info": "t:sections.header.info.edit_your_logo_in_theme_settings_editor_"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.header.content.color"
-        },
-        {
             "type": "color_scheme",
             "id": "color_scheme",
             "label": "t:sections.header.settings.color_scheme",
-            "default": "scheme-1"
-        },
-        {
-            "type": "color_scheme",
-            "id": "menu_color_scheme",
-            "label": "t:sections.header.settings.menu_color_scheme",
-            "default": "scheme-1"
-        },
-        {
-            "type": "color_scheme",
-            "id": "mobile_menu_color_scheme",
-            "label": "t:sections.header.settings.mobile_menu_color_scheme",
             "default": "scheme-1"
         },
         {
@@ -436,22 +274,6 @@
             "id": "menu",
             "label": "t:labels.menu",
             "default": "main-menu"
-        },
-        {
-            "type": "select",
-            "id": "desktop_menu_trigger",
-            "label": "t:sections.header.settings.desktop_menu_trigger",
-            "default": "hover",
-            "options": [
-                {
-                    "value": "hover",
-                    "label": "t:sections.header.options.hover"
-                },
-                {
-                    "value": "click",
-                    "label": "t:sections.header.options.click"
-                }
-            ]
         },
         {
             "type": "header",

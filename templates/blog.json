@@ -13,7 +13,6 @@
     "main": {
       "type": "blog",
       "settings": {
-        "header_color_scheme": "scheme-2",
         "color_scheme": "scheme-2",
         "padding_top": 32,
         "padding_bottom": 32

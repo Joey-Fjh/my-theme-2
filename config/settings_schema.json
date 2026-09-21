@@ -976,17 +976,6 @@
         ]
     },
     {
-        "name": "t:config.search.name",
-        "settings": [
-            {
-                "type": "checkbox",
-                "id": "predictive_search_enabled",
-                "label": "t:config.search.predictive_search_enabled",
-                "default": true
-            }
-        ]
-    },
-    {
         "name": "t:config.animations.name",
         "settings": [
             {

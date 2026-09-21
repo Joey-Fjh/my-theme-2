@@ -67,12 +67,7 @@
         "shop_more": "Shop More",
         "order_summary": "Order Summary",
         "note_placeholder": "Add a note to your order...",
-        "country_placeholder": "Country",
-        "province_placeholder": "Province",
-        "pincode_placeholder": "Pincode",
-        "get_estimate": "Get Estimate",
         "order_special_instruction": "Order Special Instruction",
-        "estimate_shipping": "Estimate Shipping",
         "estimate_total": "Estimate Total",
         "taxes_note": "Taxes, discounts and shipping calculated at checkout.",
         "taxes_included_note": "Tax included. Discounts and shipping calculated at checkout.",
@@ -84,22 +79,12 @@
         "view_cart": "View cart",
         "discounts": "Discounts",
         "you_saved": "You saved",
-        "selling_plan_label": "Plan",
-        "shipping_calculating": "Calculating shipping rates...",
-        "shipping_rates": "Available shipping rates",
-        "shipping_no_rates": "No shipping rates are available for this destination.",
-        "shipping_error": "We could not calculate shipping rates. Please check the address and try again.",
-        "shipping_timeout": "Shipping rate calculation timed out. Please try again.",
-        "shipping_country_required": "Enter a country to estimate shipping."
+        "selling_plan_label": "Plan"
     },
     "components": {
         "stars": {
             "rating_aria_label": "Rating: {{ rating }} out of {{ max }}",
             "rating_visually_hidden": "{{ rating }} out of {{ max }} stars"
-        },
-        "rotating_badge": {
-            "default_text": "FEATURED · NEW · DISCOVER ·",
-            "default_center_text": "NEW"
         }
     },
     "blocks": {
@@ -134,17 +119,12 @@
         "no_products": "No products found.",
         "view_all": "View All",
         "description_html": "<p>Describe the products and purpose of this collection.</p>",
-        "latest_brand": "Latest Brand",
-        "latest_brand_description": "Introduce the collections customers can browse on this page.",
         "popular_countries": "Popular countries/regions"
     },
     "footer": {
         "follow_on_shop": "Follow on Shop",
         "all_rights_reserved": "All rights reserved.",
-        "back_to_top": "Back to Top",
-        "default_link": "Link {{ number }}",
-        "default_location": "Your location",
-        "default_brand_name": "Your brand"
+        "default_link": "Link {{ number }}"
     },
     "gift_card": {
         "add_to_apple_wallet": "Add to Apple Wallet",
@@ -339,10 +319,6 @@
         "product_card_actions_show": "Show actions for {{ product }}",
         "product_card_actions_hide": "Hide actions for {{ product }}",
         "product_thumbnails": "Product thumbnails",
-        "share_on_facebook": "Share on Facebook",
-        "share_on_x": "Share on X",
-        "share_on_pinterest": "Share on Pinterest",
-        "share_on_tumblr": "Share on Tumblr",
         "quantity": "Quantity",
         "sort_by": "Sort by",
         "sort_options": "Sort options",

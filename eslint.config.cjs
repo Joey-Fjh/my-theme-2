@@ -16,7 +16,6 @@ module.exports = [
                 ...globals.browser,
                 QRCode: 'readonly',
                 Shopify: 'readonly',
-                Swiper: 'readonly',
             },
         },
         settings: {

@@ -32,7 +32,6 @@
 
     --color-theme-border: rgb(var(--color-border));
 
-
     /* Colors: Field */
     --color-field: rgb(var(--color-input-background));
     --color-field-text: rgb(var(--color-input-text));
@@ -69,7 +68,6 @@
     --z-layer-sticky-raised: 101;
     --z-layer-drawer-backdrop: 200;
     --z-layer-drawer: 201;
-    --z-layer-magnifier: 500;
     --z-layer-toast: 700;
 }
 

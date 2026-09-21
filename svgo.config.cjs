@@ -2,6 +2,7 @@ module.exports = {
     multipass: true,
     plugins: [
         'removeDoctype',
+        'removeXMLProcInst',
         'removeComments',
         'removeMetadata',
         'removeTitle',
@@ -9,7 +10,7 @@ module.exports = {
         {
             name: 'removeAttrs',
             params: {
-                attrs: ['fill', 'stroke', 'width', 'height', 'style', 'class'],
+                attrs: ['fill', 'stroke', 'width', 'height', 'style', 'class', 'id', 't', 'p-id'],
             },
         },
         {

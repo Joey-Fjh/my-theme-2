@@ -168,17 +168,6 @@ Apply heading-base / body-base stack; override font-size only
 via local CSS variables. Do not add unbounded body-8xl tiers.
 ========================================================= */
 
-@utility body-size-custom {
-    @apply body-base;
-    font-size: calc(var(--body-size-custom) * var(--font-body-scale));
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(
-            var(--body-size-custom-pc, var(--body-size-custom)) * var(--font-body-scale)
-        );
-    }
-}
-
 /* =========================================================
 RTL / Arabic-script typography overrides
 These override the CSS custom properties consumed by heading-base

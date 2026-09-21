@@ -14,12 +14,8 @@
         "header": {
             "type": "header",
             "settings": {
-                "logo_position": "middle-center",
                 "color_scheme": "scheme-1",
-                "menu_color_scheme": "scheme-1",
-                "mobile_menu_color_scheme": "scheme-1",
                 "menu": "main-menu",
-                "desktop_menu_trigger": "hover",
                 "enable_country_selector": true,
                 "enable_language_selector": true
             }

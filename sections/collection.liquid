@@ -11,105 +11,46 @@
     data-module-id="section-pagination"
     data-module-lazy
 >
-    {%- liquid
-        assign collection_heading_class = section.settings.heading_size | default: 'heading-4xl'
-        assign collection_subtitle_class = section.settings.subtitle_size | default: 'body-xl'
-    -%}
-    <div class="layout layout-no-pb container-page pb-0">
-        {%- liquid
-            assign collection_hero_image = collection.image
-            if collection_hero_image == blank
-                assign collection_hero_image = section.settings.fallback_image
-            endif
-            assign collection_hero_has_media = false
-            if collection_hero_image != blank
-                assign collection_hero_has_media = true
-            endif
-        -%}
+    <div class="layout container-page pb-8">
         <div
-            class="relative mb-8 overflow-hidden rounded-sm color-{{ section.settings.header_color_scheme }} pc:mb-10"
+            class="flex flex-col gap-4"
             x-data="motionRevealSection()"
             data-module-id="motion-reveal-section"
             data-module-lazy
             data-motion-section
+            data-motion-reveal
+            data-motion-critical
         >
-            <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-                {%- if collection_hero_has_media -%}
-                    {%- render 'image',
-                        image: collection_hero_image,
-                        alt: '',
-                        width: 2000,
-                        widths: '750,1100,1500,2000',
-                        sizes: '100vw',
-                        loading: 'eager',
-                        fetchpriority: 'high',
-                        mode: 'frame',
-                        fit: 'cover',
-                        wrapper_class: '!absolute inset-0 h-full w-full',
-                        img_class: 'h-full w-full object-cover',
-                        motion_reveal: false
-                    -%}
-                    <div class="absolute inset-0 bg-black/45"></div>
-                {%- else -%}
-                    <div class="absolute inset-0 bg-theme-bg"></div>
-                {%- endif -%}
-            </div>
-
-            <div
-                class="
-                    relative z-10 flex flex-col items-center justify-center px-6 py-16 text-center
-                    pc:px-10 pc:py-24
-                "
-                data-motion-reveal
-                data-motion-critical
-            >
-                <div class="mx-auto w-full max-w-3xl">
-                    {%- liquid
-                        assign resolved_heading = collection.title
-                        if section.settings.header != blank
-                            assign resolved_heading = section.settings.header
-                        endif
-                        assign resolved_description = collection.description
-                        if section.settings.description != blank
-                            assign resolved_description = section.settings.description
-                        endif
-                        if resolved_description == blank
-                            assign resolved_description = 'collections.description_html' | t
-                        endif
-                    -%}
-                    <h1 class="{{ collection_heading_class }}">{{ resolved_heading }}</h1>
-                    {%- render 'rte-compact-prose',
-                        content: resolved_description,
-                        content_class: collection_subtitle_class
-                    -%}
-                </div>
-            </div>
+            {%- liquid
+                assign resolved_heading = collection.title
+                if section.settings.header != blank
+                    assign resolved_heading = section.settings.header
+                endif
+                assign resolved_description = collection.description
+                if section.settings.description != blank
+                    assign resolved_description = section.settings.description
+                endif
+                if resolved_description == blank
+                    assign resolved_description = 'collections.description_html' | t
+                endif
+            -%}
+            <h1 class="heading-4xl">{{ resolved_heading }}</h1>
+            {%- render 'rte-compact-prose',
+                content: resolved_description,
+                content_class: 'body-xl'
+            -%}
         </div>
     </div>
 
-    <div class="layout layout-no-pt container-page overflow-clip!">
-        {%- liquid
-            assign mobile_grid_class = 'grid-cols-1'
-            if section.settings.mobile_card_columns == '2'
-                assign mobile_grid_class = 'grid-cols-2'
-            endif
-
-            assign desktop_grid_class = 'pc:grid-cols-4'
-            if section.settings.desktop_card_columns == '3'
-                assign desktop_grid_class = 'pc:grid-cols-3'
-            endif
-        -%}
-
+    <div class="layout container-page overflow-clip!">
         <div data-collection-dynamic-content class="flex flex-col gap-6 pc:gap-6">
             <div class="relative w-full">
                 {% render 'loading', overlay: true, size: 'large' %}
 
-                {%- liquid
-                    assign first_row_count = section.settings.mobile_card_columns | default: '2' | plus: 0
-                -%}
+                {%- assign first_row_count = 2 -%}
                 {% paginate collection.products by section.settings.products_per_page %}
                     <div
-                        class="grid {{ mobile_grid_class }} {{ desktop_grid_class }} gap-x-4 gap-y-8 pb-10"
+                        class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3"
                         x-data="motionRevealSection()"
                         data-module-id="motion-reveal-section"
                         data-module-lazy
@@ -173,67 +114,9 @@
     "settings": [
         {
             "type": "color_scheme",
-            "id": "header_color_scheme",
-            "label": "t:sections.collection.settings.header_color_scheme",
-            "default": "scheme-2"
-        },
-        {
-            "type": "color_scheme",
             "id": "color_scheme",
             "label": "t:sections.collection.settings.content_color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.font"
-        },
-        {
-            "type": "select",
-            "id": "heading_size",
-            "label": "t:sections.shared_typography.settings.heading_size",
-            "options": [
-                {
-                    "value": "heading-4xl",
-                    "label": "t:sections.shared_typography.options.heading_4xl"
-                },
-                {
-                    "value": "heading-3xl",
-                    "label": "t:sections.shared_typography.options.heading_3xl"
-                },
-                {
-                    "value": "heading-2xl",
-                    "label": "t:sections.shared_typography.options.heading_2xl"
-                },
-                {
-                    "value": "heading-xl",
-                    "label": "t:sections.shared_typography.options.heading_xl"
-                },
-                {
-                    "value": "heading-h1",
-                    "label": "t:sections.shared_typography.options.heading_h1"
-                },
-                {
-                    "value": "heading-h2",
-                    "label": "t:sections.shared_typography.options.heading_h2"
-                },
-                {
-                    "value": "heading-h3",
-                    "label": "t:sections.shared_typography.options.heading_h3"
-                },
-                {
-                    "value": "heading-h4",
-                    "label": "t:sections.shared_typography.options.heading_h4"
-                },
-                {
-                    "value": "heading-h5",
-                    "label": "t:sections.shared_typography.options.heading_h5"
-                },
-                {
-                    "value": "heading-h6",
-                    "label": "t:sections.shared_typography.options.heading_h6"
-                }
-            ],
-            "default": "heading-4xl"
         },
         {
             "type": "inline_richtext",
@@ -248,64 +131,6 @@
             "label": "t:sections.collection.settings.description"
         },
         {
-            "type": "image_picker",
-            "id": "fallback_image",
-            "label": "t:sections.collection.settings.fallback_image",
-            "info": "t:sections.collection.info.fallback_image"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.subtitle"
-        },
-        {
-            "type": "select",
-            "id": "subtitle_size",
-            "label": "t:sections.shared_typography.settings.subtitle_size",
-            "options": [
-                {
-                    "value": "body-3xl",
-                    "label": "t:sections.shared_typography.options.body_3xl"
-                },
-                {
-                    "value": "body-2xl",
-                    "label": "t:sections.shared_typography.options.body_2xl"
-                },
-                {
-                    "value": "body-xl",
-                    "label": "t:sections.shared_typography.options.body_xl"
-                },
-                {
-                    "value": "body-lg",
-                    "label": "t:sections.shared_typography.options.body_lg"
-                },
-                {
-                    "value": "body-md",
-                    "label": "t:sections.shared_typography.options.body_md"
-                },
-                {
-                    "value": "body-sm",
-                    "label": "t:sections.shared_typography.options.body_sm"
-                },
-                {
-                    "value": "body-xs",
-                    "label": "t:sections.shared_typography.options.body_xs"
-                }
-            ],
-            "default": "body-xl"
-        },
-        {
-            "type": "text",
-            "id": "rotate_badge_text",
-            "label": "t:sections.collection.settings.rotate_badge_text",
-            "default": "t:sections.collection.defaults.rotate_badge_text"
-        },
-        {
-            "type": "text",
-            "id": "rotate_badge_percent",
-            "label": "t:sections.collection.settings.rotate_badge_percent",
-            "default": "t:sections.collection.defaults.rotate_badge_percent"
-        },
-        {
             "type": "range",
             "id": "products_per_page",
             "min": 3,
@@ -313,38 +138,6 @@
             "step": 3,
             "default": 12,
             "label": "t:sections.collection.settings.products_per_page"
-        },
-        {
-            "type": "select",
-            "id": "desktop_card_columns",
-            "label": "t:sections.collection.settings.desktop_product_card_columns",
-            "default": "4",
-            "options": [
-                {
-                    "value": "3",
-                    "label": "t:sections.collection.options.3_columns"
-                },
-                {
-                    "value": "4",
-                    "label": "t:sections.collection.options.4_columns"
-                }
-            ]
-        },
-        {
-            "type": "select",
-            "id": "mobile_card_columns",
-            "label": "t:sections.collection.settings.mobile_product_card_columns",
-            "default": "2",
-            "options": [
-                {
-                    "value": "1",
-                    "label": "t:sections.collection.options.1_column"
-                },
-                {
-                    "value": "2",
-                    "label": "t:sections.collection.options.2_columns"
-                }
-            ]
         },
         {
             "type": "header",

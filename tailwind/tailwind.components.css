@@ -140,8 +140,8 @@ Dropdown
 
         .dropdown-open {
             details[open] > &,
-[data-dropdown][open] > &,
-[aria-expanded='true'] > & {
+            [data-dropdown][open] > &,
+            [aria-expanded='true'] > & {
                 opacity: 1;
                 visibility: visible;
                 pointer-events: auto;
@@ -353,118 +353,6 @@ Variants:
 }
 
 /* =========================================================
-Tab Control
-========================================================= */
-@layer components {
-    .tab-control-default {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        gap: 2.4rem;
-        width: 100%;
-    }
-
-    .tab-control-default > * {
-        width: 100%;
-        min-width: 0;
-    }
-
-    /* 1. Generic Default (Mobile: horizontal scroll, Desktop: wrap) */
-    .tab-control-default {
-        @media (width >= theme(--breakpoint-pc)) {
-            gap: 4.8rem;
-        }
-    }
-
-    .tab-control-default .tab-header-default {
-        display: flex;
-        flex-wrap: nowrap;
-        white-space: nowrap;
-        overflow-x: auto;
-        width: 100%;
-
-        scrollbar-width: none;
-        &::-webkit-scrollbar {
-            display: none;
-        }
-
-        > * {
-            flex-shrink: 0;
-            padding-top: 0.3em;
-            padding-bottom: 0.3em;
-        }
-
-        @media (width >= theme(--breakpoint-pc)) {
-            flex-wrap: wrap;
-            white-space: normal;
-            overflow-x: visible;
-        }
-    }
-
-    .tab-control-default .tab-header-default {
-        gap: 1.6rem;
-
-        @media (width >= theme(--breakpoint-pc)) {
-            gap: 3.2rem;
-        }
-    }
-
-    /* Tab content layout */
-    .tab-content-default {
-        @apply relative w-full overflow-hidden;
-    }
-}
-
-/* =========================================================
-Tab Nav Item
-
-Trigger chrome for role="tab" inside tab-control.
-Shell/layout: tab-control-default (unchanged).
-Layout (flex, gap, uppercase, tracking): tab-header header_class or legacy owner delta.
-Active contract: .is-active on trigger (Alpine tabControl).
-========================================================= */
-@layer components {
-    .tab-nav-item {
-        @apply cursor-pointer focus-ring;
-    }
-
-    .tab-nav-item--search.tab-nav-item--search-border-token.is-active {
-        border-color: rgb(var(--color-border));
-    }
-
-    .tab-nav-item--underline-opacity {
-        border-bottom: 2px solid transparent;
-        opacity: 0.5;
-        transition:
-            opacity var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
-
-        &:hover,
-        &:focus-visible {
-            opacity: 1;
-        }
-
-        &.is-active {
-            opacity: 1;
-            border-color: currentColor;
-        }
-    }
-
-    .tab-nav-item--underline-opacity.tab-nav-item--hover-muted {
-        opacity: 0.4;
-
-        &:hover {
-            opacity: 0.6;
-        }
-
-        &:focus-visible,
-        &.is-active {
-            opacity: 1;
-        }
-    }
-}
-
-/* =========================================================
 Accordion
 
 CSS promoted from snippets.css (Phase 5B layer promotion).
@@ -540,7 +428,6 @@ Hybrid pattern — same as pagination: components.css reads vars from snippet in
 Section grid/carousel (.icon-with-text-section__*) and PDP wrappers stay in snippets.css.
 ========================================================= */
 @layer components {
-
     @media (width >= theme(--breakpoint-pc)) {
     }
 }

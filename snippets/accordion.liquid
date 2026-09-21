@@ -83,7 +83,7 @@
                     :class="isActive($el.dataset.index) && 'is-active'"
                 >
                     {%- if icon_style == 'chevron' -%}
-                        {% render 'icons', icon: 'icon-arrow', size: 'sm' %}
+                        {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
                     {%- elsif icon_style == 'plus' -%}
                         {% render 'icons', icon: 'icon-plus', size: 'sm' %}
                     {%- endif -%}
@@ -108,7 +108,7 @@
     {%- elsif blocks -%}
         {%- for block in blocks -%}
             {%- liquid
-                assign accordion_block_title_class = block.settings.title_size | default: title_class | default: 'heading-h2'
+                assign accordion_block_title_class = title_class | default: 'heading-h2'
             -%}
             <div
                 class="{{ item_class | default: 'border-t border-theme-border/20 first:border-t-0' }}"
@@ -136,7 +136,7 @@
                         :class="isActive($el.dataset.index) && 'is-active'"
                     >
                         {%- if icon_style == 'chevron' -%}
-                            {% render 'icons', icon: 'icon-arrow', size: 'sm' %}
+                            {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
                         {%- elsif icon_style == 'plus' -%}
                             {% render 'icons', icon: 'icon-plus', size: 'sm' %}
                         {%- endif -%}
@@ -187,7 +187,7 @@
                         :class="isActive($el.dataset.index) && 'is-active'"
                     >
                         {%- if icon_style == 'chevron' -%}
-                            {% render 'icons', icon: 'icon-arrow', size: 'sm' %}
+                            {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
                         {%- elsif icon_style == 'plus' -%}
                             {% render 'icons', icon: 'icon-plus', size: 'sm' %}
                         {%- endif -%}

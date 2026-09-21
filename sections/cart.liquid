@@ -7,500 +7,402 @@
     "
     x-data="cartPage()"
     data-module-id="cart-page"
-    data-shipping-msg-calculating="{{ 'cart.shipping_calculating' | t | escape }}"
-    data-shipping-msg-rates="{{ 'cart.shipping_rates' | t | escape }}"
-    data-shipping-msg-empty="{{ 'cart.shipping_no_rates' | t | escape }}"
-    data-shipping-msg-error="{{ 'cart.shipping_error' | t | escape }}"
-    data-shipping-msg-timeout="{{ 'cart.shipping_timeout' | t | escape }}"
-    data-shipping-msg-country-required="{{ 'cart.shipping_country_required' | t | escape }}"
     :class="{ 'opacity-50 pointer-events-none': $store.cart.loading }"
 >
     {%- liquid
-        assign cart_heading_class = section.settings.heading_size | default: 'heading-3xl'
         assign cart_shop_more_link = section.settings.shop_more_link
         if cart_shop_more_link == blank or cart_shop_more_link == '/'
             assign cart_shop_more_link = routes.root_url
         endif
     -%}
     <div class="layout container-page">
-        <div class="grid grid-cols-1 gap-10 pc:grid-cols-[minmax(0,1fr)_auto]">
-            {%- comment -%} Left: Cart list (Liquid-rendered for SRA) {%- endcomment -%}
-            <div class="flex flex-col gap-10 pc:gap-30">
-                <h1 class="{{ cart_heading_class }}">{{ 'cart.title' | t }}</h1>
+        <h1 class="heading-3xl">{{ 'cart.title' | t }}</h1>
 
-                {%- if cart.item_count == 0 -%}
-                    <p>{{ 'cart.empty' | t }}</p>
-                {%- endif -%}
-
-                <ul class="flex flex-col">
-                    {%- for item in cart.items -%}
-                        <li class="grid grid-cols-3 gap-x-2 gap-y-3 border-b border-theme-border/20 py-3 first:pt-0 pc:grid-cols-[minmax(7.75rem,1fr)_minmax(0,3fr)_minmax(8rem,1fr)] pc:gap-6 pc:py-6">
-                            <div class="flex aspect-square w-full items-center justify-center overflow-hidden bg-theme-bg/50">
-                                {%- if item.image -%}
-                                    {% render 'image',
-                                        url: item.url,
-                                        wrapper_class: 'block h-full w-full',
-                                        image: item.image,
-                                        alt: item.image.alt,
-                                        width: 120,
-                                        height: 120,
-                                        crop: 'center',
-                                        img_class: 'object-contain p-3'
-                                    %}
-                                {%- else -%}
-                                    {%- assign cart_placeholder_index = forloop.index0
-                                        | modulo: 6
-                                        | plus: 1
-                                    -%}
-                                    {%- assign cart_placeholder_key = 'product-'
-                                        | append: cart_placeholder_index
-                                    -%}
-                                    {% render 'image',
-                                        wrapper_class: 'h-full w-full',
-                                        placeholder_key: cart_placeholder_key,
-                                        placeholder_class: 'text-theme-text/20',
-                                        alt: '',
-                                        width: 120,
-                                        height: 120,
-                                        fit: 'contain',
-                                        motion_reveal: false
-                                    %}
-                                {%- endif -%}
-                            </div>
-
-                            <div class="flex min-w-0 flex-col py-1">
-                                <p class="uppercase">
-                                    {{ item.vendor | default: ' ' }}
-                                </p>
-                                <a
-                                    href="{{ item.url }}"
-                                    class="cart__product-link mt-3 block body-xl interactive-link pc:mt-5"
-                                >
-                                    {{ item.product.title }}
-                                </a>
-
-                                {%- unless item.product.has_only_default_variant -%}
-                                    <ul class="mt-1 text-theme-text/80">
-                                        {%- for option in item.options_with_values -%}
-                                            <li>
-                                                {{ option.name | escape }}:
-                                                {{ option.value | escape }}
-                                            </li>
-                                        {%- endfor -%}
-                                    </ul>
-                                {%- endunless -%}
-
-                                {%- if item.selling_plan_allocation -%}
-                                    <p class="mt-1 text-theme-text/80">
-                                        {{ 'cart.selling_plan_label' | t }}:
-                                        {{ item.selling_plan_allocation.selling_plan.name }}
-                                    </p>
-                                {%- endif -%}
-
-                                {%- if item.properties.size > 0 -%}
-                                    {%- capture cart_upload_backslash -%}\{%- endcapture -%}
-                                    {%- capture cart_item_properties_html -%}
-                                        {%- for property in item.properties -%}
-                                            {%- liquid
-                                                assign property_key = property.first
-                                                assign property_value = property.last
-                                                assign property_key_first = property_key | slice: 0
-                                                assign property_is_private = false
-                                                if property_key == blank or property_key_first == '_'
-                                                    assign property_is_private = true
-                                                endif
-
-                                                assign property_has_value = true
-                                                if property_value == nil
-                                                    assign property_has_value = false
-                                                elsif property_value == blank and property_value != 0 and property_value != false
-                                                    assign property_has_value = false
-                                                else
-                                                    assign property_value_stripped = property_value | strip
-                                                    if property_value_stripped == blank and property_value != 0 and property_value != false
-                                                        assign property_has_value = false
-                                                    endif
-                                                endif
-
-                                                assign property_upload_url = ''
-                                                if property_has_value and property_is_private == false
-                                                    assign property_value_text = property_value | append: '' | strip
-                                                    assign property_value_lower = property_value_text | downcase
-                                                    assign scheme_js = property_value_lower | slice: 0, 11
-                                                    assign scheme_data = property_value_lower | slice: 0, 5
-                                                    assign scheme_https = property_value_lower | slice: 0, 8
-                                                    assign scheme_http = property_value_lower | slice: 0, 7
-                                                    assign scheme_proto = property_value_text | slice: 0, 2
-                                                    assign scheme_root = property_value_text | slice: 0, 1
-                                                    assign upload_bs_parts = property_value_text | split: cart_upload_backslash
-                                                    assign upload_rejected = false
-                                                    if property_value_text == blank
-                                                        assign upload_rejected = true
-                                                    elsif upload_bs_parts.size > 1
-                                                        assign upload_rejected = true
-                                                    elsif property_value_text contains ' '
-                                                        assign upload_rejected = true
-                                                    elsif property_value_lower contains '..'
-                                                        assign upload_rejected = true
-                                                    elsif property_value_lower contains '%2e'
-                                                        assign upload_rejected = true
-                                                    elsif scheme_js == 'javascript:' or scheme_data == 'data:' or scheme_proto == '//'
-                                                        assign upload_rejected = true
-                                                    endif
-
-                                                    unless upload_rejected
-                                                        if scheme_https == 'https://' or scheme_http == 'http://'
-                                                            if scheme_https == 'https://'
-                                                                assign upload_url_rest = property_value_text | slice: 8, property_value_text.size
-                                                            else
-                                                                assign upload_url_rest = property_value_text | slice: 7, property_value_text.size
-                                                            endif
-                                                            assign upload_rest_first = upload_url_rest | slice: 0, 1
-                                                            if upload_url_rest == blank or upload_rest_first == '/'
-                                                                assign upload_rejected = true
-                                                            elsif upload_url_rest contains '/'
-                                                                assign upload_path_parts = upload_url_rest | split: '/'
-                                                                assign upload_host = upload_path_parts | first
-                                                                if upload_host == blank
-                                                                    assign upload_rejected = true
-                                                                elsif property_value_text contains '/uploads/'
-                                                                    assign property_upload_url = property_value_text
-                                                                endif
-                                                            else
-                                                                assign upload_rejected = true
-                                                            endif
-                                                        elsif scheme_root == '/' and scheme_proto != '//'
-                                                            if property_value_text contains '/uploads/'
-                                                                assign property_upload_url = property_value_text
-                                                            endif
-                                                        endif
-                                                    endunless
-                                                endif
-                                                assign property_upload_filename = ''
-                                                if property_upload_url != blank
-                                                    assign property_upload_filename = property_upload_url | split: '?' | first | split: '#' | first | split: '/' | last
-                                                endif
-                                            -%}
-                                            {%- unless property_is_private or property_has_value == false -%}
-                                                <li>
-                                                    <span>{{ property_key | escape }}:</span>
-                                                    {%- if property_upload_url != blank -%}
-                                                        <a
-                                                            href="{{ property_upload_url | escape }}"
-                                                            class="ms-1 interactive-link"
-                                                        >
-                                                            {{- property_upload_filename | escape -}}
-                                                        </a>
-                                                    {%- else -%}
-                                                        <span class="ms-1">
-                                                            {{- property_value | escape -}}
-                                                        </span>
-                                                    {%- endif -%}
-                                                </li>
-                                            {%- endunless -%}
-                                        {%- endfor -%}
-                                    {%- endcapture -%}
-                                    {%- assign cart_item_properties_html = cart_item_properties_html
-                                        | strip
-                                    -%}
-                                    {%- if cart_item_properties_html != blank -%}
-                                        <ul class="mt-1 text-theme-text/80">
-                                            {{ cart_item_properties_html }}
-                                        </ul>
+        {%- assign cart_form_id = 'CartForm-' | append: section.id -%}
+        {%- if cart.item_count == 0 -%}
+            <div class="mt-8 flex flex-col gap-6">
+                <p>{{ 'cart.empty' | t }}</p>
+                {%- assign link_text = 'cart.shop_more' | t -%}
+                {%- render 'link',
+                    text: link_text,
+                    href: cart_shop_more_link,
+                    variant: 'underline',
+                    class: 'body-xl'
+                -%}
+            </div>
+        {%- else -%}
+            <div class="mt-10 grid grid-cols-1 gap-10 pc:grid-cols-[minmax(0,1fr)_auto]">
+                <div class="flex flex-col gap-10 pc:gap-30">
+                    <ul class="flex flex-col">
+                        {%- for item in cart.items -%}
+                            <li class="grid grid-cols-3 gap-x-2 gap-y-3 border-b border-theme-border/20 py-3 first:pt-0 pc:grid-cols-[minmax(7.75rem,1fr)_minmax(0,3fr)_minmax(8rem,1fr)] pc:gap-6 pc:py-6">
+                                <div class="flex aspect-square w-full items-center justify-center overflow-hidden bg-theme-bg/50">
+                                    {%- if item.image -%}
+                                        {% render 'image',
+                                            url: item.url,
+                                            wrapper_class: 'block h-full w-full',
+                                            image: item.image,
+                                            alt: item.image.alt,
+                                            width: 120,
+                                            height: 120,
+                                            crop: 'center',
+                                            img_class: 'object-contain p-3'
+                                        %}
+                                    {%- else -%}
+                                        {%- assign cart_placeholder_index = forloop.index0
+                                            | modulo: 6
+                                            | plus: 1
+                                        -%}
+                                        {%- assign cart_placeholder_key = 'product-'
+                                            | append: cart_placeholder_index
+                                        -%}
+                                        {% render 'image',
+                                            wrapper_class: 'h-full w-full',
+                                            placeholder_key: cart_placeholder_key,
+                                            placeholder_class: 'text-theme-text/20',
+                                            alt: '',
+                                            width: 120,
+                                            height: 120,
+                                            fit: 'contain',
+                                            motion_reveal: false
+                                        %}
                                     {%- endif -%}
-                                {%- endif -%}
+                                </div>
 
-                                <div class="mt-auto pt-2 pc:pt-4">
-                                    <p class="body-sm text-theme-text/80">
-                                        {%- if item.original_price > item.final_price -%}
-                                            <span class="line-through">
-                                                {{- item.original_price | money -}}
-                                            </span>
-                                            <span class="ms-1">
-                                                {{- item.final_price | money -}}
-                                            </span>
-                                        {%- else -%}
-                                            {{- item.final_price | money -}}
-                                        {%- endif -%}
+                                <div class="flex min-w-0 flex-col py-1">
+                                    <p class="uppercase">
+                                        {{ item.vendor | default: ' ' }}
                                     </p>
-                                    <p class="body-lg">
-                                        {%- if item.original_line_price > item.final_line_price -%}
-                                            <span class="text-theme-text/80 line-through">
-                                                {{- item.original_line_price | money -}}
-                                            </span>
-                                            <span class="ms-1">
-                                                {{- item.final_line_price | money -}}
-                                            </span>
-                                        {%- else -%}
-                                            {{- item.final_line_price | money -}}
-                                        {%- endif -%}
-                                    </p>
-                                    {%- render 'unit-price',
-                                        target: item,
-                                        class: 'mt-1 block body-sm text-theme-text/80'
-                                    -%}
-                                    {%- if item.line_level_discount_allocations.size > 0 -%}
-                                        <ul
-                                            class="mt-1"
-                                            aria-label="{{ 'cart.discounts' | t }}"
-                                        >
-                                            {%- for allocation in item.line_level_discount_allocations -%}
-                                                <li class="text-theme-text/80">
-                                                    {{ allocation.discount_application.title }}
-                                                    (-{{ allocation.amount | money }})
+                                    <a
+                                        href="{{ item.url }}"
+                                        class="cart__product-link mt-3 block body-xl interactive-link pc:mt-5"
+                                    >
+                                        {{ item.product.title }}
+                                    </a>
+
+                                    {%- unless item.product.has_only_default_variant -%}
+                                        <ul class="mt-1 text-theme-text/80">
+                                            {%- for option in item.options_with_values -%}
+                                                <li>
+                                                    {{ option.name | escape }}:
+                                                    {{ option.value | escape }}
                                                 </li>
                                             {%- endfor -%}
                                         </ul>
+                                    {%- endunless -%}
+
+                                    {%- if item.selling_plan_allocation -%}
+                                        <p class="mt-1 text-theme-text/80">
+                                            {{ 'cart.selling_plan_label' | t }}:
+                                            {{ item.selling_plan_allocation.selling_plan.name }}
+                                        </p>
                                     {%- endif -%}
+
+                                    {%- if item.properties.size > 0 -%}
+                                        {%- capture cart_upload_backslash -%}\{%- endcapture -%}
+                                        {%- capture cart_item_properties_html -%}
+                                            {%- for property in item.properties -%}
+                                                {%- liquid
+                                                    assign property_key = property.first
+                                                    assign property_value = property.last
+                                                    assign property_key_first = property_key | slice: 0
+                                                    assign property_is_private = false
+                                                    if property_key == blank or property_key_first == '_'
+                                                        assign property_is_private = true
+                                                    endif
+
+                                                    assign property_has_value = true
+                                                    if property_value == nil
+                                                        assign property_has_value = false
+                                                    elsif property_value == blank and property_value != 0 and property_value != false
+                                                        assign property_has_value = false
+                                                    else
+                                                        assign property_value_stripped = property_value | strip
+                                                        if property_value_stripped == blank and property_value != 0 and property_value != false
+                                                            assign property_has_value = false
+                                                        endif
+                                                    endif
+
+                                                    assign property_upload_url = ''
+                                                    if property_has_value and property_is_private == false
+                                                        assign property_value_text = property_value | append: '' | strip
+                                                        assign property_value_lower = property_value_text | downcase
+                                                        assign scheme_js = property_value_lower | slice: 0, 11
+                                                        assign scheme_data = property_value_lower | slice: 0, 5
+                                                        assign scheme_https = property_value_lower | slice: 0, 8
+                                                        assign scheme_http = property_value_lower | slice: 0, 7
+                                                        assign scheme_proto = property_value_text | slice: 0, 2
+                                                        assign scheme_root = property_value_text | slice: 0, 1
+                                                        assign upload_bs_parts = property_value_text | split: cart_upload_backslash
+                                                        assign upload_rejected = false
+                                                        if property_value_text == blank
+                                                            assign upload_rejected = true
+                                                        elsif upload_bs_parts.size > 1
+                                                            assign upload_rejected = true
+                                                        elsif property_value_text contains ' '
+                                                            assign upload_rejected = true
+                                                        elsif property_value_lower contains '..'
+                                                            assign upload_rejected = true
+                                                        elsif property_value_lower contains '%2e'
+                                                            assign upload_rejected = true
+                                                        elsif scheme_js == 'javascript:' or scheme_data == 'data:' or scheme_proto == '//'
+                                                            assign upload_rejected = true
+                                                        endif
+
+                                                        unless upload_rejected
+                                                            if scheme_https == 'https://' or scheme_http == 'http://'
+                                                                if scheme_https == 'https://'
+                                                                    assign upload_url_rest = property_value_text | slice: 8, property_value_text.size
+                                                                else
+                                                                    assign upload_url_rest = property_value_text | slice: 7, property_value_text.size
+                                                                endif
+                                                                assign upload_rest_first = upload_url_rest | slice: 0, 1
+                                                                if upload_url_rest == blank or upload_rest_first == '/'
+                                                                    assign upload_rejected = true
+                                                                elsif upload_url_rest contains '/'
+                                                                    assign upload_path_parts = upload_url_rest | split: '/'
+                                                                    assign upload_host = upload_path_parts | first
+                                                                    if upload_host == blank
+                                                                        assign upload_rejected = true
+                                                                    elsif property_value_text contains '/uploads/'
+                                                                        assign property_upload_url = property_value_text
+                                                                    endif
+                                                                else
+                                                                    assign upload_rejected = true
+                                                                endif
+                                                            elsif scheme_root == '/' and scheme_proto != '//'
+                                                                if property_value_text contains '/uploads/'
+                                                                    assign property_upload_url = property_value_text
+                                                                endif
+                                                            endif
+                                                        endunless
+                                                    endif
+                                                    assign property_upload_filename = ''
+                                                    if property_upload_url != blank
+                                                        assign property_upload_filename = property_upload_url | split: '?' | first | split: '#' | first | split: '/' | last
+                                                    endif
+                                                -%}
+                                                {%- unless property_is_private or property_has_value == false -%}
+                                                    <li>
+                                                        <span>{{ property_key | escape }}:</span>
+                                                        {%- if property_upload_url != blank -%}
+                                                            <a
+                                                                href="{{ property_upload_url | escape }}"
+                                                                class="ms-1 interactive-link"
+                                                            >
+                                                                {{- property_upload_filename | escape -}}
+                                                            </a>
+                                                        {%- else -%}
+                                                            <span class="ms-1">
+                                                                {{- property_value | escape -}}
+                                                            </span>
+                                                        {%- endif -%}
+                                                    </li>
+                                                {%- endunless -%}
+                                            {%- endfor -%}
+                                        {%- endcapture -%}
+                                        {%- assign cart_item_properties_html = cart_item_properties_html
+                                            | strip
+                                        -%}
+                                        {%- if cart_item_properties_html != blank -%}
+                                            <ul class="mt-1 text-theme-text/80">
+                                                {{ cart_item_properties_html }}
+                                            </ul>
+                                        {%- endif -%}
+                                    {%- endif -%}
+
+                                    <div class="mt-auto pt-2 pc:pt-4">
+                                        <p class="body-sm text-theme-text/80">
+                                            {%- if item.original_price > item.final_price -%}
+                                                <span class="line-through">
+                                                    {{- item.original_price | money -}}
+                                                </span>
+                                                <span class="ms-1">
+                                                    {{- item.final_price | money -}}
+                                                </span>
+                                            {%- else -%}
+                                                {{- item.final_price | money -}}
+                                            {%- endif -%}
+                                        </p>
+                                        <p class="body-lg">
+                                            {%- if item.original_line_price > item.final_line_price
+                                            -%}
+                                                <span class="text-theme-text/80 line-through">
+                                                    {{- item.original_line_price | money -}}
+                                                </span>
+                                                <span class="ms-1">
+                                                    {{- item.final_line_price | money -}}
+                                                </span>
+                                            {%- else -%}
+                                                {{- item.final_line_price | money -}}
+                                            {%- endif -%}
+                                        </p>
+                                        {%- render 'unit-price',
+                                            target: item,
+                                            class: 'mt-1 block body-sm text-theme-text/80'
+                                        -%}
+                                        {%- if item.line_level_discount_allocations.size > 0 -%}
+                                            <ul
+                                                class="mt-1"
+                                                aria-label="{{ 'cart.discounts' | t }}"
+                                            >
+                                                {%- for allocation in item.line_level_discount_allocations -%}
+                                                    <li class="text-theme-text/80">
+                                                        {{ allocation.discount_application.title }}
+                                                        (-{{ allocation.amount | money }})
+                                                    </li>
+                                                {%- endfor -%}
+                                            </ul>
+                                        {%- endif -%}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="flex items-center justify-end self-end py-1 pc:col-span-1">
-                                <a
-                                    href="{{ item.url_to_remove }}"
-                                    class="inline-flex items-center justify-center text-current opacity-50 transition-opacity hover:opacity-100"
-                                    aria-label="{{ 'accessibility.remove_item' | t: item: item.product.title | escape }}"
-                                    data-item-key="{{ item.key | escape }}"
-                                    data-section-id="{{ section.id }}"
-                                    @click.prevent="$store.cart.change($el.dataset.itemKey, 0, [$el.dataset.sectionId])"
-                                >
-                                    {% render 'icons', icon: 'icon-trash' %}
-                                </a>
+                                <div class="flex items-center justify-end self-end py-1 pc:col-span-1">
+                                    <a
+                                        href="{{ item.url_to_remove }}"
+                                        class="inline-flex items-center justify-center text-current opacity-50 transition-opacity hover:opacity-100"
+                                        aria-label="{{ 'accessibility.remove_item' | t: item: item.product.title | escape }}"
+                                        data-item-key="{{ item.key | escape }}"
+                                        data-section-id="{{ section.id }}"
+                                        @click.prevent="$store.cart.change($el.dataset.itemKey, 0, [$el.dataset.sectionId])"
+                                    >
+                                        {% render 'icons', icon: 'icon-trash' %}
+                                    </a>
 
-                                <span
-                                    class="mx-5 h-5 border-s border-theme-border/20 pc:mx-10 pc:h-10"
-                                    aria-hidden="true"
-                                ></span>
+                                    <span
+                                        class="mx-5 h-5 border-s border-theme-border/20 pc:mx-10 pc:h-10"
+                                        aria-hidden="true"
+                                    ></span>
 
-                                <div
-                                    data-item-key="{{ item.key | escape }}"
-                                    data-section-id="{{ section.id }}"
-                                    @theme:product:quantity:changed="$store.cart.change($el.dataset.itemKey, $event.detail.value, [$el.dataset.sectionId])"
-                                >
-                                    {%- capture cart_quantity_input_id -%}
-                                        CartQuantity-{{ section.id }}-{{ forloop.index0 }}
-                                    {%- endcapture -%}
-                                    {%- render 'quantity-selector',
-                                        variant: item.variant,
-                                        surface: 'cart',
-                                        value: item.quantity,
-                                        label: item.product.title,
-                                        input_id: cart_quantity_input_id
-                                    -%}
+                                    <div
+                                        data-item-key="{{ item.key | escape }}"
+                                        data-section-id="{{ section.id }}"
+                                        @theme:product:quantity:changed="$store.cart.change($el.dataset.itemKey, $event.detail.value, [$el.dataset.sectionId])"
+                                    >
+                                        {%- capture cart_quantity_input_id -%}
+                                            CartQuantity-{{ section.id }}-{{ forloop.index0 }}
+                                        {%- endcapture -%}
+                                        {%- render 'quantity-selector',
+                                            variant: item.variant,
+                                            surface: 'cart',
+                                            value: item.quantity,
+                                            label: item.product.title,
+                                            input_id: cart_quantity_input_id,
+                                            name: 'updates[]',
+                                            product_form_id: cart_form_id
+                                        -%}
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                    {%- endfor -%}
-                </ul>
+                            </li>
+                        {%- endfor -%}
+                    </ul>
 
-                <div class="text-center">
-                    {%- assign link_text = 'cart.shop_more' | t -%}
-                    {%- render 'link',
-                        text: link_text,
-                        href: cart_shop_more_link,
-                        variant: 'underline',
-                        class: 'body-xl'
-                    -%}
+                    <div class="text-center">
+                        {%- assign link_text = 'cart.shop_more' | t -%}
+                        {%- render 'link',
+                            text: link_text,
+                            href: cart_shop_more_link,
+                            variant: 'underline',
+                            class: 'body-xl'
+                        -%}
+                    </div>
                 </div>
-            </div>
 
-            {%- comment -%} Right: Order Summary card {%- endcomment -%}
-            <aside class="self-start">
-                <div class="w-full p-5 pc:p-6">
-                    <h2 class="heading-h2">{{ 'cart.order_summary' | t }}</h2>
+                <aside class="self-start">
+                    <div class="w-full p-5 pc:p-6">
+                        <h2 class="heading-h2">{{ 'cart.order_summary' | t }}</h2>
 
-                    {%- comment -%} Accordion: Order Special Instruction + Estimate Shipping {%- endcomment -%}
-                    {%- capture note_html -%}
-                        <label class="sr-only" for="Cart-note-{{ section.id }}">
-                            {{ 'cart.order_special_instruction' | t }}
-                        </label>
-                        <textarea
-                            id="Cart-note-{{ section.id }}"
-                            name="note"
-                            class="min-h-20 field resize-y"
-                            placeholder="{{ 'cart.note_placeholder' | t }}"
-                            @change="$store.cart.update({ note: $event.target.value })"
-                        >{{- cart.note | escape -}}</textarea>
-                    {%- endcapture -%}
+                        <div class="mt-6">
+                            <label class="mb-2 block body-md" for="Cart-note-{{ section.id }}">
+                                {{ 'cart.order_special_instruction' | t }}
+                            </label>
+                            <textarea
+                                id="Cart-note-{{ section.id }}"
+                                name="note"
+                                form="{{ cart_form_id }}"
+                                class="min-h-20 field w-full resize-y"
+                                placeholder="{{ 'cart.note_placeholder' | t }}"
+                                @change="$store.cart.update({ note: $event.target.value })"
+                            >{{- cart.note | escape -}}</textarea>
+                        </div>
 
-                    {%- capture shipping_html -%}
-                        <form
-                            class="space-y-6"
-                            data-shipping-estimate-form
-                            @submit.prevent="estimateShipping($event)"
-                            :aria-busy="shippingStatus === 'loading'"
-                        >
-                            <div class="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label
-                                        class="sr-only"
-                                        for="cart-shipping-country-{{ section.id }}"
+                        <div class="mt-10 border-t border-theme-border/20 pt-10">
+                            {%- if cart.cart_level_discount_applications.size > 0 -%}
+                                <div class="mb-4">
+                                    <p class="font-medium">{{ 'cart.discounts' | t }}</p>
+                                    <ul
+                                        class="mt-2 space-y-1"
+                                        aria-label="{{ 'cart.discounts' | t }}"
                                     >
-                                        {{- 'cart.country_placeholder' | t -}}
-                                    </label>
-                                    <input
-                                        id="cart-shipping-country-{{ section.id }}"
-                                        type="text"
-                                        name="attributes[Country]"
-                                        class="field"
-                                        placeholder="{{ 'cart.country_placeholder' | t }}"
-                                        value="{{ cart.attributes.Country | default: localization.country.name | escape }}"
-                                        required
-                                        autocomplete="country-name"
-                                    >
+                                        {%- for discount_application in cart.cart_level_discount_applications -%}
+                                            <li class="flex items-baseline justify-between gap-4 text-theme-text/80">
+                                                <span>{{ discount_application.title }}</span>
+                                                <span
+                                                    >-
+                                                    {{-
+                                                        discount_application.total_allocated_amount
+                                                        | money
+                                                    -}}
+                                                </span>
+                                            </li>
+                                        {%- endfor -%}
+                                    </ul>
                                 </div>
-                                <div>
-                                    <label
-                                        class="sr-only"
-                                        for="cart-shipping-province-{{ section.id }}"
-                                    >
-                                        {{- 'cart.province_placeholder' | t -}}
-                                    </label>
-                                    <input
-                                        id="cart-shipping-province-{{ section.id }}"
-                                        type="text"
-                                        name="attributes[Province]"
-                                        class="field"
-                                        placeholder="{{ 'cart.province_placeholder' | t }}"
-                                        value="{{ cart.attributes.Province | escape }}"
-                                        autocomplete="address-level1"
-                                    >
+                            {%- endif -%}
+
+                            {%- if cart.total_discount > 0 -%}
+                                <div class="mb-4 flex items-baseline justify-between gap-4">
+                                    <span>{{ 'cart.you_saved' | t }}</span>
+                                    <span class="text-theme-text/80"
+                                        >-{{ cart.total_discount | money -}}
+                                    </span>
                                 </div>
-                            </div>
+                            {%- endif -%}
 
-                            <div>
-                                <label
-                                    class="sr-only"
-                                    for="cart-shipping-zip-{{ section.id }}"
-                                >
-                                    {{- 'cart.pincode_placeholder' | t -}}
-                                </label>
-                                <input
-                                    id="cart-shipping-zip-{{ section.id }}"
-                                    type="text"
-                                    name="shipping_zip"
-                                    class="field"
-                                    placeholder="{{ 'cart.pincode_placeholder' | t }}"
-                                    autocomplete="postal-code"
-                                >
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="btn-secondary w-full body-xl"
-                                data-shipping-estimate-submit
-                                :disabled="shippingStatus === 'loading'"
-                            >
-                                {{ 'cart.get_estimate' | t }}
-                            </button>
-
-                            <div class="space-y-3" data-shipping-result>
-                                <p
-                                    class="body-sm"
-                                    role="status"
-                                    aria-live="polite"
-                                    aria-atomic="true"
-                                    x-show="shippingMessage"
-                                    x-text="shippingMessage"
-                                ></p>
-                                <ul
-                                    class="space-y-3"
-                                    aria-label="{{ 'cart.shipping_rates' | t | escape }}"
-                                    x-show="shippingStatus === 'success' && shippingRates.length > 0"
-                                >
-                                    <template
-                                        x-for="(rate, index) in shippingRates"
-                                        :key="(rate.code || rate.name || 'rate') + '-' + index"
-                                    >
-                                        <li class="flex items-baseline justify-between gap-4 body-sm">
-                                            <span x-text="shippingRateLabel(rate)"></span>
-                                            <span x-text="formatShippingPrice(rate.price)"></span>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </div>
-                        </form>
-                    {%- endcapture -%}
-
-                    {%- assign accordion_title_note = 'cart.order_special_instruction' | t -%}
-                    {%- assign accordion_title_shipping = 'cart.estimate_shipping' | t -%}
-                    {%- assign cart_note_accordion_id = section.id | append: '-note' -%}
-                    {%- assign cart_shipping_accordion_id = section.id | append: '-shipping' -%}
-                    {%- render 'accordion',
-                        item_title: accordion_title_note,
-                        item_content: note_html,
-                        id_prefix: cart_note_accordion_id,
-                        icon_type: 'plus',
-                        initial_active: 0
-                    -%}
-                    {%- render 'accordion',
-                        item_title: accordion_title_shipping,
-                        item_content: shipping_html,
-                        id_prefix: cart_shipping_accordion_id,
-                        icon_type: 'plus',
-                        initial_active: 1
-                    -%}
-
-                    <div class="mt-10 border-t border-theme-border/20 pt-10">
-                        {%- if cart.cart_level_discount_applications.size > 0 -%}
-                            <div class="mb-4">
-                                <p class="font-medium">{{ 'cart.discounts' | t }}</p>
-                                <ul class="mt-2 space-y-1" aria-label="{{ 'cart.discounts' | t }}">
-                                    {%- for discount_application in cart.cart_level_discount_applications -%}
-                                        <li class="flex items-baseline justify-between gap-4 text-theme-text/80">
-                                            <span>{{ discount_application.title }}</span>
-                                            <span
-                                                >-
-                                                {{-
-                                                    discount_application.total_allocated_amount
-                                                    | money
-                                                -}}
-                                            </span>
-                                        </li>
-                                    {%- endfor -%}
-                                </ul>
-                            </div>
-                        {%- endif -%}
-
-                        {%- if cart.total_discount > 0 -%}
-                            <div class="mb-4 flex items-baseline justify-between gap-4">
-                                <span>{{ 'cart.you_saved' | t }}</span>
-                                <span class="text-theme-text/80"
-                                    >-{{ cart.total_discount | money -}}
+                            <div class="flex items-baseline justify-between gap-4 body-lg">
+                                <span>
+                                    {{- 'cart.estimate_total' | t -}}
+                                </span>
+                                <span>
+                                    {{- cart.total_price | money -}}
                                 </span>
                             </div>
-                        {%- endif -%}
-
-                        <div class="flex items-baseline justify-between gap-4 body-lg">
-                            <span>
-                                {{- 'cart.estimate_total' | t -}}
-                            </span>
-                            <span>
-                                {{- cart.total_price | money -}}
-                            </span>
+                            {%- render 'product-tax-note', class: 'mt-10 text-theme-text/80' -%}
                         </div>
-                        {%- render 'product-tax-note', class: 'mt-10 text-theme-text/80' -%}
-                    </div>
 
-                    <form action="{{ routes.cart_url }}" method="post" class="mt-5">
-                        <button
-                            type="submit"
-                            name="checkout"
-                            class="btn-primary w-full body-xl"
+                        <form
+                            id="{{ cart_form_id }}"
+                            action="{{ routes.cart_url }}"
+                            method="post"
+                            class="mt-5"
                         >
-                            {{ 'cart.checkout' | t }}
-                            <sup class="sup-badge">( {{ cart.item_count | default: 0 }} )</sup>
-                        </button>
-                    </form>
+                            <noscript>
+                                <button
+                                    type="submit"
+                                    name="update"
+                                    class="btn-secondary mb-3 w-full body-xl"
+                                >
+                                    {{- 'cart.update' | t -}}
+                                </button>
+                            </noscript>
+                            <button
+                                type="submit"
+                                name="checkout"
+                                class="btn-primary w-full body-xl"
+                            >
+                                {{ 'cart.checkout' | t }}
+                            </button>
+                        </form>
 
-                    {%- if additional_checkout_buttons -%}
-                        <div class="additional-checkout-buttons mt-4">
-                            {{ content_for_additional_checkout_buttons }}
-                        </div>
-                    {%- endif -%}
-                </div>
-            </aside>
-        </div>
+                        {%- if additional_checkout_buttons -%}
+                            <div class="additional-checkout-buttons mt-4">
+                                {{ content_for_additional_checkout_buttons }}
+                            </div>
+                        {%- endif -%}
+                    </div>
+                </aside>
+            </div>
+        {%- endif -%}
     </div>
 </div>
 
@@ -518,58 +420,6 @@
             "id": "color_scheme",
             "label": "t:sections.cart.settings.color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.heading"
-        },
-        {
-            "type": "select",
-            "id": "heading_size",
-            "label": "t:sections.shared_typography.settings.heading_size",
-            "options": [
-                {
-                    "value": "heading-4xl",
-                    "label": "t:sections.shared_typography.options.heading_4xl"
-                },
-                {
-                    "value": "heading-3xl",
-                    "label": "t:sections.shared_typography.options.heading_3xl"
-                },
-                {
-                    "value": "heading-2xl",
-                    "label": "t:sections.shared_typography.options.heading_2xl"
-                },
-                {
-                    "value": "heading-xl",
-                    "label": "t:sections.shared_typography.options.heading_xl"
-                },
-                {
-                    "value": "heading-h1",
-                    "label": "t:sections.shared_typography.options.heading_h1"
-                },
-                {
-                    "value": "heading-h2",
-                    "label": "t:sections.shared_typography.options.heading_h2"
-                },
-                {
-                    "value": "heading-h3",
-                    "label": "t:sections.shared_typography.options.heading_h3"
-                },
-                {
-                    "value": "heading-h4",
-                    "label": "t:sections.shared_typography.options.heading_h4"
-                },
-                {
-                    "value": "heading-h5",
-                    "label": "t:sections.shared_typography.options.heading_h5"
-                },
-                {
-                    "value": "heading-h6",
-                    "label": "t:sections.shared_typography.options.heading_h6"
-                }
-            ],
-            "default": "heading-3xl"
         },
         {
             "type": "url",

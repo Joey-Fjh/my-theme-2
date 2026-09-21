@@ -6,241 +6,125 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
     data-pagination-section-id="{{ section.id }}"
-    data-pagination-selectors='["[role=&quot;tabpanel&quot;]",".sup-badge"]'
+    data-pagination-selectors='[".blog-articles-grid",".blog-pagination-wrapper"]'
     x-data="sectionPagination()"
     data-module-id="section-pagination"
     data-module-lazy
 >
-    {%- liquid
-        assign blog_heading_class = section.settings.heading_size | default: 'heading-3xl'
-        assign blog_subtitle_class = section.settings.subtitle_size | default: 'body-xl'
-    -%}
     <div
-        class="
-            layout layout-no-pb container-page
-            color-{{ section.settings.header_color_scheme }}
-        "
+        class="layout container-page color-{{ section.settings.color_scheme }} surface-section"
     >
-        {%- comment -%} Hero {%- endcomment -%}
         <div
-            class="relative py-20 pc:py-40"
+            class="pt-10 pb-8"
             x-data="motionRevealSection()"
             data-module-id="motion-reveal-section"
             data-module-lazy
             data-motion-section
         >
-            <div class="flex items-start justify-between">
-                <div data-motion-reveal data-motion-critical>
-                    {%- liquid
-                        assign resolved_heading = blog.title
-                        if section.settings.header != blank
-                            assign resolved_heading = section.settings.header
-                        endif
-                        assign resolved_description = section.settings.description
-                        if resolved_description == blank
-                            assign resolved_description = 'blog.description_html' | t
-                        endif
-                    -%}
-                    <h1 class="{{ blog_heading_class }}">{{ resolved_heading }}</h1>
-                    {%- render 'rte-compact-prose',
-                        content: resolved_description,
-                        content_class: blog_subtitle_class
-                    -%}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div
-        class="
-            layout layout-no-pt container-page
-            color-{{ section.settings.color_scheme }} surface-section
-            pt-6 pc:pt-8
-        "
-        style="--body-size-custom: 24px; --body-size-custom-pc: 32px;"
-    >
-        <div class="relative flex items-center justify-between">
-            {%- comment -%} Tab Header (Router Trigger) + Tab Content (fetch replace) {%- endcomment -%}
-            <div class="min-w-0 flex-1">
+            <div data-motion-reveal data-motion-critical>
                 {%- liquid
-                    assign active_tab_index = 0
-                    if current_tags != blank
-                        for tag in blog.all_tags
-                            if current_tags contains tag
-                                assign active_tab_index = forloop.index
-                                break
-                            endif
-                        endfor
+                    assign resolved_heading = blog.title
+                    if section.settings.header != blank
+                        assign resolved_heading = section.settings.header
+                    endif
+                    assign resolved_description = section.settings.description
+                    if resolved_description == blank
+                        assign resolved_description = 'blog.description_html' | t
                     endif
                 -%}
-
-                {% capture tab_header %}
-                    <span class="hidden" x-init="$nextTick(() => { setActive({{ active_tab_index }}) })"></span>
-
-                    <a
-                        href="{{ blog.url }}"
-                        role="tab"
-                        x-data="{ index: null }"
-                        x-init="index = registerTab($el);"
-                        :id="`blog-{{ section.id }}-tab-${index}`"
-                        aria-controls="blog-{{ section.id }}-panel"
-                        @click.prevent="loadUrl($el.href); setActive(index)"
-                        @popstate.window="isUrlMatch($el.href) && setActive(index)"
-                        :tabindex="isFocusable(index) ? 0 : -1"
-                        :aria-selected="isActive(index)"
-                        :class="isActive(index) && 'is-active'"
-                        class="blog__tab tab-nav-item tab-nav-item--underline-opacity tab-nav-item--hover-muted"
-                    >
-                        {{ 'collections.all' | t }} <sup class="sup-badge">({{ blog.articles_count | default: 0 }})</sup>
-                    </a>
-
-                    {%- for tag in blog.all_tags -%}
-                        <a
-                            href="{{ blog.url }}/tagged/{{ tag | handle }}"
-                            role="tab"
-                            x-data="{ index: null }"
-                            x-init="index = registerTab($el);"
-                            :id="`blog-{{ section.id }}-tab-${index}`"
-                            aria-controls="blog-{{ section.id }}-panel"
-                            @click.prevent="loadUrl($el.href); setActive(index)"
-                            @popstate.window="isUrlMatch($el.href) && setActive(index)"
-                            :tabindex="isFocusable(index) ? 0 : -1"
-                            :aria-selected="isActive(index)"
-                            :class="isActive(index) && 'is-active'"
-                            class="blog__tab tab-nav-item tab-nav-item--underline-opacity tab-nav-item--hover-muted"
-                        >
-                            {{ tag }}
-                        </a>
-                    {%- endfor -%}
-                {% endcapture %}
-
-                {% capture tab_content %}
-                    <div
-                        role="tabpanel"
-                        id="blog-{{ section.id }}-panel"
-                        :aria-labelledby="`blog-{{ section.id }}-tab-${activeIndex}`"
-                        x-data="{ index: null }"
-                        x-init="index = registerPanel($el)"
-                        class="relative w-full"
-                    >
-                        {% render 'loading', overlay: true, size: 'large' %}
-
-                        {% paginate blog.articles by section.settings.articles_per_page %}
-                            <div
-                                class="grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
-                                x-data="motionRevealSection()" data-module-id="motion-reveal-section" data-module-lazy
-                                data-motion-section
-                            >
-                                {% for article in blog.articles %}
-                                    {%- liquid
-                                        assign editorial_placeholder_index = forloop.index0 | modulo: 2 | plus: 1
-                                        assign editorial_placeholder_key = 'lifestyle-' | append: editorial_placeholder_index
-                                    -%}
-                                    <article
-                                        class="group"
-                                        data-motion-reveal
-                                    >
-                                        <div class="mb-4 block aspect-4/3 overflow-hidden rounded-sm">
-                                            {% comment %} Image {% endcomment %}
-                                            {%- capture sizes -%}
-                                                (max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw
-                                            {%- endcapture -%}
-                                            
-                                            {%- capture widths -%}
-                                                400, 700
-                                            {%- endcapture -%}
-
-                                            {%- render 'image',
-                                                url: article.url,
-                                                wrapper_class: 'block h-full w-full',
-                                                img_class: 'h-full w-full object-cover',
-                                                image: article.image,
-                                                placeholder_key: editorial_placeholder_key,
-                                                alt: article.title,
-                                                width: article.image.width,
-                                                sizes: sizes,
-                                                widths: widths,
-                                                motion_reveal: false
-                                            -%}
-                                        </div>
-
-                                        <div>
-                                                <p class="my-6">
-                                                    {{ article.tags | first }}
-                                                </p>
-
-                                                <h2 class="my-6 heading-h2">
-                                                    <a href="{{ article.url }}">{{ article.title }}</a>
-                                                </h2>
-
-                                                {%- liquid
-                                                    assign article_excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 30
-                                                -%}
-                                                {%- if article_excerpt != blank -%}
-                                                    <p class="my-6 body-lg text-theme-text/80">
-                                                        {{- article_excerpt | escape_once -}}
-                                                    </p>
-                                                {%- endif -%}
-
-                                                {%- if article.url !=blank -%}
-                                                    {%- capture link_content -%}
-                                                        <span>{{ section.settings.link_text }}</span>
-                                                        {% render 'icons', icon: 'icon-arrow2', class: 'ms-3' %}
-                                                    {%- endcapture -%}
-
-                                                    {%- render 'link',
-                                                        href: article.url,
-                                                        content: link_content,
-                                                        variant: 'underline',
-                                                        class: 'body-xl'
-                                                    -%}
-                                                {%- endif -%}
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            </div>
-
-                            <div
-                                class="blog-pagination-wrapper"
-                                @click="
-                                    let link = $event.target.closest('[data-pagination-nav] a');
-                                    if (link) { 
-                                        $event.preventDefault(); 
-                                        loadUrl(link.href); 
-                                    }
-                                "
-                            >
-                                {% render 'pagination', paginate_obj: paginate %}
-                            </div>
-                        {% endpaginate %}
-                    </div>
-                {% endcapture %}
-
-                {%- render 'tab-control',
-                    custom_class: 'items-start',
-                    tab_header: tab_header,
-                    header_class: 'body-size-custom gap-9',
-                    tab_content: tab_content
+                <h1 class="heading-3xl">{{ resolved_heading }}</h1>
+                {%- render 'rte-compact-prose',
+                    content: resolved_description,
+                    content_class: 'body-xl'
                 -%}
             </div>
+        </div>
+
+        <div class="relative w-full">
+            {% render 'loading', overlay: true, size: 'large' %}
+
+            {% paginate blog.articles by section.settings.articles_per_page %}
+                <div
+                    class="blog-articles-grid grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
+                    x-data="motionRevealSection()"
+                    data-module-id="motion-reveal-section"
+                    data-module-lazy
+                    data-motion-section
+                >
+                    {% for article in blog.articles %}
+                        <article
+                            class="group"
+                            data-motion-reveal
+                        >
+                            <div class="mb-4 block aspect-4/3 overflow-hidden rounded-sm">
+                                {%- capture sizes -%}
+                                    (max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw
+                                {%- endcapture -%}
+
+                                {%- capture widths -%}
+                                    400, 700
+                                {%- endcapture -%}
+
+                                {%- render 'image',
+                                    url: article.url,
+                                    wrapper_class: 'block h-full w-full',
+                                    img_class: 'h-full w-full object-cover',
+                                    image: article.image,
+                                    alt: article.title,
+                                    width: article.image.width,
+                                    sizes: sizes,
+                                    widths: widths,
+                                    motion_reveal: false
+                                -%}
+                            </div>
+
+                            <div>
+                                <p class="my-6">
+                                    {{ article.tags | first }}
+                                </p>
+
+                                <h2 class="my-6 heading-h2">
+                                    <a href="{{ article.url }}">{{ article.title }}</a>
+                                </h2>
+
+                                {%- liquid
+                                    assign article_excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 30
+                                -%}
+                                {%- if article_excerpt != blank -%}
+                                    <p class="my-6 body-lg text-theme-text/80">
+                                        {{- article_excerpt | escape_once -}}
+                                    </p>
+                                {%- endif -%}
+
+                                {%- if article.url != blank -%}
+                                    {%- render 'link',
+                                        href: article.url,
+                                        text: section.settings.link_text,
+                                        variant: 'underline',
+                                        class: 'body-xl'
+                                    -%}
+                                {%- endif -%}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <div
+                    class="blog-pagination-wrapper"
+                    @click="
+                        let link = $event.target.closest('[data-pagination-nav] a');
+                        if (link) {
+                            $event.preventDefault();
+                            loadUrl(link.href);
+                        }
+                    "
+                >
+                    {% render 'pagination', paginate_obj: paginate %}
+                </div>
+            {% endpaginate %}
         </div>
     </div>
 </div>
-
-{% stylesheet %}
-    .blog__tab {
-        display: inline-flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        column-gap: 1rem;
-        white-space: nowrap;
-        border-bottom: none;
-    }
-
-    .blog__tab.is-active {
-        border-bottom: 2px solid currentColor;
-    }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -251,64 +135,6 @@
         "templates": ["blog"]
     },
     "settings": [
-        {
-            "type": "color_scheme",
-            "id": "header_color_scheme",
-            "label": "t:sections.blog.settings.header_color_scheme",
-            "default": "scheme-2"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.heading"
-        },
-        {
-            "type": "select",
-            "id": "heading_size",
-            "label": "t:sections.shared_typography.settings.heading_size",
-            "options": [
-                {
-                    "value": "heading-4xl",
-                    "label": "t:sections.shared_typography.options.heading_4xl"
-                },
-                {
-                    "value": "heading-3xl",
-                    "label": "t:sections.shared_typography.options.heading_3xl"
-                },
-                {
-                    "value": "heading-2xl",
-                    "label": "t:sections.shared_typography.options.heading_2xl"
-                },
-                {
-                    "value": "heading-xl",
-                    "label": "t:sections.shared_typography.options.heading_xl"
-                },
-                {
-                    "value": "heading-h1",
-                    "label": "t:sections.shared_typography.options.heading_h1"
-                },
-                {
-                    "value": "heading-h2",
-                    "label": "t:sections.shared_typography.options.heading_h2"
-                },
-                {
-                    "value": "heading-h3",
-                    "label": "t:sections.shared_typography.options.heading_h3"
-                },
-                {
-                    "value": "heading-h4",
-                    "label": "t:sections.shared_typography.options.heading_h4"
-                },
-                {
-                    "value": "heading-h5",
-                    "label": "t:sections.shared_typography.options.heading_h5"
-                },
-                {
-                    "value": "heading-h6",
-                    "label": "t:sections.shared_typography.options.heading_h6"
-                }
-            ],
-            "default": "heading-3xl"
-        },
         {
             "type": "inline_richtext",
             "id": "header",
@@ -322,62 +148,10 @@
             "label": "t:sections.blog.settings.description"
         },
         {
-            "type": "header",
-            "content": "t:sections.shared_typography.content.subtitle"
-        },
-        {
-            "type": "select",
-            "id": "subtitle_size",
-            "label": "t:sections.shared_typography.settings.subtitle_size",
-            "options": [
-                {
-                    "value": "body-3xl",
-                    "label": "t:sections.shared_typography.options.body_3xl"
-                },
-                {
-                    "value": "body-2xl",
-                    "label": "t:sections.shared_typography.options.body_2xl"
-                },
-                {
-                    "value": "body-xl",
-                    "label": "t:sections.shared_typography.options.body_xl"
-                },
-                {
-                    "value": "body-lg",
-                    "label": "t:sections.shared_typography.options.body_lg"
-                },
-                {
-                    "value": "body-md",
-                    "label": "t:sections.shared_typography.options.body_md"
-                },
-                {
-                    "value": "body-sm",
-                    "label": "t:sections.shared_typography.options.body_sm"
-                },
-                {
-                    "value": "body-xs",
-                    "label": "t:sections.shared_typography.options.body_xs"
-                }
-            ],
-            "default": "body-xl"
-        },
-        {
             "type": "color_scheme",
             "id": "color_scheme",
             "label": "t:sections.blog.settings.content_color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "text",
-            "id": "rotate_badge_text",
-            "label": "t:sections.blog.settings.rotate_badge_text",
-            "default": "t:sections.blog.defaults.rotate_badge_text"
-        },
-        {
-            "type": "text",
-            "id": "rotate_badge_percent",
-            "label": "t:sections.blog.settings.rotate_badge_percent",
-            "default": "t:sections.blog.defaults.rotate_badge_percent"
         },
         {
             "type": "range",

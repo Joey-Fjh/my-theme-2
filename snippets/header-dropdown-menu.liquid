@@ -1,24 +1,13 @@
-{%- liquid
-    assign desktop_menu_trigger = section.settings.desktop_menu_trigger | default: 'hover'
-    unless desktop_menu_trigger == 'click'
-        assign desktop_menu_trigger = 'hover'
-    endunless
--%}
-
 <nav
     aria-label="{{ 'accessibility.main_menu' | t }}"
     class="header-dropdown-menu"
-    data-desktop-menu-trigger="{{ desktop_menu_trigger }}"
     x-data="dropdown"
     data-module-id="dropdown"
-    @mouseenter="onHeaderEnter()"
     @click.capture="onMenuTriggerClickEvent($event)"
-    @mouseover="openOnHoverEvent($event)"
-    @mouseleave="closeHoverAndDeactivate()"
     @focusin="onHeaderFocusIn()"
     @focusout="onHeaderFocusOut($event)"
     @click.outside="closeAndDeactivate()"
-    @keydown.escape.window="closeAndDeactivate()"
+    @keydown="onMenuKeydown($event)"
 >
     <ul class="flex items-center gap-6" role="list">
         {%- for link in section.settings.menu.links -%}
@@ -39,7 +28,7 @@
                                     {{ link.title | escape }}
                                 </span>
                                 {% render 'icons',
-                                    icon: 'icon-arrow',
+                                    icon: 'icon-chevron-down',
                                     class: 'dropdown-icon dropdown-icon--down'
                                 %}
                             {% endcapture %}
@@ -52,10 +41,9 @@
                         </summary>
 
                         <ul
-                            class="dropdown-panel dropdown-open panel-motion panel-motion-scale color-{{ section.settings.menu_color_scheme }} [inset-inline-start:0] top-[calc(100%+1.5rem)] mt-0 min-w-56 rounded-md surface-component p-3"
+                            class="dropdown-panel dropdown-open panel-motion panel-motion-scale color-{{ section.settings.color_scheme }} [inset-inline-start:0] top-[calc(100%+1.5rem)] mt-0 min-w-56 rounded-md surface-component p-3"
                             role="list"
                             tabindex="-1"
-                            @mouseenter="cancelHoverClose(); cancelHoverOpen(); onHeaderEnter()"
                         >
                             {%- for childlink in link.links -%}
                                 <li class="w-full{% if childlink.links != blank %} relative{% endif %}">
@@ -94,15 +82,14 @@
                                                     {{ childlink.title | escape }}
                                                 </span>
                                                 {% render 'icons',
-                                                    icon: 'icon-arrow1',
+                                                    icon: 'icon-chevron-down',
                                                     class: 'dropdown-icon dropdown-icon--tilt shrink-0'
                                                 %}
                                             </summary>
 
                                             <ul
-                                                class="dropdown-panel dropdown-open panel-motion panel-motion-flyout inset-s-full [inset-inline-start:calc(100%+1.5rem)] top-0 mt-0 p-3 color-{{ section.settings.menu_color_scheme }} surface-component"
+                                                class="dropdown-panel dropdown-open panel-motion panel-motion-flyout inset-s-full [inset-inline-start:calc(100%+1.5rem)] top-0 mt-0 p-3 color-{{ section.settings.color_scheme }} surface-component"
                                                 role="list"
-                                                @mouseenter="cancelHoverClose(); onHeaderEnter()"
                                             >
                                                 {%- for grandChildLink in childlink.links -%}
                                                     <li>

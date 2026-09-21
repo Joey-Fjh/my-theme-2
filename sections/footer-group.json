@@ -38,15 +38,7 @@
             },
             "block_order": ["link_column_p3mUrU", "link_column_JgBtkH", "link_column_UCePDM"],
             "settings": {
-                "color_scheme": "scheme-1",
-                "bg_image": "",
-                "brand_name": "",
-                "brush_image": "",
-                "location": "",
-                "content_heading": "",
-                "content_text": "",
-                "content_link": "",
-                "content_link_text": ""
+                "color_scheme": "scheme-1"
             }
         }
     },

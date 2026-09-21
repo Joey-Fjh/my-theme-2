@@ -25,9 +25,6 @@ export function sortTargetsByDomOrder(targets) {
 
 export function assignBatchStaggerIndices(targets) {
     sortTargetsByDomOrder(targets).forEach((target, batchPosition) => {
-        target.style.setProperty(
-            '--motion-index',
-            String(clampedBatchStaggerIndex(batchPosition)),
-        );
+        target.style.setProperty('--motion-index', String(clampedBatchStaggerIndex(batchPosition)));
     });
 }

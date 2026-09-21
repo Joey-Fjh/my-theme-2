@@ -1,11 +1,14 @@
 {%- assign heading_tag = block.settings.semantic_level -%}
 
 {%- if block.settings.heading != blank -%}
-    <{{ heading_tag }} class="{{ block.settings.visual_size }}" {{ block.shopify_attributes }}>
+    <{{ heading_tag }} class="heading-h2" {{ block.shopify_attributes }}>
         {{ block.settings.heading }}
     </{{ heading_tag }}>
 {%- elsif request.design_mode -%}
-    <div class="theme-block-heading theme-block-heading--placeholder" {{ block.shopify_attributes }}>
+    <div
+        class="theme-block-heading theme-block-heading--placeholder"
+        {{ block.shopify_attributes }}
+    >
         {{ 'blocks.heading.placeholders.empty' | t }}
     </div>
 {%- endif -%}
@@ -42,20 +45,6 @@
                 { "value": "h6", "label": "t:blocks.heading.options.h6" }
             ],
             "default": "h2"
-        },
-        {
-            "type": "select",
-            "id": "visual_size",
-            "label": "t:blocks.heading.settings.visual_size",
-            "options": [
-                { "value": "heading-h1", "label": "t:blocks.heading.options.h1" },
-                { "value": "heading-h2", "label": "t:blocks.heading.options.h2" },
-                { "value": "heading-h3", "label": "t:blocks.heading.options.h3" },
-                { "value": "heading-h4", "label": "t:blocks.heading.options.h4" },
-                { "value": "heading-h5", "label": "t:blocks.heading.options.h5" },
-                { "value": "heading-h6", "label": "t:blocks.heading.options.h6" }
-            ],
-            "default": "heading-h2"
         }
     ],
     "presets": [

@@ -2,7 +2,7 @@
     Renders an inline SVG icon from the assets folder.
     Icon color follows the active scheme's foreground via currentColor inheritance.
 
-    @param {string} icon - The name of the SVG icon file (e.g., 'icon-arrow2')
+    @param {string} icon - The name of the SVG icon file (e.g., 'icon-chevron-down')
     @param {string} [size] - Size variant: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'fill'.
 
     'fill' skips fixed Tailwind size classes so a parent can control dimensions. Default is 'md'
@@ -10,7 +10,7 @@
 
     @param {string} [class] - Optional extra Tailwind classes applied to the wrapping span
 
-    @example {%- render 'icons', icon: 'icon-arrow2', class: 'rotate-180' -%}
+    @example {%- render 'icons', icon: 'icon-chevron-down', class: 'rotate-180' -%}
 {% enddoc %}
 
 {%- liquid

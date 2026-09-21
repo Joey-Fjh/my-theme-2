@@ -11,16 +11,6 @@
     }
 }
 
-@utility sticky-viewport-panel {
-    position: sticky;
-    top: var(--sticky-viewport-top, 1rem);
-}
-
-@utility sup-badge {
-    @apply ms-1 align-super;
-    font-size: var(--sup-badge-font-size, 0.75em);
-}
-
 /* =========================================================
 Surface helpers — semantic aliases for repeated color-surface
 combinations. These reduce Liquid class-list noise while
@@ -81,10 +71,6 @@ converted to @utility for tree-shaking.
 
     .z-layer-drawer {
         z-index: var(--z-layer-drawer);
-    }
-
-    .z-layer-magnifier {
-        z-index: var(--z-layer-magnifier);
     }
 
     .z-layer-toast {
