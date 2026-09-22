@@ -237,40 +237,6 @@ const components = {
             },
         };
     },
-
-    toastContainer() {
-        return {
-            init() {
-                const ds = this.$el.dataset;
-
-                this.$store.toast.configure({
-                    defaultDuration: Number(ds.toastDuration),
-                });
-
-                this.$store.cart.configure({
-                    errorMessages: {
-                        generic: ds.cartToastGeneric || '',
-                        rateLimited: ds.cartToastRateLimited || '',
-                        serverError: ds.cartToastServerError || '',
-                        timeout: ds.cartToastTimeout || '',
-                        networkError: ds.cartToastNetworkError || '',
-                    },
-                });
-
-                if (ds.toastPreview === 'true') {
-                    const previewDuration = ds.toastPreviewPersistent === 'true' ? 0 : undefined;
-
-                    requestAnimationFrame(() => {
-                        this.$store.toast.show(
-                            ds.toastPreviewMessage,
-                            ds.toastPreviewType,
-                            previewDuration,
-                        );
-                    });
-                }
-            },
-        };
-    },
 };
 
-export const { dropdown, localizationSwitcher, accordion, toastContainer } = components;
+export const { dropdown, localizationSwitcher, accordion } = components;

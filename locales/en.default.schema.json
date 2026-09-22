@@ -137,40 +137,6 @@
             "shadow_vertical_offset": "Card shadow vertical offset",
             "shadow_blur": "Card shadow blur"
         },
-        "toast": {
-            "name": "Toast",
-            "radius": "Toast radius",
-            "position": "Position",
-            "duration": "Auto-dismiss (seconds)",
-            "preview_type": "Preview",
-            "preview_persistent": "Keep preview visible until dismissed",
-            "shadow": "Shadow",
-            "shadow_opacity": "Toast shadow opacity",
-            "shadow_horizontal_offset": "Toast shadow horizontal offset",
-            "shadow_vertical_offset": "Toast shadow vertical offset",
-            "shadow_blur": "Toast shadow blur",
-            "options": {
-                "position": {
-                    "top_left": "Top left",
-                    "top_center": "Top center",
-                    "top_right": "Top right",
-                    "bottom_left": "Bottom left",
-                    "bottom_center": "Bottom center",
-                    "bottom_right": "Bottom right"
-                },
-                "preview_type": {
-                    "off": "Off",
-                    "success": "Success",
-                    "warning": "Warning",
-                    "error": "Error",
-                    "info": "Info"
-                }
-            }
-        },
-        "cart": {
-            "name": "Cart",
-            "cart_type": "Cart type"
-        },
         "animations": {
             "name": "Animations",
             "motion_enabled": "Enable motion",
@@ -240,10 +206,6 @@
             "square": "Square",
             "portrait": "Portrait",
             "landscape": "Landscape"
-        },
-        "cart_type": {
-            "drawer": "Drawer",
-            "page": "Page"
         },
         "content_reveal_style": {
             "none": "None",

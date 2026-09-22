@@ -72,8 +72,4 @@ converted to @utility for tree-shaking.
     .z-layer-drawer {
         z-index: var(--z-layer-drawer);
     }
-
-    .z-layer-toast {
-        z-index: var(--z-layer-toast);
-    }
 }

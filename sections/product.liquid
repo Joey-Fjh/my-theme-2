@@ -126,8 +126,7 @@
                                                 product_form_id: product_form_id,
                                                 section_id: section.id,
                                                 context: 'product',
-                                                quantity_block: quantity_block,
-                                                cart_type: settings.cart_type
+                                                quantity_block: quantity_block
                                             -%}
                                         {%- else -%}
                                             {%- render 'quantity-selector',
@@ -146,8 +145,7 @@
                                             product_form_id: product_form_id,
                                             section_id: section.id,
                                             context: 'product',
-                                            quantity_block: quantity_block,
-                                            cart_type: settings.cart_type
+                                            quantity_block: quantity_block
                                         -%}
                                     {%- endif -%}
                                 {%- when 'inventory_notice' -%}

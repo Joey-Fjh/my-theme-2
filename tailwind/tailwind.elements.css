@@ -14,7 +14,7 @@ link
 ========================================================= */
 @utility skip-link {
     @apply fixed start-4 top-4 bg-theme-bg px-4 py-3 body-md text-theme-text shadow-lg;
-    z-index: var(--z-layer-toast);
+    z-index: var(--z-layer-skip-link);
     transform: translateY(calc(-100% - 2rem));
     transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
 

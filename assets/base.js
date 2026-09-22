@@ -1,7 +1,6 @@
 import ThemeEvents from 'events';
 import * as adapter from 'alpine-adapter';
 import { createCartContract } from 'cart-contract';
-import { toastStore } from './alpine.store.toast.js';
 import { createCartUiStore } from './alpine.store.cart.js';
 
 /**
@@ -335,11 +334,25 @@ function unmountModuleRoots(container) {
     root.querySelectorAll?.(MODULE_SELECTOR).forEach((el) => adapter.unmount(el));
 }
 
-function setupStores() {
-    adapter.store('toast', toastStore);
+function readCartErrorMessages() {
+    const dataset = document.body?.dataset || {};
 
+    return {
+        generic: dataset.cartErrorGeneric || '',
+        rateLimited: dataset.cartErrorRateLimited || '',
+        serverError: dataset.cartErrorServerError || '',
+        timeout: dataset.cartErrorTimeout || '',
+        networkError: dataset.cartErrorNetworkError || '',
+    };
+}
+
+function setupStores() {
     const contract = createCartContract();
     const cartStore = createCartUiStore(contract);
+
+    cartStore.configure({
+        errorMessages: readCartErrorMessages(),
+    });
 
     contract.hydrate();
     adapter.store('cart', cartStore);

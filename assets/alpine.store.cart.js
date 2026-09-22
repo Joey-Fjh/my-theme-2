@@ -1,5 +1,3 @@
-import { store } from 'alpine-adapter';
-
 const MIRRORED_KEYS = [
     'items',
     'item_count',
@@ -15,8 +13,8 @@ const MIRRORED_KEYS = [
  * UI bridge over the Skeleton-owned cart contract.
  *
  * The contract owns platform cart state and every Cart API mutation. This store only
- * mirrors that state into reactive UI properties and owns UI concerns: merchant-facing
- * error copy and the toast surfaced when a mutation fails.
+ * mirrors that state into reactive UI properties and owns merchant-facing error copy.
+ * Callers render normalized errors beside their own controls.
  *
  * @param {object} contract - Instance returned by `createCartContract()`.
  */
@@ -94,7 +92,7 @@ export function createCartUiStore(contract) {
         },
 
         /**
-         * Centralized error interceptor — shows toast and re-throws.
+         * Normalize a cart mutation failure and rethrow with `displayMessage` for callers.
          * @param {Object|Error} err - Shopify API error or native Error
          * @returns {Promise<never>}
          */
@@ -122,14 +120,23 @@ export function createCartUiStore(contract) {
                 finalMsg = msgs.generic;
             }
 
-            if (finalMsg) {
-                const toast = store('toast');
-                if (toast) {
-                    toast.show(finalMsg, 'error');
-                }
+            if (finalMsg && err && typeof err === 'object') {
+                err.displayMessage = finalMsg;
             }
 
             return Promise.reject(err);
+        },
+
+        /**
+         * Read a caller-facing message from a rejected cart mutation.
+         * @param {Object|Error} err
+         * @returns {string}
+         */
+        messageFromError(err) {
+            if (typeof err?.displayMessage === 'string' && err.displayMessage.trim()) {
+                return err.displayMessage.trim();
+            }
+            return this._errorMessages.generic || '';
         },
     };
 }

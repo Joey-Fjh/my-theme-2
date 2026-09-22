@@ -13,7 +13,7 @@ Working discipline for this goal: think each decision through once, record it, e
 ## Current position
 
 - CL-1 to CL-6, the Alpine notice, the release checks, and the desktop/mobile browser pass were accepted on 2026-09-22 (commits `00229b6`, `c3b3d7c`). The direction below revisits defaults and the Agent layer; it does not undo that acceptance.
-- `context.md` holds no plan. The user asked to record and tidy this direction without starting implementation.
+- Step 1 (Toast and cart drawer removal) was accepted on 2026-09-22 after diff review and the user's browser pass. `context.md` holds no plan.
 
 ## User direction (2026-09-22)
 
@@ -29,8 +29,8 @@ Working discipline for this goal: think each decision through once, record it, e
 
 ## Sequence (one decision at a time)
 
-1. **Active — Toast and cart drawer removal.** Replace every Toast feedback path with local feedback, then remove Toast and the `drawer` cart type.
-2. Product card: remove the styling, reduce the global settings, and record the contract.
+1. Done — Toast and cart drawer removal (accepted 2026-09-22).
+2. **Active — Product card:** remove the styling, reduce the global settings, and record the contract.
 3. Fonts: decide the controls and defaults.
 4. JS/CSS architecture: independent review against the references, then fixes.
 5. Agent layer and validators: rewrite `AGENTS.md` and `docs/references/` into fixed SOPs, and audit every validator (keep, merge, or remove).
@@ -39,10 +39,10 @@ The Agent layer comes last so it describes the final architecture once.
 
 ## Evidence for the sequence
 
-- **Toast and drawer (step 1):** `cart_type` still defaults to `drawer`, although the drawer was retired; `config/settings_data.json` does not override it. `cart_type` is read by `layout/theme.liquid` (`data-cart-type`), `sections/product.liquid`, and `snippets/buy-buttons.liquid`. Buy buttons use Toast for non-page success. Toast also reports cart failures, quantity limits, and contact success. Map every path before removing the Toast store, container, settings, locale copy, CSS, and module entry. `config/settings_data.json` stores `toast_position`; editing it needs the user's authorization inside the batch. `AGENTS.md` lists Toast as an accepted primitive; update it when the batch is accepted.
 - **Product card (step 2):** `sections/collection.liquid` renders a simple listing. The global `config.product_cards` group has eight settings (image ratio, border thickness, radius, and shadow opacity, offsets, and blur) that emit CSS variables with no storefront consumer.
 - **Fonts (step 3):** Two global `font_picker` settings and their `font_face`/token chain are sound; the many typography knobs and their defaults need review. Input and button base styles have consumers outside blocks, so removing editor controls must not remove shared accessible primitives. Visible focus stays a global accessibility rule; whether focus width and offset need merchant controls is open. The only animation setting is `motion_enabled`.
 - **Global settings reference (steps 2–3):** Use [Horizon's settings schema](https://github.com/Shopify/horizon/blob/main/config/settings_schema.json) to decide which layer owns a setting, not as a feature checklist. Global settings govern shared policy (logo, typography, colors, product card, cart, animation, focus, social links); Section/Block settings govern one instance.
+- **JS/CSS architecture (step 4):** `BuyButtons` in `assets/alpine.components.product.js` keeps `_getRecipientApi`, `displayCartErrors`, and `resetAfterSuccess` branches, but no `data-gift-card-recipient` markup exists in the theme; treat them as dead-code candidates.
 - **Agent layer (step 5):** `AGENTS.md` is 225 lines; `docs/references/` has 9 documents; role contracts come as 3 roles × 3 client shims. Self-built validators: `check-i18n` and `check-theme-architecture`, with dedicated test suites `section-stylesheet-carry` and `motion-reveal-batch`. The `lint:theme` tab-accessibility rule has no target since the blog tabs were removed.
 
 ## Deferred ideas

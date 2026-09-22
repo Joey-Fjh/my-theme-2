@@ -204,6 +204,7 @@ const components = {
             _sectionId: sectionId,
             _variant: null,
             _cartUnwatch: null,
+            feedbackMessage: '',
 
             get canDecrement() {
                 return this.canPurchase && this.qty > this.min;
@@ -380,18 +381,20 @@ const components = {
 
             increment() {
                 if (!this.canIncrement) {
-                    this._toast(this._msgMax, '%%MAX%%', this.max);
+                    this._showFeedback(this._msgMax, '%%MAX%%', this.max);
                     return;
                 }
+                this._clearFeedback();
                 this.qty = this.qty + this.step;
                 this._notify();
             },
 
             decrement() {
                 if (!this.canDecrement) {
-                    this._toast(this._msgMin, '%%MIN%%', this.min);
+                    this._showFeedback(this._msgMin, '%%MIN%%', this.min);
                     return;
                 }
+                this._clearFeedback();
                 this.qty = Math.max(this.min, this.qty - this.step);
                 this._notify();
             },
@@ -399,17 +402,18 @@ const components = {
             onInput() {
                 const raw = parseInt(this.qty, 10);
                 if (isNaN(raw) || raw < this.min) {
-                    this._toast(this._msgBelowMin, '%%MIN%%', this.min);
+                    this._showFeedback(this._msgBelowMin, '%%MIN%%', this.min);
                     this.qty = this.min;
                     this._notify();
                     return;
                 }
                 if (this.max !== null && raw > this.max) {
-                    this._toast(this._msgAboveMax, '%%MAX%%', this.max);
+                    this._showFeedback(this._msgAboveMax, '%%MAX%%', this.max);
                     this.qty = this.max;
                     this._notify();
                     return;
                 }
+                this._clearFeedback();
                 this.qty = this._snapToStep(raw);
                 this._notify();
             },
@@ -431,9 +435,16 @@ const components = {
                 });
             },
 
-            _toast(template, key, value) {
+            _showFeedback(template, key, value) {
                 const msg = template ? template.replace(key, String(value)) : '';
-                if (msg) store('toast')?.show?.(msg, 'info');
+                this.feedbackMessage = '';
+                this.$nextTick(() => {
+                    this.feedbackMessage = msg;
+                });
+            },
+
+            _clearFeedback() {
+                this.feedbackMessage = '';
             },
 
             destroy() {
@@ -455,8 +466,6 @@ const components = {
         successMessage = '',
         requestSections = '',
         showBuyNow = false,
-        cartType = 'drawer',
-        cartUrl = '',
     } = {}) {
         return {
             ...useDisposable(),
@@ -467,11 +476,12 @@ const components = {
             successMessage,
             requestSections,
             showBuyNow,
-            cartType,
-            cartUrl,
             isLoading: false,
+            isSuccess: false,
+            errorMessage: '',
             canPurchaseQuantity: true,
             _eventScope: null,
+            _successTimeout: null,
             _buttonLabels: {
                 addToCart: '',
                 soldOut: '',
@@ -480,6 +490,7 @@ const components = {
             },
 
             get buttonText() {
+                if (this.isSuccess) return this.successMessage || '';
                 const labels = this._buttonLabels || {};
                 if (!this.variantId) return labels.unavailable || '';
                 if (!this.available) return labels.soldOut || '';
@@ -515,14 +526,6 @@ const components = {
 
                 if (dataset.showBuyNow !== undefined && dataset.showBuyNow !== '') {
                     this.showBuyNow = dataset.showBuyNow === 'true';
-                }
-
-                if (dataset.cartType !== undefined && dataset.cartType !== '') {
-                    this.cartType = dataset.cartType;
-                }
-
-                if (dataset.cartUrl !== undefined && dataset.cartUrl !== '') {
-                    this.cartUrl = dataset.cartUrl;
                 }
 
                 if (dataset.requestSections !== undefined) {
@@ -690,6 +693,9 @@ const components = {
                 }
 
                 this.isLoading = true;
+                this.errorMessage = '';
+                this._clearSuccessState();
+
                 const cart = store('cart');
                 if (!cart) {
                     this.isLoading = false;
@@ -704,25 +710,35 @@ const components = {
                             recipient.resetAfterSuccess();
                         }
 
-                        if (this.cartType === 'page') {
-                            if (this.successMessage) {
-                                store('toast')?.show?.(this.successMessage, 'success');
-                            }
-                            window.location.assign(this.cartUrl);
-                        } else {
-                            if (this.successMessage) {
-                                store('toast')?.show?.(this.successMessage, 'success');
-                            }
-                        }
+                        this._showSuccessState();
                     })
                     .catch((err) => {
                         if (recipient && typeof recipient.displayCartErrors === 'function') {
                             recipient.displayCartErrors(err);
+                        } else {
+                            this.errorMessage = cart.messageFromError(err);
                         }
                     })
                     .finally(() => {
                         this.isLoading = false;
                     });
+            },
+
+            _showSuccessState() {
+                this.isSuccess = true;
+                if (this._successTimeout) clearTimeout(this._successTimeout);
+                this._successTimeout = setTimeout(() => {
+                    this.isSuccess = false;
+                    this._successTimeout = null;
+                }, 3000);
+            },
+
+            _clearSuccessState() {
+                this.isSuccess = false;
+                if (this._successTimeout) {
+                    clearTimeout(this._successTimeout);
+                    this._successTimeout = null;
+                }
             },
 
             buyNow() {
@@ -747,6 +763,9 @@ const components = {
                 }
 
                 this.isLoading = true;
+                this.errorMessage = '';
+                this._clearSuccessState();
+
                 const cart = store('cart');
                 if (!cart) {
                     this.isLoading = false;
@@ -762,6 +781,8 @@ const components = {
                     .catch((err) => {
                         if (recipient && typeof recipient.displayCartErrors === 'function') {
                             recipient.displayCartErrors(err);
+                        } else {
+                            this.errorMessage = cart.messageFromError(err);
                         }
                     })
                     .finally(() => {
@@ -770,6 +791,7 @@ const components = {
             },
 
             destroy() {
+                this._clearSuccessState();
                 this._eventScope?.dispose?.();
                 this._eventScope = null;
                 this.dispose();

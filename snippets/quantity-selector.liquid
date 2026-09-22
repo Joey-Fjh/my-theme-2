@@ -120,6 +120,11 @@
         assign qty_input_id = product_form_id | append: '-quantity'
     endif
 
+    assign qty_feedback_id = ''
+    if qty_interactive and qty_input_id != blank
+        assign qty_feedback_id = qty_input_id | append: '-feedback'
+    endif
+
     assign qty_input_label = label
     if qty_input_label == blank
         assign qty_input_label = 'accessibility.quantity' | t
@@ -139,79 +144,93 @@
     {% if section_id %}
         data-qty-section-id="{{ section_id }}"
     {% endif %}
-    data-qty-msg-max="{{ 'toast.max_quantity' | t: max: '%%MAX%%' | escape }}"
-    data-qty-msg-min="{{ 'toast.min_quantity' | t: min: '%%MIN%%' | escape }}"
-    data-qty-msg-below-min="{{ 'toast.quantity_below_min' | t: min: '%%MIN%%' | escape }}"
-    data-qty-msg-above-max="{{ 'toast.quantity_above_max' | t: max: '%%MAX%%' | escape }}"
+    data-qty-msg-max="{{ 'quantity.max_quantity' | t: max: '%%MAX%%' | escape }}"
+    data-qty-msg-min="{{ 'quantity.min_quantity' | t: min: '%%MIN%%' | escape }}"
+    data-qty-msg-below-min="{{ 'quantity.quantity_below_min' | t: min: '%%MIN%%' | escape }}"
+    data-qty-msg-above-max="{{ 'quantity.quantity_above_max' | t: max: '%%MAX%%' | escape }}"
     {% if qty_interactive %}
         x-data="QuantitySelector()" data-module-id="quantity-selector"
     {% endif %}
     class="quantity-selector{% unless qty_interactive %} quantity-selector--static{% endunless %} {{ wrapper_class }}"
 >
-    <button
-        type="button"
-        class="quantity-selector__button {{ button_class }}"
-        {% if qty_interactive %}
-            aria-label="{{ 'accessibility.decrease_quantity' | t }}"
-            @click="decrement()"
-            :disabled="!canDecrement"
-        {% else %}
-            disabled
-            tabindex="-1"
-        {% endif %}
-    >
-        {%- render 'icons', icon: 'icon-minus' -%}
-    </button>
+    <div class="quantity-selector__controls">
+        <button
+            type="button"
+            class="quantity-selector__button {{ button_class }}"
+            {% if qty_interactive %}
+                aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+                @click="decrement()"
+                :disabled="!canDecrement"
+            {% else %}
+                disabled
+                tabindex="-1"
+            {% endif %}
+        >
+            {%- render 'icons', icon: 'icon-minus' -%}
+        </button>
 
-    {%- if qty_interactive and qty_input_id != blank -%}
-        <label class="sr-only" for="{{ qty_input_id }}">{{ qty_input_label }}</label>
+        {%- if qty_interactive and qty_input_id != blank -%}
+            <label class="sr-only" for="{{ qty_input_id }}">{{ qty_input_label }}</label>
+        {%- endif -%}
+        <input
+            type="number"
+            {% if qty_input_id != blank %}
+                id="{{ qty_input_id }}"
+            {% endif %}
+            name="{{ name | default: 'quantity' }}"
+            class="quantity-selector__input {{ input_class }}"
+            value="{{ qty_value }}"
+            min="{{ qty_min }}"
+            {% if qty_has_max %}
+                max="{{ qty_max }}"
+            {% endif %}
+            step="{{ qty_step }}"
+            {% if product_form_id %}
+                form="{{ product_form_id }}"
+            {% endif %}
+            {% if qty_interactive %}
+                x-model.number="qty"
+                :min="min"
+                :max="max === null ? undefined : max"
+                :step="step"
+                {% unless qty_can_purchase %}
+                    readonly
+                {% endunless %}
+                @change="onInput()"
+                :readonly="!canPurchase"
+                :aria-invalid="(!canPurchase).toString()"
+                :aria-describedby="feedbackMessage ? '{{ qty_feedback_id }}' : null"
+                aria-label="{{ qty_input_label | escape }}"
+            {% else %}
+                disabled
+                tabindex="-1"
+            {% endif %}
+        >
+
+        <button
+            type="button"
+            class="quantity-selector__button {{ button_class }}"
+            {% if qty_interactive %}
+                aria-label="{{ 'accessibility.increase_quantity' | t }}"
+                @click="increment()"
+                :disabled="!canIncrement"
+            {% else %}
+                disabled
+                tabindex="-1"
+            {% endif %}
+        >
+            {%- render 'icons', icon: 'icon-plus' -%}
+        </button>
+    </div>
+
+    {%- if qty_interactive and qty_feedback_id != blank -%}
+        <p
+            id="{{ qty_feedback_id }}"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            class="quantity-selector__feedback mt-1 body-sm text-theme-text/80 empty:hidden"
+            x-text="feedbackMessage"
+        ></p>
     {%- endif -%}
-    <input
-        type="number"
-        {% if qty_input_id != blank %}
-            id="{{ qty_input_id }}"
-        {% endif %}
-        name="{{ name | default: 'quantity' }}"
-        class="quantity-selector__input {{ input_class }}"
-        value="{{ qty_value }}"
-        min="{{ qty_min }}"
-        {% if qty_has_max %}
-            max="{{ qty_max }}"
-        {% endif %}
-        step="{{ qty_step }}"
-        {% if product_form_id %}
-            form="{{ product_form_id }}"
-        {% endif %}
-        {% if qty_interactive %}
-            x-model.number="qty"
-            :min="min"
-            :max="max === null ? undefined : max"
-            :step="step"
-            {% unless qty_can_purchase %}
-                readonly
-            {% endunless %}
-            @change="onInput()"
-            :readonly="!canPurchase"
-            :aria-invalid="(!canPurchase).toString()"
-            aria-label="{{ qty_input_label | escape }}"
-        {% else %}
-            disabled
-            tabindex="-1"
-        {% endif %}
-    >
-
-    <button
-        type="button"
-        class="quantity-selector__button {{ button_class }}"
-        {% if qty_interactive %}
-            aria-label="{{ 'accessibility.increase_quantity' | t }}"
-            @click="increment()"
-            :disabled="!canIncrement"
-        {% else %}
-            disabled
-            tabindex="-1"
-        {% endif %}
-    >
-        {%- render 'icons', icon: 'icon-plus' -%}
-    </button>
 </div>

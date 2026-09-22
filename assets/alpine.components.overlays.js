@@ -1,12 +1,35 @@
 const components = {
     cartPage() {
         return {
+            errors: {},
+            noteError: '',
             _unregisterCartSection: null,
 
             init() {
                 const sectionId = this.$el?.dataset?.sectionId || '';
                 this._unregisterCartSection =
                     this.$store?.cart?.registerSection?.(sectionId) || null;
+            },
+
+            async changeLine(itemKey, quantity, sectionId) {
+                const key = itemKey || 'global';
+                this.errors[key] = '';
+
+                try {
+                    await this.$store.cart.change(itemKey, quantity, [sectionId]);
+                } catch (err) {
+                    this.errors[key] = this.$store.cart.messageFromError(err);
+                }
+            },
+
+            async updateCart(data) {
+                this.noteError = '';
+
+                try {
+                    await this.$store.cart.update(data);
+                } catch (err) {
+                    this.noteError = this.$store.cart.messageFromError(err);
+                }
             },
 
             destroy() {

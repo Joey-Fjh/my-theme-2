@@ -433,42 +433,6 @@ Section grid/carousel (.icon-with-text-section__*) and PDP wrappers stay in snip
 }
 
 /* =========================================================
-Toast
-========================================================= */
-@layer components {
-    .toast {
-        @apply flex w-fit items-center gap-3;
-
-        border-radius: var(--toast-radius);
-
-        box-shadow: var(--toast-shadow-horizontal-offset) var(--toast-shadow-vertical-offset)
-            var(--toast-shadow-blur-radius)
-            rgba(var(--color-foreground), var(--toast-shadow-opacity));
-
-        [data-toast-message] {
-            min-width: 0;
-            overflow-wrap: break-word;
-        }
-    }
-
-    .toast--success {
-        @apply bg-success text-success-text;
-    }
-
-    .toast--warning {
-        @apply bg-warning text-warning-text;
-    }
-
-    .toast--error {
-        @apply bg-error text-error-text;
-    }
-
-    .toast--info {
-        @apply bg-info text-info-text;
-    }
-}
-
-/* =========================================================
 Rich text (RTE)
 Standard:
 - `.rte` handles shared rich-text structure and the default long-form media treatment.
@@ -773,8 +737,16 @@ Consumed via snippets/quantity-selector.liquid and inline in cart sections.
 ========================================================= */
 @layer components {
     .quantity-selector {
-        @apply inline-flex w-max items-center text-current;
+        @apply flex w-max flex-col text-current;
+    }
+
+    .quantity-selector__controls {
+        @apply inline-flex items-center;
         gap: 0.5rem;
+    }
+
+    .quantity-selector__feedback {
+        max-width: 100%;
     }
 
     .quantity-selector__button {
@@ -872,6 +844,14 @@ Not included: pickup-availability-inline__retry-action (pickup owner delta in sn
 
     .buy-buttons__label.is-loading {
         @apply opacity-0;
+    }
+
+    .buy-buttons__submit--success {
+        @apply bg-success text-success-text;
+    }
+
+    .buy-buttons__error {
+        margin: 0;
     }
 }
 

@@ -68,7 +68,7 @@
     --z-layer-sticky-raised: 101;
     --z-layer-drawer-backdrop: 200;
     --z-layer-drawer: 201;
-    --z-layer-toast: 700;
+    --z-layer-skip-link: 700;
 }
 
 @import '../assets/base.css' layer(base);

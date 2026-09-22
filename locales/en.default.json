@@ -17,15 +17,7 @@
             "page": "Page {{ page }}"
         }
     },
-    "toast": {
-        "preview_message": "This is a toast preview.",
-        "added_to_cart": "Added to cart!",
-        "generic_error": "Something went wrong. Please try again.",
-        "rate_limited": "Too many requests. Please slow down.",
-        "server_error": "Server error. Please try again later.",
-        "timeout": "Request timed out. Please try again.",
-        "network_error": "Network error. Please check your connection.",
-        "search_failed": "Search failed. Please try again.",
+    "quantity": {
         "max_quantity": "Maximum quantity is {{ max }}.",
         "min_quantity": "Minimum quantity is {{ min }}.",
         "quantity_below_min": "Quantity must be at least {{ min }}.",
@@ -79,7 +71,14 @@
         "view_cart": "View cart",
         "discounts": "Discounts",
         "you_saved": "You saved",
-        "selling_plan_label": "Plan"
+        "selling_plan_label": "Plan",
+        "errors": {
+            "generic": "Something went wrong. Please try again.",
+            "rate_limited": "Too many requests. Please slow down.",
+            "server_error": "Server error. Please try again later.",
+            "timeout": "Request timed out. Please try again.",
+            "network_error": "Network error. Please check your connection."
+        }
     },
     "components": {
         "stars": {
@@ -190,6 +189,7 @@
         "product": {
             "quick_view": "Quick View",
             "add_to_cart": "Add to Cart",
+            "added_to_cart": "Added to cart!",
             "sold_out": "Sold out",
             "maximum_in_cart": "Maximum in cart",
             "adding": "Adding...",
@@ -290,7 +290,6 @@
         "main_menu": "Main menu",
         "search": "Search",
         "cart": "Cart",
-        "close_cart_drawer": "Close cart drawer",
         "decrease_quantity": "Decrease quantity",
         "increase_quantity": "Increase quantity",
         "previous_slide": "Previous slide",

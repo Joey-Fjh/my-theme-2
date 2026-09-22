@@ -13,21 +13,20 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | Core | `base.js`, `events.js` | Static | Layout measurement, module scanning and lazy loading, DOM teardown coordination, Theme Editor event forwarding, store bootstrap |
 | Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `defer`, `mount`, `unmount`, `store`, `data` |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
-| UI state bridges | `alpine.store.toast.js`, `alpine.store.cart.js` | Static | Toast and cart UI stores registered by the core through the adapter |
+| UI state bridges | `alpine.store.cart.js` | Static | Cart UI store registered by the core through the adapter |
 | On-demand modules | `utils.js`, component entry files, `alpine.components.*.js` groups | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
-Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-20:
+Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-22:
 
 | File | Bytes |
 | --- | --- |
-| `base.js` | 10,962 |
+| `base.js` | 11,232 |
 | `events.js` | 3,328 |
 | `alpine.adapter.js` | 4,131 |
 | `cart.contract.js` | 7,086 |
 | `https.js` | 11,837 |
-| `alpine.store.toast.js` | 1,465 |
-| `alpine.store.cart.js` | 4,267 |
-| **Always loaded** | **42,136** |
+| `alpine.store.cart.js` | 4,596 |
+| **Always loaded** | **42,210** |
 
 D19 Part A classified `https.js` as an on-demand service module because `base.js` referenced `ShopifyHttp` and `SectionRefresher` zero times at decision time. The JS1 implementation moved cart platform state into `cart.contract.js`, which `base.js` imports statically and which imports `https`, so that classification no longer holds. The boundary test D19 Part A set — what must exist before any component can load — is unchanged; only the file list it produced was overtaken by the implementation. Re-measure this table whenever a static import is added to the graph.
 
@@ -169,7 +168,11 @@ Any approved `{% partial %}` trial must be low risk and verify:
 
 Platform cart state lives in `cart.contract.js`. The contract hydrates from `document.body.dataset.initialCart`, mutates through the Cart API, and notifies subscribers.
 
-The Alpine `$store.cart` bridge in `alpine.store.cart.js` mirrors contract state into reactive UI properties and owns merchant-facing error copy and failure toasts. Storefront cart mutations must go through `$store.cart` (which delegates to the contract), not direct Cart API calls from component code.
+The Alpine `$store.cart` bridge in `alpine.store.cart.js` mirrors contract state into reactive UI properties and owns merchant-facing error copy. Mutation failures normalize into `err.displayMessage`; each caller renders that message beside its own control. The cart page is the only built-in cart presentation. Storefront cart mutations must go through `$store.cart` (which delegates to the contract), not direct Cart API calls from component code.
+
+Cart error copy is configured from `body` `data-cart-error-*` attributes rendered in `layout/theme.liquid` and read during `setupStores()` in `base.js`.
+
+Action feedback (add to cart success, quantity limits, cart line errors, contact form success) stays local to the triggering control or form through button state, inline messages, and polite `aria-live` regions — not a global notification layer.
 
 ## Global UI Stores
 
@@ -177,10 +180,9 @@ The core registers stores during startup:
 
 | Store | Module | Role |
 | --- | --- | --- |
-| `toast` | `alpine.store.toast.js` | Transient notifications |
 | `cart` | `alpine.store.cart.js` | UI bridge over `createCartContract()` |
 
-Inspect the store modules for configure/init APIs instead of copying historical examples.
+Inspect the store module for configure/init APIs instead of copying historical examples.
 
 ## Shared Modules
 
@@ -212,7 +214,7 @@ The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary 
 | Cart contract | `cart.contract.js` |
 | Alpine component groups | `alpine.components.*.js` |
 | Component entry modules | `accordion.js`, `buy-buttons.js`, … one file per import-map identifier |
-| Alpine stores | `alpine.store.toast.js`, `alpine.store.cart.js` |
+| Alpine stores | `alpine.store.cart.js` |
 | HTTP and section refresh | `https.js` |
 | Shared utilities | `utils.js`, `quantity-constraints.js`, motion helpers |
 

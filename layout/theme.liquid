@@ -50,7 +50,6 @@
                     "product-gallery": "{{ 'product-gallery.js' | asset_url }}",
                     "quantity-selector": "{{ 'quantity-selector.js' | asset_url }}",
                     "section-pagination": "{{ 'section-pagination.js' | asset_url }}",
-                    "toast-container": "{{ 'toast-container.js' | asset_url }}",
                     "variant-picker": "{{ 'variant-picker.js' | asset_url }}"
                 }
             }
@@ -73,7 +72,11 @@
     <body
         class="color-{{ page_canvas_color_scheme }}"
         data-initial-cart="{{ cart | json | escape }}"
-        data-cart-type="{{ settings.cart_type }}"
+        data-cart-error-generic="{{ 'cart.errors.generic' | t | escape }}"
+        data-cart-error-rate-limited="{{ 'cart.errors.rate_limited' | t | escape }}"
+        data-cart-error-server-error="{{ 'cart.errors.server_error' | t | escape }}"
+        data-cart-error-timeout="{{ 'cart.errors.timeout' | t | escape }}"
+        data-cart-error-network-error="{{ 'cart.errors.network_error' | t | escape }}"
         {% if settings.motion_enabled == false %}
             data-motion-enabled="false"
         {% endif %}
@@ -89,7 +92,5 @@
         </main>
 
         {% sections 'footer-group' %}
-
-        {% render 'ui-toast' %}
     </body>
 </html>

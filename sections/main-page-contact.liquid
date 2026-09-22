@@ -47,16 +47,6 @@
                         <div
                             class="rounded p-4 text-center"
                             role="status"
-                            data-success-message="{{ success_message | escape }}"
-                            x-data
-                            x-init="
-                                const message = $el.dataset.successMessage;
-                                if (!message || !$store.toast) return;
-                                $nextTick(() => {
-                                    $store.toast.show(message, 'success');
-                                    $el.hidden = true;
-                                });
-                            "
                         >
                             {{ success_message }}
                         </div>

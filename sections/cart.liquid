@@ -264,7 +264,7 @@
                                         aria-label="{{ 'accessibility.remove_item' | t: item: item.product.title | escape }}"
                                         data-item-key="{{ item.key | escape }}"
                                         data-section-id="{{ section.id }}"
-                                        @click.prevent="$store.cart.change($el.dataset.itemKey, 0, [$el.dataset.sectionId])"
+                                        @click.prevent="changeLine($el.dataset.itemKey, 0, $el.dataset.sectionId)"
                                     >
                                         {% render 'icons', icon: 'icon-trash' %}
                                     </a>
@@ -275,9 +275,10 @@
                                     ></span>
 
                                     <div
+                                        class="flex flex-col items-end"
                                         data-item-key="{{ item.key | escape }}"
                                         data-section-id="{{ section.id }}"
-                                        @theme:product:quantity:changed="$store.cart.change($el.dataset.itemKey, $event.detail.value, [$el.dataset.sectionId])"
+                                        @theme:product:quantity:changed="changeLine($el.dataset.itemKey, $event.detail.value, $el.dataset.sectionId)"
                                     >
                                         {%- capture cart_quantity_input_id -%}
                                             CartQuantity-{{ section.id }}-{{ forloop.index0 }}
@@ -291,6 +292,13 @@
                                             name: 'updates[]',
                                             product_form_id: cart_form_id
                                         -%}
+                                        <p
+                                            x-show="errors['{{ item.key | escape }}']"
+                                            x-cloak
+                                            role="alert"
+                                            class="mt-1 max-w-full text-end body-sm text-error-text"
+                                            x-text="errors['{{ item.key | escape }}']"
+                                        ></p>
                                     </div>
                                 </div>
                             </li>
@@ -322,8 +330,15 @@
                                 form="{{ cart_form_id }}"
                                 class="min-h-20 field w-full resize-y"
                                 placeholder="{{ 'cart.note_placeholder' | t }}"
-                                @change="$store.cart.update({ note: $event.target.value })"
+                                @change="updateCart({ note: $event.target.value })"
                             >{{- cart.note | escape -}}</textarea>
+                            <p
+                                x-show="noteError"
+                                x-cloak
+                                role="alert"
+                                class="mt-2 body-sm text-error-text"
+                                x-text="noteError"
+                            ></p>
                         </div>
 
                         <div class="mt-10 border-t border-theme-border/20 pt-10">
