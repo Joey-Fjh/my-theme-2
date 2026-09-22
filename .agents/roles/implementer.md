@@ -22,6 +22,18 @@ filesystem-profile: workspace-write
 - Do not edit generated or vendor files manually.
 - Stop when scope, architecture direction, or ownership is materially ambiguous.
 
+## Task template
+
+Use when delegating or when the user requests a portable execution prompt. Give the implementer only the context it needs:
+
+1. Read `AGENTS.md`, then `docs/agent/context.md` for the active plan and acceptance boundary.
+2. **Implementation surface:** list allowed paths. **Forbidden:** `config/settings_data.json`, `templates/*.json`, vendor/generated assets, and anything outside the surface unless the user widens it.
+3. **Tasks:** numbered checks from the plan.
+4. **Completion checks:** the plan's validators plus `npx prettier --check` on every changed file.
+5. Record progress and validation in `docs/agent/context.md`.
+6. Do not mark the plan accepted and do not commit unless the user asks.
+7. **Report:** outcome, changed files, validation results, unverified items, risks.
+
 ## Output
 
 Return a concise implementation report containing status, changed files, material decisions, checks run and their results, unresolved risks or blockers, and the next validation action.
