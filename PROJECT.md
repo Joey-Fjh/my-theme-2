@@ -17,3 +17,10 @@ This is an internal Shopify Skeleton Theme mother template for building future t
 - Generic storefront primitives: cart page (the only built-in cart presentation), quantity selector, variant picker with shared dropdown, buy buttons, product media gallery, pagination with section refresh, localization switcher, accordion, header nested-menu dropdown, header search entry, and product card (neutral linked image/title/price in the collection grid, with one global image-ratio setting; derived themes own card appearance).
 - Action feedback stays local to the control or form that triggered it.
 - Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes.
+
+## Status
+
+- The mother-template goal is met: the storefront primitives, runtime, style system, and Agent layer are accepted after independent review. `npm.cmd run lint` and `npm.cmd test` pass. The template stays compatible with Theme Store submission but does not implement every submission requirement.
+- Waiting on the user: the first GitHub run of the CI stale-CSS check (after a push), and the `v1.0.0` tag or GitHub Release, which the user starts. There is no CHANGELOG.
+- Left to a theme that needs it: Shopify performance tooling that needs a store (Lighthouse CI, the benchmark store, Theme Inspector, the Web Performance Dashboard; see https://shopify.dev/docs/storefronts/themes/best-practices/performance/testing-for-performance); the gift-card recipient form, required for Theme Store submission; article JSON-LD, which official Skeleton does not emit either.
+- Settled: no Playwright, because a real storefront run needs store access and the user runs browser checks, with each plan naming the pages and actions to check; no separate feature definition-of-done or design-to-code standard, because each plan's acceptance checks carry the standard; Theme Check `AssetSizeCSS` and `AssetSizeJavaScript` stay off, as in `theme-check:recommended`.

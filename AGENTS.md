@@ -98,7 +98,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 
 **Record-layer checks (apply at steps 3, 6, and 9):**
 
-- `docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**. `docs/agent/board.md` holds what has not yet become a plan.
+- `PROJECT.md` holds the project's identity, scope, and overall status. `docs/agent/board.md` holds what has not yet become a plan. `docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**.
 - **One narrow exception:** more than one plan may coexist only when every extra entry is executed and waiting on verification the agent cannot perform (browser pass or human review). Each must name who verifies.
 - An unexecuted plan, queued plan, or plan waiting on work the agent could finish does not belong in `context.md`.
 - While `context.md` holds a plan that is not fully executed and reviewed, do not start other work; finish it, or ask the user to drop it.
