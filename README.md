@@ -114,7 +114,7 @@ git clone https://github.com/Joey-Fjh/my-skeleton-theme <theme-name>
 After starting, the derived theme makes these edits:
 
 - `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
-- Rewrite the Project Context and Project Identity sections of `AGENTS.md` for the derived theme's own scope; the mother-template inventory rules do not bind it.
+- Rewrite `PROJECT.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
 - Empty `docs/agent/board.md` and `docs/agent/context.md`.
 - Resetting `config/settings_data.json` or `templates/*.json` needs its own authorization in the derived theme.
 
@@ -134,6 +134,7 @@ Then deploy through Git:
 ## Documentation
 
 - [AGENTS.md](AGENTS.md): canonical repository rules and validation commands
+- [PROJECT.md](PROJECT.md): this repository's identity, inventory boundary, and accepted scope
 - [docs/agent/context.md](docs/agent/context.md): short current-state and cross-session handoff
 - [docs/references/](docs/references/): on-demand architecture and review references
 

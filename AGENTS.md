@@ -1,14 +1,10 @@
 # Agent Entry Guide
 
-This file is the always-on entry point and the canonical rule source for agents working in this repository. Keep it lean. Supporting docs under `docs/references/` provide details; if one conflicts with this file, follow this file.
+This file is the always-on entry point and the canonical rule source for agents working in this repository. It holds only rules shared by every theme built from this codebase; keep it lean. **Before any task, read `PROJECT.md`** for this repository's identity, inventory boundary, and accepted scope. Supporting docs under `docs/references/` provide details; if one conflicts with this file, follow this file.
 
 ---
 
-## Project Context
-
-This is an internal Shopify Skeleton Theme mother template for building future themes: minimal, official-Skeleton-aligned, modular, extensible, maintainable, and verifiable. Its storefront inventory starts from Shopify's official `skeleton-theme`; this repository adds only explicitly accepted project-owned infrastructure and capabilities, such as the lifecycle/runtime and Agent configuration. Derived themes own business features, page design, and Theme Store positioning.
-
-Tech stack:
+## Tech Stack
 
 - Shopify Liquid sections, snippets, JSON templates, and locale files
 - Tailwind CSS v4 with CSS-based config and `@theme inline`
@@ -60,12 +56,12 @@ Do not modify merchant-owned configuration or content unless explicitly authoriz
 
 Classify ambiguous issues before fixing them. If an issue could be code, configuration, content, uploaded asset, Shopify platform/vendor, or measurement noise, do not guess. Lighthouse findings are code-fixed only after code ownership is clear.
 
-### Project Identity And Authority
+### Authority
 
-- Shopify's current official `skeleton-theme` defines the default storefront inventory boundary. Shopify best practices govern how retained code and approved additions are implemented.
-- Theme Store requirements do not expand the mother-template inventory. Submission completeness is a gate only when the user explicitly scopes a batch or derived theme to submission. Adopting its accessibility and browser requirements as quality baselines does not import its feature inventory.
+- `PROJECT.md` defines this repository's identity, inventory boundary, and accepted scope. Shopify best practices govern how retained code and approved additions are implemented.
+- Theme Store submission completeness is a gate only when the user explicitly scopes a batch or theme to submission. Adopting its accessibility and browser requirements as quality baselines does not import its feature inventory.
 - Shopify Horizon is a reference for organization only, such as section and block structure; do not copy its code or import its features. Storefront features and review standards, including Theme Store requirements, come only from Shopify's official documentation queried through Shopify Dev MCP.
-- Project additions require an explicit accepted decision. Current examples include the project-owned component lifecycle/runtime, native section motion, Agent/tooling configuration, and these generic storefront primitives (accepted 2026-09-21): cart page (the only built-in cart presentation), quantity selector, variant picker with shared dropdown, buy buttons, product media gallery, pagination with section refresh, localization switcher, accordion, header nested-menu dropdown, header search entry, and product card (neutral linked image/title/price in the collection grid, with one global image-ratio setting; derived themes own card appearance; accepted 2026-09-22). Action feedback stays local to the control or form that triggered it. Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes.
+- Project additions require an explicit accepted decision.
 - In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
 - Keep one writer per shared worktree.
 - Do not retain code merely because it already exists.
@@ -90,7 +86,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 
 | Step | Owner | Action | Stop condition |
 | --- | --- | --- | --- |
-| 1 | Coordinator | Read `docs/agent/board.md`, then `docs/agent/context.md` if continuing work. Read `docs/references/` only when task routing or the plan requires it. | Facts gathered; no implementation yet. |
+| 1 | Coordinator | Read `PROJECT.md` and `docs/agent/board.md`, then `docs/agent/context.md` if continuing work. Read `docs/references/` only when task routing or the plan requires it. | Facts gathered; no implementation yet. |
 | 2 | Coordinator + user | Discuss on `board.md`. One decision at a time. Update the board when discussion produces a conclusion, disagreement, or new pending decision. Record evidence, alternatives, disagreements, and pending decisions. If the user asks for review, orientation, or a prompt only, do not implement unless they explicitly authorize implementation. | A single direction is ready for the user to accept or reject. |
 | 3 | Coordinator | When the user accepts a direction, remove resolved discussion from the board and write the plan into `context.md` with outcome, dependencies, **implementation surface**, and acceptance checks written as verifiable checks, not claims. | Plan recorded. **Recording is not authorization.** |
 | 4 | User | Authorize the batch explicitly. Resolve every dependency listed in the plan first. | User grants execution authority for this batch only. |
@@ -105,6 +101,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 - `docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**. `docs/agent/board.md` holds what has not yet become a plan.
 - **One narrow exception:** more than one plan may coexist only when every extra entry is executed and waiting on verification the agent cannot perform (browser pass or human review). Each must name who verifies.
 - An unexecuted plan, queued plan, or plan waiting on work the agent could finish does not belong in `context.md`.
+- While `context.md` holds a plan that is not fully executed and reviewed, do not start other work; finish it, or ask the user to drop it.
 - A batch's acceptance boundary names its **implementation surface**. Changing the record files is never a scope violation.
 - Chat history and commit messages are evidence, never a substitute for the current execution record.
 
@@ -128,7 +125,7 @@ Read only the matching reference for the current task:
 - i18n keys, locale structure, schema translation, hardcoded copy review: `docs/references/code-review/i18n-checklist.md`
 - Shopify browser matrix, Tailwind build boundary, static compatibility checks, progressive enhancement, and WebKit guardrails: `docs/references/code-review/browser-compatibility.md`
 - Launch readiness, Lighthouse ownership classification, cleanup safety, ignore-file boundaries, review output, and gate validation: `docs/references/code-review/launch-gate.md`
-- Theme Store submission, or judging whether a derived theme's features are complete: no local copy; query the current official pages through Shopify Dev MCP — [requirements](https://shopify.dev/docs/storefronts/themes/store/requirements), [review stages](https://shopify.dev/docs/storefronts/themes/store/review-process/submit-theme), and [testing checklist](https://shopify.dev/docs/storefronts/themes/store/test-theme/checklist)
+- Theme Store submission, or judging whether a theme's features are complete: no local copy; query the current official pages through Shopify Dev MCP — [requirements](https://shopify.dev/docs/storefronts/themes/store/requirements), [review stages](https://shopify.dev/docs/storefronts/themes/store/review-process/submit-theme), and [testing checklist](https://shopify.dev/docs/storefronts/themes/store/test-theme/checklist)
 
 ---
 
