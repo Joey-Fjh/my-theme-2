@@ -409,6 +409,10 @@ field
 
     font: inherit;
 
+    @media (width < theme(--breakpoint-pc)) {
+        font-size: max(16px, 1em);
+    }
+
     border-width: var(--input-border-width);
     border-style: solid;
     border-radius: var(--input-radius);
@@ -452,20 +456,6 @@ field
 
     min-height: 12rem;
     resize: vertical;
-}
-
-/* Prevent iOS zoom on focus without disabling zoom globally */
-@media (width < theme(--breakpoint-pc)) {
-    .field,
-    .field-textarea,
-    .field-select,
-    input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='button']):not(
-            [type='submit']
-        ):not([type='reset']):not([type='image']),
-    textarea,
-    select {
-        font-size: max(16px, 1em);
-    }
 }
 
 /* select */

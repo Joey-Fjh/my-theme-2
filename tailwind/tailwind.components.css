@@ -30,6 +30,19 @@ Inline Submit Field
 }
 
 /* =========================================================
+Search page input — body-xl tier with mobile zoom floor
+========================================================= */
+@layer components {
+    .search-section__input {
+        @apply body-xl;
+
+        @media (width < theme(--breakpoint-pc)) {
+            font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
+        }
+    }
+}
+
+/* =========================================================
 Link With Icon Motion
 
 Composition class for links that render child icons through snippets/icons.liquid.
@@ -784,6 +797,10 @@ Consumed via snippets/quantity-selector.liquid and inline in cart sections.
     .quantity-selector__input {
         @apply w-[4ch] appearance-none border-b border-current bg-transparent p-0 text-center text-current tabular-nums focus-ring [-moz-appearance:textfield] focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
         font: inherit;
+
+        @media (width < theme(--breakpoint-pc)) {
+            font-size: max(16px, 1em);
+        }
 
         &:focus:not(:focus-visible) {
             outline: none;

@@ -1,45 +1,6 @@
 class Utils {
-    static throttle(func, delay = 300) {
-        let timeoutId;
-        let lastExecTime = 0;
-
-        return function (...args) {
-            const currentTime = Date.now();
-
-            if (currentTime - lastExecTime > delay) {
-                func.apply(this, args);
-                lastExecTime = currentTime;
-            } else {
-                clearTimeout(timeoutId);
-
-                timeoutId = setTimeout(
-                    () => {
-                        func.apply(this, args);
-                        lastExecTime = Date.now();
-                    },
-                    delay - (currentTime - lastExecTime),
-                );
-            }
-        };
-    }
-
     static prefersReducedMotion() {
         return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-    }
-
-    static getPageScrollBehavior() {
-        if (document.body?.dataset?.motionEnabled === 'false') return 'auto';
-        if (Utils.prefersReducedMotion()) return 'auto';
-        return 'smooth';
-    }
-
-    static getMicroScrollBehavior() {
-        if (Utils.prefersReducedMotion()) return 'auto';
-        return 'smooth';
-    }
-
-    static scrollToTop() {
-        window.scrollTo({ top: 0, behavior: Utils.getPageScrollBehavior() });
     }
 
     static debounce(func, wait = 300, immediate = false) {

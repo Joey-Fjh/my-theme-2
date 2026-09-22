@@ -188,7 +188,7 @@ Inspect the store module for configure/init APIs instead of copying historical e
 
 | Module | Import specifier | Role |
 | --- | --- | --- |
-| `utils.js` | `utils` | `debounce`, scroll-behavior helpers, `prefersReducedMotion`, `scrollToTop` |
+| `utils.js` | `utils` | `debounce`, `prefersReducedMotion`, `useDisposable()` |
 | `quantity-constraints.js` | relative import from component groups | Pure quantity min/max/step math |
 | `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 

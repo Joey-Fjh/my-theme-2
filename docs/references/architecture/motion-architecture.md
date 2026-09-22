@@ -91,10 +91,6 @@ CSS must never hide an authored motion target by itself. Hiding is allowed only 
 
 Ordinary reveal imports neither GSAP nor ScrollTrigger.
 
-### Footer scroll-to-top
-
-`footer-scroll-top.js` owns `scrollToTop()` independently of the reveal adapter. Do not fold navigation behavior back into `motionRevealSection()`.
-
 ## Drawer And Overlay Motion
 
 The mother template ships no drawer or dialog overlay. Derived themes that add one own its motion under the existing `prefers-reduced-motion` policy and must not rely on removed drawer infrastructure from this repository.

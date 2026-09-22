@@ -979,6 +979,9 @@
     color: rgb(var(--color-input-text));
     padding: var(--input-padding-y) var(--input-padding-x);
     font: inherit;
+    @media (width < 48rem) {
+      font-size: max(16px, 1em);
+    }
     border-width: var(--input-border-width);
     border-style: solid;
     border-radius: var(--input-radius);
@@ -1017,6 +1020,9 @@
     color: rgb(var(--color-input-text));
     padding: var(--input-padding-y) var(--input-padding-x);
     font: inherit;
+    @media (width < 48rem) {
+      font-size: max(16px, 1em);
+    }
     border-width: var(--input-border-width);
     border-style: solid;
     border-radius: var(--input-radius);
@@ -1046,6 +1052,9 @@
     color: rgb(var(--color-input-text));
     padding: var(--input-padding-y) var(--input-padding-x);
     font: inherit;
+    @media (width < 48rem) {
+      font-size: max(16px, 1em);
+    }
     border-width: var(--input-border-width);
     border-style: solid;
     border-radius: var(--input-radius);
@@ -1602,6 +1611,18 @@
     font-size: calc(var(--font-heading-scale) * 3.5rem);
     @media (width >= 48rem) {
       font-size: calc(var(--font-heading-scale) * 4.5rem);
+    }
+  }
+  .body-2xl {
+    font-family: var(--font-body-family);
+    font-style: var(--font-body-style);
+    line-height: var(--font-body-line-height);
+    letter-spacing: var(--font-body-letter-spacing);
+    text-transform: var(--font-body-text-transform);
+    word-break: break-word;
+    font-size: calc(var(--font-body-size-mobile) * 1.25);
+    @media (width >= 48rem) {
+      font-size: calc(var(--font-body-size) * 1.375);
     }
   }
   .body-3xl {
@@ -2239,11 +2260,6 @@ button shopify-accelerated-checkout {
         rgba(var(--color-foreground), var(--button-shadow-opacity));
   --shopify-accelerated-checkout-skeleton-background-color: var(--color-primary);
 }
-@media (width < 48rem) {
-  .field, .field-textarea, .field-select, input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='button']):not( [type='submit'] ):not([type='reset']):not([type='image']), textarea, select {
-    font-size: max(16px, 1em);
-  }
-}
 @layer components {
   .inline-submit-field {
     display: grid;
@@ -2259,6 +2275,9 @@ button shopify-accelerated-checkout {
     color: rgb(var(--color-input-text));
     padding: var(--input-padding-y) var(--input-padding-x);
     font: inherit;
+    @media (width < 48rem) {
+      font-size: max(16px, 1em);
+    }
     border-width: var(--input-border-width);
     border-style: solid;
     border-radius: var(--input-radius);
@@ -2424,6 +2443,23 @@ button shopify-accelerated-checkout {
     aspect-ratio: 1 / 1;
     padding-inline: calc(var(--spacing) * 0);
     min-width: 3rem;
+  }
+}
+@layer components {
+  .search-section__input {
+    font-family: var(--font-body-family);
+    font-style: var(--font-body-style);
+    line-height: var(--font-body-line-height);
+    letter-spacing: var(--font-body-letter-spacing);
+    text-transform: var(--font-body-text-transform);
+    word-break: break-word;
+    font-size: calc(var(--font-body-size-mobile) * 1.125);
+    @media (width >= 48rem) {
+      font-size: calc(var(--font-body-size) * 1.25);
+    }
+    @media (width < 48rem) {
+      font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
+    }
   }
 }
 @layer components {
@@ -3110,6 +3146,9 @@ button shopify-accelerated-checkout {
       appearance: none;
     }
     font: inherit;
+    @media (width < 48rem) {
+      font-size: max(16px, 1em);
+    }
     &:focus:not(:focus-visible) {
       outline: none;
     }

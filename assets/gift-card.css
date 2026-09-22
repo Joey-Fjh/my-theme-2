@@ -39,7 +39,6 @@
 
 .gift-card-page__shop-name {
     color: rgb(var(--color-foreground));
-    font-size: 1.6rem;
     font-weight: 500;
     text-decoration: none;
 }
@@ -72,14 +71,12 @@
 .gift-card-page__eyebrow,
 .gift-card-page__code-label {
     color: rgba(var(--color-foreground), 0.6);
-    font-size: 1rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
 }
 
 .gift-card-page__balance {
     color: rgb(var(--color-foreground));
-    font-size: 2rem;
 }
 
 .gift-card-page__visual {
@@ -108,13 +105,11 @@
     border: 1px solid rgba(var(--color-border), 0.2);
     border-radius: 0.75rem;
     color: rgb(var(--color-foreground));
-    font-size: 1.2rem;
     font-weight: 500;
 }
 
 .gift-card-page__meta {
     color: rgba(var(--color-foreground), 0.7);
-    font-size: 1.2rem;
 }
 
 .gift-card-page__redeem {
@@ -130,7 +125,6 @@
 .gift-card-page__instructions {
     max-width: 28rem;
     color: rgba(var(--color-foreground), 0.7);
-    font-size: 1.4rem;
 }
 
 .gift-card-page__qr {
@@ -159,7 +153,6 @@
     color: rgb(var(--color-foreground));
     background: transparent;
     font-family: var(--font-body-family);
-    font-size: 1.6rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     white-space: nowrap;
@@ -169,7 +162,6 @@
     cursor: pointer;
     border-bottom: 1px solid rgba(var(--color-border), 0.4);
     color: rgba(var(--color-foreground), 0.7);
-    font-size: 1.2rem;
     transition: opacity 150ms ease;
 }
 
@@ -204,36 +196,12 @@
         margin-bottom: 2.5rem;
     }
 
-    .gift-card-page__shop-name,
-    .gift-card-page__code {
-        font-size: 1.8rem;
-    }
-
     .gift-card-page__card {
         padding: 3rem;
     }
 
-    .gift-card-page__eyebrow,
-    .gift-card-page__code-label {
-        font-size: 1.1rem;
-    }
-
-    .gift-card-page__balance {
-        font-size: 2.2rem;
-    }
-
     .gift-card-page__visual {
         margin-block: 2.5rem;
-    }
-
-    .gift-card-page__status,
-    .gift-card-page__meta,
-    .gift-card-page__copy {
-        font-size: 1.3rem;
-    }
-
-    .gift-card-page__instructions {
-        font-size: 1.6rem;
     }
 
     .gift-card-page__qr svg {

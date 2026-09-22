@@ -1,5 +1,5 @@
 import { useDisposable } from 'utils';
-import { data, store } from 'alpine-adapter';
+import { store } from 'alpine-adapter';
 import ThemeEvents from 'events';
 import QuantityConstraints from './quantity-constraints.js';
 
@@ -631,12 +631,6 @@ const components = {
                         : [];
             },
 
-            _getRecipientApi() {
-                const root = this.$el?.querySelector?.('[data-gift-card-recipient]');
-                if (!root) return null;
-                return data(root);
-            },
-
             _collectLineItemProperties() {
                 const form = document.getElementById(this.productFormId);
                 if (!form) return null;
@@ -683,15 +677,6 @@ const components = {
                 )
                     return;
 
-                const recipient = this._getRecipientApi();
-                if (
-                    recipient &&
-                    typeof recipient.validate === 'function' &&
-                    !recipient.validate()
-                ) {
-                    return;
-                }
-
                 this.isLoading = true;
                 this.errorMessage = '';
                 this._clearSuccessState();
@@ -706,18 +691,10 @@ const components = {
 
                 cart.add([this._buildCartItem()], sections)
                     .then(() => {
-                        if (recipient && typeof recipient.resetAfterSuccess === 'function') {
-                            recipient.resetAfterSuccess();
-                        }
-
                         this._showSuccessState();
                     })
                     .catch((err) => {
-                        if (recipient && typeof recipient.displayCartErrors === 'function') {
-                            recipient.displayCartErrors(err);
-                        } else {
-                            this.errorMessage = cart.messageFromError(err);
-                        }
+                        this.errorMessage = cart.messageFromError(err);
                     })
                     .finally(() => {
                         this.isLoading = false;
@@ -750,18 +727,6 @@ const components = {
                 )
                     return;
 
-                const recipient = this._getRecipientApi();
-                if (recipient?.enabled) {
-                    return;
-                }
-                if (
-                    recipient &&
-                    typeof recipient.validate === 'function' &&
-                    !recipient.validate()
-                ) {
-                    return;
-                }
-
                 this.isLoading = true;
                 this.errorMessage = '';
                 this._clearSuccessState();
@@ -779,11 +744,7 @@ const components = {
                         );
                     })
                     .catch((err) => {
-                        if (recipient && typeof recipient.displayCartErrors === 'function') {
-                            recipient.displayCartErrors(err);
-                        } else {
-                            this.errorMessage = cart.messageFromError(err);
-                        }
+                        this.errorMessage = cart.messageFromError(err);
                     })
                     .finally(() => {
                         this.isLoading = false;
