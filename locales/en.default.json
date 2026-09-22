@@ -9,9 +9,6 @@
  */
 {
     "general": {
-        "and": "and",
-        "item": "item",
-        "loading_seconds": "{{ seconds }}s",
         "meta": {
             "tagged": "tagged \"{{ tags }}\"",
             "page": "Page {{ page }}"
@@ -25,21 +22,14 @@
     },
     "404": {
         "title": "404",
-        "not_found": "Page not found.",
         "back_to_shopping": "Back to shopping",
         "heading_line_2": "Not Found",
         "description_html": "<p>The page you're looking for has moved or no longer exists. Return home to continue shopping.</p>"
     },
     "blog": {
-        "title": "Blog",
-        "article_comments": "Comments",
         "comments_count_heading": "Comments ({{ count }})",
         "comment_metadata_html": "By {{ author }} · {{ date }}",
         "article_metadata_html": "{{ date }} by {{ author }}",
-        "article_navigation": "Article navigation",
-        "previous_article": "Previous article",
-        "next_article": "Next article",
-        "back_to_blog": "Back to blog",
         "comment_form_body": "Comment",
         "comment_form_email": "Email",
         "comment_form_error_title": "Please correct the following:",
@@ -54,8 +44,6 @@
         "checkout": "Checkout",
         "title": "Cart",
         "update": "Update",
-        "remove": "Remove",
-        "no_image": "No image",
         "shop_more": "Shop More",
         "order_summary": "Order Summary",
         "note_placeholder": "Add a note to your order...",
@@ -63,12 +51,7 @@
         "estimate_total": "Estimate Total",
         "taxes_note": "Taxes, discounts and shipping calculated at checkout.",
         "taxes_included_note": "Tax included. Discounts and shipping calculated at checkout.",
-        "loading": "Loading cart...",
         "empty": "Your cart is empty.",
-        "product_alt": "Cart product",
-        "add_more_product": "Add More Product",
-        "total": "Total",
-        "view_cart": "View cart",
         "discounts": "Discounts",
         "you_saved": "You saved",
         "selling_plan_label": "Plan",
@@ -78,12 +61,6 @@
             "server_error": "Server error. Please try again later.",
             "timeout": "Request timed out. Please try again.",
             "network_error": "Network error. Please check your connection."
-        }
-    },
-    "components": {
-        "stars": {
-            "rating_aria_label": "Rating: {{ rating }} out of {{ max }}",
-            "rating_visually_hidden": "{{ rating }} out of {{ max }} stars"
         }
     },
     "blocks": {
@@ -112,11 +89,7 @@
         "message_placeholder": "Enter your message"
     },
     "collections": {
-        "title": "Collections",
-        "products": "Products",
-        "all": "All",
         "no_products": "No products found.",
-        "view_all": "View All",
         "description_html": "<p>Describe the products and purpose of this collection.</p>",
         "popular_countries": "Popular countries/regions"
     },
@@ -164,182 +137,56 @@
         "subscribe": "Subscribe",
         "email_placeholder": "Enter your email address",
         "email_address": "Email address",
-        "success_message": "Thanks for subscribing.",
-        "error_message": "Subscription failed. Please try again."
-    },
-    "testimonial": {
-        "defaults": {
-            "author_name": "Customer name",
-            "author_title": "Customer"
-        }
+        "success_message": "Thanks for subscribing."
     },
     "pagination": {
         "previous": "Previous",
         "next": "Next"
     },
     "password": {
-        "enter": "Enter store",
-        "enter_using_password": "Enter using password",
-        "log_in": "Log in here",
-        "password": "Password",
-        "store_owner": "Are you the store owner?",
         "title": "Opening soon"
     },
     "products": {
         "product": {
-            "quick_view": "Quick View",
             "add_to_cart": "Add to Cart",
             "added_to_cart": "Added to cart!",
             "sold_out": "Sold out",
             "maximum_in_cart": "Maximum in cart",
-            "adding": "Adding...",
-            "view_full_details": "View full details",
-            "example_title": "Example Product Title",
-            "example_title_numbered": "Example product {{ index }}",
-            "example_price": "$99.00",
-            "from_price": "From {{ price }}",
-            "example_description": "Add product details such as features, materials, care instructions, or ways to use this item.",
             "only_in_stock_html": "Only {{ quantity }} in stock",
             "low_stock": "Low stock",
             "buy_it_now": "Buy it now",
             "unavailable": "Unavailable",
-            "share": "Share",
-            "fallback_vendor": "Product",
             "selling_plan": {
-                "purchase_options": "Purchase options",
-                "one_time_purchase": "One-time purchase"
+                "purchase_options": "Purchase options"
             }
-        },
-        "comparison": {
-            "product": "Product",
-            "price": "Price",
-            "rating": "Rating",
-            "availability": "Availability",
-            "in_stock": "In stock",
-            "out_of_stock": "Out of Stock",
-            "example_product": "Example product {{ index }}",
-            "example_detail": "Example details",
-            "no_products": "Select products in the section settings to compare.",
-            "no_blocks": "Add blocks (Price, Rating, etc.) to define comparison rows."
         }
     },
     "search": {
         "title": "Search",
-        "placeholder": "Search articles, pages, or products",
         "search": "Search",
-        "submit": "Search",
-        "no_results_html": "No results found for {{ terms }}",
-        "results_for_html": "{{ count }} results found for {{ terms }}",
-        "no_results_for": "No results found for",
-        "products": "Products",
-        "articles": "Articles",
-        "pages": "Pages",
-        "no_products": "No products found.",
-        "no_articles": "No articles found.",
-        "no_pages": "No pages found.",
-        "no_products_in_collection": "No products found in this collection.",
-        "recommendation": "Recommendation",
-        "no_suggestions": "No suggestions",
-        "not_found": "Not found for",
-        "search_for": "Search for"
+        "no_results_html": "No results found for {{ terms }}"
     },
     "sections": {
-        "main-page-about": {
-            "defaults": {
-                "image_alt": "About Us"
-            }
-        },
-        "promise-section": {
-            "defaults": {
-                "image_alt": "Promise Section Image"
-            }
-        },
-        "brand-statement": {
-            "defaults": {
-                "image_alt": "Brushstroke"
-            }
-        },
         "main-page-contact": {
             "defaults": {
-                "image_alt": "Contact us",
                 "heading": "We're here to help",
                 "success_message": "Thank you for your message. We will get back to you soon.",
                 "button_text": "Send"
             }
-        },
-        "blog-stories": {
-            "defaults": {
-                "link_text": "Read more"
-            }
-        },
-        "video-banner": {
-            "external_video_title": "Embedded video"
-        },
-        "google-map": {
-            "visual_preview_label": "Map preview",
-            "visual_preview_hint": "Paste a Google Maps embed code to show your store location."
         }
     },
     "accessibility": {
         "skip_to_content": "Skip to content",
         "required": "Required",
-        "show_first_image": "Show first image",
-        "show_second_image": "Show second image",
-        "drag_to_compare": "Drag to compare images",
         "mobile_menu": "Mobile Menu",
         "main_menu": "Main menu",
         "search": "Search",
         "cart": "Cart",
         "decrease_quantity": "Decrease quantity",
         "increase_quantity": "Increase quantity",
-        "previous_slide": "Previous slide",
-        "next_slide": "Next slide",
-        "close_newsletter_popup": "Close newsletter popup",
-        "submit_newsletter_form": "Submit newsletter form",
         "remove_item": "Remove {{ item }}",
-        "scroll_to_compare": "Scroll to compare more products",
-        "product_comparison": "Product comparison",
-        "read_more_about": "Read more about {{ title }}",
-        "close_search_drawer": "Close search drawer",
-        "close": "Close",
         "clear_item": "Clear {{ item }}",
-        "close_mobile_menu": "Close mobile menu",
-        "back_to_second_level": "Back to second level menu",
-        "open_image_zoom": "Open image zoom",
-        "image_zoom": "Image zoom",
-        "close_zoom": "Close zoom",
-        "previous_image": "Previous image",
-        "next_image": "Next image",
         "loading": "Loading",
-        "image_navigation": "Image navigation",
-        "show_image": "Show image {{ index }}",
-        "show_media": "Show media {{ index }}",
-        "quick_view": "Quick view {{ product }}",
-        "product_card_actions_show": "Show actions for {{ product }}",
-        "product_card_actions_hide": "Hide actions for {{ product }}",
-        "product_thumbnails": "Product thumbnails",
-        "quantity": "Quantity",
-        "sort_by": "Sort by",
-        "sort_options": "Sort options",
-        "tab_control": "Tab Control",
-        "dismiss": "Dismiss",
-        "menu": "Menu",
-        "account": "Account",
-        "close_quick_view": "Close quick view",
-        "carousel": "Carousel",
-        "hero_slides": "Hero slides",
-        "announcements": "Announcements",
-        "pause_slideshow": "Pause slideshow",
-        "play_slideshow": "Play slideshow",
-        "featured_products_carousel": "Featured products",
-        "routine_carousel": "Routine products",
-        "product_gallery_carousel": "Product gallery",
-        "google_map": "Google map",
-        "play_video": "Play video",
-        "pause_video": "Pause video",
-        "mute_video": "Mute video",
-        "unmute_video": "Unmute video",
-        "view_3d_model": "View 3D model",
-        "product_media_viewer": "Product media viewer"
+        "quantity": "Quantity"
     }
 }

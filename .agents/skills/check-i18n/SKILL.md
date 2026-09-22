@@ -27,7 +27,7 @@ Skip this skill for merchant-owned content, product data, or runtime variables. 
 - Focused automated checks: `npm.cmd run test:i18n`
 - Aggregate gate that includes i18n lint: `npm.cmd run lint`
 
-Shopify Theme Check remains the platform authority. This validator supplements Theme Check with duplicate keys, missing project locale keys, hardcoded user-visible copy, and schema/preset boundary checks.
+Shopify Theme Check remains the platform authority. This validator supplements Theme Check with duplicate keys, missing project locale keys, unused locale keys (`lint-i18n-unused.js`; intentional keeps go in its `ALLOWLISTED_PREFIXES` with a reason), hardcoded user-visible copy, and schema/preset boundary checks.
 
 ## Reporting
 

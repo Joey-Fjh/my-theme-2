@@ -130,12 +130,7 @@
         },
         "animations": {
             "name": "Animations",
-            "motion_enabled": "Enable motion",
-            "content_reveal_style": "Content reveal style",
-            "media_reveal_style": "Media reveal style",
-            "motion_speed": "Motion speed",
-            "reveal_behavior": "Reveal behavior",
-            "reveal_behavior_info": "Once plays each reveal when the element first enters the viewport. Always replays when elements re-enter the viewport. Reduced motion and disabled page motion always show content immediately."
+            "motion_enabled": "Enable motion"
         },
         "focus": {
             "name": "Focus",
@@ -177,16 +172,12 @@
         "layout": "Layout",
         "page": "Page",
         "password": "Password",
-        "password_footer": "Password footer",
-        "password_header": "Password header",
         "product": "Product",
         "search": "Search",
         "typography": "Typography"
     },
     "labels": {
         "background": "Background",
-        "grid_gap": "Grid spacing",
-        "grid_item_width": "Grid item width",
         "menu": "Menu",
         "page_margin": "Page margin",
         "page_width": "Page width"
@@ -197,27 +188,6 @@
             "square": "Square",
             "portrait": "Portrait",
             "landscape": "Landscape"
-        },
-        "content_reveal_style": {
-            "none": "None",
-            "fade": "Fade",
-            "rise": "Rise",
-            "slide": "Slide reveal"
-        },
-        "media_reveal_style": {
-            "none": "None",
-            "fade": "Fade",
-            "zoom": "Zoom",
-            "slide": "Slide reveal"
-        },
-        "motion_speed": {
-            "slow": "Slow",
-            "normal": "Normal",
-            "fast": "Fast"
-        },
-        "reveal_behavior": {
-            "once": "Once",
-            "always": "Replay on re-enter"
         }
     },
     "blocks": {
@@ -369,12 +339,6 @@
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
-            "options": {
-                "3_columns": "3 columns",
-                "4_columns": "4 columns",
-                "1_column": "1 column",
-                "2_columns": "2 columns"
-            },
             "content": {
                 "padding": "Padding"
             },
@@ -462,7 +426,6 @@
         },
         "header": {
             "content": {
-                "header": "Header",
                 "localization_settings": "Public settings",
                 "localization_large_screens_only": "Only displayed on large screens"
             },
@@ -472,7 +435,6 @@
                 "language_selector": "Language selector"
             },
             "info": {
-                "edit_your_logo_in_theme_settings_editor_": "Edit your logo in [theme settings](/editor?context=theme&category=logo)",
                 "manage_countries_regions": "[Manage countries/regions](/admin/settings/markets)",
                 "manage_languages": "[Manage languages](/admin/settings/languages)"
             }
@@ -535,34 +497,13 @@
                 "padding_bottom": "Padding bottom"
             },
             "options": {
-                "thumbnails": "Thumbnails",
-                "carousel": "Carousel",
-                "stacked": "Stacked",
-                "grid": "Grid",
-                "left": "Left",
-                "bottom": "Bottom",
-                "original": "Original",
-                "compact": "Compact",
-                "standard": "Standard",
-                "large": "Large",
-                "balanced": "Balanced",
-                "full_screen": "Full screen",
                 "portrait_3_4": "Portrait (3:4)",
                 "square_1_1": "Square (1:1)",
-                "form_column": "Form column",
-                "gallery_column": "Gallery column",
                 "dropdown": "Dropdown",
                 "pills": "Pills",
                 "circle": "Circle",
                 "square": "Square",
-                "none": "None",
-                "center": "Center",
-                "right": "Right"
-            },
-            "info": {
-                "applies_when_image_layout_is_set_to_thum": "Applies when Image layout is set to Thumbnails.",
-                "thumbnail_size": "Controls thumbnail size for both positions when Image layout is set to Thumbnails.",
-                "controls_desktop_gallery_height": "Controls the maximum desktop gallery height. Original follows the media width and image ratio."
+                "none": "None"
             },
             "content": {
                 "padding": "Padding"
@@ -580,29 +521,19 @@
                 "collapsible_tab": "Collapsible tab"
             },
             "block_settings": {
-                "position_desktop": "Position (desktop)",
                 "style": "Style",
                 "swatch_shape": "Swatch shape",
                 "low_stock_threshold": "Low stock threshold",
-                "alignment": "Alignment",
                 "display_stock_number": "Display stock number",
                 "show_dynamic_checkout_buttons": "Show dynamic checkout buttons",
                 "custom_liquid": "Custom liquid",
                 "heading": "Heading",
-                "size": "Size",
                 "text": "Text",
-                "image": "Image",
-                "image_width": "Image width",
-                "link": "Link",
-                "dynamic_content": "Dynamic content",
-                "use_page_title_for_tab_heading": "Use page title for tab heading",
                 "open_tab_by_default": "Open tab by default"
             },
             "block_info": {
                 "the_low_stock_notice_displays_if_your_in": "The low stock notice displays if your inventory is equal to or lower than this number.",
-                "using_the_payment_methods_available_on_y": "Using the payment methods available on your store, customers see their preferred option, like PayPal or Apple Pay.",
-                "dynamic_content": "Optional. Use a store page's body as this tab's text (for example Shipping or Returns). That page content replaces the Text field above. Icon, image, alignment, and link still apply.",
-                "use_page_title_for_tab_heading": "Only works when a page is selected in Dynamic content. Replaces the Heading field with that page's title."
+                "using_the_payment_methods_available_on_y": "Using the payment methods available on your store, customers see their preferred option, like PayPal or Apple Pay."
             },
             "blocks_defaults": {
                 "collapsible_tab_heading": "Collapsible tab",
@@ -613,7 +544,6 @@
             "settings": {
                 "color_scheme": "Color scheme",
                 "search_per_page": "Search per page",
-                "mobile_product_card_columns": "Mobile product card columns (results and dropdown)",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },

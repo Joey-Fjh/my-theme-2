@@ -151,6 +151,32 @@ test('missing schema locale key fails', () => {
     });
 });
 
+test('missing schema locale key in section group JSON fails', () => {
+    withTempTheme((root) => {
+        expectFailure(
+            root,
+            (dir) => {
+                writeBaseTheme(dir, {
+                    'sections/header-group.json': `{"type":"header","name":"t:sections.missing_group.name","sections":{},"order":[]}
+`,
+                });
+            },
+            /Missing schema locale key "sections.missing_group.name"/,
+        );
+    });
+});
+
+test('existing schema locale key in section group JSON passes', () => {
+    withTempTheme((root) => {
+        expectPass(root, (dir) => {
+            writeBaseTheme(dir, {
+                'sections/header-group.json': `{"type":"header","name":"t:sections.fixture.name","sections":{},"order":[]}
+`,
+            });
+        });
+    });
+});
+
 test('english hardcoded visible text fails', () => {
     withTempTheme((root) => {
         expectFailure(

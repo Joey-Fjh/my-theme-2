@@ -20,6 +20,8 @@ const LIQUID_GLOBS = [
     'templates/**/*.liquid',
 ];
 const SCHEMA_GLOBS = ['sections/**/*.liquid', 'blocks/**/*.liquid', 'config/settings_schema.json'];
+// Section group JSON (header-group, footer-group) can carry `t:` names; check their keys exist.
+const SCHEMA_KEY_GLOBS = [...SCHEMA_GLOBS, 'sections/*.json'];
 const LOCALE_GLOBS = ['locales/**/*.json'];
 
 const UNICODE_LETTER_RE = /\p{L}/u;
@@ -493,7 +495,7 @@ async function checkLiquidTranslationKeys(storefrontKeys) {
 }
 
 async function checkSchemaTranslationKeys(schemaKeys) {
-    const files = await fg(SCHEMA_GLOBS, { cwd: ROOT, dot: false, onlyFiles: true });
+    const files = await fg(SCHEMA_KEY_GLOBS, { cwd: ROOT, dot: false, onlyFiles: true });
 
     for (const file of files.map(formatPath)) {
         const text = await readText(file);
