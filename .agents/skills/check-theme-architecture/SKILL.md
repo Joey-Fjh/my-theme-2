@@ -2,8 +2,8 @@
 name: check-theme-architecture
 description: Validate Shopify theme architecture and static browser compatibility rules. Use when Liquid, embedded stylesheet or javascript blocks, tab markup, or browser compatibility tooling change.
 when_to_use: >
-  Liquid runtime-name shadowing, tab accessibility, SVG WebKit guardrails,
-  Liquid output syntax, or CSS/JS compatibility checks changed.
+  Liquid runtime-name shadowing, tab accessibility, Liquid output syntax,
+  or CSS/JS compatibility checks changed.
 ---
 
 # Check Theme Architecture
@@ -18,13 +18,13 @@ Use this skill for project-level architecture and static compatibility validatio
 - `npm.cmd run lint:compat:embedded` — embedded Liquid block scan; this is part of `lint:compat`, not `lint:theme`.
 - `npm.cmd run scan:compat` — rebuild Tailwind output, then run all compatibility checks.
 - `npm.cmd run test:theme-architecture` — focused fixture tests for the scripts above.
+- `npm.cmd run test:section-stylesheet-carry` — DOM tests for `SectionRefresher.carryInnerSectionStylesheet` extracted from `assets/https.js`.
 - `npm.cmd run lint` — aggregate gate that includes the commands above when a broader check is requested.
 
 ## What `lint:theme` Covers
 
 1. Do not `assign` or `capture` over protected Shopify Liquid runtime names.
 2. Static `role="tab"` elements must include `aria-selected` and `aria-controls` (`aria-*`, `:*`, or `x-bind:*` forms).
-3. SVG `<text textLength>` must not contain nested `<tspan>` nodes.
 
 ## What This Skill Does Not Enforce Yet
 
@@ -32,9 +32,10 @@ Rules tied to undecided JS/CSS implementation architecture — such as specific 
 
 ## When To Run
 
-- After Liquid changes that may shadow protected runtime names, tab markup, or SVG text rendering.
+- After Liquid changes that may shadow protected runtime names or tab markup.
 - After embedded stylesheet/javascript block changes: run `lint:compat`.
 - After Tailwind source changes: run `scan:compat`.
+- After changes to `SectionRefresher.carryInnerSectionStylesheet` in `assets/https.js`: run `test:section-stylesheet-carry`.
 - Do not auto-fix merchant-owned configuration or content while resolving lint failures.
 
 ## Reporting

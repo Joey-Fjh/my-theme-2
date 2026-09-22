@@ -1,5 +1,7 @@
 # Internationalization Checklist
 
+Read when: changing locale JSON, translated Liquid strings, schema labels, preset copy, or hardcoded user-visible text.
+
 Shopify-specific locale ownership boundaries. `AGENTS.md` remains authoritative.
 
 ## Locale Boundaries

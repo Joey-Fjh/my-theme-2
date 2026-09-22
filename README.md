@@ -42,11 +42,11 @@ This repository tracks two classes of client adapters. Neither class may be repl
 
 **Role adapters (must remain separate real files):**
 
-- `.claude/agents/{scout,implementer,verifier}.md`
-- `.cursor/agents/{scout,implementer,verifier}.md`
-- `.codex/agents/{scout,implementer,verifier}.toml`
+- `.claude/agents/{implementer,verifier}.md`
+- `.cursor/agents/{implementer,verifier}.md`
+- `.codex/agents/{implementer,verifier}.toml`
 
-These nine files are per-client permission shims, not duplicates of `.agents/roles/`. Do not symlink them to the canonical roles or merge them across clients.
+These six files are per-client permission shims, not duplicates of `.agents/roles/`. Do not symlink them to the canonical roles or merge them across clients.
 
 ### Clone on a symlink-capable environment
 

@@ -28,7 +28,7 @@ Every file marked Static is reached from `base.js` through a static `import`, so
 | `alpine.store.cart.js` | 4,596 |
 | **Always loaded** | **42,210** |
 
-D19 Part A classified `https.js` as an on-demand service module because `base.js` referenced `ShopifyHttp` and `SectionRefresher` zero times at decision time. The JS1 implementation moved cart platform state into `cart.contract.js`, which `base.js` imports statically and which imports `https`, so that classification no longer holds. The boundary test D19 Part A set — what must exist before any component can load — is unchanged; only the file list it produced was overtaken by the implementation. Re-measure this table whenever a static import is added to the graph.
+Re-measure this table whenever a static import is added to the graph.
 
 The core does not import component names. It reads `data-module-id` on DOM roots, resolves the identifier through the import map in `layout/theme.liquid`, and calls dynamic `import()`.
 

@@ -121,16 +121,6 @@ Do not over-tokenize motion. Tokens are for shared foundation values reused acro
 
 Merchant-facing motion settings should control policy, not low-level implementation details such as GSAP easing names, ScrollTrigger start/end positions, or raw stagger amounts.
 
-## Migration And Duplication
-
-Motion cleanup must be staged:
-
-1. Audit current motion usage before refactoring.
-2. Group findings as CSS capabilities, Alpine/state recipes, GSAP/choreography, and mixed-ownership risks.
-3. Keep `motion-transition` removed.
-4. Build ordinary reveal around the public protocol, the native adapter, and CSS gated on runtime state.
-5. Preserve visual behavior unless the task explicitly asks to redesign motion.
-
 Before adding another copy of a motion pattern, inspect whether an existing capability utility, reveal hook, or approved runtime contract already owns it.
 
 ## Performance And Reduced Motion

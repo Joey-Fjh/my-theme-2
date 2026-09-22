@@ -3,18 +3,30 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { test } = require('node:test');
 
-const { carryInnerSectionStylesheet } = require('./lib/section-stylesheet-carry');
-const { compareCarrySources } = require('./lib/carry-body-sync');
-
 const ROOT = path.resolve(__dirname, '../../../..');
 const HTTPS_PATH = path.join(ROOT, 'assets/https.js');
-const LIB_PATH = path.join(__dirname, 'lib/section-stylesheet-carry.js');
 
-function readCarrySources() {
-    return {
-        httpsSource: fs.readFileSync(HTTPS_PATH, 'utf8'),
-        libSource: fs.readFileSync(LIB_PATH, 'utf8'),
-    };
+function loadProductionCarryInnerSectionStylesheet() {
+    const httpsSource = fs.readFileSync(HTTPS_PATH, 'utf8');
+    const marker = 'static carryInnerSectionStylesheet(doc, targetEl) {';
+    const start = httpsSource.indexOf(marker);
+
+    if (start === -1) {
+        throw new Error('carryInnerSectionStylesheet not found in assets/https.js');
+    }
+
+    let index = start + marker.length;
+    let depth = 1;
+
+    while (index < httpsSource.length && depth > 0) {
+        const char = httpsSource[index];
+        if (char === '{') depth += 1;
+        else if (char === '}') depth -= 1;
+        index += 1;
+    }
+
+    const body = httpsSource.slice(start + marker.length, index - 1);
+    return new Function('doc', 'targetEl', body);
 }
 
 function createStyleNode(text) {
@@ -44,16 +56,12 @@ function attachChild(parent, child) {
     };
 }
 
-function createElement({ children = [], querySelectorImpl } = {}) {
+function createElement({ children = [] } = {}) {
     const el = {
         tagName: 'DIV',
         childNodes: [...children],
         firstChild: children[0] ?? null,
         querySelector(sel) {
-            if (typeof querySelectorImpl === 'function') {
-                return querySelectorImpl(sel, this);
-            }
-
             if (sel === 'style[data-section-stylesheet]') {
                 return findStyle(this);
             }
@@ -103,6 +111,8 @@ function collectStyles(node, matches) {
     }
 }
 
+const carryInnerSectionStylesheet = loadProductionCarryInnerSectionStylesheet();
+
 test('carryInnerSectionStylesheet inserts when target has no section stylesheet', () => {
     const style = createStyleNode('.ok { color: red; }');
 
@@ -114,16 +124,14 @@ test('carryInnerSectionStylesheet inserts when target has no section stylesheet'
     };
 
     const targetEl = createElement();
-    const result = carryInnerSectionStylesheet(doc, targetEl);
+    carryInnerSectionStylesheet(doc, targetEl);
 
-    assert.equal(result.action, 'inserted');
     assert.equal(targetEl.querySelectorAll('style[data-section-stylesheet]').length, 1);
     assert.equal(targetEl.firstChild.textContent, '.ok { color: red; }');
 });
 
 test('carryInnerSectionStylesheet replaces on repeated refresh without accumulation', () => {
     const firstStyle = createStyleNode('.v1 { color: red; }');
-
     const secondStyle = createStyleNode('.v2 { color: blue; }');
 
     const targetEl = createElement({
@@ -137,9 +145,8 @@ test('carryInnerSectionStylesheet replaces on repeated refresh without accumulat
         },
     };
 
-    const result = carryInnerSectionStylesheet(doc, targetEl);
+    carryInnerSectionStylesheet(doc, targetEl);
 
-    assert.equal(result.action, 'replaced');
     assert.equal(targetEl.querySelectorAll('style[data-section-stylesheet]').length, 1);
     assert.equal(targetEl.querySelector('style[data-section-stylesheet]').textContent, '.v2 { color: blue; }');
 
@@ -152,65 +159,9 @@ test('carryInnerSectionStylesheet replaces on repeated refresh without accumulat
     assert.equal(targetEl.querySelector('style[data-section-stylesheet]').textContent, '.v3 { color: green; }');
 });
 
-test('production and validator carryInnerSectionStylesheet bodies stay in sync', () => {
-    const { httpsSource, libSource } = readCarrySources();
-    const { equal, httpsBody, libBody } = compareCarrySources(httpsSource, libSource);
-
-    assert.equal(
-        equal,
-        true,
-        `assets/https.js and lib/section-stylesheet-carry.js diverged; sync carryInnerSectionStylesheet before committing.\n` +
-            `https: ${httpsBody}\n` +
-            `lib:   ${libBody}`,
-    );
-});
-
-test('sync guard detects deleted return after replaceWith', () => {
-    const { httpsSource, libSource } = readCarrySources();
-    const mutatedHttps = httpsSource.replace(
-        /existingStyle\.replaceWith\(nextStyle\);\s*\r?\n\s*return;/,
-        'existingStyle.replaceWith(nextStyle);',
-    );
-    const candidateHttps = mutatedHttps === httpsSource ? httpsSource : mutatedHttps;
-
-    const { equal } = compareCarrySources(candidateHttps, libSource);
-    assert.equal(
-        equal,
-        false,
-        'deleted return after replaceWith should report divergence',
-    );
-});
-
-test('sync guard detects deleted early exit when sectionStyle is missing', () => {
-    const { httpsSource, libSource } = readCarrySources();
-    const mutatedHttps = httpsSource.replace(
-        /\r?\n\s*if \(!sectionStyle\) return;/,
-        '',
-    );
-
-    assert.notEqual(mutatedHttps, httpsSource, 'mutation did not change https source');
-
-    const { equal } = compareCarrySources(mutatedHttps, libSource);
-    assert.equal(equal, false, 'deleted early exit should report divergence');
-});
-
-test('sync guard detects insertBefore changed to appendChild', () => {
-    const { httpsSource, libSource } = readCarrySources();
-    const mutatedHttps = httpsSource.replace(
-        /targetEl\.insertBefore\(nextStyle, targetEl\.firstChild\);/,
-        'targetEl.appendChild(nextStyle);',
-    );
-
-    assert.notEqual(mutatedHttps, httpsSource, 'mutation did not change https source');
-
-    const { equal } = compareCarrySources(mutatedHttps, libSource);
-    assert.equal(equal, false, 'insertBefore -> appendChild should report divergence');
-});
-
 test('carryInnerSectionStylesheet is a no-op when response has no section stylesheet', () => {
     const targetEl = createElement();
-    const result = carryInnerSectionStylesheet({ querySelector: () => null }, targetEl);
+    carryInnerSectionStylesheet({ querySelector: () => null }, targetEl);
 
-    assert.equal(result.action, 'none');
     assert.equal(targetEl.querySelectorAll('style[data-section-stylesheet]').length, 0);
 });

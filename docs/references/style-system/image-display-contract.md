@@ -1,5 +1,7 @@
 # Image Display Contract
 
+Read when: changing `snippets/image.liquid`, image display modes, aspect ratio, placeholder behavior, or media callers.
+
 This file documents `snippets/image.liquid` display behavior. CSS layer/token contracts live in `docs/references/style-system/css-architecture.md`.
 
 ## Display Modes

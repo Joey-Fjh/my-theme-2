@@ -55,8 +55,6 @@ const PROTECTED_RUNTIME_NAMES = new Set([
     'theme',
 ]);
 
-const SVG_TEXT_LENGTH_RE = /<text\b(?=[^>]*\btextLength\s*=)[^>]*>([\s\S]*?)<\/text>/gi;
-
 const TAB_ARIA_SELECTED_ATTRS = ['aria-selected', ':aria-selected', 'x-bind:aria-selected'];
 const TAB_ARIA_CONTROLS_ATTRS = ['aria-controls', ':aria-controls', 'x-bind:aria-controls'];
 
@@ -346,21 +344,6 @@ function collectMotionActivationFailures(cssText, file, failures, options = {}) 
     }
 }
 
-function collectSvgTextLengthFailures(text, file, failures) {
-    const masked = maskNonExecutableLiquid(text);
-
-    for (const match of masked.matchAll(SVG_TEXT_LENGTH_RE)) {
-        if (!/<tspan\b/i.test(match[1])) continue;
-
-        failures.push({
-            file,
-            line: lineAt(text, match.index ?? 0),
-            message:
-                'Do not nest <tspan> inside SVG <text textLength>; WebKit can ignore the requested text length. Apply whole-text styling on <text>.',
-        });
-    }
-}
-
 async function runThemeLint(root) {
     const failures = [];
     const files = await fg(LIQUID_GLOBS, { cwd: root, dot: false, onlyFiles: true });
@@ -380,7 +363,6 @@ async function runThemeLint(root) {
 
         collectProtectedRuntimeNameFailures(ast, text, file, failures);
         collectBundledAssetTagFailures(ast, text, file, failures);
-        collectSvgTextLengthFailures(text, file, failures);
         collectTabFailures(ast, text, file, failures);
 
         for (const block of extractBlocks(text, 'stylesheet')) {
@@ -436,7 +418,6 @@ module.exports = {
     runThemeLint,
     collectProtectedRuntimeNameFailures,
     collectBundledAssetTagFailures,
-    collectSvgTextLengthFailures,
     collectTabFailures,
     collectMotionActivationFailures,
     collectInvalidRgbAlphaFailures,

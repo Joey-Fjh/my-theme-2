@@ -1,12 +1,12 @@
 # Theme Block Reference
 
-This reference owns the accepted TB1 Theme Block contracts: the initial block inventory, the Container host, blank-content and editor-placeholder behavior, and the generic-block responsibility boundary. `AGENTS.md` remains the rule source. Read this file when adding or changing Theme Blocks, their schemas, allowed parents, or blank-content handling in the four TB1 blocks.
+This reference owns the Theme Block contracts: the initial block inventory, the Container host, blank-content and editor-placeholder behavior, and the generic-block responsibility boundary. `AGENTS.md` remains the rule source. Read this file when adding or changing Theme Blocks, their schemas, allowed parents, or blank-content handling in the four theme blocks.
 
 Inspect current source for exact settings, schema shape, and markup.
 
 ## Scope and non-scope
 
-**In scope (TB1):**
+**In scope:**
 
 - The four Theme Blocks: `group`, `heading`, `text`, `button`
 - The Container host section (`sections/custom-section.liquid`)
@@ -17,7 +17,7 @@ Inspect current source for exact settings, schema shape, and markup.
 
 - Liquid `{% block %}` / `{% partial %}` adoption stance — see `javascript-runtime.md` (Liquid Rendering Features)
 - `SectionRefresher` transitional status — see `javascript-runtime.md` (Transitional status)
-- New block types, schemas, and allowed parents beyond TB1
+- New block types, schemas, and allowed parents beyond the four blocks below
 - Media behavior, including a Container `background_image` setting — deferred; see `../style-system/image-display-contract.md`
 - Global page, Section, and Block layout protocol
 - Whether to extend a shared abstraction — see `abstraction-boundaries.md`
@@ -26,7 +26,7 @@ Inspect current source for exact settings, schema shape, and markup.
 
 ## Host (Container)
 
-`sections/custom-section.liquid` is the TB1 host for the four Theme Blocks. In the Theme Editor it appears as **Container** (`t:sections.custom-section.name` / preset name in `locales/en.default.schema.json`).
+`sections/custom-section.liquid` is the host for the four Theme Blocks. In the Theme Editor it appears as **Container** (`t:sections.custom-section.name` / preset name in `locales/en.default.schema.json`).
 
 The section:
 
@@ -34,7 +34,7 @@ The section:
 - Outputs `{% content_for 'blocks' %}` inside a `layout container-page` wrapper
 - Accepts `@theme` blocks only in its schema (`"blocks": [{ "type": "@theme" }]`)
 
-`group` is the only TB1 block that nests children. Its schema accepts `@theme` and `@app` block types and renders them via `{% content_for 'blocks' %}` inside a flex container.
+`group` is the only block that nests children. Its schema accepts `@theme` and `@app` block types and renders them via `{% content_for 'blocks' %}` inside a flex container.
 
 ## Block inventory and responsibilities
 
@@ -47,7 +47,7 @@ The section:
 
 ## Blank-content rule and current coverage
 
-**Rule (accepted with TB1, 2026-09-21):** A Theme Block whose required content is blank renders nothing in the storefront. Only in the editor (`request.design_mode`) it renders a non-semantic placeholder that carries `block.shopify_attributes`, so the block stays selectable.
+**Rule:** A Theme Block whose required content is blank renders nothing in the storefront. Only in the editor (`request.design_mode`) it renders a non-semantic placeholder that carries `block.shopify_attributes`, so the block stays selectable.
 
 **Current coverage:**
 

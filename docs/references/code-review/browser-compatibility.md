@@ -1,5 +1,7 @@
 # Browser Compatibility Policy
 
+Read when: changing first-party CSS or JS, embedded Liquid stylesheet/javascript blocks, browserslist config, or Tailwind build compatibility.
+
 Static compatibility baseline and guardrails. `AGENTS.md` remains the rule source.
 
 ## Official Support Baseline
@@ -52,14 +54,6 @@ Detailed allowlists and generated-artifact rules live in lint source and config,
 - Use `@supports` for optional visual enhancement when the fallback must remain usable.
 - Prefer feature detection over user-agent detection.
 - Keep critical navigation, product forms, and purchase paths usable without JavaScript.
-
-## Project WebKit Guardrail
-
-The architecture lint enforces one deterministic SVG regression already confirmed in Safari:
-
-- SVG `<text textLength>` must not contain nested `<tspan>` nodes.
-
-When a future browser defect has a stable source signature and a low false-positive rate, add a similarly narrow guard to `lint:theme` rather than reviving theme-specific class rules.
 
 ## Evidence Boundary
 

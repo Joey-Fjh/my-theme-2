@@ -183,10 +183,4 @@ Three Shopify platform constraints govern `{% stylesheet %}` and `{% javascript 
 7. Is this motion capability/reveal/keyframe CSS? Use `tailwind.animates.css`.
 8. Must it survive subsetting when the defining Liquid file is absent? Keep it in the Tailwind build (steps 2–4, 6, or 7). Do not place it in a `{% stylesheet %}` block outside its render tree.
 
-## Governance
-
-- `npm.cmd run lint:theme` enforces protected Liquid runtime-name assign/capture, bundled-asset tag limits and no-Liquid-in-block rules, static `role="tab"` accessibility, and the SVG `<text textLength>` nested `<tspan>` guard.
-- Never edit `vendor-*.min.css` manually.
-- CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.
-- Record durable architecture decisions in the relevant reference, not in `context.md` unless it is short cross-session state.
-- Keep optional cleanup ideas out of this contract until repository evidence makes them actionable.
+Never edit `vendor-*.min.css` manually. CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.

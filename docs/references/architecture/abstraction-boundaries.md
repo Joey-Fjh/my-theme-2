@@ -41,10 +41,6 @@ Never add a parameter to an existing public method just to make a divergent new 
 | Copy a hot snippet of behavior into a shared base class to "make it reusable"             | Wait for a third real consumer before generalizing                                           |
 | Create a renamed near-copy of an existing abstraction instead of extending or splitting intentionally | New dedicated component or explicit extension when invariants match                          |
 
-## Why This Matters
-
-A shared abstraction's contract is consumed by every caller. Extending it for one new caller silently changes the contract for all the others, and the resulting bugs surface in code that has nothing to do with the change. Boundary discipline is a stability investment, not a code-style preference.
-
 ## Snippet API Semantics
 
 Snippets are the theme's reusable UI components. Their parameter contracts follow these rules:

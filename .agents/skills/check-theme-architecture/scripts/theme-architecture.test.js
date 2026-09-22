@@ -248,57 +248,6 @@ test('tab missing aria-controls fails', async () => {
     });
 });
 
-test('svg textLength with plain text passes', async () => {
-    await withTempThemeAsync(async (root) => {
-        writeFile(
-            root,
-            'sections/fixture.liquid',
-            `<svg><text textLength="100">Label</text></svg>\n`,
-        );
-
-        const failures = await runThemeLint(root);
-        assert.equal(failures.length, 0);
-    });
-});
-
-test('svg textLength with nested tspan fails', async () => {
-    await withTempThemeAsync(async (root) => {
-        writeFile(
-            root,
-            'sections/fixture.liquid',
-            `<svg><text textLength="100"><tspan>Label</tspan></text></svg>\n`,
-        );
-
-        const failures = await runThemeLint(root);
-        assert.match(
-            failureMessages(failures),
-            /Do not nest <tspan> inside SVG <text textLength>/,
-        );
-        assert.equal(failures[0].line, 1);
-    });
-});
-
-test('comment and doc svg examples do not fail svg textLength lint', async () => {
-    await withTempThemeAsync(async (root) => {
-        writeFile(
-            root,
-            'sections/fixture.liquid',
-            [
-                '{% comment %}',
-                '<svg><text textLength="100"><tspan>Label</tspan></text></svg>',
-                '{% endcomment %}',
-                '{% doc %}',
-                '<svg><text textLength="100"><tspan>Label</tspan></text></svg>',
-                '{% enddoc %}',
-                '',
-            ].join('\n'),
-        );
-
-        const failures = await runThemeLint(root);
-        assert.equal(failures.length, 0);
-    });
-});
-
 test('maskNonExecutableLiquid preserves line breaks and length', () => {
     const source = ['line1', '{% comment %}', 'hidden', '{% endcomment %}', 'line5', ''].join('\n');
     const masked = maskNonExecutableLiquid(source);

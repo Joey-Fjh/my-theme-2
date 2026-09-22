@@ -226,7 +226,7 @@ class SectionRefresher {
 
     /**
      * Carry <style data-section-stylesheet> from the parsed response into the live target.
-     * Keep in sync with .agents/skills/check-theme-architecture/scripts/lib/section-stylesheet-carry.js.
+     * Covered by section-stylesheet-carry.test.js, which extracts and tests this method directly.
      */
     static carryInnerSectionStylesheet(doc, targetEl) {
         const sectionStyle = doc.querySelector('style[data-section-stylesheet]');

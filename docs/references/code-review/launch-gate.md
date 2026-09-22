@@ -1,5 +1,7 @@
 # Launch Gate And Review Reference
 
+Read when: classifying Lighthouse findings, changing ignore files, planning Theme Store submission, or deciding cleanup safety.
+
 Launch-readiness decision boundaries that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source.
 
 ## Lighthouse Issue Classification
