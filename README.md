@@ -101,12 +101,28 @@ npm.cmd run test:theme-check    # Shopify Theme Check only
 
 Use `npm.cmd` for project scripts in this Windows workspace. Default to the smallest relevant validation command while developing; run full `npm.cmd run lint` and `npm.cmd test` before PR, version/release, or Theme Store submission, or when explicitly requested.
 
+## Start a derived theme
+
+A derived theme starts from this repository the same way a theme starts from Shopify's official Skeleton, and is then edited directly. It does not pull later changes from this repository. The repository is private, so both commands need GitHub access to it.
+
+```powershell
+shopify theme init <theme-name> --clone-url https://github.com/Joey-Fjh/my-skeleton-theme
+# or
+git clone https://github.com/Joey-Fjh/my-skeleton-theme <theme-name>
+```
+
+After starting, the derived theme makes these edits:
+
+- `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
+- Rewrite the Project Context and Project Identity sections of `AGENTS.md` for the derived theme's own scope; the mother-template inventory rules do not bind it.
+- Empty `docs/agent/board.md` and `docs/agent/context.md`.
+- Resetting `config/settings_data.json` or `templates/*.json` needs its own authorization in the derived theme.
+
 ## Repository Boundaries
 
 - Do not edit `config/settings_data.json` or `templates/*.json` without explicit authorization.
 - Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
 - `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
-- `theme_info` in `config/settings_schema.json` identifies this private internal mother template, and its links resolve only for repository collaborators. Before release, each derived theme replaces the name, author, version, documentation URL, and support destination with its own real values that merchants can reach.
 - `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` records Skeleton construction-phase state only.
 
 ## Documentation
