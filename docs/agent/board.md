@@ -8,7 +8,7 @@ Last updated: 2026-09-22.
 
 The mother-template goal was met on 2026-09-22. All five steps were accepted after independent review: Toast and cart drawer removal, product-card anchor, typography and mobile text, JS/CSS architecture closure, and the Agent layer SOP and validator audit. `npm.cmd run lint` and `npm.cmd test` pass. The durable workflow is the Batch SOP in `AGENTS.md`; git holds the execution history.
 
-Finishing order for the deadline (agreed 2026-09-22, about 5–6 hours of work): (1) R1 + R6 + R2 as one round; (2) R4 and R3 as two small batches; (3) R8 with the requirement-to-check mapping only, leaving the per-item skeleton status for the first derived theme that targets submission. Deferred: R5 (optional) and R7 (needs a development store and secrets). Round 1 (R1 + R6) was implemented, independently reviewed, and committed on 2026-09-22; the contracts live in `README.md` and `AGENTS.md`. R2 settled (user, 2026-09-22): one `v1.0.0` tag or GitHub Release as a record of state, created only after the remaining board items and the user's other questions are closed; no CHANGELOG, no downstream update path.
+Finishing order for the deadline (agreed 2026-09-22, about 5–6 hours of work): (1) R1 + R6 + R2 as one round; (2) R4 and R3 as two small batches; (3) R8 with the requirement-to-check mapping only, leaving the per-item skeleton status for the first derived theme that targets submission. Deferred: R5 (optional) and R7 (needs a development store and secrets). Round 1 (R1 + R6) was implemented, independently reviewed, and committed on 2026-09-22; the contracts live in `README.md` and `AGENTS.md`. R2 settled (user, 2026-09-22): one `v1.0.0` tag or GitHub Release as a record of state, no CHANGELOG, no downstream update path. The user starts the tag themselves once their questions are closed; the agent does not raise it or list it as a next step.
 
 ## Skeleton readiness review (2026-09-22) — proposal, not a plan
 
@@ -19,9 +19,9 @@ Claude's breakdown: storefront baseline 18/20; JS/CSS architecture 18/20; qualit
 Agreed items (one decision at a time, in this order):
 
 - **R1 — Derived-theme start (done 2026-09-22).** A derived theme is started by `shopify theme init --clone-url` or `git clone` and then edited directly; it does not pull later mother-template changes.
-- **R2 — Versioning (settled 2026-09-22).** One `v1.0.0` tag or GitHub Release as a record, after the remaining items close. No CHANGELOG.
+- **R2 — Versioning (settled 2026-09-22).** One `v1.0.0` tag or GitHub Release as a record, started by the user. No CHANGELOG.
 - **R3 — Fixed browser smoke checklist.** One per-template checklist (product add-to-cart, cart edits, search, contact, password, gift card, mobile form focus, Theme Editor reload) in `launch-gate.md`, referenced by SOP step 8. Run the flows a storefront or editor change affects; documentation-only batches need no storefront browser pass.
-- **R4 — CI check for generated CSS.** CI (`.github/workflows/ci.yml`) runs `npm run lint`, `npm run test:validators`, and the Theme Check action, but never rebuilds Tailwind, so a source edit without `build:tw` would ship stale CSS. Add a rebuild and `git diff --exit-code assets/tailwind.output.css`. The output is in sync today. Separate batch from R3 (different owner and validation).
+- **R4 — CI check for generated CSS (done 2026-09-22).** The CI lint job rebuilds Tailwind and fails on `git diff --exit-code -- assets/tailwind.output.css`. Checked locally: in sync exits 0; a probe class in a temporary snippet exits 1.
 - **R5 — Article structured data (optional SEO).** `snippets/meta-tags.liquid:57-58` emits `product | structured_data` only; articles set `og:type` but no JSON-LD in theme source. Rendered article output (platform or app markup) has not been checked. Shopify's `structured_data` filter supports articles.
 - **R6 — Reference sources (done 2026-09-22).** Official Skeleton shows how Shopify defines a Skeleton's state; Horizon is a reference for organization only (block structure and similar); features and review standards come only from Shopify official documentation through Shopify Dev MCP.
 - **R7 — Official performance tooling (optional, needs the user's store).** Shopify documents these tools (https://shopify.dev/docs/storefronts/themes/best-practices/performance/testing-for-performance); none is built into this repository:
@@ -50,11 +50,6 @@ Agreed items (one decision at a time, in this order):
 Decided (Claude, at the user's discretion 2026-09-22): **no Playwright.** Browser automation was removed earlier because it only worked inside a native agent browser, and a real storefront run needs store access; the fixed manual checklist in R3 covers the need. Revisit only if R7's Lighthouse CI store exists and a scripted flow becomes cheap.
 
 Checked and not worth doing: minifying `tailwind.output.css` saves about 1 KB gzipped (15.6 KB → 14.5 KB) and still leaves the raw file above the 100,000-byte `AssetSizeCSS` limit (see R7).
-
-## Small follow-ups
-
-- `README.md:126` says `docs/agent/context.md` "records Skeleton construction-phase state only", which contradicts the record contract in `AGENTS.md` (the plan under execution and its status). Pre-existing; found by the round-1 Verifier on 2026-09-22; outside the round-1 surface. Fix in the next documentation batch.
-- Derived-theme flow confirmed by the user (2026-09-22): (1) start with `shopify theme init --clone-url` or `git clone`; (2) push to the derived theme's own GitHub repository; (3) connect the store through the Shopify GitHub integration, which syncs the branch automatically (editor changes are committed back). README currently documents step 1 only; add steps 2–3 in the next documentation batch, confirming the integration's behavior through Shopify Dev MCP first.
 
 ## Deferred ideas
 

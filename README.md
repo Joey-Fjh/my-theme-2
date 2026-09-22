@@ -118,12 +118,18 @@ After starting, the derived theme makes these edits:
 - Empty `docs/agent/board.md` and `docs/agent/context.md`.
 - Resetting `config/settings_data.json` or `templates/*.json` needs its own authorization in the derived theme.
 
+Then deploy through Git:
+
+1. Push the derived theme to its own GitHub repository.
+2. In the Shopify admin, connect a branch of that repository through the [Shopify GitHub integration](https://shopify.dev/docs/storefronts/themes/tools/github). Shopify updates the theme whenever the branch changes and commits theme editor and code editor saves back to the branch as "Update from Shopify" commits; this cannot be disabled, so pull before pushing.
+3. The integration reads only the default theme folder structure and ignores folders outside it, such as `docs/`, `tailwind/`, and `.agents/`. It runs no build, so rebuild and commit `assets/tailwind.output.css` (`npm.cmd run build:tw`) before pushing Tailwind source changes.
+
 ## Repository Boundaries
 
 - Do not edit `config/settings_data.json` or `templates/*.json` without explicit authorization.
 - Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
 - `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
-- `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` records Skeleton construction-phase state only.
+- `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` holds the plan under execution and its status; `docs/agent/board.md` holds open decisions.
 
 ## Documentation
 
