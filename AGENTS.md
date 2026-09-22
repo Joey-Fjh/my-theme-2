@@ -73,7 +73,6 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 - Shopify's current official `skeleton-theme` defines the default storefront inventory boundary. Shopify best practices govern how retained code and approved additions are implemented; Theme Store submission feature requirements do not expand the mother-template inventory by themselves.
 - Project additions require an explicit accepted decision. Current examples include the project-owned component lifecycle/runtime, native section motion, Agent/tooling configuration, and these generic storefront primitives (accepted 2026-09-21): cart page (the only built-in cart presentation), quantity selector, variant picker with shared dropdown, buy buttons, product media gallery, pagination with section refresh, localization switcher, accordion, header nested-menu dropdown, header search entry, and product card (neutral linked image/title/price in the collection grid, with one global image-ratio setting; derived themes own card appearance; accepted 2026-09-22). Action feedback stays local to the control or form that triggered it. Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes. Do not infer new storefront business features merely because a finished Theme Store theme would require them.
 - In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
-- While working on this Skeleton repository, do not modify `my-theme-1`; it is read-only historical evidence. This mother template requires no compatibility with Ceylune appearance, content, schemas, configuration, or behavior.
 - Keep one writer per shared worktree.
 - Do not retain code merely because it already exists.
 - The files under `docs/references/` describe what exists; they are evidence, not authority over what should be built. Architecture is decided from Shopify's current official sources and the user's stated intent; references are rewritten to match accepted decisions.
@@ -121,7 +120,7 @@ One numbered workflow replaces the former Session Start, Universal Work Loop, Ag
 Use when delegating or when the user requests a portable execution prompt:
 
 1. Read `AGENTS.md`, then `docs/agent/context.md` for the active plan and acceptance boundary.
-2. **Implementation surface:** list allowed paths. **Forbidden:** `config/settings_data.json`, `templates/*.json`, `my-theme-1`, vendor/generated assets, and anything outside the surface unless the user widens it.
+2. **Implementation surface:** list allowed paths. **Forbidden:** `config/settings_data.json`, `templates/*.json`, vendor/generated assets, and anything outside the surface unless the user widens it.
 3. **Tasks:** numbered checks from the plan.
 4. **Completion checks:** the plan's validators plus `npx prettier --check` on every changed file.
 5. Record progress and validation in `docs/agent/context.md`.
