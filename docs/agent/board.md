@@ -13,7 +13,7 @@ Working discipline for this goal: think each decision through once, record it, e
 ## Current position
 
 - CL-1 to CL-6, the Alpine notice, the release checks, and the desktop/mobile browser pass were accepted on 2026-09-22 (commits `00229b6`, `c3b3d7c`). The direction below revisits defaults and the Agent layer; it does not undo that acceptance.
-- Step 1 (Toast and cart drawer removal) was accepted on 2026-09-22 after diff review and the user's browser pass. `context.md` holds no plan.
+- Step 1 (Toast and cart drawer removal) was accepted on 2026-09-22 after diff review and the user's browser pass. Step 2 (product card) was accepted on 2026-09-22 after diff review and the user's browser pass. `context.md` holds no plan.
 
 ## User direction (2026-09-22)
 
@@ -23,15 +23,14 @@ Working discipline for this goal: think each decision through once, record it, e
 - **Starter storefront:** Richer than the official Skeleton, but generic fundamentals only.
   - Remove Toast. Feedback belongs where the action happens: button loading/success/error states and inline messages.
   - Remove the cart drawer mode. The mother template keeps the cart page only. Derived themes may add a drawer.
-  - Remove the current product card styling. Keep the product-card global settings at a minimal set as the anchor for derived themes, and record the contract they will build on.
   - Keep the color scheme chain. Fonts: keep the font architecture; detailed controls and defaults are still to be discussed.
 - **Agent layer:** Most of `AGENTS.md` and `docs/references/` is loaded or linked but rarely read. Replace explanation with fixed SOP workflows that the user can read and follow. The tidied `AGENTS.md` constraints then serve as the workflow. Keep the needed MCP servers and official/third-party Skills; keep self-built Skills and validators only when they have a recurring SOP or proven validation value.
 
 ## Sequence (one decision at a time)
 
 1. Done — Toast and cart drawer removal (accepted 2026-09-22).
-2. **Active — Product card:** remove the styling, reduce the global settings, and record the contract.
-3. Fonts: decide the controls and defaults.
+2. Done — Product card anchor (accepted 2026-09-22).
+3. **Active — Fonts:** decide the controls and defaults.
 4. JS/CSS architecture: independent review against the references, then fixes.
 5. Agent layer and validators: rewrite `AGENTS.md` and `docs/references/` into fixed SOPs, and audit every validator (keep, merge, or remove).
 
@@ -39,7 +38,6 @@ The Agent layer comes last so it describes the final architecture once.
 
 ## Evidence for the sequence
 
-- **Product card (step 2):** `sections/collection.liquid` renders a simple listing. The global `config.product_cards` group has eight settings (image ratio, border thickness, radius, and shadow opacity, offsets, and blur) that emit CSS variables with no storefront consumer.
 - **Fonts (step 3):** Two global `font_picker` settings and their `font_face`/token chain are sound; the many typography knobs and their defaults need review. Input and button base styles have consumers outside blocks, so removing editor controls must not remove shared accessible primitives. Visible focus stays a global accessibility rule; whether focus width and offset need merchant controls is open. The only animation setting is `motion_enabled`.
 - **Global settings reference (steps 2–3):** Use [Horizon's settings schema](https://github.com/Shopify/horizon/blob/main/config/settings_schema.json) to decide which layer owns a setting, not as a feature checklist. Global settings govern shared policy (logo, typography, colors, product card, cart, animation, focus, social links); Section/Block settings govern one instance.
 - **JS/CSS architecture (step 4):** `BuyButtons` in `assets/alpine.components.product.js` keeps `_getRecipientApi`, `displayCartErrors`, and `resetAfterSuccess` branches, but no `data-gift-card-recipient` markup exists in the theme; treat them as dead-code candidates.

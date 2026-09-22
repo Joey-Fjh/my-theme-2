@@ -127,15 +127,7 @@
         "product_cards": {
             "name": "Product cards",
             "image": "Image",
-            "image_ratio": "Image ratio",
-            "border": "Border",
-            "border_thickness": "Card border thickness",
-            "radius": "Card radius",
-            "shadow": "Shadow",
-            "shadow_opacity": "Card shadow opacity",
-            "shadow_horizontal_offset": "Card shadow horizontal offset",
-            "shadow_vertical_offset": "Card shadow vertical offset",
-            "shadow_blur": "Card shadow blur"
+            "image_ratio": "Image ratio"
         },
         "animations": {
             "name": "Animations",

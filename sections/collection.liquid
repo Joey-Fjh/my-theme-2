@@ -59,7 +59,15 @@
                         {%- for product in collection.products -%}
                             <div class="group" data-motion-reveal>
                                 {%- liquid
-                                    assign product_card_alt = product.featured_image.alt | default: product.title
+                                    assign card_aspect_ratio = blank
+                                    case settings.product_card_image_ratio
+                                        when 'square'
+                                            assign card_aspect_ratio = '1/1'
+                                        when 'portrait'
+                                            assign card_aspect_ratio = '4/5'
+                                        when 'landscape'
+                                            assign card_aspect_ratio = '4/3'
+                                    endcase
                                     assign card_loading = 'lazy'
                                     if forloop.index <= first_row_count
                                         assign card_loading = 'eager'
@@ -69,10 +77,11 @@
                                     {%- render 'image',
                                         image: product.featured_image,
                                         width: 600,
-                                        alt: product_card_alt,
+                                        alt: '',
                                         sizes: '(min-width: 48rem) 25vw, 50vw',
                                         loading: card_loading,
-                                        motion_reveal: false
+                                        motion_reveal: false,
+                                        aspect_ratio: card_aspect_ratio
                                     -%}
                                     <span class="heading-h6">{{ product.title }}</span>
                                     <span>{{ product.price | money }}</span>
