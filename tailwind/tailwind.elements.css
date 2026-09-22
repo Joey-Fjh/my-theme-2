@@ -354,13 +354,40 @@ button
     @apply w-full;
 }
 
-button
-
 /*
  * Unbranded payment button — specificity override.
  *
  * Shopify's stylesheet targets:
- *
+ *   .shopify-payment-button__button--unbranded:hover:not([disabled])
+ * with specificity (0,3,0), which overrides the theme btn-primary hover
+ * background-color. The selector below exceeds Shopify specificity so
+ * soft-reverse color-mix and animation are preserved on dynamic checkout.
+ */
+button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
+    @supports (background-color: color-mix(in srgb, black, white)) {
+        background-color: color-mix(
+            in srgb,
+            rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)),
+            rgb(var(--btn-text-rgb)) var(--btn-reverse-fill-pct)
+        );
+        color: color-mix(
+            in srgb,
+            rgb(var(--btn-text-rgb)) calc(100% - var(--btn-reverse-text-pct)),
+            rgb(var(--btn-bg-rgb)) var(--btn-reverse-text-pct)
+        );
+        border-color: color-mix(
+            in srgb,
+            rgb(var(--btn-border-rgb)) calc(100% - var(--btn-reverse-border-pct)),
+            rgb(var(--btn-bg-rgb)) var(--btn-reverse-border-pct)
+        );
+    }
+
+    @supports not (background-color: color-mix(in srgb, black, white)) {
+        background-color: rgb(var(--color-primary-button));
+        border-color: rgb(var(--color-primary-button-border));
+        color: rgb(var(--color-primary-button-text));
+    }
+}
 
 /*
  * Accelerated checkout — branded payment buttons (Apple Pay, Google Pay, Shop Pay).
