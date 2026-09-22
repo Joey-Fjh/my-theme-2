@@ -1,6 +1,6 @@
 # Agent Entry Guide
 
-This file is the always-on entry point and the canonical rule source for agents working in this repository. It holds only rules shared by every theme built from this codebase; keep it lean. **Before any task, read `PROJECT.md`** for this repository's identity, inventory boundary, and accepted scope. Supporting docs under `docs/references/` provide details; if one conflicts with this file, follow this file.
+This file is the always-on entry point and the canonical rule source for agents working in this repository. It holds only rules shared by every theme built from this codebase; keep it lean. **Before any task, read `docs/project.md`** for this repository's identity, inventory boundary, and accepted scope. Supporting docs under `docs/references/` provide details; if one conflicts with this file, follow this file.
 
 ---
 
@@ -16,7 +16,7 @@ This file is the always-on entry point and the canonical rule source for agents 
 Runtime constraints:
 
 - No bundler is used.
-- Scripts load via `defer` in `layout/theme.liquid`.
+- `layout/theme.liquid` loads theme code as ES modules through an import map, with `base.js` as the entry. Only the vendored Alpine script is a classic `defer` script, and it runs after the entry. Load order: `docs/references/architecture/javascript-runtime.md`.
 - Do not introduce React, Vue, TypeScript, or nested runtime asset structures unless the user explicitly approves an architecture change. Theme assets stay flat under `assets/`.
 - Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision. Browserslist drives static compatibility checks only, not Tailwind v4's build target.
 
@@ -51,6 +51,7 @@ Do not modify merchant-owned configuration or content unless explicitly authoriz
 
 - `config/settings_data.json`
 - `templates/*.json`
+- `sections/*-group.json` (section groups the theme editor writes)
 - color scheme values
 - product, collection, page, article, blog, metafield, uploaded media, merchant copy, and navigation/content composition
 
@@ -58,18 +59,19 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 
 ### Authority
 
-- `PROJECT.md` defines this repository's identity, inventory boundary, and accepted scope. Shopify best practices govern how retained code and approved additions are implemented.
+- `docs/project.md` defines this repository's identity, inventory boundary, and accepted scope. Shopify best practices govern how retained code and approved additions are implemented.
 - Theme Store submission completeness is a gate only when the user explicitly scopes a batch or theme to submission. Adopting its accessibility and browser requirements as quality baselines does not import its feature inventory.
 - Shopify Horizon is a reference for organization only, such as section and block structure; do not copy its code or import its features. Storefront features and review standards, including Theme Store requirements, come only from Shopify's official documentation queried through Shopify Dev MCP.
 - Project additions require an explicit accepted decision.
+- The agent rules (`AGENTS.md`, `docs/project.md`, `docs/references/`, `.agents/`, and the client adapters) and the validator wiring (`package.json` scripts and `.github/workflows/ci.yml`) are the harness that constrains agents, and the user owns them. Agents propose rule changes and wait for explicit approval; they never add, strengthen, weaken, or move a rule on their own. When a mistake recurs, propose a computational check (lint, test, or hook) before adding prose.
 - In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
 - Keep one writer per shared worktree.
 - Do not retain code merely because it already exists.
-- The files under `docs/references/` describe what exists; they are evidence, not authority over what should be built. Architecture is decided from Shopify's current official sources and the user's stated intent; references are rewritten to match accepted decisions.
+- The files under `docs/references/` cite paths and symbol names, never line numbers, and `lint:doc-paths` fails when a cited path is missing. They describe what exists; they are evidence, not authority over what should be built. Architecture is decided from Shopify's current official sources and the user's stated intent; references are rewritten to match accepted decisions.
 
 Hard implementation rules:
 
-- Do not write inline `<script>` tags or bare global DOM listeners in Liquid.
+- Do not write inline executable `<script>` tags or bare global DOM listeners in Liquid. Data-only blocks with `type="importmap"` or `type="application/ld+json"` are allowed.
 - Pass Liquid-driven runtime values to JavaScript through `data-*`.
 - Critical first-viewport content must render usable and visible without JavaScript or animation completion.
 - User-visible strings, schema labels, ARIA copy, placeholders, and editor text must use locale keys.
@@ -86,7 +88,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 
 | Step | Owner | Action | Stop condition |
 | --- | --- | --- | --- |
-| 1 | Coordinator | Read `PROJECT.md` and `docs/agent/board.md`, then `docs/agent/context.md` if continuing work. Read `docs/references/` only when task routing or the plan requires it. | Facts gathered; no implementation yet. |
+| 1 | Coordinator | Read `docs/project.md` and `docs/agent/board.md`, then `docs/agent/context.md` if continuing work. Read `docs/references/` only when task routing or the plan requires it. | Facts gathered; no implementation yet. |
 | 2 | Coordinator + user | Discuss on `board.md`. One decision at a time. Update the board when discussion produces a conclusion, disagreement, or new pending decision. Record evidence, alternatives, disagreements, and pending decisions. If the user asks for review, orientation, or a prompt only, do not implement unless they explicitly authorize implementation. | A single direction is ready for the user to accept or reject. |
 | 3 | Coordinator | When the user accepts a direction, remove resolved discussion from the board and write the plan into `context.md` with outcome, dependencies, **implementation surface**, and acceptance checks written as verifiable checks, not claims. | Plan recorded. **Recording is not authorization.** |
 | 4 | User | Authorize the batch explicitly. Resolve every dependency listed in the plan first. | User grants execution authority for this batch only. |
@@ -98,7 +100,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 
 **Record-layer checks (apply at steps 3, 6, and 9):**
 
-- `PROJECT.md` holds the project's identity, scope, and overall status. `docs/agent/board.md` holds what has not yet become a plan. `docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**.
+- `docs/project.md` holds the project's identity, scope, and overall status. `docs/agent/board.md` holds what has not yet become a plan. `docs/agent/context.md` holds **the plan currently under execution and its status, and nothing else**.
 - **One narrow exception:** more than one plan may coexist only when every extra entry is executed and waiting on verification the agent cannot perform (browser pass or human review). Each must name who verifies.
 - An unexecuted plan, queued plan, or plan waiting on work the agent could finish does not belong in `context.md`.
 - While `context.md` holds a plan that is not fully executed and reviewed, do not start other work; finish it, or ask the user to drop it.
@@ -148,7 +150,7 @@ Run scripts through `npm.cmd` in this Windows PowerShell workspace. Default to t
 | `tailwind/**` | `npm.cmd run scan:compat` |
 | `assets/*.js`, embedded Liquid blocks | `npm.cmd run lint:compat` |
 | Strict Liquid output parsing (filter-arg guard) | `npm.cmd run lint:liquid-syntax` |
-| Agent rules, skills, roles, adapters | Link/syntax check on changed files + `npm.cmd run doctor:agent` |
+| Agent rules, skills, roles, adapters, references | Link/syntax check on changed files + `npm.cmd run lint:doc-paths` + `npm.cmd run doctor:agent` |
 | Release / PR / Theme Store gate | `npm.cmd run lint` and `npm.cmd run test` |
 
 Build helpers: `npm.cmd run build:tw` (Tailwind iteration), `npm.cmd run build:svg` (staged icons in `icons/`). Do not run rewriting formatters unless the user asks.

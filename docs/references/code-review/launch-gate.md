@@ -52,12 +52,7 @@ Tracked governance files such as `AGENTS.md`, `.agents/`, and `docs/references/`
 
 ## Review Output
 
-When reporting a review, use:
-
-- **Blockers:** Critical issues that make the change unsafe to merge. If none, output `None`.
-- **Warnings:** Non-blocking issues, edge cases, or consistency problems.
-- **Suggestions:** Actionable improvements for maintainability, UX, accessibility, or performance.
-- **Conclusion:** Output exactly `APPROVE` or `REQUEST CHANGES`.
+Reviews use the output format in the Output section of `.agents/roles/verifier.md`.
 
 ## Gate Validation
 

@@ -10,6 +10,7 @@ Shopify-specific locale ownership boundaries. `AGENTS.md` remains authoritative.
 | --- | --- | --- |
 | Storefront text, form copy, status messages, and accessible names | `locales/en.default.json` | Liquid `\| t` |
 | Supported Theme Editor schema copy | `locales/en.default.schema.json` | Schema `t:` reference |
+| Text that JavaScript renders or announces | `locales/en.default.json` | Liquid `\| t` into a `data-*` attribute; JS reads it from `dataset`. Do not hardcode user-visible strings in `assets/*.js`. |
 | Merchant content and preset/default instance values | Schema defaults or preset/default values | Literal value only when needed |
 
 Merchant content, resource titles, product data, and other store-owned values stay as data, not locale keys.

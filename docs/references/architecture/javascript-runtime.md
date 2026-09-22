@@ -16,19 +16,7 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | UI state bridges | `alpine.store.cart.js` | Static | Cart UI store registered by the core through the adapter |
 | On-demand modules | `utils.js`, component entry files, `alpine.components.*.js` groups | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
-Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Measured 2026-09-22:
-
-| File | Bytes |
-| --- | --- |
-| `base.js` | 11,232 |
-| `events.js` | 3,328 |
-| `alpine.adapter.js` | 4,131 |
-| `cart.contract.js` | 7,086 |
-| `https.js` | 11,837 |
-| `alpine.store.cart.js` | 4,596 |
-| **Always loaded** | **42,210** |
-
-Re-measure this table whenever a static import is added to the graph.
+Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Keep the static graph small; measure file sizes when a change adds a static import.
 
 The core does not import component names. It reads `data-module-id` on DOM roots, resolves the identifier through the import map in `layout/theme.liquid`, and calls dynamic `import()`.
 
@@ -40,7 +28,7 @@ The core does not import component names. It reads `data-module-id` on DOM roots
 2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
 3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
 
-There is no classic path for theme stores, utilities, or component definitions. GSAP and Swiper are selected libraries; vendored files are added only when an accepted consumer exists, with the version recorded at vendoring time. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
+There is no classic path for theme stores, utilities, or component definitions. The one page outside this graph is `templates/gift_card.liquid`: it renders without the layout and loads Shopify's `qrcode.js` and `assets/gift-card.js` as classic `defer` scripts. GSAP and Swiper are selected libraries; vendored files are added only when an accepted consumer exists, with the version recorded at vendoring time. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
 
 ## Module Discovery Contract
 

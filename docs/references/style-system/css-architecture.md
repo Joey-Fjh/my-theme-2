@@ -68,11 +68,10 @@ Typography tier CSS lives in `tailwind/tailwind.typography.css`. Native heading 
 The Skeleton's stable typography interface is `--font-body-*` and `--font-heading-*`, emitted from theme settings by `snippets/css-variables.liquid`. Derived themes change the values through settings or by redefining the properties, and add further roles (such as a subtitle or eyebrow style) themselves.
 
 - Semantic `h1`–`h6` level is chosen for document outline; visual `heading-h*` tier is chosen independently for design size. Example: `<h3 class="heading-h2">` when outline needs `h3` but the visual target is a larger tier.
-- `heading-h*` classes remain restricted to semantic heading elements; lint bans them on non-heading elements only.
+- `heading-h*` classes remain restricted to semantic heading elements. No lint checks this yet; review enforces it.
 - Display tiers such as `heading-4xl` through `heading-xl` remain valid where intended. Section subtitles use a `body-*` size tier alone and inherit body font settings.
 - `body-*` tiers are for non-heading body semantics only; do not put them on headings.
 - Default body copy inherits global body settings; do not add section-level body text-size settings for ordinary paragraphs.
-- `heading-size-custom` and `body-size-custom` require their scoped CSS variables.
 - Component-owned typography exceptions may live in component/snippet CSS when part of a reusable API. If a component overrides body size, it must not imply body sliders still control it unless wired to its own scoped API.
 - `.rte h1` through `.rte h6` map rich-text/merchant HTML headings and are independent from page outline semantics.
 
@@ -102,7 +101,7 @@ The Skeleton's stable typography interface is `--font-body-*` and `--font-headin
 
 `heading-4xl` through `heading-xl` are unchanged. `body-md`, `body-sm`, and `body-xs` use `max()` floors on mobile so small ratios never drop below 14px, 13px, or 12px.
 
-Exact tier ratios, token math, and lint exceptions live in source and `lint:theme`.
+Exact tier ratios and token math live in `tailwind/tailwind.typography.css`.
 
 ## Color, Surface, And Inline Style
 
@@ -126,10 +125,11 @@ Exact tier ratios, token math, and lint exceptions live in source and `lint:them
 
 The following platform selectors may live in `elements.css` because they bridge Shopify-controlled markup into the theme button system:
 
-- `button.shopify-payment-button__button--unbranded`
-- `shopify-accelerated-checkout`
-- `shopify-accelerated-checkout-cart`
-- Shopify payment button wrappers needed for width/layout
+- `button.shopify-payment-button__button--unbranded` (hover specificity override)
+- `shopify-accelerated-checkout` (product page wallet buttons: radius, shadow, and skeleton color bridges)
+- `.shopify-payment-button-wrapper` and `.shopify-payment-button` (width)
+
+The cart page element `shopify-accelerated-checkout-cart` has no theme rule and keeps Shopify's defaults.
 
 Branded accelerated checkout buttons render in closed shadow DOM; only supported CSS custom-property bridges should be used.
 
@@ -145,7 +145,7 @@ Theme setting / token source
 
 Rules:
 
-- Do not restore `snippets/motion-transition.liquid`.
+- Do not restore `snippets/motion-transition.liquid`. <!-- doc-paths: ignore -->
 - Do not scatter `x-transition:*` recipes for ordinary state motion.
 - Do not hide critical first-viewport content behind animation completion.
 - Use `docs/references/architecture/motion-architecture.md` for motion classification.

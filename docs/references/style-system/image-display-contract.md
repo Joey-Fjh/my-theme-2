@@ -11,9 +11,9 @@ This file documents `snippets/image.liquid` display behavior. CSS layer/token co
 | `frame` | fixed frame, aspect-ratio box, card image, gallery cell, full-bleed media | wrapper fills the frame | `object-cover` |
 | `natural` | logo, editorial image, decorative brush, content image preserving intrinsic ratio | wrapper follows natural image ratio | `object-contain` unless overridden |
 
-Calls without an explicit mode default to `frame` for backward compatibility.
+Calls without an explicit mode default to `frame`.
 
-Nil images default to the shared `framed` placeholder surface so adjacent empty media remains visually distinct. The shared frame uses an opaque token-mixed surface so underlying section or root colors cannot bleed through SVG transparency. Pass `placeholder_style: 'plain'` only when the media is intentionally unframed, such as the Slideshow background, or when a composite caller applies the shared frame to its complete empty-state surface to avoid a nested double border. The caller still owns the placeholder family, aspect ratio, and outer layout.
+Nil images default to the shared `framed` placeholder surface so adjacent empty media remains visually distinct. The shared frame uses an opaque token-mixed surface so underlying section or root colors cannot bleed through SVG transparency. Pass `placeholder_style: 'plain'` only when the media is intentionally unframed, such as a full-bleed background, or when a composite caller applies the shared frame to its complete empty-state surface to avoid a nested double border. The caller still owns the placeholder family, aspect ratio, and outer layout.
 
 ## Parameters
 
@@ -59,13 +59,14 @@ If `img_class` already contains an `object-*` utility, including responsive vari
 ## Current Contract
 
 - `image.liquid` is the base image primitive.
-- Frame-mode default preserves legacy product card, gallery, hero, slide, overlay, blog, and collection behavior.
+- Frame mode is the default for current callers: product media, the product card, cart line items, collection and blog cards, and the article image. The header logo passes `mode: 'natural'`.
+- `placeholder_style: 'plain'` and `position` are available API with no current caller; keep them working when changing the snippet.
 - Natural-mode is used for cases where preserving intrinsic ratio matters.
 - Focal points are owned by Shopify `image_tag` unless the caller passes an explicit whitelist `position`.
 
 ## Review Checklist
 
-- Do not bypass `image.liquid` with raw `<img>` unless explicitly justified.
+- Do not bypass `image.liquid` with raw `<img>` unless explicitly justified. Current exception: `templates/gift_card.liquid` renders without the main layout and outputs the shop logo with `image_tag` directly.
 - Do not use wrapper classes to express image fit; use `img_class`, `fit`, or `position`.
 - Do not default `position` before detecting whether the caller passed it.
 - Above-the-fold image changes require visual/performance review.

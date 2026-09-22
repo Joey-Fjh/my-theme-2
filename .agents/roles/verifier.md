@@ -18,9 +18,11 @@ filesystem-profile: read-only
 Apply at SOP step 7 (`AGENTS.md` Batch SOP):
 
 - `git grep` (or equivalent) for consumers before accepting any deletion.
+- When a batch deletes, renames, or changes a contract, search `docs/references/` for its paths and symbols.
 - Check CSS **layer** order, not only source order, when typography or field sizing is involved.
 - Verify rendered output when a claim depends on platform behavior (for example iOS form zoom).
 - Confirm the diff stays inside the recorded implementation surface.
+- A change to `AGENTS.md`, `docs/project.md`, `docs/references/`, `.agents/`, the client adapters, `package.json` scripts, or `.github/workflows/ci.yml` needs the user's approval recorded in `docs/agent/context.md`; without it, report the change as a defect.
 - Re-run the plan's named validators; do not inherit the implementer's pass/fail claims.
 
 ## Boundaries

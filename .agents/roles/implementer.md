@@ -27,7 +27,7 @@ filesystem-profile: workspace-write
 Use when delegating or when the user requests a portable execution prompt. Give the implementer only the context it needs:
 
 1. Read `AGENTS.md`, then `docs/agent/context.md` for the active plan and acceptance boundary.
-2. **Implementation surface:** list allowed paths. **Forbidden:** `config/settings_data.json`, `templates/*.json`, vendor/generated assets, and anything outside the surface unless the user widens it.
+2. **Implementation surface:** list allowed paths. **Forbidden:** `config/settings_data.json`, `templates/*.json`, `sections/*-group.json`, vendor/generated assets, and anything outside the surface unless the user widens it.
 3. **Tasks:** numbered checks from the plan.
 4. **Completion checks:** the plan's validators plus `npx prettier --check` on every changed file.
 5. Record progress and validation in `docs/agent/context.md`.

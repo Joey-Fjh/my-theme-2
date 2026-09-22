@@ -12,23 +12,29 @@ Use this skill for project-level architecture and static compatibility validatio
 
 ## Command Families
 
-- `npm.cmd run lint:theme` — slim generic architecture rules only.
+- `npm.cmd run lint:theme` — the five project rules listed below.
 - `npm.cmd run lint:liquid-syntax` — strict Liquid output parsing guard beyond ordinary Theme Check usage.
 - `npm.cmd run lint:compat` — first-party CSS, JS, and embedded Liquid `{% stylesheet %}` / `{% javascript %}` compatibility checks.
 - `npm.cmd run lint:compat:embedded` — embedded Liquid block scan; this is part of `lint:compat`, not `lint:theme`.
 - `npm.cmd run scan:compat` — rebuild Tailwind output, then run all compatibility checks.
 - `npm.cmd run test:theme-architecture` — focused fixture tests for the scripts above.
 - `npm.cmd run test:section-stylesheet-carry` — DOM tests for `SectionRefresher.carryInnerSectionStylesheet` extracted from `assets/https.js`.
+- `npm.cmd run test:motion-reveal-batch` — tests for the reveal batching helper in `assets/motion-reveal-batch.js`.
 - `npm.cmd run lint` — aggregate gate that includes the commands above when a broader check is requested.
 
 ## What `lint:theme` Covers
 
+Liquid files under `layout/`, `sections/`, `snippets/`, `blocks/`, and `templates/`; CSS in `tailwind/**/*.css`, `assets/*.css`, and Liquid `{% stylesheet %}` blocks. A Liquid file that fails to parse is reported.
+
 1. Do not `assign` or `capture` over protected Shopify Liquid runtime names.
 2. Static `role="tab"` elements must include `aria-selected` and `aria-controls` (`aria-*`, `:*`, or `x-bind:*` forms).
+3. At most one `{% stylesheet %}` and one `{% javascript %}` tag per file, with no Liquid output or tags inside them (`docs/references/style-system/css-architecture.md`, "Bundled Asset Tag Constraints").
+4. Scheme color variables take alpha as `rgba(var(--color-*), alpha)`, never `rgb(var(--color-*) / alpha)` (`docs/references/style-system/css-architecture.md`, "Color, Surface, And Inline Style").
+5. A `[data-motion-reveal]` selector must not hide its target (`opacity: 0`, `visibility: hidden`, `display: none`) unless the selector also names a runtime state attribute (`docs/references/architecture/motion-architecture.md`).
 
 ## What This Skill Does Not Enforce Yet
 
-Rules tied to undecided JS/CSS implementation architecture — such as specific Components, Alpine, HTTP, SectionRefresher, typography token, or CSS layer conventions — are intentionally not part of the current validator. `AGENTS.md` still governs those implementation rules separately.
+Other rules in `docs/references/` have no check yet, for example typography-tier placement (`heading-h*` only on headings), CSS layer placement, and JS runtime conventions. Review enforces them. Whether a rule gets a check is decided per rule by the user, following the `AGENTS.md` rule-ownership bullet.
 
 ## When To Run
 

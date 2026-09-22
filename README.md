@@ -114,9 +114,9 @@ git clone https://github.com/Joey-Fjh/my-skeleton-theme <theme-name>
 After starting, the derived theme makes these edits:
 
 - `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
-- Rewrite `PROJECT.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
+- Rewrite `docs/project.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
 - Empty `docs/agent/board.md` and `docs/agent/context.md`.
-- Resetting `config/settings_data.json` or `templates/*.json` needs its own authorization in the derived theme.
+- Resetting `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` needs its own authorization in the derived theme.
 
 Then deploy through Git:
 
@@ -126,7 +126,7 @@ Then deploy through Git:
 
 ## Repository Boundaries
 
-- Do not edit `config/settings_data.json` or `templates/*.json` without explicit authorization.
+- Do not edit `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` without explicit authorization.
 - Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
 - `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
 - `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` holds the plan under execution and its status; `docs/agent/board.md` holds open decisions.
@@ -134,7 +134,7 @@ Then deploy through Git:
 ## Documentation
 
 - [AGENTS.md](AGENTS.md): canonical repository rules and validation commands
-- [PROJECT.md](PROJECT.md): this repository's identity, inventory boundary, and accepted scope
+- [docs/project.md](docs/project.md): this repository's identity, inventory boundary, and accepted scope
 - [docs/agent/context.md](docs/agent/context.md): short current-state and cross-session handoff
 - [docs/references/](docs/references/): on-demand architecture and review references
 
