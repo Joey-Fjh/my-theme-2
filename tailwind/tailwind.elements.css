@@ -454,6 +454,20 @@ field
     resize: vertical;
 }
 
+/* Prevent iOS zoom on focus without disabling zoom globally */
+@media (width < theme(--breakpoint-pc)) {
+    .field,
+    .field-textarea,
+    .field-select,
+    input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='button']):not(
+            [type='submit']
+        ):not([type='reset']):not([type='image']),
+    textarea,
+    select {
+        font-size: max(16px, 1em);
+    }
+}
+
 /* select */
 @utility field-select {
     @apply field;
@@ -598,17 +612,19 @@ badge
 
 @utility badge-cart {
     @apply badge;
-    min-width: 1.125rem;
-    min-height: 1.125rem;
-    padding-inline: 0.3em;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    padding-inline: 0.35em;
     padding-block: 0;
-    font-size: 0.65rem;
+    font-size: 1.2rem;
+    line-height: 1.8rem;
 
     @media (width >= theme(--breakpoint-pc)) {
-        min-width: 1.25rem;
-        min-height: 1.25rem;
+        min-width: 1.8rem;
+        min-height: 1.8rem;
         padding-inline: 0.35em;
-        font-size: 0.7rem;
+        font-size: 1.2rem;
+        line-height: 1.8rem;
     }
 }
 

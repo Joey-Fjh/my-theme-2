@@ -47,7 +47,7 @@
             {
                 "type": "font_picker",
                 "id": "type_header_font",
-                "default": "mono",
+                "default": "inter_n4",
                 "label": "t:config.typography.heading_font"
             },
             {
@@ -57,7 +57,7 @@
             {
                 "type": "font_picker",
                 "id": "type_body_font",
-                "default": "mono",
+                "default": "inter_n4",
                 "label": "t:config.typography.body_font"
             },
             {
@@ -186,7 +186,7 @@
                 "max": 32,
                 "step": 1,
                 "unit": "px",
-                "default": 14,
+                "default": 16,
                 "label": "t:config.typography.body_font_size_mobile"
             },
             {
@@ -269,15 +269,6 @@
                 "max": 150,
                 "unit": "%",
                 "label": "t:config.typography.heading_scale",
-                "default": 100
-            },
-            {
-                "type": "range",
-                "id": "body_scale",
-                "min": 100,
-                "max": 150,
-                "unit": "%",
-                "label": "t:config.typography.body_scale",
                 "default": 100
             }
         ]

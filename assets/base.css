@@ -52,7 +52,7 @@ body {
     margin: 0;
     color: rgba(var(--color-foreground), 0.8);
     background-color: rgb(var(--color-background));
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
+    font-size: var(--font-body-size-mobile);
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
@@ -67,7 +67,7 @@ body > main {
 
 @media (width >= theme(--breakpoint-pc)) {
     body {
-        font-size: calc(var(--font-body-size) * var(--font-body-scale));
+        font-size: var(--font-body-size);
     }
 }
 
@@ -99,23 +99,23 @@ h1 {
 }
 
 h2 {
-    font-size: calc(var(--font-heading-scale) * 2rem);
+    font-size: calc(var(--font-heading-scale) * 2.2rem);
 }
 
 h3 {
-    font-size: calc(var(--font-heading-scale) * 1.7rem);
+    font-size: calc(var(--font-heading-scale) * 1.8rem);
 }
 
 h4 {
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
+    font-size: calc(var(--font-heading-scale) * 1.6rem);
 }
 
 h5 {
-    font-size: calc(var(--font-heading-scale) * 1.2rem);
+    font-size: calc(var(--font-heading-scale) * 1.5rem);
 }
 
 h6 {
-    font-size: calc(var(--font-heading-scale) * 1.1rem);
+    font-size: calc(var(--font-heading-scale) * 1.4rem);
 }
 
 @media (width >= theme(--breakpoint-pc)) {
@@ -124,23 +124,23 @@ h6 {
     }
 
     h2 {
-        font-size: calc(var(--font-heading-scale) * 2.4rem);
+        font-size: calc(var(--font-heading-scale) * 2.6rem);
     }
 
     h3 {
-        font-size: calc(var(--font-heading-scale) * 1.8rem);
+        font-size: calc(var(--font-heading-scale) * 2rem);
     }
 
     h4 {
-        font-size: calc(var(--font-heading-scale) * 1.5rem);
+        font-size: calc(var(--font-heading-scale) * 1.8rem);
     }
 
     h5 {
-        font-size: calc(var(--font-heading-scale) * 1.3rem);
+        font-size: calc(var(--font-heading-scale) * 1.6rem);
     }
 
     h6 {
-        font-size: calc(var(--font-heading-scale) * 1.2rem);
+        font-size: calc(var(--font-heading-scale) * 1.4rem);
     }
 }
 

@@ -685,9 +685,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 0.875);
+    font-size: max(14px, calc(var(--font-body-size-mobile) * 0.875));
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale));
+      font-size: calc(var(--font-body-size));
     }
     color: rgb(var(--color-foreground));
     --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
@@ -895,16 +895,18 @@
     border-style: solid;
     line-height: 1;
     white-space: nowrap;
-    min-width: 1.125rem;
-    min-height: 1.125rem;
-    padding-inline: 0.3em;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
+    padding-inline: 0.35em;
     padding-block: 0;
-    font-size: 0.65rem;
+    font-size: 1.2rem;
+    line-height: 1.8rem;
     @media (width >= 48rem) {
-      min-width: 1.25rem;
-      min-height: 1.25rem;
+      min-width: 1.8rem;
+      min-height: 1.8rem;
       padding-inline: 0.35em;
-      font-size: 0.7rem;
+      font-size: 1.2rem;
+      line-height: 1.8rem;
     }
   }
   .icons {
@@ -1541,9 +1543,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 2rem);
+    font-size: calc(var(--font-heading-scale) * 2.2rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2.4rem);
+      font-size: calc(var(--font-heading-scale) * 2.6rem);
     }
   }
   .heading-h3 {
@@ -1555,9 +1557,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.7rem);
+    font-size: calc(var(--font-heading-scale) * 1.8rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
+      font-size: calc(var(--font-heading-scale) * 2rem);
     }
   }
   .heading-h4 {
@@ -1569,9 +1571,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
+    font-size: calc(var(--font-heading-scale) * 1.6rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.5rem);
+      font-size: calc(var(--font-heading-scale) * 1.8rem);
     }
   }
   .heading-h6 {
@@ -1583,9 +1585,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.1rem);
+    font-size: calc(var(--font-heading-scale) * 1.4rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.2rem);
+      font-size: calc(var(--font-heading-scale) * 1.4rem);
     }
   }
   .heading-xl {
@@ -1609,9 +1611,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 1.375);
+    font-size: calc(var(--font-body-size-mobile) * 1.375);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.5);
+      font-size: calc(var(--font-body-size) * 1.5);
     }
   }
   .body-lg {
@@ -1621,9 +1623,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
+    font-size: calc(var(--font-body-size-mobile));
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.125);
+      font-size: calc(var(--font-body-size) * 1.125);
     }
   }
   .body-md {
@@ -1633,9 +1635,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 0.875);
+    font-size: max(14px, calc(var(--font-body-size-mobile) * 0.875));
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale));
+      font-size: calc(var(--font-body-size));
     }
   }
   .body-sm {
@@ -1645,9 +1647,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 0.75);
+    font-size: max(13px, calc(var(--font-body-size-mobile) * 0.75));
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale) * 0.875);
+      font-size: calc(var(--font-body-size) * 0.875);
     }
   }
   .body-xl {
@@ -1657,9 +1659,9 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 1.125);
+    font-size: calc(var(--font-body-size-mobile) * 1.125);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.25);
+      font-size: calc(var(--font-body-size) * 1.25);
     }
   }
   .body-base {
@@ -2080,7 +2082,7 @@
     margin: 0;
     color: rgba(var(--color-foreground), 0.8);
     background-color: rgb(var(--color-background));
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
+    font-size: var(--font-body-size-mobile);
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
@@ -2093,7 +2095,7 @@
   }
   @media (width >= 48rem) {
     body {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale));
+      font-size: var(--font-body-size);
     }
   }
   input, textarea, select, dialog {
@@ -2113,38 +2115,38 @@
     font-size: calc(var(--font-heading-scale) * 3rem);
   }
   h2 {
-    font-size: calc(var(--font-heading-scale) * 2rem);
+    font-size: calc(var(--font-heading-scale) * 2.2rem);
   }
   h3 {
-    font-size: calc(var(--font-heading-scale) * 1.7rem);
+    font-size: calc(var(--font-heading-scale) * 1.8rem);
   }
   h4 {
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
+    font-size: calc(var(--font-heading-scale) * 1.6rem);
   }
   h5 {
-    font-size: calc(var(--font-heading-scale) * 1.2rem);
+    font-size: calc(var(--font-heading-scale) * 1.5rem);
   }
   h6 {
-    font-size: calc(var(--font-heading-scale) * 1.1rem);
+    font-size: calc(var(--font-heading-scale) * 1.4rem);
   }
   @media (width >= 48rem) {
     h1 {
       font-size: calc(var(--font-heading-scale) * 4rem);
     }
     h2 {
-      font-size: calc(var(--font-heading-scale) * 2.4rem);
+      font-size: calc(var(--font-heading-scale) * 2.6rem);
     }
     h3 {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
+      font-size: calc(var(--font-heading-scale) * 2rem);
     }
     h4 {
-      font-size: calc(var(--font-heading-scale) * 1.5rem);
+      font-size: calc(var(--font-heading-scale) * 1.8rem);
     }
     h5 {
-      font-size: calc(var(--font-heading-scale) * 1.3rem);
+      font-size: calc(var(--font-heading-scale) * 1.6rem);
     }
     h6 {
-      font-size: calc(var(--font-heading-scale) * 1.2rem);
+      font-size: calc(var(--font-heading-scale) * 1.4rem);
     }
   }
   .layout {
@@ -2236,6 +2238,11 @@ button shopify-accelerated-checkout {
         var(--button-shadow-vertical-offset) var(--button-shadow-blur-radius)
         rgba(var(--color-foreground), var(--button-shadow-opacity));
   --shopify-accelerated-checkout-skeleton-background-color: var(--color-primary);
+}
+@media (width < 48rem) {
+  .field, .field-textarea, .field-select, input:not([type='checkbox']):not([type='radio']):not([type='hidden']):not([type='button']):not( [type='submit'] ):not([type='reset']):not([type='image']), textarea, select {
+    font-size: max(16px, 1em);
+  }
 }
 @layer components {
   .inline-submit-field {
@@ -2736,9 +2743,9 @@ button shopify-accelerated-checkout {
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 2rem);
+    font-size: calc(var(--font-heading-scale) * 2.2rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2.4rem);
+      font-size: calc(var(--font-heading-scale) * 2.6rem);
     }
   }
   .rte h4 {
@@ -2750,9 +2757,9 @@ button shopify-accelerated-checkout {
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.7rem);
+    font-size: calc(var(--font-heading-scale) * 1.8rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
+      font-size: calc(var(--font-heading-scale) * 2rem);
     }
   }
   .rte h5 {
@@ -2764,9 +2771,9 @@ button shopify-accelerated-checkout {
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
+    font-size: calc(var(--font-heading-scale) * 1.6rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.5rem);
+      font-size: calc(var(--font-heading-scale) * 1.8rem);
     }
   }
   .rte h6 {
@@ -2778,9 +2785,9 @@ button shopify-accelerated-checkout {
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.2rem);
+    font-size: calc(var(--font-heading-scale) * 1.5rem);
     @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.3rem);
+      font-size: calc(var(--font-heading-scale) * 1.6rem);
     }
   }
   .rte p {
@@ -2906,9 +2913,9 @@ button shopify-accelerated-checkout {
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale) * 0.75);
+    font-size: max(13px, calc(var(--font-body-size-mobile) * 0.75));
     @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * var(--font-body-scale) * 0.875);
+      font-size: calc(var(--font-body-size) * 0.875);
     }
     color: rgb(var(--color-foreground));
     @supports (color: color-mix(in lab, red, red)) {

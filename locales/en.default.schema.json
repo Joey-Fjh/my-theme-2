@@ -27,7 +27,6 @@
             "body_font": "Font",
             "body_font_size": "Font size (desktop)",
             "body_font_size_mobile": "Font size (mobile)",
-            "body_scale": "Body scale",
             "weight": "Weight",
             "line_height": "Line height",
             "letter_spacing": "Letter spacing",

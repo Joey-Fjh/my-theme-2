@@ -235,13 +235,13 @@
         letter-spacing: var(--font-body-letter-spacing);
         text-transform: var(--font-body-text-transform);
         word-break: break-word;
-        font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
+        font-size: var(--font-body-size-mobile);
         color: rgb(var(--color-foreground));
     }
 
     @media (width >= 48rem) {
         .product-info-blocks--product .product-info-blocks__vendor {
-            font-size: calc(var(--font-body-size) * var(--font-body-scale) * 1.125);
+            font-size: calc(var(--font-body-size) * 1.125);
         }
     }
 

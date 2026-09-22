@@ -76,6 +76,32 @@ The Skeleton's stable typography interface is `--font-body-*` and `--font-headin
 - Component-owned typography exceptions may live in component/snippet CSS when part of a reusable API. If a component overrides body size, it must not imply body sliders still control it unless wired to its own scoped API.
 - `.rte h1` through `.rte h6` map rich-text/merchant HTML headings and are independent from page outline semantics.
 
+**Usage example:** collection product card title — semantic outline `h2`, visual tier `heading-h6`:
+
+```liquid
+<h2 class="heading-h6">{{ product.title }}</h2>
+```
+
+**Scale at default settings** (`html { font-size: 62.5%; }`, mobile and desktop body base 16px):
+
+| Tier | Mobile | Desktop |
+| --- | --- | --- |
+| heading-h1 | 30px | 40px |
+| heading-h2 | 22px | 26px |
+| heading-h3 | 18px | 20px |
+| heading-h4 | 16px | 18px |
+| heading-h5 | 15px | 16px |
+| heading-h6 | 14px | 14px |
+| body-3xl | 22px | 24px |
+| body-2xl | 20px | 22px |
+| body-xl | 18px | 20px |
+| body-lg | 16px | 18px |
+| body-md | 14px (floor) | 16px |
+| body-sm | 13px (floor) | 14px |
+| body-xs | 12px (floor) | 12px |
+
+`heading-4xl` through `heading-xl` are unchanged. `body-md`, `body-sm`, and `body-xs` use `max()` floors on mobile so small ratios never drop below 14px, 13px, or 12px.
+
 Exact tier ratios, token math, and lint exceptions live in source and `lint:theme`.
 
 ## Color, Surface, And Inline Style
