@@ -1,7 +1,7 @@
 {% doc %}
-    Global pagination snippet with the default mother-template style.
+    Pagination links for a surrounding `{% paginate %}` tag.
 
-    Usage (must pass a paginate object from within a `{% paginate %}` block):
+    Usage:
 
     {% paginate collection.products by 24 %}
       <!-- your list -->
@@ -11,102 +11,55 @@
     @param {paginate} paginate_obj - Paginate object from a surrounding `{% paginate %}` tag.
 {% enddoc %}
 
-{%- liquid
-    assign pagination_data = paginate_obj
--%}
+{%- if paginate_obj and paginate_obj.pages > 1 -%}
+    <nav class="pagination" aria-label="{{ 'pagination.label' | t }}" data-pagination-nav>
+        {%- if paginate_obj.previous -%}
+            <a href="{{ paginate_obj.previous.url }}" class="pagination__link">
+                {%- render 'icons', icon: 'icon-chevron-left' -%}
+                <span>{{ 'pagination.previous' | t }}</span>
+            </a>
+        {%- endif -%}
 
-{%- if pagination_data and pagination_data.pages > 1 -%}
-    <nav
-        class="pagination py-10"
-        role="navigation"
-        data-pagination-nav
-        style="--pagination-font-size: 13px; --pagination-radius: 4px;"
-    >
-        <div class="pagination__inner">
-            {%- comment -%} PREVIOUS {%- endcomment -%}
-            {%- if pagination_data.previous -%}
-                <a
-                    href="{{ pagination_data.previous.url }}"
-                    class="pagination__button pagination__prev"
-                >
-                    {%- render 'icons', icon: 'icon-chevron-left' -%}
-                    <span>{{ 'pagination.previous' | t }}</span>
-                </a>
-            {%- else -%}
-                <span
-                    class="pagination__button pagination__prev pagination__button--disabled"
-                    aria-disabled="true"
-                >
-                    {%- render 'icons', icon: 'icon-chevron-left' -%}
-                </span>
-            {%- endif -%}
-
-            {%- comment -%} PAGES {%- endcomment -%}
-            <div class="pagination__pages-wrap">
-                <div class="pagination__pages">
-                    {%- for part in pagination_data.parts -%}
-                        {%- if part.is_link -%}
-                            <a
-                                href="{{ part.url }}"
-                                class="pagination__page"
-                            >
-                                {{- part.title -}}
-                            </a>
-                        {%- else -%}
-                            {%- if part.title == pagination_data.current_page -%}
-                                <span
-                                    class="pagination__page pagination__page--current"
-                                    aria-current="page"
-                                >
-                                    {{- part.title -}}
-                                </span>
-                            {%- else -%}
-                                <span class="pagination__page pagination__page--ellipsis">
-                                    {{- part.title -}}
-                                </span>
-                            {%- endif -%}
-                        {%- endif -%}
-                    {%- endfor -%}
-                </div>
-            </div>
-
-            {%- comment -%} NEXT {%- endcomment -%}
-            {%- if pagination_data.next -%}
-                <a
-                    href="{{ pagination_data.next.url }}"
-                    class="pagination__button pagination__next"
-                >
-                    <span>{{ 'pagination.next' | t }}</span>
-                    {%- render 'icons', icon: 'icon-chevron-right' -%}
-                </a>
-            {%- else -%}
-                <span
-                    class="pagination__button pagination__next pagination__button--disabled"
-                    aria-disabled="true"
-                >
-                    {%- render 'icons', icon: 'icon-chevron-right' -%}
-                </span>
-            {%- endif -%}
+        <div class="pagination__pages">
+            {%- for part in paginate_obj.parts -%}
+                {%- if part.is_link -%}
+                    <a href="{{ part.url }}" class="pagination__link">{{ part.title }}</a>
+                {%- elsif part.title == paginate_obj.current_page -%}
+                    <span class="pagination__link pagination__link--current" aria-current="page">
+                        {{- part.title -}}
+                    </span>
+                {%- else -%}
+                    <span class="pagination__link">{{ part.title }}</span>
+                {%- endif -%}
+            {%- endfor -%}
         </div>
+
+        {%- if paginate_obj.next -%}
+            <a href="{{ paginate_obj.next.url }}" class="pagination__link">
+                <span>{{ 'pagination.next' | t }}</span>
+                {%- render 'icons', icon: 'icon-chevron-right' -%}
+            </a>
+        {%- endif -%}
     </nav>
 {%- endif -%}
 
 {% stylesheet %}
-    .pagination {
-        list-style: none;
-    }
-
-    .pagination__inner {
+    /* One row; page numbers scroll sideways on narrow screens. */
+    .pagination,
+    .pagination__pages {
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        width: fit-content;
-        max-width: 100%;
-        margin-inline: auto;
     }
 
-    .pagination__button {
+    .pagination__pages {
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    .pagination__link {
         display: inline-flex;
+        min-width: 2.5rem;
         height: 2.5rem;
         flex-shrink: 0;
         align-items: center;
@@ -114,60 +67,15 @@
         gap: 0.25rem;
         padding-inline: 0.5rem;
         white-space: nowrap;
-        font-family: inherit;
-        font-size: var(--pagination-font-size);
-        border-radius: var(--pagination-radius);
     }
 
-    .pagination__button--disabled {
-        pointer-events: none;
-        cursor: default;
-        opacity: 0.4;
-    }
-
-    .pagination__page {
-        display: inline-flex;
-        height: 2.5rem;
-        min-width: 2.5rem;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: center;
-        padding-inline: 0.5rem;
-        font-family: inherit;
-        font-size: var(--pagination-font-size);
-        border-radius: var(--pagination-radius);
-    }
-
-    .pagination__page:focus-visible {
+    /* The scroll container clips outside rings; draw them inside the link. */
+    .pagination__pages .pagination__link:focus-visible {
         outline-offset: -2px;
     }
 
-    .pagination__page--current {
+    .pagination__link--current {
         background-color: rgb(var(--color-foreground));
         color: rgb(var(--color-background));
-    }
-
-    .pagination__page--current:focus-visible {
-        outline-color: rgb(var(--color-background));
-    }
-
-    .pagination__page--ellipsis {
-        cursor: default;
-        font-size: var(--pagination-font-size);
-    }
-
-    .pagination__pages-wrap {
-        max-width: 100%;
-        min-width: 0;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .pagination__pages {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        min-width: max-content;
-        margin-inline: auto;
     }
 {% endstylesheet %}

@@ -35,7 +35,6 @@ Bridge a CSS variable into `@theme inline` only when Liquid markup needs a Tailw
 Do not bridge variables that are only consumed inside CSS layer rules. Examples that intentionally stay direct `var()` consumption:
 
 - `--motion-duration-*`, `--motion-ease-*`
-- snippet-local variables such as `--pagination-*`
 
 ## Layer Ownership
 
@@ -107,7 +106,7 @@ Exact tier ratios and token math live in `tailwind/tailwind.typography.css`.
 - The first configured color scheme is the `:root` token fallback; it is not the implicit visible page-canvas decision.
 - `settings.page_canvas_color_scheme` explicitly owns the visible `<body>` canvas behind sections, during overscroll, and in areas without their own color-scheme scope.
 - Section, overlay, drawer, modal, and component color-scheme scopes override the body canvas normally.
-- Use one surface role per node: `color-{{ section.settings.color_scheme }}`, `surface-section`, or `surface-component`.
+- Use one surface role per node: `color-{{ section.settings.color_scheme }}` on the section frame, or `surface-component` on nested overlays such as dropdown panels.
 - Use semantic tokens or scheme utilities for theme UI; avoid hardcoded brand colors unless documented as a platform bridge or local effect.
 - Allowed inline styles: scoped CSS custom properties from Liquid, platform-required media values, and per-render geometry that static utilities cannot express.
 - Use semantic z-index utilities or variables for layered UI.
@@ -147,7 +146,7 @@ Four constraints govern CSS written from here on. Violations of 1-3 fail silentl
 
 1. **Plain CSS in `{% stylesheet %}`.** Shopify ships `{% stylesheet %}` content as written. `@apply`, `@utility`, and `@variant` never run there. Use plain CSS only: properties, nesting, pseudo-elements, keyframes, container queries, `:has()`, and direct `var()` consumption.
 
-2. **Subsetting compatibility.** A file's `{% stylesheet %}` classes may be used only within that file or files it directly renders. Cross-file use breaks once CSS lives in a subsetted block. Example: `sections/header.liquid` defines header layout classes consumed only by header markup and snippets the header renders.
+2. **Subsetting compatibility.** A file's `{% stylesheet %}` classes may be used only within that file or files it directly renders. Cross-file use breaks once CSS lives in a subsetted block. Example: `snippets/quantity-selector.liquid` defines control classes consumed by its own markup.
 
 3. **Shared vocabulary boundary.** The Tailwind build (`tailwind/tailwind.input.css` and imported `tailwind.*.css` layers) owns shared vocabulary: design tokens bridged into `@theme inline`, typography tiers, surfaces, layout vocabulary, reusable motion capabilities, and cross-cutting utilities. Component-specific selectors with a single render-tree owner belong in that owner's `{% stylesheet %}` block. CSS that must survive when the defining file is absent from a subsetted response stays in the Tailwind build. **Growth rule:** new shared-layer entries require either (a) 2+ unrelated consumers, or (b) an explicit accepted architecture decision recorded in this reference or `AGENTS.md`.
 

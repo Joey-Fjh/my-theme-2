@@ -3,11 +3,7 @@
     Icon color follows the active scheme's foreground via currentColor inheritance.
 
     @param {string} icon - The name of the SVG icon file (e.g., 'icon-chevron-down')
-    @param {string} [size] - Size variant: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'fill'.
-
-    'fill' skips fixed Tailwind size classes so a parent can control dimensions. Default is 'md'
-    (32px via h-8 w-8).
-
+    @param {string} [size] - Size variant: 'xs' | 'sm' | 'md'. Default is 'md' (32px).
     @param {string} [class] - Optional extra Tailwind classes applied to the wrapping span
 
     @example {%- render 'icons', icon: 'icon-chevron-down', class: 'rotate-180' -%}
@@ -19,16 +15,10 @@
     assign size_class = ''
 
     case icon_size
-        when 'fill'
-            assign size_class = ''
         when 'xs'
             assign size_class = 'h-4 w-4'
         when 'sm'
             assign size_class = 'h-6 w-6'
-        when 'lg'
-            assign size_class = 'h-10 w-10'
-        when 'xl'
-            assign size_class = 'h-12 w-12'
         else
             assign size_class = 'h-8 w-8'
     endcase

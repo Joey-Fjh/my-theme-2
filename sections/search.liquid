@@ -4,71 +4,49 @@
 
 <div
     data-section-id="{{ section.id }}"
-    class="full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="section color-{{ section.settings.color_scheme }}"
     style="
         --section-padding-top: {{ section.settings.padding_top | default: 0 }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
 >
-    <div class="layout container-page{% unless search.performed %} py-16 pc:py-20{% endunless %}">
-        <div class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}">
-            <h1 class="sr-only">{{ 'search.title' | t }}</h1>
+    <h1 class="sr-only">{{ 'search.title' | t }}</h1>
 
-            <form
-                action="{{ routes.search_url }}"
-                method="get"
-                role="search"
-                class="relative w-full"
-            >
-                <input type="hidden" name="options[prefix]" value="last">
-                <div class="mb-1 flex items-center gap-3 border-b border-theme-border pb-3 text-theme-text">
-                    {%- render 'icons', icon: 'icon-search', class: 'shrink-0' -%}
-                    <label class="sr-only" for="SearchInput-{{ section.id }}">
-                        {{ 'search.search' | t }}
-                    </label>
-                    <input
-                        id="SearchInput-{{ section.id }}"
-                        type="search"
-                        name="q"
-                        value="{{ terms | escape }}"
-                        class="search-section__input w-full flex-1 appearance-none border-none bg-transparent body-xl text-theme-text"
-                        placeholder="{{ 'search.search' | t }}"
-                    >
-                    <button type="submit" class="btn shrink-0">
-                        {{ 'search.search' | t }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <form action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="options[prefix]" value="last">
+        <label class="sr-only" for="SearchInput-{{ section.id }}">
+            {{ 'search.search' | t }}
+        </label>
+        {%- render 'icons', icon: 'icon-search' -%}
+        <input
+            id="SearchInput-{{ section.id }}"
+            type="search"
+            name="q"
+            value="{{ terms | escape }}"
+            class="search-section__input field"
+            placeholder="{{ 'search.search' | t }}"
+        >
+        <button type="submit" class="btn">{{ 'search.search' | t }}</button>
+    </form>
 
     {%- if search.performed -%}
-        <div class="layout container-page pb-10">
-            {%- paginate search.results by 12 -%}
-                {%- if search.results_count == 0 -%}
-                    <p class="py-10 text-center body-lg">
-                        {{ 'search.no_results_html' | t: terms: terms }}
-                    </p>
-                {%- else -%}
-                    <ul class="flex flex-col gap-4">
-                        {%- for item in search.results -%}
-                            <li>
-                                <a
-                                    href="{{ item.url }}"
-                                    class="body-lg underline underline-offset-4"
-                                >
-                                    {{- item.title | escape -}}
-                                </a>
-                            </li>
-                        {%- endfor -%}
-                    </ul>
-                {%- endif -%}
+        {%- paginate search.results by 12 -%}
+            {%- if search.results_count == 0 -%}
+                <p class="body-lg">{{ 'search.no_results_html' | t: terms: terms }}</p>
+            {%- else -%}
+                <ul>
+                    {%- for item in search.results -%}
+                        <li>
+                            <a class="body-lg underline underline-offset-4" href="{{ item.url }}">
+                                {{- item.title | escape -}}
+                            </a>
+                        </li>
+                    {%- endfor -%}
+                </ul>
+            {%- endif -%}
 
-                <div class="mt-8">
-                    {%- render 'pagination', paginate_obj: paginate -%}
-                </div>
-            {%- endpaginate -%}
-        </div>
+            {%- render 'pagination', paginate_obj: paginate -%}
+        {%- endpaginate -%}
     {%- endif -%}
 </div>
 
@@ -84,7 +62,6 @@
 {
     "name": "t:general.search",
     "tag": "section",
-    "class": "section",
     "enabled_on": {
         "templates": ["search"]
     },

@@ -1,26 +1,10 @@
-{%- comment -%}
-    Renders the country picker using Alpine.js (like language switcher)
-    Accepts:
-      - localPosition: used for form ID
-{%- endcomment -%}
-
 {%- liquid
     assign currencies = localization.available_countries | map: 'currency' | map: 'iso_code' | uniq
-    assign popular_countries = localization.available_countries | where: 'popular?' | sort: 'name'
-
-    assign show_popular_countries = false
-    if localization.available_countries.size > 9 and popular_countries.size > 1
-        assign show_popular_countries = true
-    endif
-
     assign show_currencies = false
     if currencies.size > 1
         assign show_currencies = true
     endif
-%}
-
-{%- assign current_country = localization.country.iso_code -%}
-{%- assign available_countries = localization.available_countries -%}
+-%}
 
 {%- capture localization_content -%}
     <button
@@ -30,7 +14,6 @@
         :aria-expanded="open"
         aria-haspopup="true"
         aria-controls="country-list-{{ localPosition }}"
-        class="localization-toggle"
     >
         <span>{{ localization.country.name }}</span>
         {% if show_currencies %}
@@ -47,34 +30,14 @@
         class="localization-menu"
         :class="{ 'localization-menu--align-end': alignEnd }"
     >
-        {%- if show_popular_countries -%}
-            <div>
-                <div>{{ 'collections.popular_countries' | t }}</div>
-                {%- for country in popular_countries -%}
-                    {%- assign is_current_country = false -%}
-                    {%- if country.iso_code == current_country -%}
-                        {%- assign is_current_country = true -%}
-                    {%- endif -%}
-                    {%- render 'localization-option',
-                        submit_name: 'country_code',
-                        submit_value: country.iso_code,
-                        is_current: is_current_country,
-                        label: country.name,
-                        show_currency: show_currencies,
-                        currency_iso: country.currency.iso_code,
-                        currency_symbol: country.currency.symbol
-                    -%}
-                {%- endfor -%}
-            </div>
-        {%- endif -%}
-
         <div>
-            {%- for country in available_countries -%}
-                {%- unless popular_countries contains country -%}
-                    {%- assign is_current_country = false -%}
-                    {%- if country.iso_code == current_country -%}
-                        {%- assign is_current_country = true -%}
-                    {%- endif -%}
+            {%- for country in localization.available_countries -%}
+                    {%- liquid
+                        assign is_current_country = false
+                        if country.iso_code == localization.country.iso_code
+                            assign is_current_country = true
+                        endif
+                    -%}
                     {%- render 'localization-option',
                         submit_name: 'country_code',
                         submit_value: country.iso_code,
@@ -84,7 +47,6 @@
                         currency_iso: country.currency.iso_code,
                         currency_symbol: country.currency.symbol
                     -%}
-                {%- endunless -%}
             {%- endfor -%}
         </div>
     </div>

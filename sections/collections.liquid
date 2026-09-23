@@ -1,94 +1,48 @@
 <div
     data-section-id="{{ section.id }}"
-    class="full-width h-full color-{{ section.settings.color_scheme }} surface-section"
+    class="section color-{{ section.settings.color_scheme }}"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <div class="layout container-page">
-        <div class="relative mb-8 pt-14 text-center pc:mb-10 pc:pt-25">
-            <div class="mx-auto flex flex-col gap-3 pc:gap-6">
-                <h1 class="heading-2xl">
-                    {{ 'collections.list_heading' | t }}
-                </h1>
-            </div>
+    <h1 class="heading-2xl">{{ 'collections.list_heading' | t }}</h1>
+
+    {%- paginate collections by 12 -%}
+        <div class="grid-list" data-collection-grid>
+            {%- for collection in collections -%}
+                <a href="{{ collection.url }}">
+                    {%- assign image_loading = 'lazy' -%}
+                    {%- if forloop.first -%}
+                        {%- assign image_loading = 'eager' -%}
+                    {%- endif -%}
+                    {%- assign collection_card_image = collection.featured_image -%}
+                    {%- assign image_alt = collection_card_image.alt
+                        | default: collection.title
+                        | escape
+                    -%}
+                    {%- render 'image',
+                        image: collection_card_image,
+                        placeholder_key: 'collection-1',
+                        alt: image_alt,
+                        width: collection_card_image.width,
+                        sizes: '(min-width: 1200px) 33vw, (min-width: 800px) 50vw, 100vw',
+                        widths: '400,700,1000,1200,1600',
+                        loading: image_loading
+                    -%}
+                    <span class="body-lg">{{ collection.title }}</span>
+                </a>
+            {%- endfor -%}
         </div>
 
-        {%- paginate collections by 12 -%}
-            <div>
-                {% comment %} Collection Grid {% endcomment %}
-                <div
-                    class="grid grid-cols-2 gap-1.5 pb-8 pc:grid-cols-3 pc:gap-2 pc:pb-10 fw:grid-cols-4"
-                    data-collection-grid
-                >
-                    {%- for collection in collections -%}
-                        <a
-                            href="{{ collection.url }}"
-                            class="block bg-theme-bg"
-                        >
-                            {%- comment -%} Image {%- endcomment -%}
-                            <div class="relative aspect-square bg-theme-bg">
-                                {%- capture sizes -%}
-                                        (max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw
-                                    {%- endcapture -%}
-
-                                {%- capture widths -%}
-                                        300,450,600
-                                    {%- endcapture -%}
-
-                                {%- assign image_loading = 'lazy' -%}
-                                {%- if forloop.index <= 4 -%}
-                                    {%- assign image_loading = 'eager' -%}
-                                {%- endif -%}
-
-                                {%- assign collection_card_image = collection.featured_image -%}
-                                {%- assign collection_placeholder_index = forloop.index0
-                                    | modulo: 6
-                                    | plus: 1
-                                -%}
-                                {%- assign collection_placeholder_key = 'collection-'
-                                    | append: collection_placeholder_index
-                                -%}
-                                {%- assign image_alt = collection_card_image.alt
-                                    | default: collection.title
-                                    | escape
-                                -%}
-                                {%- render 'image',
-                                    image: collection_card_image,
-                                    placeholder_key: collection_placeholder_key,
-                                    alt: image_alt,
-                                    width: collection_card_image.width,
-                                    sizes: sizes,
-                                    widths: widths,
-                                    loading: image_loading,
-                                    wrapper_class: 'h-full w-full',
-                                    img_class: 'h-full w-full object-cover'
-                                -%}
-                            </div>
-
-                            {%- comment -%} Info {%- endcomment -%}
-                            <div class="px-2 py-1.5 pc:px-3 pc:py-2">
-                                <span class="min-w-0 body-lg break-words">
-                                    {{- collection.title -}}
-                                </span>
-                            </div>
-                        </a>
-                    {%- endfor -%}
-                </div>
-
-                {% comment %} Pagination {% endcomment %}
-                {%- render 'pagination', paginate_obj: paginate -%}
-            </div>
-        {% endpaginate %}
-    </div>
+        {%- render 'pagination', paginate_obj: paginate -%}
+    {% endpaginate %}
 </div>
 
 {% schema %}
 {
     "name": "t:general.collections_grid",
     "tag": "section",
-    "class": "section",
     "enabled_on": {
         "templates": ["list-collections"]
     },

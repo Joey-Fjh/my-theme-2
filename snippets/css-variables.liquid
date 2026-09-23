@@ -59,7 +59,7 @@
 
     {% comment %} last result: body, .color-sheme-1{}, .color-sheme-2{} ... {% endcomment %}
     {{ scheme_classes | prepend: 'body' }} {
-        color: rgba(var(--color-foreground), 0.8);
+        color: rgb(var(--color-foreground));
         background-color: rgb(var(--color-background));
     }
 

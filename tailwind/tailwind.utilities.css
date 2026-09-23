@@ -1,19 +1,10 @@
-@utility container-page {
-    @apply relative grid w-full;
-
-    grid-template-columns:
-        minmax(var(--page-margin), 1fr)
-        minmax(0, var(--page-width))
-        minmax(var(--page-margin), 1fr);
-
-    & > * {
-        grid-column: 2;
-    }
-}
-
-/* Surface helpers — section gradient and component overlay backgrounds. */
-@utility surface-section {
-    background-image: var(--gradient-background);
+/* The one grid for repeated items (cards, articles, media). Items are not stretched,
+   so an image's height follows its aspect ratio instead of the tallest card. */
+@utility grid-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+    align-items: start;
+    gap: 2rem;
 }
 
 @utility surface-component {

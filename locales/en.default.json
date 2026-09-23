@@ -85,13 +85,11 @@
     },
     "collections": {
         "no_products": "No products found.",
-        "list_heading": "Collections",
-        "popular_countries": "Popular countries/regions"
+        "list_heading": "Collections"
     },
     "footer": {
         "follow_on_shop": "Follow on Shop",
-        "all_rights_reserved": "All rights reserved.",
-        "default_link": "Link {{ number }}"
+        "all_rights_reserved": "All rights reserved."
     },
     "gift_card": {
         "add_to_apple_wallet": "Add to Apple Wallet",
@@ -134,6 +132,7 @@
         "success_message": "Thanks for subscribing."
     },
     "pagination": {
+        "label": "Pagination",
         "previous": "Previous",
         "next": "Next"
     },
@@ -149,7 +148,6 @@
             "sold_out": "Sold out",
             "maximum_in_cart": "Maximum in cart",
             "only_in_stock_html": "Only {{ quantity }} in stock",
-            "buy_it_now": "Buy it now",
             "unavailable": "Unavailable",
             "selling_plan": {
                 "purchase_options": "Purchase options"
@@ -172,7 +170,6 @@
     "accessibility": {
         "skip_to_content": "Skip to content",
         "required": "Required",
-        "mobile_menu": "Mobile Menu",
         "main_menu": "Main menu",
         "search": "Search",
         "cart": "Cart",

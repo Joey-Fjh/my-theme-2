@@ -40,7 +40,7 @@
     @param {number} [height] - The highest resolution height of the image to be rendered
     @param {string} [crop] - The crop position of the image
     @param {string} [widths] - Optional widths for srcset generation (comma-separated list of numbers)
-    @param {string} [sizes] - Optional sizes attribute for responsive images
+    @param {string} [sizes] - Sizes for the layout width, never smaller than the rendered width at the browser's default font size (default: '100vw'). Lazy images get an 'auto, ' prefix. See docs/references/style-system/image-display-contract.md.
     @param {string} [loading] - Optional loading attribute for the img tag ('lazy' or 'eager')
     @param {string} [decoding] - Optional decoding attribute for the img tag ('async', 'sync' or 'auto')
     @param {string} [alt] - Alt text for the image (defaults to empty string for decorative images)
@@ -71,6 +71,12 @@
     assign sizes = sizes | default: '100vw'
 
     assign loading = loading | default: 'lazy'
+
+    # A lazy image lets supporting browsers size it from layout; the given sizes stay as the fallback.
+    assign sizes_start = sizes | strip | slice: 0, 4 | downcase
+    if loading == 'lazy' and sizes_start != 'auto'
+        assign sizes = 'auto, ' | append: sizes
+    endif
     assign decoding = decoding | default: 'async'
     assign fetchpriority = fetchpriority
     assign placeholder_aspect_ratio = placeholder_aspect_ratio | default: '4/3'
@@ -159,10 +165,6 @@
     assign img_class_tokens = img_class | split: ' '
     for img_class_token in img_class_tokens
         if img_class_token == 'object-cover' or img_class_token == 'object-contain' or img_class_token == 'object-fill' or img_class_token == 'object-none' or img_class_token == 'object-scale-down'
-            assign has_object_fit = true
-            break
-        endif
-        if img_class_token contains ':object-cover' or img_class_token contains ':object-contain' or img_class_token contains ':object-fill' or img_class_token contains ':object-none' or img_class_token contains ':object-scale-down'
             assign has_object_fit = true
             break
         endif

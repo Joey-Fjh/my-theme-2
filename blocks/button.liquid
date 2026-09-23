@@ -1,25 +1,14 @@
 {%- if block.settings.label != blank and block.settings.link != blank -%}
-    <div class="theme-block-button" {{ block.shopify_attributes }}>
+    <div {{ block.shopify_attributes }}>
         <a class="btn" href="{{ block.settings.link }}">
             {{- block.settings.label | escape -}}
         </a>
     </div>
 {%- elsif request.design_mode -%}
-    <div class="theme-block-button theme-block-button--placeholder" {{ block.shopify_attributes }}>
+    <div {{ block.shopify_attributes }}>
         {{ 'blocks.button.placeholders.empty' | t }}
     </div>
 {%- endif -%}
-
-{% stylesheet %}
-    .theme-block-button--placeholder {
-        display: inline-flex;
-        min-height: 2.75rem;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        border: 1px dashed rgb(var(--color-border));
-        color: rgb(var(--color-foreground));
-    }
-{% endstylesheet %}
 
 {% schema %}
 {

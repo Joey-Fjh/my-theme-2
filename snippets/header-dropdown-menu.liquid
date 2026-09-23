@@ -9,7 +9,7 @@
     @click.outside="closeAndDeactivate()"
     @keydown="onMenuKeydown($event)"
 >
-    <ul class="flex items-center gap-6" role="list">
+    <ul role="list">
         {%- for link in section.settings.menu.links -%}
             <li class="relative">
                 {%- if link.links != blank -%}
@@ -19,95 +19,71 @@
                         data-deep="1"
                     >
                         <summary
-                            class="dropdown-trigger flex items-center gap-1"
+                            class="dropdown-trigger"
                             id="HeaderMenu-{{ link.handle }}"
                             :aria-expanded="$el.parentElement.open"
                         >
-                            <span class="flex items-center gap-3">
-                                <span>
-                                    {{ link.title | escape }}
-                                </span>
-                                {% render 'icons',
-                                    icon: 'icon-chevron-down',
-                                    class: 'dropdown-icon dropdown-icon--down'
-                                %}
+                            <span>
+                                {{ link.title | escape }}
                             </span>
+                            {% render 'icons',
+                                icon: 'icon-chevron-down',
+                                class: 'dropdown-icon dropdown-icon--down'
+                            %}
                         </summary>
 
                         <ul
-                            class="dropdown-panel dropdown-open color-{{ section.settings.color_scheme }} [inset-inline-start:0] top-[calc(100%+1.5rem)] mt-0 min-w-56 surface-component p-3"
+                            class="dropdown-panel dropdown-open color-{{ section.settings.color_scheme }} surface-component"
                             role="list"
                             tabindex="-1"
                         >
                             {%- for childlink in link.links -%}
-                                <li class="w-full{% if childlink.links != blank %} relative{% endif %}">
+                                <li class="{% if childlink.links != blank %} relative{% endif %}">
                                     {%- if childlink.links == blank -%}
-                                        {% capture childlink_classes %}
-                                            block w-full whitespace-nowrap px-4 py-2 text-theme-text
-                                            {% if childlink.current %} font-medium {% endif %}
-                                        {% endcapture %}
-
-                                        {%- capture childlink_attributes -%}
-                                            {%- if childlink.current -%}
+                                        <a
+                                            class="underline underline-offset-4"
+                                            href="{{ childlink.url }}"
+                                            {% if childlink.current %}
                                                 aria-current="page"
-                                            {%- endif -%}
-                                        {%- endcapture -%}
-
-                                        {%- assign child_link_text = childlink.title | escape -%}
-                                        {%- render 'link',
-                                            text: child_link_text,
-                                            class: childlink_classes,
-                                            href: childlink.url,
-                                            variant: 'underline',
-                                            attributes: childlink_attributes
-                                        -%}
+                                            {% endif %}
+                                        >
+                                            {{ childlink.title | escape }}
+                                        </a>
                                     {%- else -%}
                                         <details
-                                            class="dropdown relative w-full"
+                                            class="dropdown relative"
                                             data-dropdown
                                             data-deep="2"
                                         >
                                             <summary
-                                                class="dropdown-trigger flex w-full items-center justify-between gap-6 px-4 py-2"
+                                                class="dropdown-trigger"
                                                 id="HeaderMenu-{{ childlink.handle }}"
                                                 :aria-expanded="$el.parentElement.open"
                                             >
-                                                <span class="whitespace-nowrap text-theme-text{% if childlink.current %} font-medium{% endif %}">
+                                                <span>
                                                     {{ childlink.title | escape }}
                                                 </span>
                                                 {% render 'icons',
                                                     icon: 'icon-chevron-down',
-                                                    class: 'dropdown-icon dropdown-icon--tilt shrink-0'
+                                                    class: 'dropdown-icon dropdown-icon--tilt'
                                                 %}
                                             </summary>
 
                                             <ul
-                                                class="dropdown-panel dropdown-open inset-s-full [inset-inline-start:calc(100%+1.5rem)] top-0 mt-0 p-3 color-{{ section.settings.color_scheme }} surface-component"
+                                                class="dropdown-panel dropdown-open color-{{ section.settings.color_scheme }} surface-component"
                                                 role="list"
                                             >
                                                 {%- for grandChildLink in childlink.links -%}
                                                     <li>
-                                                        {%- capture grand_child_link_classes -%}
-                                                            block w-full whitespace-nowrap px-4 py-2 text-theme-text
-                                                            {% if grandChildLink.current %} font-medium {% endif %}
-                                                        {%- endcapture -%}
-
-                                                        {%- capture grand_child_link_attributes -%}
-                                                            {%- if grandChildLink.current -%}
+                                                        <a
+                                                            class="underline underline-offset-4"
+                                                            href="{{ grandChildLink.url }}"
+                                                            {% if grandChildLink.current %}
                                                                 aria-current="page"
-                                                            {%- endif -%}
-                                                        {%- endcapture -%}
-
-                                                        {%- assign grand_child_link_text = grandChildLink.title
-                                                            | escape
-                                                        -%}
-                                                        {%- render 'link',
-                                                            text: grand_child_link_text,
-                                                            class: grand_child_link_classes,
-                                                            href: grandChildLink.url,
-                                                            variant: 'underline',
-                                                            attributes: grand_child_link_attributes
-                                                        -%}
+                                                            {% endif %}
+                                                        >
+                                                            {{ grandChildLink.title | escape }}
+                                                        </a>
                                                     </li>
                                                 {%- endfor -%}
                                             </ul>
@@ -118,19 +94,15 @@
                         </ul>
                     </details>
                 {%- else -%}
-                    {%- capture link_attributes -%}
-                        {%- if link.current -%}
+                    <a
+                        class="underline underline-offset-4"
+                        href="{{ link.url }}"
+                        {% if link.current %}
                             aria-current="page"
-                        {%- endif -%}
-                    {%- endcapture -%}
-
-                    {%- assign nav_link_text = link.title | escape -%}
-                    {%- render 'link',
-                        text: nav_link_text,
-                        href: link.url,
-                        variant: 'underline',
-                        attributes: link_attributes
-                    -%}
+                        {% endif %}
+                    >
+                        {{ link.title | escape }}
+                    </a>
                 {%- endif -%}
             </li>
         {%- endfor -%}

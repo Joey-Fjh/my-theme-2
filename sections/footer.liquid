@@ -1,77 +1,45 @@
 <footer
     data-section-id="{{ section.id }}"
-    class="full-width relative color-{{ section.settings.color_scheme }}"
+    class="section color-{{ section.settings.color_scheme }}"
 >
-    <div class="container-page">
-        <div class="relative p-12">
-            <div class="z-10 flex flex-col gap-12 pc:mb-12">
-                <div
-                    class="grid grid-cols-1 gap-x-4 gap-y-10 pc:grid-cols-3 pc:gap-20"
-                >
-                    {% for block in section.blocks %}
-                        {% if block.type == 'link_column' %}
-                            <div {{ block.shopify_attributes }}>
-                                <h2 class="mb-6 heading-h2 pc:mb-10">
-                                    {{ block.settings.heading }}
-                                </h2>
-                                <ul class="flex flex-col gap-3">
-                                    {% assign links_menu = block.settings.menu %}
-                                    {% if links_menu != blank and links_menu.links != blank %}
-                                        {% for link in links_menu.links %}
-                                            <li>
-                                                {% render 'link',
-                                                    text: link.title,
-                                                    variant: 'underline',
-                                                    href: link.url
-                                                %}
-                                            </li>
-                                        {% endfor %}
-                                    {% else %}
-                                        {% for i in (1..4) %}
-                                            <li>
-                                                {%- assign link_text = 'footer.default_link'
-                                                    | t: number: i
-                                                -%}
-                                                <span class="underline underline-offset-4">
-                                                    {{ link_text }}
-                                                </span>
-                                            </li>
-                                        {% endfor %}
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
+    {% for block in section.blocks %}
+        {% if block.type == 'link_column' %}
+            {% assign links_menu = block.settings.menu %}
+            {% if links_menu != blank and links_menu.links != blank %}
+                <div {{ block.shopify_attributes }}>
+                    <h2 class="heading-h2">{{ block.settings.heading }}</h2>
+                    <ul>
+                        {% for link in links_menu.links %}
+                            <li>
+                                <a class="underline underline-offset-4" href="{{ link.url }}">
+                                    {{ link.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
 
-                {% if shop.features.follow_on_shop? %}
-                    <div class="flex flex-col gap-3">
-                        <p>{{ 'footer.follow_on_shop' | t }}</p>
-                        <div>
-                            {{ shop | login_button: action: 'follow' }}
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-
-            <div
-                class="z-10 flex flex-col gap-4 border-t border-theme-border pt-6 pc:flex-row pc:items-center pc:justify-end"
-            >
-                <span class="text-start pc:text-end">
-                    {{ 'now' | date: '%Y' }}
-                    {{ shop.name | escape }}
-                    {{ 'footer.all_rights_reserved' | t }}
-                </span>
-            </div>
+    {% if shop.features.follow_on_shop? %}
+        <div>
+            <p>{{ 'footer.follow_on_shop' | t }}</p>
+            {{ shop | login_button: action: 'follow' }}
         </div>
-    </div>
+    {% endif %}
+
+    <p>
+        {{ 'now' | date: '%Y' }}
+        {{ shop.name | escape }}
+        {{ 'footer.all_rights_reserved' | t }}
+    </p>
 </footer>
 
 {% schema %}
 {
     "name": "t:general.footer",
     "tag": "section",
-    "class": "section footer",
     "limit": 1,
     "enabled_on": {
         "groups": ["footer"]

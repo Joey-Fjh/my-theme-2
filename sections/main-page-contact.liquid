@@ -1,161 +1,107 @@
 <div
     data-section-id="{{ section.id }}"
-    class="full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="section color-{{ section.settings.color_scheme }}"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <div class="layout container-page">
-        <div class="mx-auto w-full max-w-2xl py-10">
-            <div class="flex flex-col gap-6">
-                <div>
-                    <h1 class="text-center heading-xl">
-                        {{ page.title }}
-                    </h1>
-                    {%- if page.content != blank -%}
-                        <div class="rte rte--compact mt-3 text-center">
-                            {{ page.content }}
-                        </div>
-                    {%- endif -%}
-                </div>
+    <h1 class="heading-xl">{{ page.title }}</h1>
+    {%- if page.content != blank -%}
+        <div class="rte">{{ page.content }}</div>
+    {%- endif -%}
 
-                {%- form 'contact',
-                    return_to: 'back',
-                    data-shopify-captcha: 'true',
-                    class: 'mt-6 flex flex-col gap-5 pc:mt-8 pc:gap-6'
-                -%}
-                    {%- if form.posted_successfully? -%}
-                        <div
-                            class="p-4 text-center"
-                            role="status"
-                        >
-                            {{ 'sections.main-page-contact.defaults.success_message' | t }}
-                        </div>
-                    {%- endif -%}
-
-                    {%- if form.errors -%}
-                        <div
-                            id="ContactFormErrors-{{ section.id }}"
-                            class="p-4 text-error-text"
-                            role="alert"
-                        >
-                            {{ form.errors | default_errors }}
-                        </div>
-                    {%- endif -%}
-
-                    {%- comment -%} First name & Last name {%- endcomment -%}
-                    <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
-                        <div class="flex flex-col gap-1.5">
-                            <label
-                                for="ContactFirstName-{{ section.id }}"
-                            >
-                                {{- 'contact.first_name' | t -}}
-                            </label>
-                            <input
-                                type="text"
-                                id="ContactFirstName-{{ section.id }}"
-                                name="contact[first_name]"
-                                placeholder="{{ 'contact.first_name_placeholder' | t }}"
-                                autocomplete="given-name"
-                                class="field"
-                            >
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label
-                                for="ContactLastName-{{ section.id }}"
-                            >
-                                {{- 'contact.last_name' | t -}}
-                            </label>
-                            <input
-                                type="text"
-                                id="ContactLastName-{{ section.id }}"
-                                name="contact[last_name]"
-                                placeholder="{{ 'contact.last_name_placeholder' | t }}"
-                                autocomplete="family-name"
-                                class="field"
-                            >
-                        </div>
-                    </div>
-
-                    {%- comment -%} Email & Phone {%- endcomment -%}
-                    <div class="grid grid-cols-1 gap-4 pc:grid-cols-2 pc:gap-5">
-                        <div class="flex flex-col gap-1.5">
-                            <label
-                                for="ContactEmail-{{ section.id }}"
-                            >
-                                {{- 'contact.email' | t -}}
-                                <span aria-hidden="true">*</span>
-                                <span class="sr-only">{{ 'accessibility.required' | t }}</span>
-                            </label>
-                            <input
-                                type="email"
-                                id="ContactEmail-{{ section.id }}"
-                                name="contact[email]"
-                                placeholder="{{ 'contact.email_placeholder' | t }}"
-                                autocomplete="email"
-                                required
-                                aria-required="true"
-                                class="field"
-                                {% if form.errors contains 'email' %}
-                                    aria-invalid="true"
-                                    aria-describedby="ContactFormErrors-{{ section.id }}"
-                                {% endif %}
-                            >
-                        </div>
-                        <div class="hidden flex-col gap-1.5 pc:flex">
-                            <label
-                                for="ContactPhone-{{ section.id }}"
-                            >
-                                {{- 'contact.phone' | t -}}
-                            </label>
-                            <input
-                                type="tel"
-                                id="ContactPhone-{{ section.id }}"
-                                name="contact[phone]"
-                                placeholder="{{ 'contact.phone_placeholder' | t }}"
-                                autocomplete="tel"
-                                class="field"
-                            >
-                        </div>
-                    </div>
-
-                    {%- comment -%} Message {%- endcomment -%}
-                    <div class="flex flex-col gap-1.5">
-                        <label for="ContactMessage-{{ section.id }}">
-                            {{- 'contact.message' | t -}}
-                        </label>
-                        <textarea
-                            id="ContactMessage-{{ section.id }}"
-                            name="contact[body]"
-                            placeholder="{{ 'contact.message_placeholder' | t }}"
-                            rows="4"
-                            class="min-h-24 field resize-none pc:min-h-28"
-                            {% if form.errors contains 'body' %}
-                                aria-invalid="true"
-                                aria-describedby="ContactFormErrors-{{ section.id }}"
-                            {% endif %}
-                        ></textarea>
-                    </div>
-
-                    {%- comment -%} Submit {%- endcomment -%}
-                    <button
-                        type="submit"
-                        class="btn w-full body-xl"
-                    >
-                        {{ 'sections.main-page-contact.defaults.button_text' | t }}
-                    </button>
-                {%- endform -%}
+    {%- form 'contact', return_to: 'back', data-shopify-captcha: 'true' -%}
+        {%- if form.posted_successfully? -%}
+            <div role="status">
+                {{ 'sections.main-page-contact.defaults.success_message' | t }}
             </div>
+        {%- endif -%}
+
+        {%- if form.errors -%}
+            <div id="ContactFormErrors-{{ section.id }}" role="alert">
+                {{ form.errors | default_errors }}
+            </div>
+        {%- endif -%}
+
+        <div>
+            <label for="ContactFirstName-{{ section.id }}">{{ 'contact.first_name' | t }}</label>
+            <input
+                type="text"
+                id="ContactFirstName-{{ section.id }}"
+                name="contact[first_name]"
+                placeholder="{{ 'contact.first_name_placeholder' | t }}"
+                autocomplete="given-name"
+                class="field"
+            >
         </div>
-    </div>
+        <div>
+            <label for="ContactLastName-{{ section.id }}">{{ 'contact.last_name' | t }}</label>
+            <input
+                type="text"
+                id="ContactLastName-{{ section.id }}"
+                name="contact[last_name]"
+                placeholder="{{ 'contact.last_name_placeholder' | t }}"
+                autocomplete="family-name"
+                class="field"
+            >
+        </div>
+        <div>
+            <label for="ContactEmail-{{ section.id }}">
+                {{ 'contact.email' | t }}
+                <span aria-hidden="true">*</span>
+                <span class="sr-only">{{ 'accessibility.required' | t }}</span>
+            </label>
+            <input
+                type="email"
+                id="ContactEmail-{{ section.id }}"
+                name="contact[email]"
+                placeholder="{{ 'contact.email_placeholder' | t }}"
+                autocomplete="email"
+                required
+                aria-required="true"
+                class="field"
+                {% if form.errors contains 'email' %}
+                    aria-invalid="true"
+                    aria-describedby="ContactFormErrors-{{ section.id }}"
+                {% endif %}
+            >
+        </div>
+        <div>
+            <label for="ContactPhone-{{ section.id }}">{{ 'contact.phone' | t }}</label>
+            <input
+                type="tel"
+                id="ContactPhone-{{ section.id }}"
+                name="contact[phone]"
+                placeholder="{{ 'contact.phone_placeholder' | t }}"
+                autocomplete="tel"
+                class="field"
+            >
+        </div>
+        <div>
+            <label for="ContactMessage-{{ section.id }}">{{ 'contact.message' | t }}</label>
+            <textarea
+                id="ContactMessage-{{ section.id }}"
+                name="contact[body]"
+                placeholder="{{ 'contact.message_placeholder' | t }}"
+                rows="4"
+                class="field-textarea"
+                {% if form.errors contains 'body' %}
+                    aria-invalid="true"
+                    aria-describedby="ContactFormErrors-{{ section.id }}"
+                {% endif %}
+            ></textarea>
+        </div>
+        <button type="submit" class="btn body-xl">
+            {{ 'sections.main-page-contact.defaults.button_text' | t }}
+        </button>
+    {%- endform -%}
 </div>
 
 {% schema %}
 {
     "name": "t:sections.main-page-contact.name",
     "tag": "section",
-    "class": "section",
     "enabled_on": {
         "templates": ["page"]
     },

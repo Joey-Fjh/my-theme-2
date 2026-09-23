@@ -9,16 +9,8 @@
     @param [block] - Block object (for shopify_attributes + settings)
     @param {string} [section_id] - Section ID for Alpine sync and SRA refresh. Expected from caller.
     @param {string} [product_form_id] - Form ID. Defaults to 'product-form-' + section_id when omitted.
-    @param {boolean} [show_quantity] - Show quantity selector (default: false)
     @param [quantity_block] - Optional quantity selector block rendered in the purchase row
-    @param {string} [context] - Rendering context: 'product' or 'featured' (default: 'featured')
-    @param {boolean} [show_buy_now] - Show "Buy it now" button; when true with context 'product', Add to Cart becomes secondary (default: false)
     @param {boolean} [show_dynamic_checkout] - Show Shopify dynamic checkout buttons (default: true)
-    @param {string} [success_message] - Success message on add (default: localized 'Added to cart!')
-    @param [request_sections] - Section IDs to refresh via SRA after add; false to skip (default: standard SRA)
-    @param {string} [quantity_wrapper_class] - Escape hatch: forwarded to quantity-selector wrapper_class.
-    @param {string} [quantity_button_class] - Escape hatch: forwarded to quantity-selector button_class.
-    @param {string} [quantity_input_class] - Escape hatch: forwarded to quantity-selector input_class.
 
     Usage: {% render 'buy-buttons', product: product, block: block, product_form_id:
     product_form_id, section_id: section_id %}
@@ -26,14 +18,9 @@
 
 {%- assign section_id = section_id | default: '' -%}
 {%- assign product_form_id = product_form_id | default: 'product-form-' | append: section_id -%}
-{%- assign context = context | default: 'featured' -%}
-{%- if success_message == null -%}
-    {%- assign success_message = 'products.product.added_to_cart' | t -%}
-{%- endif -%}
-{%- assign show_buy_now = show_buy_now | default: false -%}
 {%- assign show_dynamic_checkout = show_dynamic_checkout | default: true -%}
 {%- assign show_quantity_control = false -%}
-{%- if quantity_block != blank or show_quantity == true or show_quantity == 'true' -%}
+{%- if quantity_block != blank -%}
     {%- assign show_quantity_control = true -%}
 {%- endif -%}
 
@@ -47,7 +34,6 @@
     {%- endcomment -%}
     {%- if product.gift_card? -%}
         {%- assign show_dynamic_checkout = false -%}
-        {%- assign show_buy_now = false -%}
     {%- endif -%}
     {%- assign native_qty_blocked = false -%}
     {%- if current_variant != blank -%}
@@ -64,20 +50,20 @@
         {%- endif -%}
     {%- endif -%}
     {%- assign available_classes = 'btn' -%}
-    {%- assign unavailable_classes = 'buy-buttons__submit--unavailable' -%}
+    {%- assign unavailable_classes = 'btn' -%}
 
     <div
         data-section-id="{{ section_id }}"
         data-product-form-id="{{ product_form_id }}"
         data-available="{{ current_variant.available | default: false }}"
         data-variant-id="{{ current_variant.id | default: '' }}"
-        data-success-message="{{ success_message | escape }}"
-        data-show-buy-now="{{ show_buy_now | json | escape }}"
+        data-success-message="{{ 'products.product.added_to_cart' | t | escape }}"
+        data-show-buy-now="false"
         data-add-to-cart-text="{{ 'products.product.add_to_cart' | t | escape }}"
         data-sold-out-text="{{ 'products.product.sold_out' | t | escape }}"
         data-maximum-in-cart-text="{{ 'products.product.maximum_in_cart' | t | escape }}"
         data-unavailable-text="{{ 'products.product.unavailable' | t | escape }}"
-        data-request-sections="{% if request_sections == false or request_sections == 'false' %}{% else %}{{ request_sections | join: ',' | escape }}{% endif %}"
+        data-request-sections=""
         x-data="BuyButtons()"
         data-module-id="buy-buttons"
         {{ block.shopify_attributes }}
@@ -97,16 +83,10 @@
                 :disabled="!available"
             >
 
-            <div
-                class="
-                    buy-buttons__actions--purchase-group
-                    {%- if show_quantity_control %} buy-buttons__actions--with-quantity{% endif -%}
-                "
-            >
+            <div class="buy-buttons__actions--purchase-group">
                 <div class="buy-buttons__primary-row">
                     {%- if show_quantity_control -%}
                         <div
-                            class="buy-buttons__quantity"
                             {% if quantity_block != blank %}
                                 {{ quantity_block.shopify_attributes }}
                             {% endif %}
@@ -115,10 +95,7 @@
                                 variant: current_variant,
                                 surface: 'product',
                                 product_form_id: product_form_id,
-                                section_id: section_id,
-                                wrapper_class: quantity_wrapper_class,
-                                button_class: quantity_button_class,
-                                input_class: quantity_input_class
+                                section_id: section_id
                             -%}
                         </div>
                     {%- endif -%}
@@ -168,23 +145,8 @@
                     </button>
                 </div>
 
-                {%- if show_buy_now == true or show_buy_now == 'true' -%}
-                    <button
-                        type="button"
-                        class="relative btn w-full"
-                        :disabled="!available || !canPurchaseQuantity || isLoading"
-                        :aria-busy="isLoading"
-                        @click.prevent="buyNow()"
-                        x-show="available && canPurchaseQuantity"
-                        x-cloak
-                    >
-                        {{ 'products.product.buy_it_now' | t }}
-                    </button>
-                {%- endif -%}
-
                 {%- if show_dynamic_checkout -%}
                     <div
-                        class="shopify-payment-button-wrapper"
                         hidden
                         :hidden="!available || !canPurchaseQuantity"
                         :class="{ 'hidden': !available || !canPurchaseQuantity }"
@@ -205,7 +167,7 @@
                 x-show="errorMessage"
                 x-cloak
                 role="alert"
-                class="buy-buttons__error mt-2 body-md text-error-text"
+                class="body-md text-error-text"
                 x-text="errorMessage"
             ></p>
         {%- endform -%}
@@ -250,9 +212,7 @@
                                 open
                             {% endif %}
                         >
-                            <summary
-                                class="cursor-pointer list-none body-md font-medium text-theme-text [&::-webkit-details-marker]:hidden"
-                            >
+                            <summary>
                                 {%- if product.has_only_default_variant -%}
                                     {{ product.title | escape }}
                                 {%- else -%}
@@ -275,7 +235,7 @@
                     {%- if fallback_option_count == 0 -%}
                         <button
                             type="button"
-                            class="buy-buttons__submit--unavailable w-full"
+                            class="btn w-full"
                             disabled
                         >
                             {{ 'products.product.unavailable' | t }}
@@ -284,8 +244,8 @@
                 </div>
             {%- elsif product.requires_selling_plan -%}
                 {%- assign fallback_option_count = 0 -%}
-                <fieldset class="selling-plan-picker__fieldset m-0 border-0 p-0">
-                    <legend class="mb-3 body-sm font-medium text-theme-text">
+                <fieldset>
+                    <legend>
                         {{ 'products.product.selling_plan.purchase_options' | t }}
                     </legend>
                     <div class="flex flex-col gap-2">
@@ -342,7 +302,7 @@
                         {%- if fallback_option_count == 0 -%}
                             <button
                                 type="button"
-                                class="buy-buttons__submit--unavailable w-full"
+                                class="btn w-full"
                                 disabled
                             >
                                 {{ 'products.product.unavailable' | t }}
@@ -392,7 +352,7 @@
                     {%- if fallback_option_count == 0 -%}
                         <button
                             type="button"
-                            class="buy-buttons__submit--unavailable w-full"
+                            class="btn w-full"
                             disabled
                         >
                             {{ 'products.product.unavailable' | t }}
@@ -403,35 +363,6 @@
         </div>
     </div>
 
-{%- elsif context == 'featured' -%}
-    <div {{ block.shopify_attributes }}>
-        <span class="sr-only">{{ 'products.product.unavailable' | t }}</span>
-        <div class="buy-buttons__actions--purchase-group{% if show_quantity_control %} buy-buttons__actions--with-quantity{% endif %}">
-            <div class="buy-buttons__primary-row">
-                {%- if show_quantity_control -%}
-                    <div class="buy-buttons__quantity">
-                        {%- render 'quantity-selector', interactive: false -%}
-                    </div>
-                {%- endif -%}
-
-                <span
-                    class="pointer-events-none relative btn w-full cursor-default"
-                    aria-hidden="true"
-                >
-                    {{ 'products.product.add_to_cart' | t }}
-                </span>
-            </div>
-
-            {%- if show_dynamic_checkout or show_buy_now == true or show_buy_now == 'true' -%}
-                <span
-                    class="pointer-events-none relative btn w-full cursor-default"
-                    aria-hidden="true"
-                >
-                    {{ 'products.product.buy_it_now' | t }}
-                </span>
-            {%- endif -%}
-        </div>
-    </div>
 {%- else -%}
     <div {{ block.shopify_attributes }}>
         <button type="button" class="relative btn w-full" disabled>
@@ -443,49 +374,17 @@
 {% stylesheet %}
     .buy-buttons__actions--purchase-group {
         display: flex;
-        width: 100%;
         flex-direction: column;
         gap: 0.75rem;
     }
 
     .buy-buttons__primary-row {
-        display: grid;
-        width: 100%;
-        grid-template-columns: minmax(0, 1fr);
-        align-items: stretch;
+        display: flex;
         gap: 0.75rem;
     }
 
-    .buy-buttons__actions--with-quantity .buy-buttons__primary-row {
-        grid-template-columns: minmax(8.75rem, 9.75rem) minmax(0, 1fr);
-    }
-
-    @media (width >= 48rem) {
-        .buy-buttons__actions--with-quantity .buy-buttons__primary-row {
-            grid-template-columns: 10.5rem minmax(0, 1fr);
-        }
-    }
-
-    .buy-buttons__quantity {
-        display: flex;
-        min-width: 0;
-        align-items: stretch;
-    }
-
-    .buy-buttons__quantity > * {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .buy-buttons__submit--unavailable {
-        border: 1px solid rgba(var(--color-border), 0.2);
-        background-color: rgba(var(--color-border), 0.2);
-        color: rgba(var(--color-foreground), 0.45);
-        opacity: 1;
-    }
-
-    .buy-buttons__label {
-        display: inline-block;
+    .buy-buttons__primary-row > :last-child {
+        flex: 1;
     }
 
     .buy-buttons__label.is-loading {
@@ -495,14 +394,5 @@
     .buy-buttons__submit--success {
         background-color: rgb(var(--color-success-background));
         color: rgb(var(--color-success-foreground));
-    }
-
-    .buy-buttons__error {
-        margin: 0;
-    }
-
-    .shopify-payment-button-wrapper,
-    .shopify-payment-button {
-        width: 100%;
     }
 {% endstylesheet %}

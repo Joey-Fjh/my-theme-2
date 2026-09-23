@@ -1,21 +1,18 @@
 <div
     data-section-id="{{ section.id }}"
-    class="full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="section color-{{ section.settings.color_scheme }}"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <div class="layout container-page">
-        {% content_for 'blocks' %}
-    </div>
+    {% content_for 'blocks' %}
 </div>
 
 {% schema %}
 {
     "name": "t:sections.custom-section.name",
     "tag": "section",
-    "class": "section",
     "disabled_on": {
         "groups": ["header", "footer", "custom.overlay"]
     },

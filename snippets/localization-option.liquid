@@ -18,25 +18,23 @@
     -%}
 {% enddoc %}
 
-<div class="localization-item">
-    <button
-        name="{{ submit_name }}"
-        type="submit"
-        value="{{ submit_value }}"
-        class="localization-link w-full"
-        {%- if is_current %}
-            aria-current="true"
-        {%- endif -%}
-    >
-        {%- if is_current -%}
-            {%- render 'localization-selected-icon' -%}
-        {%- endif -%}
-        <span>{{ label }}</span>
-        {%- if show_currency -%}
-            <span>
-                {{- currency_iso }}
-                {{ currency_symbol -}}
-            </span>
-        {%- endif -%}
-    </button>
-</div>
+<button
+    name="{{ submit_name }}"
+    type="submit"
+    value="{{ submit_value }}"
+    class="localization-option"
+    {%- if is_current %}
+        aria-current="true"
+    {%- endif -%}
+>
+    {%- if is_current -%}
+        {%- render 'localization-selected-icon' -%}
+    {%- endif -%}
+    <span>{{ label }}</span>
+    {%- if show_currency -%}
+        <span>
+            {{- currency_iso }}
+            {{ currency_symbol -}}
+        </span>
+    {%- endif -%}
+</button>

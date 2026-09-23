@@ -3,32 +3,19 @@
     Constraint math lives in the `quantity-constraints.js` module.
 
     @param {number} [value] - Initial quantity (default: computed min when variant is passed, else 1)
-    @param {number} [min] - Minimum when variant is omitted (default: 1)
-    @param {number} [max] - Maximum when variant is omitted (optional)
-    @param {number} [step] - Step when variant is omitted (default: 1)
     @param {variant} [variant] - Derives min/max/step from quantity_rule + inventory + cart count
     @param {string} [surface] - 'product' | 'cart' (default: 'product')
-    @param {number} [cart_quantity] - Override cart count for product surface
     @param {string} [name] - Input name (default: 'quantity')
     @param {string} [product_form_id] - Form id via form attribute
     @param {string} [section_id] - Section ID for variant/cart sync
     @param {string} [input_id] - Input id
-    @param {string} [wrapper_class] - Escape hatch wrapper classes
-    @param {string} [button_class] - Escape hatch button classes
-    @param {string} [input_class] - Escape hatch input classes
     @param {string} [label] - Accessible label
-    @param {boolean} [interactive] - Set false for a static visual state without form or Alpine behavior
 {% enddoc %}
 
 {%- liquid
-    assign qty_interactive = true
-    if interactive == false or interactive == 'false'
-        assign qty_interactive = false
-    endif
-
     assign qty_surface = surface | default: 'product'
-    assign qty_min = min | default: 1
-    assign qty_step = step | default: 1
+    assign qty_min = 1
+    assign qty_step = 1
     assign qty_value = value | default: 1
     assign qty_has_max = false
     assign qty_max = 0
@@ -36,36 +23,37 @@
     assign qty_cart_quantity = 0
     assign qty_variant_id = ''
     assign qty_input_id = input_id
-
-    if cart_quantity != blank
-        assign qty_cart_quantity = cart_quantity | plus: 0
-    endif
+    capture qty_constraints_json
+        echo '{"min":1,"max":null,"step":1,"value":'
+        echo qty_value
+        echo ',"can_purchase":true,"cart_quantity":0,"absolute_max":null}'
+    endcapture
 
     if variant != blank
         assign qty_variant_id = variant.id
         capture qty_constraints_json
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value
         endcapture
         capture qty_min
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'min'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'min'
         endcapture
         capture qty_max_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'max'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'max'
         endcapture
         capture qty_step
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'step'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'step'
         endcapture
         capture qty_value
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'value'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'value'
         endcapture
         capture qty_can_purchase_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'can_purchase'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'can_purchase'
         endcapture
         capture qty_has_max_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'has_max'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'has_max'
         endcapture
         capture qty_cart_quantity
-            render 'quantity-constraints', variant: variant, surface: qty_surface, cart_quantity: cart_quantity, value: value, output: 'cart_quantity'
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'cart_quantity'
         endcapture
         assign qty_constraints_json = qty_constraints_json | strip
         assign qty_min = qty_min | strip | plus: 0
@@ -82,46 +70,14 @@
         if qty_can_purchase_raw == 'false'
             assign qty_can_purchase = false
         endif
-    elsif max != blank
-        assign qty_has_max = true
-        assign qty_max = max | plus: 0
-        capture qty_constraints_json
-            echo '{'
-            echo '"min":'
-            echo qty_min
-            echo ',"max":'
-            echo qty_max
-            echo ',"step":'
-            echo qty_step
-            echo ',"value":'
-            echo qty_value
-            echo ',"can_purchase":true,"cart_quantity":'
-            echo qty_cart_quantity
-            echo ',"absolute_max":'
-            echo qty_max
-            echo '}'
-        endcapture
-    else
-        capture qty_constraints_json
-            echo '{'
-            echo '"min":'
-            echo qty_min
-            echo ',"max":null,"step":'
-            echo qty_step
-            echo ',"value":'
-            echo qty_value
-            echo ',"can_purchase":true,"cart_quantity":'
-            echo qty_cart_quantity
-            echo ',"absolute_max":null}'
-        endcapture
     endif
 
-    if qty_interactive and qty_input_id == blank and product_form_id != blank
+    if qty_input_id == blank and product_form_id != blank
         assign qty_input_id = product_form_id | append: '-quantity'
     endif
 
     assign qty_feedback_id = ''
-    if qty_interactive and qty_input_id != blank
+    if qty_input_id != blank
         assign qty_feedback_id = qty_input_id | append: '-feedback'
     endif
 
@@ -132,9 +88,6 @@
 -%}
 
 <div
-    {% unless qty_interactive %}
-        aria-hidden="true"
-    {% endunless %}
     data-qty-constraints="{{ qty_constraints_json | strip | escape }}"
     data-qty-surface="{{ qty_surface | escape }}"
     data-qty-can-purchase="{% if qty_can_purchase %}true{% else %}false{% endif %}"
@@ -148,28 +101,22 @@
     data-qty-msg-min="{{ 'quantity.min_quantity' | t: min: '%%MIN%%' | escape }}"
     data-qty-msg-below-min="{{ 'quantity.quantity_below_min' | t: min: '%%MIN%%' | escape }}"
     data-qty-msg-above-max="{{ 'quantity.quantity_above_max' | t: max: '%%MAX%%' | escape }}"
-    {% if qty_interactive %}
-        x-data="QuantitySelector()" data-module-id="quantity-selector"
-    {% endif %}
-    class="quantity-selector{% unless qty_interactive %} quantity-selector--static{% endunless %} {{ wrapper_class }}"
+    x-data="QuantitySelector()"
+    data-module-id="quantity-selector"
+    class="quantity-selector"
 >
     <div class="quantity-selector__controls">
         <button
             type="button"
-            class="quantity-selector__button {{ button_class }}"
-            {% if qty_interactive %}
-                aria-label="{{ 'accessibility.decrease_quantity' | t }}"
-                @click="decrement()"
-                :disabled="!canDecrement"
-            {% else %}
-                disabled
-                tabindex="-1"
-            {% endif %}
+            class="quantity-selector__button"
+            aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+            @click="decrement()"
+            :disabled="!canDecrement"
         >
             {%- render 'icons', icon: 'icon-minus' -%}
         </button>
 
-        {%- if qty_interactive and qty_input_id != blank -%}
+        {%- if qty_input_id != blank -%}
             <label class="sr-only" for="{{ qty_input_id }}">{{ qty_input_label }}</label>
         {%- endif -%}
         <input
@@ -178,7 +125,7 @@
                 id="{{ qty_input_id }}"
             {% endif %}
             name="{{ name | default: 'quantity' }}"
-            class="quantity-selector__input {{ input_class }}"
+            class="quantity-selector__input"
             value="{{ qty_value }}"
             min="{{ qty_min }}"
             {% if qty_has_max %}
@@ -188,85 +135,61 @@
             {% if product_form_id %}
                 form="{{ product_form_id }}"
             {% endif %}
-            {% if qty_interactive %}
-                x-model.number="qty"
-                :min="min"
-                :max="max === null ? undefined : max"
-                :step="step"
-                {% unless qty_can_purchase %}
-                    readonly
-                {% endunless %}
-                @change="onInput()"
-                :readonly="!canPurchase"
-                :aria-invalid="(!canPurchase).toString()"
-                data-feedback-id="{{ qty_feedback_id }}"
-                :aria-describedby="feedbackMessage ? $el.dataset.feedbackId : null"
-                aria-label="{{ qty_input_label | escape }}"
-            {% else %}
-                disabled
-                tabindex="-1"
-            {% endif %}
+            x-model.number="qty"
+            :min="min"
+            :max="max === null ? undefined : max"
+            :step="step"
+            {% unless qty_can_purchase %}
+                readonly
+            {% endunless %}
+            @change="onInput()"
+            :readonly="!canPurchase"
+            :aria-invalid="(!canPurchase).toString()"
+            data-feedback-id="{{ qty_feedback_id }}"
+            :aria-describedby="feedbackMessage ? $el.dataset.feedbackId : null"
+            aria-label="{{ qty_input_label | escape }}"
         >
 
         <button
             type="button"
-            class="quantity-selector__button {{ button_class }}"
-            {% if qty_interactive %}
-                aria-label="{{ 'accessibility.increase_quantity' | t }}"
-                @click="increment()"
-                :disabled="!canIncrement"
-            {% else %}
-                disabled
-                tabindex="-1"
-            {% endif %}
+            class="quantity-selector__button"
+            aria-label="{{ 'accessibility.increase_quantity' | t }}"
+            @click="increment()"
+            :disabled="!canIncrement"
         >
             {%- render 'icons', icon: 'icon-plus' -%}
         </button>
     </div>
 
-    {%- if qty_interactive and qty_feedback_id != blank -%}
+    {%- if qty_feedback_id != blank -%}
         <p
             id="{{ qty_feedback_id }}"
             role="status"
             aria-live="polite"
             aria-atomic="true"
-            class="quantity-selector__feedback mt-1 body-md text-theme-text/80 empty:hidden"
+            class="body-md empty:hidden"
             x-text="feedbackMessage"
         ></p>
     {%- endif -%}
 </div>
 
 {% stylesheet %}
-    .quantity-selector {
-        display: flex;
-        width: max-content;
-        flex-direction: column;
-        color: currentColor;
-    }
-
     .quantity-selector__controls {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .quantity-selector__feedback {
-        max-width: 100%;
-    }
-
     .quantity-selector__button {
         display: inline-flex;
         height: 2.5rem;
         width: 2.5rem;
-        flex-shrink: 0;
-        cursor: pointer;
         align-items: center;
         justify-content: center;
     }
 
     .quantity-selector__button:disabled,
     .quantity-selector__button[aria-disabled='true'] {
-        cursor: not-allowed;
         opacity: 0.4;
     }
 
@@ -275,20 +198,11 @@
         appearance: none;
         border-bottom: 1px solid currentColor;
         background-color: transparent;
-        padding: 0;
         text-align: center;
-        font: inherit;
-        font-variant-numeric: tabular-nums;
-        color: currentColor;
     }
 
     .quantity-selector__input:focus:not(:focus-visible) {
         outline: none;
-    }
-
-    .quantity-selector__input:focus-visible {
-        position: relative;
-        z-index: 1;
     }
 
     .quantity-selector__input::-webkit-inner-spin-button,
@@ -300,17 +214,5 @@
         .quantity-selector__input {
             font-size: max(16px, 1em);
         }
-    }
-
-    .quantity-selector--static .quantity-selector__button {
-        pointer-events: none;
-        cursor: default;
-    }
-
-    .quantity-selector--static .quantity-selector__input {
-        pointer-events: none;
-        cursor: default;
-        opacity: 1;
-        -webkit-text-fill-color: currentColor;
     }
 {% endstylesheet %}

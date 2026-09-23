@@ -15,7 +15,9 @@ Dropdown — shared by header menu and nested flyouts
         .dropdown-panel {
             position: absolute;
             z-index: var(--z-layer-dropdown);
-            min-width: max-content;
+            width: max-content;
+            max-width: calc(100vw - 2 * var(--page-margin));
+            overflow-wrap: anywhere;
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
@@ -171,17 +173,5 @@ Rich text (RTE) — shared merchant HTML output
 
     .rte > *:last-child {
         margin-bottom: 0;
-    }
-}
-
-/* Compact variant for short supporting copy. */
-@layer components {
-    .rte.rte--compact > * + * {
-        margin-top: 0.6em;
-    }
-
-    .rte.rte--compact :is(h1, h2, h3, h4, h5, h6) {
-        margin-top: 0.8em;
-        margin-bottom: 0.3em;
     }
 }

@@ -1,6 +1,6 @@
 <div
     data-section-id="{{ section.id }}"
-    class="full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="section color-{{ section.settings.color_scheme }}"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -11,72 +11,56 @@
     data-module-id="section-pagination"
     data-module-lazy
 >
-    <div class="layout container-page pb-8">
-        <div class="flex flex-col gap-4">
-            <h1 class="heading-4xl">{{ collection.title }}</h1>
-            {%- if collection.description != blank -%}
-                {%- render 'rte-compact-prose',
-                    content: collection.description,
-                    content_class: 'body-xl'
-                -%}
-            {%- endif -%}
-        </div>
-    </div>
+    <h1 class="heading-4xl">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+        <div class="rte body-xl">{{ collection.description }}</div>
+    {%- endif -%}
 
-    <div class="layout container-page">
-        <div data-collection-dynamic-content class="flex flex-col gap-6 pc:gap-6">
-            <div class="relative w-full">
-                {% render 'loading', overlay: true, size: 'large' %}
+    <div class="relative" data-collection-dynamic-content>
+        {% render 'loading' %}
 
-                {%- assign first_row_count = 2 -%}
-                {% paginate collection.products by 12 %}
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3">
-                        {%- for product in collection.products -%}
-                            <div>
-                                {%- liquid
-                                    assign card_aspect_ratio = blank
-                                    case settings.product_card_image_ratio
-                                        when 'square'
-                                            assign card_aspect_ratio = '1/1'
-                                        when 'portrait'
-                                            assign card_aspect_ratio = '4/5'
-                                        when 'landscape'
-                                            assign card_aspect_ratio = '4/3'
-                                    endcase
-                                    assign card_loading = 'lazy'
-                                    if forloop.index <= first_row_count
-                                        assign card_loading = 'eager'
-                                    endif
-                                -%}
-                                <a href="{{ product.url }}" class="flex flex-col gap-3">
-                                    {%- render 'image',
-                                        image: product.featured_image,
-                                        width: 600,
-                                        alt: '',
-                                        sizes: '(min-width: 48rem) 25vw, 50vw',
-                                        loading: card_loading,
-                                        aspect_ratio: card_aspect_ratio
-                                    -%}
-                                    <h2 class="heading-h6">{{ product.title }}</h2>
-                                    <span>{{ product.price | money }}</span>
-                                </a>
-                            </div>
-                        {%- else -%}
-                            <div class="col-span-full py-20 text-center body-lg">
-                                {{ 'collections.no_products' | t }}
-                            </div>
-                        {%- endfor -%}
+        {% paginate collection.products by 12 %}
+            <div class="grid-list">
+                {%- for product in collection.products -%}
+                    <div>
+                        {%- liquid
+                            assign card_aspect_ratio = blank
+                            case settings.product_card_image_ratio
+                                when 'square'
+                                    assign card_aspect_ratio = '1/1'
+                                when 'portrait'
+                                    assign card_aspect_ratio = '4/5'
+                                when 'landscape'
+                                    assign card_aspect_ratio = '4/3'
+                            endcase
+                            assign card_loading = 'lazy'
+                            if forloop.first
+                                assign card_loading = 'eager'
+                            endif
+                        -%}
+                        <a href="{{ product.url }}">
+                            {%- render 'image',
+                                image: product.featured_image,
+                                width: 1600,
+                                alt: '',
+                                sizes: '(min-width: 1200px) 33vw, (min-width: 800px) 50vw, 100vw',
+                                widths: '400,700,1000,1200,1600',
+                                loading: card_loading,
+                                aspect_ratio: card_aspect_ratio
+                            -%}
+                            <h2 class="heading-h6">{{ product.title }}</h2>
+                            <span>{{ product.price | money }}</span>
+                        </a>
                     </div>
-
-                    <div
-                        class="mt-8"
-                        @click="onNavClick($event)"
-                    >
-                        {% render 'pagination', paginate_obj: paginate %}
-                    </div>
-                {% endpaginate %}
+                {%- else -%}
+                    <p class="body-lg">{{ 'collections.no_products' | t }}</p>
+                {%- endfor -%}
             </div>
-        </div>
+
+            <div @click="onNavClick($event)">
+                {% render 'pagination', paginate_obj: paginate %}
+            </div>
+        {% endpaginate %}
     </div>
 </div>
 
@@ -84,7 +68,6 @@
 {
     "name": "t:general.collection",
     "tag": "section",
-    "class": "section",
     "enabled_on": {
         "templates": ["collection"]
     },

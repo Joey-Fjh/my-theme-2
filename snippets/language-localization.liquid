@@ -1,13 +1,3 @@
-{%- comment -%}
-    Renders the language picker for the localization form
-
-    Accepts:
-      - localPosition: pass in the position in which the form is coming up to create specific IDs
-{%- endcomment -%}
-
-{%- assign current_locale = localization.language.iso_code -%}
-{%- assign available_locales = localization.available_languages -%}
-
 {%- capture localization_content -%}
     <button
         type="button"
@@ -16,7 +6,6 @@
         :aria-expanded="open"
         aria-haspopup="true"
         aria-controls="language-list-{{ localPosition }}"
-        class="localization-toggle"
     >
         {{ localization.language.endonym_name | capitalize }}
     </button>
@@ -29,15 +18,17 @@
         class="localization-menu"
         :class="{ 'localization-menu--align-end': alignEnd }"
     >
-        {%- for locale in available_locales -%}
-            {%- assign is_current_locale = false -%}
-            {%- if locale.iso_code == current_locale -%}
-                {%- assign is_current_locale = true -%}
-            {%- endif -%}
+        {%- for locale in localization.available_languages -%}
+            {%- liquid
+                assign is_current_language = false
+                if locale.iso_code == localization.language.iso_code
+                    assign is_current_language = true
+                endif
+            -%}
             {%- render 'localization-option',
                 submit_name: 'locale_code',
                 submit_value: locale.iso_code,
-                is_current: is_current_locale,
+                is_current: is_current_language,
                 label: locale.endonym_name
             -%}
         {%- endfor -%}

@@ -1,39 +1,30 @@
-{% comment %}
-    Minimal product media gallery — renders kept `product-media` items directly.
-{% endcomment %}
-
 {%- assign gallery_items = media -%}
-{%- if gallery_items == blank -%}
-    {%- assign gallery_items = images -%}
-{%- endif -%}
 {%- assign aspect_ratio = aspect_ratio | default: '3/4' -%}
 
 <div
+    class="grid-list"
     x-data="productGallery"
     data-module-id="product-gallery"
     data-media-count="{{ gallery_items | size }}"
-    class="h-full w-full min-w-0 {% if class %}{{ class }}{% endif %}"
     {% if id %}
         id="{{ id }}"
     {% endif %}
 >
-    <div class="flex flex-col gap-4">
-        {%- for media_item in gallery_items -%}
-            {%- liquid
-                assign media_loading = 'lazy'
-                assign media_fetchpriority = 'auto'
-                if forloop.first
-                    assign media_loading = 'eager'
-                    assign media_fetchpriority = 'high'
-                endif
-            -%}
-            {%- render 'product-media',
-                media: media_item,
-                aspect_ratio: aspect_ratio,
-                sizes: '(min-width: 48rem) 50vw, 100vw',
-                loading: media_loading,
-                fetchpriority: media_fetchpriority
-            -%}
-        {%- endfor -%}
-    </div>
+    {%- for media_item in gallery_items -%}
+        {%- liquid
+            assign media_loading = 'lazy'
+            assign media_fetchpriority = 'auto'
+            if forloop.first
+                assign media_loading = 'eager'
+                assign media_fetchpriority = 'high'
+            endif
+        -%}
+        {%- render 'product-media',
+            media: media_item,
+            aspect_ratio: aspect_ratio,
+            sizes: '(min-width: 1200px) 33vw, (min-width: 800px) 50vw, 100vw',
+            loading: media_loading,
+            fetchpriority: media_fetchpriority
+        -%}
+    {%- endfor -%}
 </div>

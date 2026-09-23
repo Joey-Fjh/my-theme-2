@@ -1,4 +1,3 @@
-{%- assign size_class = 'xl' -%}
 {%- assign header_menu = section.settings.menu -%}
 {%- assign has_header_menu = false -%}
 {%- if header_menu != blank and header_menu.links != blank -%}
@@ -7,182 +6,75 @@
 
 <header
     data-section-id="{{ section.id }}"
-    class="header-section full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="section header color-{{ section.settings.color_scheme }}"
 >
-    <div class="container-page">
-        <div class="header__cols grid py-5">
-            <div class="flex items-center pc:hidden" style="grid-area: mobile-menu">
-                {%- if has_header_menu -%}
-                    <nav
-                        aria-label="{{ 'accessibility.mobile_menu' | t }}"
-                    >
-                        <ul class="flex flex-col gap-2 px-1 py-2">
-                            {%- for link in header_menu.links -%}
-                                <li>
-                                    {%- render 'link',
-                                        href: link.url,
-                                        text: link.title,
-                                        variant: 'plain'
-                                    -%}
-                                </li>
-                            {%- endfor -%}
-                        </ul>
-                    </nav>
-                {%- endif -%}
-                <div class="pc:hidden">
-                    {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
-                </div>
-                <div class="pc:hidden">
-                    {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
-                </div>
-            </div>
+    <div style="--header-logo-width: {{ settings.logo_width }}px">
+        {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+        {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+        {%- capture sizes -%}
+            (max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px
+        {%- endcapture -%}
+        {%- capture widths -%}
+            {{ settings.logo_width }},{{ settings.logo_width | times: 1.5 | round }},{{ settings.logo_width | times:2 }}
+        {%- endcapture -%}
 
-            <div
-                class="header-logo flex items-center justify-start"
-                style="grid-area: logo; --header-logo-width: {{ settings.logo_width }}px"
-            >
-                {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-                {%- assign logo_height = settings.logo_width
-                    | divided_by: settings.logo.aspect_ratio
-                -%}
-                {%- capture sizes -%}
-                    (max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px
-                {%- endcapture -%}
-
-                {%- capture widths -%}
-                    {{ settings.logo_width }},{{ settings.logo_width | times: 1.5 | round }},{{ settings.logo_width | times:2 }}
-                {%- endcapture -%}
-
-                {%- if settings.logo -%}
-                    {% render 'image',
-                        image: settings.logo,
-                        width: settings.logo_width,
-                        height: logo_height,
-                        alt: logo_alt,
-                        url: routes.root_url,
-                        sizes: sizes,
-                        widths: widths,
-                        loading: 'eager',
-                        mode: 'natural',
-                        fit: 'contain'
-                    %}
-                {%- else -%}
-                    {%- render 'link',
-                        text: shop.name,
-                        class: 'header-logo__text',
-                        variant: 'underline',
-                        href: routes.root_url
-                    -%}
-                {%- endif -%}
-            </div>
-
-            <div
-                class="flex items-center justify-center max-pc:hidden"
-                style="grid-area: menu"
-            >
-                {%- if has_header_menu -%}
-                    {%- render 'header-dropdown-menu' -%}
-                {%- endif -%}
-            </div>
-
-            <div
-                class="header-navigation flex items-center justify-end gap-3"
-                style="grid-area:navigation"
-            >
-                <a
-                    href="{{ routes.search_url }}"
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center"
-                    aria-label="{{ 'accessibility.search' | t }}"
-                >
-                    {% render 'icons', icon: 'icon-search', class: size_class %}
-                </a>
-
-                <a
-                    href="{{ routes.cart_url }}"
-                    class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center"
-                    aria-label="{{ 'accessibility.cart' | t }}"
-                >
-                    {% render 'icons', icon: 'icon-cart', class: size_class %}
-                    <span
-                        x-cloak
-                        x-show="$store.cart && $store.cart.item_count > 0"
-                        class="header__cart-count inline-flex h-5 min-w-5 items-center justify-center bg-theme-text px-1 body-xs text-theme-bg"
-                        x-text="$store.cart.item_count"
-                    ></span>
-                </a>
-
-                {%- if shop.customer_accounts_enabled -%}
-                    <shopify-account
-                        menu="customer-account-main-menu"
-                        class="inline-flex h-10 w-10 shrink-0 items-center justify-center"
-                    >
-                        <span slot="signed-out-avatar">
-                            {%- render 'icons', icon: 'icon-account', class: size_class -%}
-                        </span>
-                    </shopify-account>
-                {%- endif -%}
-
-                <div class="max-pc:hidden">
-                    {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
-                </div>
-
-                <div class="max-pc:hidden">
-                    {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
-                </div>
-            </div>
-        </div>
+        {%- if settings.logo -%}
+            {% render 'image',
+                image: settings.logo,
+                width: settings.logo_width,
+                height: logo_height,
+                alt: logo_alt,
+                url: routes.root_url,
+                sizes: sizes,
+                widths: widths,
+                loading: 'eager',
+                mode: 'natural',
+                fit: 'contain'
+            %}
+        {%- else -%}
+            <a class="underline underline-offset-4" href="{{ routes.root_url }}">{{ shop.name }}</a>
+        {%- endif -%}
     </div>
+
+    {%- if has_header_menu -%}
+        {%- render 'header-dropdown-menu' -%}
+    {%- endif -%}
+
+    <a
+        href="{{ routes.search_url }}"
+        aria-label="{{ 'accessibility.search' | t }}"
+    >
+        {% render 'icons', icon: 'icon-search' %}
+    </a>
+
+    <a href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+        {% render 'icons', icon: 'icon-cart' %}
+    </a>
+
+    {%- if shop.customer_accounts_enabled -%}
+        <shopify-account menu="customer-account-main-menu">
+            <span slot="signed-out-avatar">
+                {%- render 'icons', icon: 'icon-account' -%}
+            </span>
+        </shopify-account>
+    {%- endif -%}
+
+    {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
+    {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
 </header>
 
 {% stylesheet %}
-    .header-section {
-        .header__cols {
-            grid-template-areas: 'mobile-menu logo navigation';
-            grid-template-columns: auto minmax(0, 1fr) auto;
-            align-items: center;
-            column-gap: 1rem;
-        }
-
-        .header-logo {
-            min-width: 0;
-        }
-
-        .header-logo > * {
-            min-width: 0;
-            max-width: 100%;
-        }
-
-        .header-logo > .theme-image {
-            width: var(--header-logo-width);
-        }
-
-        .header-logo .header-logo__text {
-            display: block;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .header-navigation {
-            min-width: max-content;
-        }
-
-        @media (min-width: 48rem) {
-            .header__cols {
-                grid-template-areas: 'logo menu navigation';
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                column-gap: 0;
-            }
-        }
+    /* One wrapping row: logo, menu, then the icons and selectors. */
+    .header,
+    .header .header-dropdown-menu > ul {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
     }
 
-    .header__cart-count {
-        position: absolute;
-        top: 0.25rem;
-        inset-inline-end: 0.25rem;
-        transform: translate(50%, -50%);
-        pointer-events: none;
+    .header .theme-image {
+        width: var(--header-logo-width);
     }
 {% endstylesheet %}
 
@@ -241,7 +133,7 @@
 {
     "name": "t:general.header",
     "tag": "section",
-    "class": "section site-header",
+    "class": "site-header",
     "limit": 1,
     "enabled_on": {
         "groups": ["header"]
