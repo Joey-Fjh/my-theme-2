@@ -18,6 +18,7 @@ Inspect current source for exact settings, schema shape, and markup.
 - Liquid `{% block %}` / `{% partial %}` adoption stance — see `javascript-runtime.md` (Liquid Rendering Features)
 - `SectionRefresher` transitional status — see `javascript-runtime.md` (Transitional status)
 - New block types, schemas, and allowed parents beyond the four blocks below
+- Composing other sections from theme blocks and adding block types: the organization follows Horizon (sections composed from theme blocks, static blocks for fixed parts), but the template ships only the Container host and the four blocks; derived themes extend both (user, 2026-09-24)
 - Media behavior, including a Container `background_image` setting — deferred; see `../style-system/image-display-contract.md`
 - Global page, Section, and Block layout protocol
 - Whether to extend a shared abstraction — see `abstraction-boundaries.md`
