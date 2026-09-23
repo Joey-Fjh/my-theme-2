@@ -1,14 +1,7 @@
 {% doc %}
-    Global-style-based pagination snippet with style variants.
+    Global pagination snippet with the default mother-template style.
 
-  Styles and behavior are controlled entirely by global theme settings
-  (config/settings_schema.json):
-
-    - settings.pagination_style          : 'default' | 'minimal' | 'outline'
-    - settings.pagination_font_size      : font size in px
-    - settings.pagination_border_radius  : border radius in px
-
-  Usage (must pass a paginate object from within a `{% paginate %}` block):
+    Usage (must pass a paginate object from within a `{% paginate %}` block):
 
     {% paginate collection.products by 24 %}
       <!-- your list -->
@@ -19,10 +12,6 @@
 {% enddoc %}
 
 {%- liquid
-    assign pagination_style = settings.pagination_style | default: 'default'
-    assign pagination_font_size = settings.pagination_font_size | default: 13
-    assign pagination_border_radius = settings.pagination_border_radius | default: 4
-
     assign pagination_data = paginate_obj
 -%}
 
@@ -31,21 +20,21 @@
         class="pagination py-10"
         role="navigation"
         data-pagination-nav
-        style="--pagination-font-size: {{ pagination_font_size }}px; --pagination-radius: {{ pagination_border_radius }}px;"
+        style="--pagination-font-size: 13px; --pagination-radius: 4px;"
     >
         <div class="pagination__inner">
             {%- comment -%} PREVIOUS {%- endcomment -%}
             {%- if pagination_data.previous -%}
                 <a
                     href="{{ pagination_data.previous.url }}"
-                    class="pagination__button pagination__prev {% case pagination_style %}{% when 'minimal' %}pagination__button--hover-minimal{% when 'outline' %}pagination__button--hover-outline{% else %}pagination__button--hover-default{% endcase %}"
+                    class="pagination__button pagination__prev"
                 >
                     {%- render 'icons', icon: 'icon-chevron-left' -%}
                     <span>{{ 'pagination.previous' | t }}</span>
                 </a>
             {%- else -%}
                 <span
-                    class="pagination__button pagination__prev pagination__button--disabled {% if pagination_style == 'outline' %}pagination__button--outline{% endif %}"
+                    class="pagination__button pagination__prev pagination__button--disabled"
                     aria-disabled="true"
                 >
                     {%- render 'icons', icon: 'icon-chevron-left' -%}
@@ -59,14 +48,14 @@
                         {%- if part.is_link -%}
                             <a
                                 href="{{ part.url }}"
-                                class="pagination__page {% case pagination_style %}{% when 'minimal' %}pagination__page--hover-minimal{% when 'outline' %}pagination__page--hover-outline{% else %}pagination__page--hover-default{% endcase %}"
+                                class="pagination__page"
                             >
                                 {{- part.title -}}
                             </a>
                         {%- else -%}
                             {%- if part.title == pagination_data.current_page -%}
                                 <span
-                                    class="pagination__page pagination__page--current pagination__page--current--{{ pagination_style }}"
+                                    class="pagination__page pagination__page--current"
                                     aria-current="page"
                                 >
                                     {{- part.title -}}
@@ -85,14 +74,14 @@
             {%- if pagination_data.next -%}
                 <a
                     href="{{ pagination_data.next.url }}"
-                    class="pagination__button pagination__next {% case pagination_style %}{% when 'minimal' %}pagination__button--hover-minimal{% when 'outline' %}pagination__button--hover-outline{% else %}pagination__button--hover-default{% endcase %}"
+                    class="pagination__button pagination__next"
                 >
                     <span>{{ 'pagination.next' | t }}</span>
                     {%- render 'icons', icon: 'icon-chevron-right' -%}
                 </a>
             {%- else -%}
                 <span
-                    class="pagination__button pagination__next pagination__button--disabled {% if pagination_style == 'outline' %}pagination__button--outline{% endif %}"
+                    class="pagination__button pagination__next pagination__button--disabled"
                     aria-disabled="true"
                 >
                     {%- render 'icons', icon: 'icon-chevron-right' -%}

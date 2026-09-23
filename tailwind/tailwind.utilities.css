@@ -43,10 +43,7 @@ Preferred usage:
 /* =========================================================
 Global z-index layer utilities
 
-These are defined as static CSS (not @utility) so they are
-always emitted regardless of content detection. Once E3c
-migrates Liquid callers to use these classes, they can be
-converted to @utility for tree-shaking.
+Static CSS (not @utility) so dropdown and popover layers are always emitted.
 ========================================================= */
 @layer utilities {
     .z-layer-dropdown {
@@ -55,21 +52,5 @@ converted to @utility for tree-shaking.
 
     .z-layer-popover {
         z-index: var(--z-layer-popover);
-    }
-
-    .z-layer-sticky {
-        z-index: var(--z-layer-sticky);
-    }
-
-    .z-layer-sticky-raised {
-        z-index: var(--z-layer-sticky-raised);
-    }
-
-    .z-layer-drawer-backdrop {
-        z-index: var(--z-layer-drawer-backdrop);
-    }
-
-    .z-layer-drawer {
-        z-index: var(--z-layer-drawer);
     }
 }

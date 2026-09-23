@@ -1,9 +1,5 @@
-/* Explicit layer ordering: includes the custom `snippets` layer so it
-   sits between components and utilities in the cascade. This declaration
-   must come before the Tailwind import; Tailwind's own `@layer theme,
-   base, components, utilities` line is a no-op once the browser has
-   already seen this ordering. */
-@layer theme, base, components, snippets, utilities;
+/* Layer order is declared at the top of this file before the Tailwind import. */
+@layer theme, base, components, utilities;
 
 @import 'tailwindcss' source(none);
 
@@ -64,10 +60,6 @@
     /* Global z-index layers: semantic overlay ordering */
     --z-layer-dropdown: 20;
     --z-layer-popover: 30;
-    --z-layer-sticky: 100;
-    --z-layer-sticky-raised: 101;
-    --z-layer-drawer-backdrop: 200;
-    --z-layer-drawer: 201;
     --z-layer-skip-link: 700;
 }
 
@@ -77,7 +69,6 @@
 
 @import './tailwind.elements.css';
 @import './tailwind.components.css';
-@import './tailwind.snippets.css';
 
 @import './tailwind.utilities.css';
 @import './tailwind.animates.css';

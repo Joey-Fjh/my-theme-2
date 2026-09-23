@@ -69,8 +69,7 @@ link
     }
 }
 
-/* focus-ring + hover underline — text link micro-pattern (Phase 5C).
-   No color, typography, layout, or spacing. Pair with legacy BEM or utilities in markup. */
+/* Shared visible-focus plus hover underline for compact text links. */
 @utility interactive-link {
     @apply focus-ring;
 
@@ -506,37 +505,6 @@ badge
         font-size: 1.2rem;
         line-height: 1.8rem;
     }
-}
-
-/* =========================================================
-close-button — dismiss control
-
-Variants:
-- close-button-corner — absolute top-end placement for dialogs/overlays
-- close-button-subtle — lower default opacity on light surfaces (newsletter, etc.)
-- close-button-on-overlay — muted white on dark media/lightbox overlays
-========================================================= */
-@utility close-button {
-    @apply inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded;
-
-    &:focus-visible {
-        outline: var(--focus-ring-width) solid
-            rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
-        outline-offset: var(--focus-ring-offset);
-    }
-
-    &:disabled,
-    &[aria-disabled='true'] {
-        cursor: not-allowed;
-        opacity: 0.5;
-        pointer-events: none;
-    }
-}
-
-@utility close-button-corner {
-    @apply absolute top-3 z-10;
-
-    inset-inline-end: calc(var(--spacing) * 3);
 }
 
 /* =========================================================

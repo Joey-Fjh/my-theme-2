@@ -1,6 +1,6 @@
 /*! tailwindcss v4.1.18 | MIT License | https://tailwindcss.com */
 @layer properties;
-@layer theme, base, components, snippets, utilities;
+@layer theme, base, components, utilities;
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
@@ -23,10 +23,6 @@
     --color-primary: rgb(var(--color-primary-button));
     --z-layer-dropdown: 20;
     --z-layer-popover: 30;
-    --z-layer-sticky: 100;
-    --z-layer-sticky-raised: 101;
-    --z-layer-drawer-backdrop: 200;
-    --z-layer-drawer: 201;
     --z-layer-skip-link: 700;
   }
 }
@@ -2025,17 +2021,10 @@
   .layout {
     position: relative;
     overflow: hidden;
-  }
-  .layout:not(.layout-no-pt) {
     padding-top: var(--section-padding-top);
-  }
-  .layout:not(.layout-no-pb) {
     padding-bottom: var(--section-padding-bottom);
   }
-  main > section:first-child .layout:first-child:not(.layout-no-safe):not(.layout-no-pt) {
-    padding-top: calc(var(--announcement-bar-height) + var(--section-padding-top));
-  }
-  .layout-safe-top:not(.layout-no-safe):not(.layout-no-pt) {
+  main > section:first-child .layout:first-child {
     padding-top: calc(var(--announcement-bar-height) + var(--section-padding-top));
   }
   .shopify-section {
@@ -2052,13 +2041,6 @@
   }
   [x-cloak] {
     display: none;
-  }
-  .no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
 }
 :lang(ar), :lang(fa), :lang(ur) {
@@ -2251,11 +2233,6 @@ shopify-accelerated-checkout {
     border-start-start-radius: 0;
     border-end-start-radius: 0;
   }
-  .inline-submit-field__button--icon {
-    aspect-ratio: 1 / 1;
-    padding-inline: calc(var(--spacing) * 0);
-    min-width: 3rem;
-  }
 }
 @layer components {
   .search-section__input {
@@ -2434,7 +2411,6 @@ shopify-accelerated-checkout {
     padding: var(--accordion-focus-safe-inset);
   }
 }
-@layer components;
 @layer components {
   .rte {
     word-break: break-word;
@@ -2958,6 +2934,11 @@ shopify-accelerated-checkout {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
       outline-offset: var(--focus-ring-offset);
     }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(.pagination__button--disabled) {
+        background-color: rgba(var(--color-foreground), 0.08);
+      }
+    }
     &:active:not(.pagination__button--disabled) {
       transform: scale(0.98);
     }
@@ -2966,44 +2947,6 @@ shopify-accelerated-checkout {
     pointer-events: none;
     cursor: default;
     opacity: 0.4;
-  }
-  .pagination__button--hover-default {
-    @media (hover: hover) and (pointer: fine) {
-      &:hover:not(.pagination__button--disabled) {
-        background-color: rgba(var(--color-foreground), 0.08);
-      }
-    }
-  }
-  .pagination__button--hover-minimal {
-    @media (hover: hover) and (pointer: fine) {
-      &:hover:not(.pagination__button--disabled) {
-        text-decoration: underline;
-      }
-    }
-    &:focus-visible:not(.pagination__button--disabled) {
-      text-decoration: underline;
-    }
-  }
-  .pagination__button--outline {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-    border-color: rgb(var(--color-border));
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, rgb(var(--color-border)) 20%, transparent);
-    }
-  }
-  .pagination__button--hover-outline {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-    border-color: rgb(var(--color-border));
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, rgb(var(--color-border)) 20%, transparent);
-    }
-    @media (hover: hover) and (pointer: fine) {
-      &:hover:not(.pagination__button--disabled) {
-        background-color: rgba(var(--color-foreground), 0.08);
-      }
-    }
   }
   .pagination__page {
     display: inline-flex;
@@ -3023,53 +2966,18 @@ shopify-accelerated-checkout {
     }
   }
   a.pagination__page {
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background-color: rgba(var(--color-foreground), 0.08);
+      }
+    }
     &:active {
       transform: scale(0.98);
     }
   }
-  .pagination__page--hover-default {
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: rgba(var(--color-foreground), 0.08);
-      }
-    }
-  }
-  .pagination__page--hover-minimal {
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-    &:focus-visible {
-      text-decoration: underline;
-    }
-  }
-  .pagination__page--hover-outline {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-    border-color: rgb(var(--color-border));
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, rgb(var(--color-border)) 20%, transparent);
-    }
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background-color: rgba(var(--color-foreground), 0.08);
-      }
-    }
-  }
-  .pagination__page--current--default {
+  .pagination__page--current {
     background-color: rgb(var(--color-foreground));
     color: rgb(var(--color-background));
-  }
-  .pagination__page--current--outline {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-    border-color: rgb(var(--color-foreground));
-    color: rgb(var(--color-foreground));
-  }
-  .pagination__page--current--minimal {
-    color: rgb(var(--color-foreground));
-    text-decoration-line: underline;
   }
   .pagination__page--ellipsis {
     cursor: default;
@@ -3099,18 +3007,6 @@ shopify-accelerated-checkout {
   }
   .z-layer-popover {
     z-index: var(--z-layer-popover);
-  }
-  .z-layer-sticky {
-    z-index: var(--z-layer-sticky);
-  }
-  .z-layer-sticky-raised {
-    z-index: var(--z-layer-sticky-raised);
-  }
-  .z-layer-drawer-backdrop {
-    z-index: var(--z-layer-drawer-backdrop);
-  }
-  .z-layer-drawer {
-    z-index: var(--z-layer-drawer);
   }
 }
 @property --tw-border-style {

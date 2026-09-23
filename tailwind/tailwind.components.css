@@ -22,11 +22,6 @@ Inline Submit Field
         border-start-start-radius: 0;
         border-end-start-radius: 0;
     }
-
-    .inline-submit-field__button--icon {
-        @apply aspect-square px-0;
-        min-width: 3rem;
-    }
 }
 
 /* =========================================================
@@ -155,9 +150,7 @@ Dropdown
 /* =========================================================
 Accordion
 
-CSS promoted from snippets.css (Phase 5B layer promotion).
 Render/API owner: snippets/accordion.liquid
-Consumers: sections/promise-section, sections/cart, snippets/filters-groups
 ========================================================= */
 @layer components {
     .accordion__trigger {
@@ -206,22 +199,6 @@ Consumers: sections/promise-section, sections/cart, snippets/filters-groups
         overflow: hidden;
         margin: calc(-1 * var(--accordion-focus-safe-inset));
         padding: var(--accordion-focus-safe-inset);
-    }
-}
-
-/* =========================================================
-Icon With Text Item
-
-CSS promoted from snippets.css (Phase 5D-1 layer promotion).
-Render/API owner: snippets/icon-with-text-item.liquid
-Consumers: sections/icon-with-text, snippets/product-info-blocks
-Uses snippet-local vars (injected per item in markup):
-  --icon-with-text-icon-size, --icon-with-text-icon-size-mobile, --icon-with-text-gap
-Hybrid pattern — same as pagination: components.css reads vars from snippet inline style.
-Section grid/carousel (.icon-with-text-section__*) and PDP wrappers stay in snippets.css.
-========================================================= */
-@layer components {
-    @media (width >= theme(--breakpoint-pc)) {
     }
 }
 
@@ -601,7 +578,6 @@ Buy Buttons — purchase_group chrome
 
 Reusable across: PDP, featured-product, quick view.
 Consumed via snippets/buy-buttons.liquid (render/API owner).
-Not included: pickup-availability-inline__retry-action (pickup owner delta in snippets.css, Phase 5D-2b).
 ========================================================= */
 @layer components {
     .buy-buttons__actions--purchase-group {
@@ -649,8 +625,7 @@ Not included: pickup-availability-inline__retry-action (pickup owner delta in sn
 /* =========================================================
 Pagination
 
-Reusable across: collection, blog, slides-show, announcement-bar,
-featured-products, collections, testimonial-featured, icon-with-text.
+Reusable across collection, blog, and other paginated sections.
 Consumed via snippets/pagination.liquid.
 ========================================================= */
 @layer components {
@@ -677,6 +652,12 @@ Consumed via snippets/pagination.liquid.
             outline-offset: var(--focus-ring-offset);
         }
 
+        @media (hover: hover) and (pointer: fine) {
+            &:hover:not(.pagination__button--disabled) {
+                background-color: rgba(var(--color-foreground), 0.08);
+            }
+        }
+
         &:active:not(.pagination__button--disabled) {
             transform: scale(0.98);
         }
@@ -685,41 +666,6 @@ Consumed via snippets/pagination.liquid.
     .pagination__button--disabled {
         @apply pointer-events-none cursor-default;
         opacity: 0.4;
-    }
-
-    /* hover variants (applied alongside pagination__button) */
-    .pagination__button--hover-default {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(.pagination__button--disabled) {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
-    }
-
-    .pagination__button--hover-minimal {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(.pagination__button--disabled) {
-                text-decoration: underline;
-            }
-        }
-
-        &:focus-visible:not(.pagination__button--disabled) {
-            text-decoration: underline;
-        }
-    }
-
-    .pagination__button--outline {
-        @apply border border-theme-border/20;
-    }
-
-    .pagination__button--hover-outline {
-        @apply border border-theme-border/20;
-
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(.pagination__button--disabled) {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
     }
 
     /* ---- page number base ---- */
@@ -738,53 +684,19 @@ Consumed via snippets/pagination.liquid.
     }
 
     a.pagination__page {
+        @media (hover: hover) and (pointer: fine) {
+            &:hover {
+                background-color: rgba(var(--color-foreground), 0.08);
+            }
+        }
+
         &:active {
             transform: scale(0.98);
         }
     }
 
-    /* hover variants (applied alongside pagination__page) */
-    .pagination__page--hover-default {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
-    }
-
-    .pagination__page--hover-minimal {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-
-        &:focus-visible {
-            text-decoration: underline;
-        }
-    }
-
-    .pagination__page--hover-outline {
-        @apply border border-theme-border/20;
-
-        @media (hover: hover) and (pointer: fine) {
-            &:hover {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
-    }
-
-    /* current page variants */
-    .pagination__page--current--default {
+    .pagination__page--current {
         @apply surface-inverted;
-    }
-
-    .pagination__page--current--outline {
-        @apply border border-theme-text text-theme-text;
-    }
-
-    .pagination__page--current--minimal {
-        @apply text-theme-text underline;
     }
 
     /* ellipsis */
