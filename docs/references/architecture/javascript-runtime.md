@@ -48,6 +48,20 @@ The core (`base.js`) scans `[data-module-id]`, imports each identifier once, and
 
 Pass Liquid-driven runtime values through `data-*`, then read `this.$el.dataset` inside the component factory. Do not embed Liquid JSON or quote-heavy values directly in `x-data`.
 
+Alpine attributes hold simple expressions: a component method call, a state read, or a binding object or ternary. Statements, declarations, control flow, arrow functions, and Liquid output belong in the component factory or in `data-*`. `lint:theme` fails on them.
+
+```html
+<!-- Don't: logic and Liquid inside the attribute -->
+<div @click="let link = $event.target.closest('a'); if (link) { $event.preventDefault(); loadUrl(link.href); }"></div>
+<p x-text="errors['{{ item.key | escape }}']"></p>
+
+<!-- Do: call a component method; pass the Liquid value through data-* -->
+<div @click="onNavClick($event)"></div>
+<p data-line-key="{{ item.key | escape }}" x-text="errors[$el.dataset.lineKey]"></p>
+```
+
+The method lives in the factory that `define` registers (here `sectionPagination` in `assets/alpine.components.pagination.js`).
+
 ## Adapter API
 
 Only `alpine.adapter.js` may call `window.Alpine` APIs.

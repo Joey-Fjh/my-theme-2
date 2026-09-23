@@ -286,11 +286,12 @@
                                             product_form_id: cart_form_id
                                         -%}
                                         <p
-                                            x-show="errors['{{ item.key | escape }}']"
+                                            data-line-key="{{ item.key | escape }}"
+                                            x-show="errors[$el.dataset.lineKey]"
                                             x-cloak
                                             role="alert"
                                             class="mt-1 max-w-full text-end body-md text-error-text"
-                                            x-text="errors['{{ item.key | escape }}']"
+                                            x-text="errors[$el.dataset.lineKey]"
                                         ></p>
                                     </div>
                                 </div>

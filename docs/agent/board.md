@@ -6,6 +6,8 @@ Last updated: 2026-09-23.
 
 ## Open decisions
 
+- **Section and snippet content to the simplest use of the frame: planned as batch E (user, 2026-09-23).** Decisions and the standard are in `docs/agent/context.md`. The evidence recorded here on 2026-09-23 (two stacked layout systems; padding settings overridden by hardcoded utilities in 404, article, collection, and search; duplicated inline pagination logic; snippet decorative defaults) moved into the plan. The Alpine rule found on the way was restored as its own batch.
+
 - **Phase 2: clean internal business content, keep the frame (user direction 2026-09-23).** The outer layer is reviewed: Agent rules, configuration, tools, validators, and all nine references. Next, clean the theme's own business content with the keep/delete test in `docs/project.md` "Cleanup Test".
   - Order: motion cleanup, the cart page content, and the CSS and section-settings reduction to official-Skeleton minimal practice (batches A–D: global base, accepted-primitive styles, section layer, section settings; combined browser pass by the user) are done (2026-09-23). Next: the JS leftover cleanup, then the theme-block architecture discussion.
 

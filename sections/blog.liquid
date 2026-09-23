@@ -84,13 +84,7 @@
 
                 <div
                     class="blog-pagination-wrapper"
-                    @click="
-                        let link = $event.target.closest('[data-pagination-nav] a');
-                        if (link) {
-                            $event.preventDefault();
-                            loadUrl(link.href);
-                        }
-                    "
+                    @click="onNavClick($event)"
                 >
                     {% render 'pagination', paginate_obj: paginate %}
                 </div>

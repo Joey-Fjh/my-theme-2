@@ -2,6 +2,7 @@
 
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const espree = require('espree');
 const fg = require('fast-glob');
 const { parseLiquidAst, walk } = require('./lib/liquid-ast');
 
@@ -182,6 +183,182 @@ function collectTabFailures(ast, text, file, failures) {
     });
 }
 
+// Alpine directives whose value is not a JavaScript expression.
+const ALPINE_NON_EXPRESSION_DIRECTIVES = new Set([
+    'x-cloak',
+    'x-ignore',
+    'x-ref',
+    'x-teleport',
+    'x-transition',
+]);
+const HTML_ENTITIES = {
+    amp: '&',
+    apos: "'",
+    gt: '>',
+    lt: '<',
+    nbsp: ' ',
+    newline: '\n',
+    quot: '"',
+    tab: '\t',
+};
+const ALPINE_EXPRESSION_MESSAGE =
+    'keep Alpine attributes to simple expressions: move the logic into the registered component, and pass Liquid values through data-*.';
+
+function isAlpineExpressionAttribute(name) {
+    if (name.startsWith('@') || name.startsWith(':')) return true;
+    if (!name.startsWith('x-')) return false;
+    return !ALPINE_NON_EXPRESSION_DIRECTIVES.has(name.split(/[:.]/)[0]);
+}
+
+// Returns the decoded value, or null when it holds an entity this check cannot read.
+function decodeHtmlEntities(value) {
+    let unknown = false;
+    const decoded = value.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z][a-z0-9]*);/gi, (match, entity) => {
+        if (entity[0] === '#') {
+            const hex = entity[1] === 'x' || entity[1] === 'X';
+            const codePoint = parseInt(entity.slice(hex ? 2 : 1), hex ? 16 : 10);
+            if (codePoint > 0x10ffff) {
+                unknown = true;
+                return ' ';
+            }
+            return String.fromCodePoint(codePoint);
+        }
+        const known = HTML_ENTITIES[entity.toLowerCase()];
+        if (known === undefined) unknown = true;
+        return known ?? ' ';
+    });
+    return unknown ? null : decoded;
+}
+
+function findFunctionOrSequence(node, allowSequence) {
+    if (!node || typeof node.type !== 'string') return null;
+    if (
+        node.type === 'ArrowFunctionExpression' ||
+        node.type === 'FunctionExpression' ||
+        node.type === 'ClassExpression'
+    ) {
+        return 'a function';
+    }
+    if (node.type === 'SequenceExpression' && !allowSequence) return 'a comma sequence';
+
+    for (const [key, value] of Object.entries(node)) {
+        if (key === 'parent' || key === 'loc' || key === 'range') continue;
+        const children = Array.isArray(value) ? value : [value];
+        for (const child of children) {
+            if (child && typeof child === 'object') {
+                const found = findFunctionOrSequence(child, allowSequence);
+                if (found) return found;
+            }
+        }
+    }
+    return null;
+}
+
+// Parses the attribute as one JavaScript expression and returns why it is not simple, or null.
+const NOT_SINGLE_EXPRESSION = 'statements or invalid JavaScript (not a single expression)';
+
+// Module source type allows Alpine's top-level `await`.
+function parseSingleExpression(code) {
+    const wrapped = `(${code}\n)`;
+    let program;
+    try {
+        program = espree.parse(wrapped, {
+            ecmaVersion: 'latest',
+            sourceType: 'module',
+            tokens: true,
+        });
+    } catch {
+        return null;
+    }
+
+    if (program.body.length !== 1 || program.body[0].type !== 'ExpressionStatement') return null;
+
+    // The wrapper's opening parenthesis must close only at the last token; otherwise the value escaped it.
+    let depth = 0;
+    const { tokens } = program;
+    for (let index = 0; index < tokens.length; index += 1) {
+        const { type, value } = tokens[index];
+        if (type !== 'Punctuator') continue;
+        if (value === '(') depth += 1;
+        if (value === ')') {
+            depth -= 1;
+            if (depth === 0 && index !== tokens.length - 1) return null;
+        }
+    }
+
+    return program.body[0].expression;
+}
+
+function describeAlpineExpressionProblem(name, code) {
+    if (code.trim() === '') return null;
+
+    // x-for="(item, index) in items": only the binding on the left may be a comma list.
+    const forParts = name.startsWith('x-for')
+        ? code.match(/^\s*([\s\S]+?)\s+(?:in|of)\s+([\s\S]+)$/)
+        : null;
+    const checks = forParts ? [[forParts[1], true], [forParts[2], false]] : [[code, false]];
+
+    for (const [part, allowSequence] of checks) {
+        const expression = parseSingleExpression(part);
+        if (!expression) return NOT_SINGLE_EXPRESSION;
+
+        const problem = findFunctionOrSequence(expression, allowSequence);
+        if (problem) return problem;
+    }
+
+    return null;
+}
+
+// Attributes inside {% if %} / {% unless %} / {% case %} branches sit in LiquidTag children.
+function flattenAttributes(attributes, result = []) {
+    for (const attr of attributes ?? []) {
+        if (Array.isArray(attr.name)) {
+            result.push(attr);
+        } else if (Array.isArray(attr.children)) {
+            for (const child of attr.children) {
+                flattenAttributes(child.children ?? [child], result);
+            }
+        }
+    }
+    return result;
+}
+
+function collectAlpineExpressionFailures(ast, text, file, failures) {
+    walk(ast, (node) => {
+        for (const attr of flattenAttributes(node.attributes)) {
+            const name = attr.name.map((part) => part.value || '').join('');
+            if (!isAlpineExpressionAttribute(name)) continue;
+
+            const parts = attr.value ?? [];
+            const reasons = [];
+
+            if (parts.some((part) => part.type !== 'TextNode')) {
+                reasons.push('Liquid');
+            }
+
+            // A Liquid part stands in as a number so the rest of the expression still parses.
+            const decoded = decodeHtmlEntities(
+                parts.map((part) => (part.type === 'TextNode' ? part.value || '' : '0')).join(''),
+            );
+
+            if (decoded === null) {
+                reasons.push('an HTML entity this check cannot read (write the character itself)');
+            } else {
+                const problem = describeAlpineExpressionProblem(name, decoded);
+                if (problem) reasons.push(problem);
+            }
+
+            if (reasons.length === 0) continue;
+
+            failures.push({
+                file,
+                line: lineAt(text, attr.position?.start ?? node.position?.start ?? 0),
+                message: `Alpine attribute "${name}" contains ${reasons.join(', ')}; ${ALPINE_EXPRESSION_MESSAGE}`,
+            });
+        }
+    });
+}
+
 function collectBundledAssetTagFailures(ast, text, file, failures) {
     const tagsByName = Object.fromEntries(BUNDLED_ASSET_TAG_NAMES.map((name) => [name, []]));
 
@@ -333,6 +510,7 @@ async function runThemeLint(root) {
         collectProtectedRuntimeNameFailures(ast, text, file, failures);
         collectBundledAssetTagFailures(ast, text, file, failures);
         collectTabFailures(ast, text, file, failures);
+        collectAlpineExpressionFailures(ast, text, file, failures);
 
         for (const block of extractBlocks(text, 'stylesheet')) {
             collectInvalidRgbAlphaFailures(block.code, file, failures, {

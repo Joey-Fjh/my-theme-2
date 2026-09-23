@@ -29,6 +29,7 @@ Liquid files under `layout/`, `sections/`, `snippets/`, `blocks/`, and `template
 2. Static `role="tab"` elements must include `aria-selected` and `aria-controls` (`aria-*`, `:*`, or `x-bind:*` forms).
 3. At most one `{% stylesheet %}` and one `{% javascript %}` tag per file, with no Liquid output or tags inside them (`docs/references/style-system/css-architecture.md`, "Bundled Asset Tag Constraints").
 4. Scheme color variables take alpha as `rgba(var(--color-*), alpha)`, never `rgb(var(--color-*) / alpha)` (`docs/references/style-system/css-architecture.md`, "Color, Surface, And Inline Style").
+5. Alpine attributes (`@*`, `:*`, and every `x-*` directive except `x-cloak`, `x-ignore`, `x-ref`, `x-teleport`, and `x-transition*`, including attributes inside Liquid `if` / `unless` / `case` branches) hold one simple JavaScript expression: each value is parsed with `espree` as module code (so Alpine's `await` is allowed) and fails when it is not a single expression (statements, declarations, control flow, invalid code, or text that closes the parser's wrapping parentheses early), contains a function, arrow function, or class, contains a comma sequence (except the `(item, index)` binding of `x-for`), contains Liquid output or tags, or contains an HTML entity the check cannot read (`AGENTS.md` hard rules; `docs/references/architecture/javascript-runtime.md`, "Module Discovery Contract").
 
 ## What This Skill Does Not Enforce Yet
 
@@ -36,7 +37,7 @@ Other rules in `docs/references/` have no check yet, for example typography-tier
 
 ## When To Run
 
-- After Liquid changes that may shadow protected runtime names or tab markup.
+- After Liquid changes that may shadow protected runtime names, touch tab markup, or add Alpine attributes.
 - After embedded stylesheet/javascript block changes: run `lint:compat`.
 - After Tailwind source changes: run `scan:compat`.
 - After changes to `SectionRefresher.carryInnerSectionStylesheet` in `assets/https.js`: run `test:section-stylesheet-carry`.

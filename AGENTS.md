@@ -73,6 +73,7 @@ Hard implementation rules:
 
 - Do not write inline executable `<script>` tags or bare global DOM listeners in Liquid. Data-only blocks with `type="importmap"` or `type="application/ld+json"` are allowed.
 - Pass Liquid-driven runtime values to JavaScript through `data-*`.
+- Keep Alpine attributes to simple expressions (method calls, state reads, binding objects or ternaries); put logic in the registered component. `lint:theme` enforces this.
 - Critical first-viewport content must render usable and visible without JavaScript or animation completion.
 - User-visible strings, schema labels, ARIA copy, placeholders, and editor text must use locale keys.
 - Use semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.

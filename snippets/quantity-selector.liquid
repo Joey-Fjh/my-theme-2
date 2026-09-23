@@ -199,7 +199,8 @@
                 @change="onInput()"
                 :readonly="!canPurchase"
                 :aria-invalid="(!canPurchase).toString()"
-                :aria-describedby="feedbackMessage ? '{{ qty_feedback_id }}' : null"
+                data-feedback-id="{{ qty_feedback_id }}"
+                :aria-describedby="feedbackMessage ? $el.dataset.feedbackId : null"
                 aria-label="{{ qty_input_label | escape }}"
             {% else %}
                 disabled

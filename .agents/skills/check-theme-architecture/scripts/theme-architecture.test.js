@@ -235,6 +235,83 @@ test('tab missing aria-selected fails', async () => {
     });
 });
 
+for (const [label, markup, reason] of [
+    ['semicolon', `<div @click="close(); reset()"></div>`, /not a single expression/],
+    ['declaration', `<div @click="let link = $event.target"></div>`, /not a single expression/],
+    ['control flow', `<div @keydown.escape.window="if (open) close()"></div>`, /not a single expression/],
+    ['control flow behind a comment', `<div @click="if/*x*/(open) close()"></div>`, /not a single expression/],
+    ['unterminated string', `<div @click="say('a; b)"></div>`, /not a single expression/],
+    ['arrow function', `<div x-init="$nextTick(() => focus())"></div>`, /contains a function/],
+    ['function', `<div x-data="{ toggle: function () {} }"></div>`, /contains a function/],
+    ['method shorthand', `<div x-data="{ toggle() { open = !open } }"></div>`, /contains a function/],
+    ['comma sequence', `<div @click="close(), reset()"></div>`, /contains a comma sequence/],
+    ['wrapper escape', `<div @click="a); if (open) close(); (b"></div>`, /not a single expression/],
+    ['wrapper escape into a sum', `<div @click="a) + (b"></div>`, /not a single expression/],
+    [
+        'comma sequence in the x-for source',
+        `<template x-for="item in (items, moreItems)"></template>`,
+        /contains a comma sequence/,
+    ],
+    ['Liquid value', `<p x-text="errors['{{ item.key }}']"></p>`, /contains Liquid/],
+    ['bare x-bind', `<div x-bind="close(); reset()"></div>`, /"x-bind" contains statements/],
+    ['plugin directive', `<div x-intersect="if (visible) load()"></div>`, /"x-intersect" contains statements/],
+    [
+        'conditional attribute',
+        `<div {% if open %}@click="close(); reset()"{% endif %}></div>`,
+        /"@click" contains statements/,
+    ],
+    [
+        'template literal interpolation',
+        '<div :class="`item ${list.map((item) => item.id)}`"></div>',
+        /contains a function/,
+    ],
+    ['unreadable entity', `<div @click="say(&#x110000;)"></div>`, /HTML entity this check cannot read/],
+    ['unknown named entity', `<div @click="say(&copy;)"></div>`, /HTML entity this check cannot read/],
+]) {
+    test(`alpine attribute with ${label} fails`, async () => {
+        await withTempThemeAsync(async (root) => {
+            writeFile(root, 'sections/fixture.liquid', `${markup}\n`);
+
+            const failures = await runThemeLint(root);
+            assert.match(failureMessages(failures), reason);
+        });
+    });
+}
+
+test('simple alpine expressions pass', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            [
+                `<div x-data="accordion" data-initial-active="{{ index }}" @click.away="close()">`,
+                `    <button @click="onNavClick($event)" :aria-expanded="isActive($el.dataset.index)"></button>`,
+                `    <p x-show="errors[$el.dataset.lineKey]" :style="'margin: 0; padding: 0'"></p>`,
+                `    <span`,
+                `        :class="{`,
+                `            'is-selected': selected === $el.dataset.value,`,
+                `            'is-unavailable': !available,`,
+                `        }"`,
+                `    ></span>`,
+                `    <span :class="isSuccess ? 'is-success' : available ? 'is-ready' : ''"></span>`,
+                `    <button @click="say(&quot;hi&quot;)" x-on:focus="say(&#34;a; b&#34;)"></button>`,
+                '    <span :class="`item-${index} is-${state}`" x-text="\'don\\\'t; stop\'"></span>',
+                `    <div x-cloak x-ref="panel" x-transition:enter="ease-out duration-300"></div>`,
+                `    <button @click="doThis&nbsp;()" x-on:blur="doThis&NewLine;()" :title="label /* note; () => */"></button>`,
+                `    <template x-for="(item, index) in items"><span x-text="item"></span></template>`,
+                `    <template x-for="i in 10"></template>`,
+                `    <span x-text="await getLabel()" x-init="await load()"></span>`,
+                `    <span :class="(open && ready) ? 'is-open' : ''" x-text="(a) + (b)"></span>`,
+                `    <div x-data="{ open: false, count: 0 }" @click="open = !open"></div>`,
+                `</div>`,
+            ].join('\n'),
+        );
+
+        const failures = await runThemeLint(root);
+        assert.equal(failureMessages(failures), '');
+    });
+});
+
 test('tab missing aria-controls fails', async () => {
     await withTempThemeAsync(async (root) => {
         writeFile(

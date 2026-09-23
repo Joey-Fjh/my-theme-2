@@ -135,6 +135,14 @@ const components = {
                 }
             },
 
+            /** Delegated click on a pagination wrapper: load the clicked page link in place. */
+            onNavClick(event) {
+                const link = event.target.closest('[data-pagination-nav] a');
+                if (!link) return;
+                event.preventDefault();
+                this.loadUrl(link.href);
+            },
+
             /**
              * Browser back/forward: cancel pending debounce and fetch immediately.
              * Fallback: uses current href when state is empty, ensuring the initial page is refreshed on return.

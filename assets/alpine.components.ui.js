@@ -138,6 +138,13 @@ const components = {
                 this._fitRetries = 0;
             },
 
+            /** Escape closes an open menu and returns focus to its trigger. */
+            onEscape() {
+                if (!this.open) return;
+                this.close();
+                this.$nextTick(() => this.$refs.localizationTrigger?.focus());
+            },
+
             shouldPreferAlignEnd() {
                 const trigger = this.$refs.localizationTrigger;
                 if (!trigger) return false;
