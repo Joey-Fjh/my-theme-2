@@ -14,7 +14,7 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `defer`, `mount`, `unmount`, `store`, `data` |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
 | UI state bridges | `alpine.store.cart.js` | Static | Cart UI store registered by the core through the adapter |
-| On-demand modules | `utils.js`, component entry files, `alpine.components.*.js` groups | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
+| On-demand modules | `utils.js`, feature entry files (`accordion.js`, `buy-buttons.js`, …) | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
 Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Keep the static graph small; measure file sizes when a change adds a static import.
 
@@ -24,7 +24,7 @@ The core does not import component names. It reads `data-module-id` on DOM roots
 
 `layout/theme.liquid` loads, in order:
 
-1. Import map — bare specifiers such as `base`, `events`, `utils`, `https`, `alpine-adapter`, `cart-contract`, `components/*`, and one specifier per component entry module.
+1. Import map — bare specifiers such as `base`, `events`, `utils`, `https`, `alpine-adapter`, `cart-contract`, and one specifier per feature module (`accordion`, `buy-buttons`, `cart-page`, …).
 2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
 3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
 
@@ -42,7 +42,7 @@ Component roots declare a module identifier and an Alpine factory name:
 ></footer>
 ```
 
-Each component entry file (for example `buy-buttons.js`) imports factories from an `alpine.components.*.js` group, calls `define(name, factory)` from `alpine-adapter`, and exports nothing the core reads directly.
+Each feature file (for example `buy-buttons.js`) imports shared helpers it needs, calls `define(name, factory)` from `alpine-adapter`, and exports nothing the core reads directly.
 
 The core (`base.js`) scans `[data-module-id]`, imports each identifier once, and calls `adapter.mount(el)` after the module defines its factory. Markup declares lazy-load intent with the boolean attribute `data-module-lazy`; the core reads that attribute and does not hold a list of module names. Roots without `data-module-lazy` load immediately.
 
@@ -60,7 +60,7 @@ Alpine attributes hold simple expressions: a component method call, a state read
 <p data-line-key="{{ item.key | escape }}" x-text="errors[$el.dataset.lineKey]"></p>
 ```
 
-The method lives in the factory that `define` registers (here `sectionPagination` in `assets/alpine.components.pagination.js`).
+The method lives in the factory that `define` registers (for example `onNavClick` in `assets/section-pagination.js`).
 
 ## Adapter API
 
@@ -147,7 +147,7 @@ After a section refresh, `SectionRefresher` rescans module roots inside the repl
 
 When `innerSelectors` is set, the refresher clones only those descendants from the Section Rendering response. Shopify nests `<style data-section-stylesheet>` inside the `#shopify-section-<id>` wrapper; the `innerSelectors` path carries that style node from the parsed Section Rendering document into the live section when the response includes one. The lookup is document-scoped (`doc.querySelector('style[data-section-stylesheet]')`) and does not depend on `targetSelector` shape, so callers that pass an inner element as `targetSelector` receive the stylesheet the same way as wrapper-target callers. The full-section path (`innerSelectors` empty) already copies the wrapper `innerHTML` and carries the style; do not extend the document-scoped lookup to that path.
 
-The live `innerSelectors` callers are the collection and blog sections. They declare selectors in markup through `data-pagination-selectors`, which `assets/alpine.components.pagination.js` hydrates before `buildDomMap()` passes them to the refresher. Collection pagination mounts `sectionPagination()` at the section root with `data-module-id="section-pagination"`. Before judging this path unused, search for `data-pagination-selectors` and for other dataset-driven configuration, not only for call arguments.
+The live `innerSelectors` callers are the collection and blog sections. They declare selectors in markup through `data-pagination-selectors`, which `assets/section-pagination.js` hydrates before `buildDomMap()` passes them to the refresher. Collection pagination mounts `sectionPagination()` at the section root with `data-module-id="section-pagination"`. Before judging this path unused, search for `data-pagination-selectors` and for other dataset-driven configuration, not only for call arguments.
 
 ### Transitional status
 
@@ -191,7 +191,7 @@ Inspect the store module for configure/init APIs instead of copying historical e
 | Module | Import specifier | Role |
 | --- | --- | --- |
 | `utils.js` | `utils` | `debounce`, `prefersReducedMotion`, `useDisposable()` |
-| `quantity-constraints.js` | relative import from component groups | Pure quantity min/max/step math |
+| `quantity-constraints.js` | relative `./quantity-constraints.js` from feature files | Pure quantity min/max/step math |
 | `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 
 ## Motion Runtime Boundary
@@ -212,11 +212,11 @@ The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary 
 | Core | `base.js`, `events.js` |
 | Adapter | `alpine.adapter.js` |
 | Cart contract | `cart.contract.js` |
-| Alpine component groups | `alpine.components.*.js` |
-| Component entry modules | `accordion.js`, `buy-buttons.js`, … one file per import-map identifier |
+| Feature modules | `accordion.js`, `buy-buttons.js`, `cart-page.js`, `dropdown.js`, `localization-switcher.js`, `product-gallery.js`, `quantity-selector.js`, `section-pagination.js`, `variant-picker.js` — each holds its Alpine factory and `define()` call |
 | Alpine stores | `alpine.store.cart.js` |
 | HTTP and section refresh | `https.js` |
 | Shared utilities | `utils.js`, `quantity-constraints.js`, motion helpers |
+| Gift card (outside module graph) | `gift-card.js` |
 
 ## Inspection Rule
 

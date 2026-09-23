@@ -20,7 +20,6 @@
     assign qty_has_max = false
     assign qty_max = 0
     assign qty_can_purchase = true
-    assign qty_cart_quantity = 0
     assign qty_variant_id = ''
     assign qty_input_id = input_id
     capture qty_constraints_json
@@ -34,40 +33,23 @@
         capture qty_constraints_json
             render 'quantity-constraints', variant: variant, surface: qty_surface, value: value
         endcapture
-        capture qty_min
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'min'
-        endcapture
-        capture qty_max_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'max'
-        endcapture
-        capture qty_step
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'step'
-        endcapture
-        capture qty_value
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'value'
-        endcapture
-        capture qty_can_purchase_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'can_purchase'
-        endcapture
-        capture qty_has_max_raw
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'has_max'
-        endcapture
-        capture qty_cart_quantity
-            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value, output: 'cart_quantity'
-        endcapture
         assign qty_constraints_json = qty_constraints_json | strip
-        assign qty_min = qty_min | strip | plus: 0
-        assign qty_step = qty_step | strip | plus: 0
-        assign qty_value = qty_value | strip | plus: 0
-        assign qty_cart_quantity = qty_cart_quantity | strip | plus: 0
-        assign qty_max_raw = qty_max_raw | strip
-        assign qty_can_purchase_raw = qty_can_purchase_raw | strip
-        assign qty_has_max_raw = qty_has_max_raw | strip
-        if qty_has_max_raw == 'true'
+        # Read the first occurrence of each key: the computed fields come before the nested quantity_rule, which has its own min and max.
+        assign qty_parts = qty_constraints_json | split: '"min":'
+        assign qty_min = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"step":'
+        assign qty_step = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"value":'
+        assign qty_value = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"max":'
+        assign qty_max_token = qty_parts[1] | split: ',' | first | strip
+        if qty_max_token != 'null'
             assign qty_has_max = true
-            assign qty_max = qty_max_raw | plus: 0
+            assign qty_max = qty_max_token | plus: 0
         endif
-        if qty_can_purchase_raw == 'false'
+        assign qty_parts = qty_constraints_json | split: '"can_purchase":'
+        assign qty_can_purchase_token = qty_parts[1] | split: ',' | first | strip
+        if qty_can_purchase_token == 'false'
             assign qty_can_purchase = false
         endif
     endif

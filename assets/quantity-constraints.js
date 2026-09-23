@@ -150,46 +150,10 @@ function fromVariant(
     });
 }
 
-function fromCartItem(item, constraintMap, cartItems = []) {
-    if (constraintMap && item?.key && constraintMap[item.key]) {
-        const c = constraintMap[item.key];
-        return {
-            min: toPositiveInt(c.min, 1),
-            max: c.max == null || c.max === '' ? null : toNonNegInt(c.max, null),
-            step: toPositiveInt(c.step, 1),
-            absoluteMax:
-                c.absolute_max == null || c.absolute_max === ''
-                    ? null
-                    : toNonNegInt(c.absolute_max, null),
-            cartQuantity: toNonNegInt(c.cart_quantity, 0),
-            otherCartQuantity: toNonNegInt(c.other_cart_quantity, 0),
-            canPurchase: true,
-        };
-    }
-
-    const variantId = item?.variant_id != null ? item.variant_id : item?.id;
-    const lineQty = toNonNegInt(item?.quantity, 0);
-    const total = cartQuantityForVariant(variantId, cartItems);
-    const otherCartQuantity = Math.max(0, total - lineQty);
-
-    return fromVariant(
-        {
-            quantity_rule: item?.quantity_rule || item?.variant?.quantity_rule,
-            inventory_management: item?.inventory_management ?? item?.variant?.inventory_management,
-            inventory_policy: item?.inventory_policy ?? item?.variant?.inventory_policy,
-            inventory_quantity: item?.inventory_quantity ?? item?.variant?.inventory_quantity,
-        },
-        { surface: 'cart', cartQuantity: total, otherCartQuantity },
-    );
-}
-
 const api = {
     resolve,
     fromVariant,
-    fromCartItem,
     cartQuantityForVariant,
-    nextValidTotal,
-    largestValidTotal,
 };
 
 export default api;

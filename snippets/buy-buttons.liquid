@@ -58,12 +58,10 @@
         data-available="{{ current_variant.available | default: false }}"
         data-variant-id="{{ current_variant.id | default: '' }}"
         data-success-message="{{ 'products.product.added_to_cart' | t | escape }}"
-        data-show-buy-now="false"
         data-add-to-cart-text="{{ 'products.product.add_to_cart' | t | escape }}"
         data-sold-out-text="{{ 'products.product.sold_out' | t | escape }}"
         data-maximum-in-cart-text="{{ 'products.product.maximum_in_cart' | t | escape }}"
         data-unavailable-text="{{ 'products.product.unavailable' | t | escape }}"
-        data-request-sections=""
         x-data="BuyButtons()"
         data-module-id="buy-buttons"
         {{ block.shopify_attributes }}
@@ -77,7 +75,6 @@
             <input
                 type="hidden"
                 name="id"
-                x-ref="variantInput"
                 value="{{ current_variant.id | default: '' }}"
                 :value="variantId"
                 :disabled="!available"

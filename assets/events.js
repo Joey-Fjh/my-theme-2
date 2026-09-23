@@ -7,8 +7,6 @@ class ThemeEvents {
         SHOPIFY_SECTION_REORDER: 'theme:editor:section-reorder',
         SHOPIFY_BLOCK_SELECT: 'theme:editor:block-select',
         SHOPIFY_BLOCK_DESELECT: 'theme:editor:block-deselect',
-        HEADER_MENU_ACTIVE_CHANGED: 'theme:header:menu:active-changed',
-        PRODUCT_VARIANT_SET_REQUEST: 'theme:product:variant:request:set',
         PRODUCT_VARIANT_CHANGED: 'theme:product:variant:changed',
         PRODUCT_GALLERY_SLIDE_TO_REQUEST: 'theme:product-gallery:request:slide-to',
         PRODUCT_QUANTITY_CHANGED: 'theme:product:quantity:changed',

@@ -38,7 +38,6 @@ class Base {
     static bindOnShopifySectionLayout = null;
     static initialized = false;
 
-    static announcementBar = null;
     static header = null;
 
     static setCSSVar(name, value) {
@@ -75,7 +74,6 @@ class Base {
         this.resizeObserver.disconnect();
         this.refreshElements();
 
-        if (this.announcementBar) this.resizeObserver.observe(this.announcementBar);
         if (this.header) this.resizeObserver.observe(this.header);
     }
 
@@ -85,26 +83,12 @@ class Base {
     }
 
     static refreshElements() {
-        this.announcementBar = document.querySelector('.announcement-bar');
         this.header = document.querySelector('.site-header > header');
     }
 
     static updateLayout() {
         this.refreshElements();
-        this.updateAnnouncementBarHeight();
         this.updateHeaderHeight();
-    }
-
-    static updateAnnouncementBarHeight() {
-        if (!this.announcementBar) return this.setCSSVar('--announcement-bar-height', `0px`);
-
-        const rect = this.announcementBar.getBoundingClientRect();
-        const announcementHeight = Math.max(
-            0,
-            Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0),
-        );
-
-        this.setCSSVar('--announcement-bar-height', `${announcementHeight}px`);
     }
 
     static updateHeaderHeight() {
