@@ -31,7 +31,7 @@
                         type="search"
                         name="q"
                         value="{{ terms | escape }}"
-                        class="search-section__input w-full flex-1 appearance-none border-none bg-transparent text-theme-text placeholder:text-theme-text/50"
+                        class="search-section__input w-full flex-1 appearance-none border-none bg-transparent body-xl text-theme-text placeholder:text-theme-text/50"
                         placeholder="{{ 'search.search' | t }}"
                     >
                     <button type="submit" class="btn shrink-0">
@@ -68,6 +68,14 @@
         </div>
     {%- endif -%}
 </div>
+
+{% stylesheet %}
+    @media (width < 48rem) {
+        .search-section__input {
+            font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
+        }
+    }
+{% endstylesheet %}
 
 {% schema %}
 {

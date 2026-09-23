@@ -285,20 +285,10 @@
         border-color: rgba(var(--color-border), 0.2);
     }
 
-    @media (hover: hover) and (pointer: fine) {
-        .variant-picker__swatch:hover {
-            border-color: rgb(var(--color-foreground));
-        }
-    }
-
     .variant-picker__swatch.is-selected {
         box-shadow:
             0 0 0 2px rgb(var(--color-background)),
             0 0 0 4px rgb(var(--color-foreground));
-    }
-
-    .variant-picker__swatch.is-unavailable {
-        opacity: 0.65;
     }
 
     .variant-picker__swatch.is-unavailable::before,
@@ -314,12 +304,12 @@
 
     .variant-picker__swatch.is-unavailable::before {
         width: 0.3125rem;
-        background-color: rgb(0 0 0 / 0.7);
+        background-color: rgba(var(--color-foreground), 0.7);
     }
 
     .variant-picker__swatch.is-unavailable::after {
         width: 0.125rem;
-        background-color: #fff;
+        background-color: rgb(var(--color-background));
     }
 
     .peer:focus-visible + .variant-picker__swatch {
@@ -327,8 +317,8 @@
         outline-offset: 2px;
     }
 
-    .peer:active + .variant-picker__swatch {
-        transform: scale(0.96);
+    .peer:focus-visible + .variant-picker__swatch.is-selected {
+        outline-offset: 6px;
     }
 
     .variant-picker__swatch--circle {
@@ -342,19 +332,11 @@
     .variant-picker__pill {
         display: block;
         cursor: pointer;
-        border-radius: 0.125rem;
         border-width: 1px;
         padding-inline: 1rem;
         padding-block: 0.5rem;
         color: rgba(var(--color-foreground), 0.8);
         border-color: rgba(var(--color-border), 0.2);
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-        .variant-picker__pill:hover {
-            border-color: rgb(var(--color-foreground));
-            color: rgb(var(--color-foreground));
-        }
     }
 
     .variant-picker__pill.is-selected {
@@ -363,17 +345,17 @@
         color: rgb(var(--color-background));
     }
 
+    .variant-picker__pill.is-selected.is-unavailable {
+        color: rgb(var(--color-background));
+    }
+
     .variant-picker__pill.is-unavailable {
-        opacity: 0.4;
+        color: rgba(var(--color-foreground), 0.4);
         text-decoration: line-through;
     }
 
     .peer:focus-visible + .variant-picker__pill {
         outline: 2px solid rgb(var(--color-foreground));
         outline-offset: 2px;
-    }
-
-    .peer:active + .variant-picker__pill:not(.is-unavailable) {
-        transform: scale(0.98);
     }
 {% endstylesheet %}

@@ -442,3 +442,70 @@
         </button>
     </div>
 {%- endif -%}
+
+{% stylesheet %}
+    .buy-buttons__actions--purchase-group {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .buy-buttons__primary-row {
+        display: grid;
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .buy-buttons__actions--with-quantity .buy-buttons__primary-row {
+        grid-template-columns: minmax(8.75rem, 9.75rem) minmax(0, 1fr);
+    }
+
+    @media (width >= 48rem) {
+        .buy-buttons__actions--with-quantity .buy-buttons__primary-row {
+            grid-template-columns: 10.5rem minmax(0, 1fr);
+        }
+    }
+
+    .buy-buttons__quantity {
+        display: flex;
+        min-width: 0;
+        align-items: stretch;
+    }
+
+    .buy-buttons__quantity > * {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .buy-buttons__submit--unavailable {
+        border: 1px solid rgba(var(--color-border), 0.2);
+        background-color: rgba(var(--color-border), 0.2);
+        color: rgba(var(--color-foreground), 0.45);
+        opacity: 1;
+    }
+
+    .buy-buttons__label {
+        display: inline-block;
+    }
+
+    .buy-buttons__label.is-loading {
+        opacity: 0;
+    }
+
+    .buy-buttons__submit--success {
+        background-color: rgb(var(--color-success-background));
+        color: rgb(var(--color-success-foreground));
+    }
+
+    .buy-buttons__error {
+        margin: 0;
+    }
+
+    .shopify-payment-button-wrapper,
+    .shopify-payment-button {
+        width: 100%;
+    }
+{% endstylesheet %}

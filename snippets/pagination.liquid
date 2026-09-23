@@ -90,3 +90,84 @@
         </div>
     </nav>
 {%- endif -%}
+
+{% stylesheet %}
+    .pagination {
+        list-style: none;
+    }
+
+    .pagination__inner {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        width: fit-content;
+        max-width: 100%;
+        margin-inline: auto;
+    }
+
+    .pagination__button {
+        display: inline-flex;
+        height: 2.5rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        padding-inline: 0.5rem;
+        white-space: nowrap;
+        font-family: inherit;
+        font-size: var(--pagination-font-size);
+        border-radius: var(--pagination-radius);
+    }
+
+    .pagination__button--disabled {
+        pointer-events: none;
+        cursor: default;
+        opacity: 0.4;
+    }
+
+    .pagination__page {
+        display: inline-flex;
+        height: 2.5rem;
+        min-width: 2.5rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        padding-inline: 0.5rem;
+        font-family: inherit;
+        font-size: var(--pagination-font-size);
+        border-radius: var(--pagination-radius);
+    }
+
+    .pagination__page:focus-visible {
+        outline-offset: -2px;
+    }
+
+    .pagination__page--current {
+        background-color: rgb(var(--color-foreground));
+        color: rgb(var(--color-background));
+    }
+
+    .pagination__page--current:focus-visible {
+        outline-color: rgb(var(--color-background));
+    }
+
+    .pagination__page--ellipsis {
+        cursor: default;
+        font-size: var(--pagination-font-size);
+    }
+
+    .pagination__pages-wrap {
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .pagination__pages {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        min-width: max-content;
+        margin-inline: auto;
+    }
+{% endstylesheet %}

@@ -1,106 +1,11 @@
 /* =========================================================
-Inline Submit Field
-========================================================= */
-@layer components {
-    .inline-submit-field {
-        @apply grid w-full grid-cols-[minmax(0,1fr)_auto] items-stretch gap-0;
-    }
-
-    .inline-submit-field__input {
-        @apply field min-w-0;
-        border-start-end-radius: 0;
-        border-end-end-radius: 0;
-
-        &:focus-visible {
-            position: relative;
-            z-index: 1;
-        }
-    }
-
-    .inline-submit-field__button {
-        @apply btn shrink-0;
-        border-start-start-radius: 0;
-        border-end-start-radius: 0;
-    }
-}
-
-/* =========================================================
-Search page input — body-xl tier with mobile zoom floor
-========================================================= */
-@layer components {
-    .search-section__input {
-        @apply body-xl;
-
-        @media (width < theme(--breakpoint-pc)) {
-            font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
-        }
-    }
-}
-
-/* =========================================================
-Localization Switcher
-========================================================= */
-@layer components {
-    .localization-switcher {
-        @apply relative inline-block font-body;
-
-        .localization-toggle {
-            @apply flex cursor-pointer items-center gap-1 px-4 py-2;
-        }
-
-        .localization-menu {
-            @apply absolute mt-1 overflow-x-hidden overflow-y-auto overscroll-y-contain border border-theme-border bg-theme-bg;
-            z-index: var(--z-layer-dropdown);
-            top: 100%;
-            inset-inline-start: 0;
-            inset-inline-end: auto;
-            max-width: min(24rem, calc(100vw - 1rem));
-            max-height: min(24rem, calc(100dvh - var(--announcement-bar-height, 0px) - 1rem));
-            scrollbar-width: thin;
-            scrollbar-color: rgba(var(--color-foreground), 0.35) transparent;
-            scrollbar-gutter: stable;
-
-            &::-webkit-scrollbar {
-                width: 0.375rem;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                border-radius: 999px;
-                background-color: rgba(var(--color-foreground), 0.35);
-            }
-
-            &.localization-menu--align-end {
-                inset-inline-start: auto;
-                inset-inline-end: 0;
-            }
-
-            .localization-item {
-                @apply border-t border-theme-border first:border-t-0;
-
-                .localization-link {
-                    @apply flex cursor-pointer items-center justify-end gap-2 px-4 py-3 whitespace-nowrap;
-
-                    /* The menu clips overflow, so the ring is drawn inside the option. */
-                    &:focus-visible {
-                        outline-offset: -2px;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/* =========================================================
-Dropdown
+Dropdown — shared by header menu and nested flyouts
 ========================================================= */
 @layer components {
     .dropdown {
         .dropdown-trigger {
-            @apply cursor-pointer list-none;
+            cursor: pointer;
+            list-style: none;
 
             &::-webkit-details-marker {
                 display: none;
@@ -110,9 +15,7 @@ Dropdown
         .dropdown-panel {
             position: absolute;
             z-index: var(--z-layer-dropdown);
-
             min-width: max-content;
-
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
@@ -130,8 +33,6 @@ Dropdown
 
         .dropdown-icon {
             display: inline-block;
-            align-items: center;
-            justify-content: center;
         }
 
         .dropdown-icon--down {
@@ -147,77 +48,13 @@ Dropdown
         }
 
         &[open] > summary .dropdown-icon--tilt {
-            transform: rotate(-135deg) translateY(2px);
+            transform: rotate(-135deg);
         }
     }
 }
 
 /* =========================================================
-Accordion
-
-Render/API owner: snippets/accordion.liquid
-========================================================= */
-@layer components {
-    .accordion__trigger {
-        @apply flex w-full cursor-pointer items-center justify-between py-5 text-start;
-    }
-
-    .accordion__title {
-        @apply text-start;
-        opacity: 0.7;
-    }
-
-    .accordion__title--active {
-        opacity: 1;
-    }
-
-    .accordion__title--inactive {
-        opacity: 0.7;
-    }
-
-    .accordion__icon {
-        @apply inline-flex shrink-0 items-center justify-center;
-        --_accordion-rotate: rotate(180deg);
-    }
-
-    .accordion__icon--plus {
-        --_accordion-rotate: rotate(45deg);
-    }
-
-    .accordion__icon.is-active {
-        transform: var(--_accordion-rotate);
-    }
-
-    .accordion__panel {
-        display: grid;
-        grid-template-rows: 0fr;
-        opacity: 0;
-    }
-
-    .accordion__panel.is-active {
-        grid-template-rows: 1fr;
-        opacity: 1;
-    }
-
-    .accordion__panel-inner {
-        --accordion-focus-safe-inset: 4px;
-        overflow: hidden;
-        margin: calc(-1 * var(--accordion-focus-safe-inset));
-        padding: var(--accordion-focus-safe-inset);
-    }
-}
-
-/* =========================================================
-Rich text (RTE)
-Standard:
-- `.rte` handles shared rich-text structure and the default long-form media treatment.
-- `rte--compact` reduces vertical rhythm for short supporting copy.
-
-Used to style backend rich-text HTML output:
-- {{ page.content }}
-- {{ article.content }}
-- {{ product.description }}
-- {{ block.settings.<richtext> }} / {{ section.settings.<richtext> }}
+Rich text (RTE) — shared merchant HTML output
 ========================================================= */
 @layer components {
     .rte {
@@ -273,44 +110,19 @@ Used to style backend rich-text HTML output:
         margin: 0;
     }
 
-    .rte :is(strong, b) {
-        font-weight: 700;
-    }
-
-    .rte :is(em, i) {
-        font-style: italic;
-    }
-
     .rte ul,
     .rte ol {
         list-style-position: outside;
         margin: 0.75em 0;
+        padding-inline-start: 1.5em;
     }
 
     .rte ul {
-        list-style: circle;
-        padding-inline-start: 1.45em;
-    }
-
-    .rte ul ul {
         list-style: disc;
-    }
-
-    .rte ul ul ul {
-        list-style: square;
     }
 
     .rte ol {
         list-style: decimal;
-        padding-inline-start: 1.6em;
-    }
-
-    .rte ol ol {
-        list-style: lower-alpha;
-    }
-
-    .rte ol ol ol {
-        list-style: lower-roman;
     }
 
     .rte li + li {
@@ -321,131 +133,19 @@ Used to style backend rich-text HTML output:
         display: list-item;
     }
 
-    .rte li::marker {
-        color: currentColor;
-        font-weight: 500;
-    }
-
-    .rte li > :is(h1, h2, h3, h4, h5, h6):first-child {
-        margin-top: 0;
-        margin-bottom: 0.45em;
-        line-height: 1.25;
-    }
-
-    .rte li > p {
-        margin: 0;
-    }
-
-    .rte li > :is(ul, ol) {
-        margin-top: 0.4em;
-    }
-
-    .rte ul > li > ul {
-        padding-inline-start: 1.2em;
-    }
-
-    .rte ol > li > ul {
-        padding-inline-start: 1.35em;
-    }
-
-    .rte ul > li > ol {
-        padding-inline-start: 1.35em;
-    }
-
-    .rte ol > li > ol {
-        padding-inline-start: 1.25em;
-    }
-
     .rte a {
-        @apply underline underline-offset-4 hover:opacity-80;
-    }
-
-    .rte blockquote {
-        @apply border-s border-theme-border ps-5 text-theme-text/80 italic;
-    }
-
-    .rte :is(p, div):has(> img:only-child) {
-        margin: 1.25em 0;
-    }
-
-    .rte a:has(> img) {
-        display: inline-block;
-        max-width: 100%;
-        text-decoration: none;
+        @apply underline underline-offset-4;
     }
 
     .rte img {
         display: block;
-        width: auto;
-        max-width: min(100%, 48rem);
-        height: auto;
-        margin-inline: auto;
-        border-radius: 0.25rem;
-    }
-
-    .rte figure {
-        margin: 1.5em auto;
-        display: flex;
-        max-width: min(100%, 48rem);
-        flex-direction: column;
-        gap: 0.75em;
-    }
-
-    .rte figure > img {
-        width: 100%;
         max-width: 100%;
-    }
-
-    .rte figcaption {
-        @apply body-sm text-theme-text/60;
-
-        text-align: center;
-    }
-
-    .rte hr {
-        @apply border-theme-border/20;
-
-        margin: 2em 0;
-    }
-
-    .rte :is(code, pre) {
-        @apply bg-theme-text/5 text-theme-text;
-
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 0.9em;
-    }
-
-    .rte code {
-        padding: 0.15em 0.35em;
-        border-radius: 0.25rem;
-    }
-
-    .rte pre {
-        padding: 1em;
-        border-radius: 0.5rem;
-        overflow-x: auto;
-    }
-
-    .rte pre code {
-        padding: 0;
-        background: transparent;
+        height: auto;
     }
 
     .rte table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed;
-    }
-
-    .rte :is(th, td) {
-        @apply border border-theme-border/20;
-
-        padding: 0.75em 1em;
-        text-align: start;
-    }
-
-    .rte th {
-        @apply bg-theme-text/5;
     }
 
     .rte > *:first-child {
@@ -457,9 +157,7 @@ Used to style backend rich-text HTML output:
     }
 }
 
-/* Compact variant: keep paragraph spacing but reduce vertical rhythm.
-   Use as `class="rte rte--compact"` on short marketing descriptions
-   inside hero/banner blocks. */
+/* Compact variant for short supporting copy. */
 @layer components {
     .rte.rte--compact > * + * {
         margin-top: 0.6em;
@@ -468,259 +166,5 @@ Used to style backend rich-text HTML output:
     .rte.rte--compact :is(h1, h2, h3, h4, h5, h6) {
         margin-top: 0.8em;
         margin-bottom: 0.3em;
-    }
-}
-
-/* =========================================================
-Media Placeholder Frame
-
-Shared framed empty-state media surface. The consuming section owns
-placeholder family, placeholder selection, aspect ratio, and outer layout.
-========================================================= */
-@layer components {
-    .media-placeholder-frame {
-        @apply overflow-hidden rounded-md border border-theme-border/20;
-
-        background-color: rgb(var(--color-background));
-
-        @supports (background-color: color-mix(in oklab, white, black)) {
-            background-color: color-mix(
-                in oklab,
-                rgb(var(--color-background)) 95%,
-                rgb(var(--color-foreground)) 5%
-            );
-        }
-    }
-
-    .media-placeholder-frame .svg-placeholder {
-        @apply text-theme-text/20;
-    }
-}
-
-/* =========================================================
-Product Price
-
-Shared price primitive used by PDP/featured product-info-blocks and quick view.
-Scene owners can add BEM classes for typography/order/color deltas.
-========================================================= */
-
-/* =========================================================
-Quantity Selector
-
-Reusable across: product, cart, featured-product.
-Consumed via snippets/quantity-selector.liquid and inline in cart sections.
-========================================================= */
-@layer components {
-    .quantity-selector {
-        @apply flex w-max flex-col text-current;
-    }
-
-    .quantity-selector__controls {
-        @apply inline-flex items-center;
-        gap: 0.5rem;
-    }
-
-    .quantity-selector__feedback {
-        max-width: 100%;
-    }
-
-    .quantity-selector__button {
-        @apply inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center;
-
-        border: 1px solid transparent;
-
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(:disabled):not([aria-disabled='true']) {
-                border-color: rgba(var(--color-foreground), 0.16);
-                background-color: rgba(var(--color-foreground), 0.1);
-                box-shadow: inset 0 0 0 1px rgba(var(--color-background), 0.28);
-            }
-        }
-
-        &:active:not(:disabled):not([aria-disabled='true']) {
-            border-color: rgba(var(--color-foreground), 0.22);
-            background-color: rgba(var(--color-foreground), 0.16);
-        }
-
-        &:disabled,
-        &[aria-disabled='true'] {
-            border-color: transparent;
-            background-color: transparent;
-            box-shadow: none;
-        }
-    }
-
-    .quantity-selector__input {
-        @apply w-[4ch] appearance-none border-b border-current bg-transparent p-0 text-center text-current tabular-nums [-moz-appearance:textfield] focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
-        font: inherit;
-
-        @media (width < theme(--breakpoint-pc)) {
-            font-size: max(16px, 1em);
-        }
-
-        &:focus:not(:focus-visible) {
-            outline: none;
-        }
-
-        &:focus-visible {
-            position: relative;
-            z-index: 1;
-        }
-    }
-
-    .quantity-selector--static .quantity-selector__button {
-        @apply pointer-events-none cursor-default;
-    }
-
-    .quantity-selector--static .quantity-selector__input {
-        @apply pointer-events-none cursor-default opacity-100;
-        -webkit-text-fill-color: currentColor;
-    }
-}
-
-/* =========================================================
-Buy Buttons — purchase_group chrome
-
-Reusable across: PDP, featured-product, quick view.
-Consumed via snippets/buy-buttons.liquid (render/API owner).
-========================================================= */
-@layer components {
-    .buy-buttons__actions--purchase-group {
-        @apply flex w-full flex-col gap-3;
-    }
-
-    .buy-buttons__primary-row {
-        @apply grid w-full grid-cols-1 items-stretch gap-3;
-    }
-
-    .buy-buttons__actions--with-quantity .buy-buttons__primary-row {
-        @apply grid-cols-[minmax(8.75rem,9.75rem)_minmax(0,1fr)] pc:grid-cols-[10.5rem_minmax(0,1fr)];
-    }
-
-    .buy-buttons__quantity {
-        @apply flex min-w-0 items-stretch;
-    }
-
-    .buy-buttons__quantity > * {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .buy-buttons__submit--unavailable {
-        @apply border-theme-border/20 bg-theme-border/20 text-theme-text/45 opacity-100;
-    }
-
-    .buy-buttons__label {
-        @apply inline-block;
-    }
-
-    .buy-buttons__label.is-loading {
-        @apply opacity-0;
-    }
-
-    .buy-buttons__submit--success {
-        @apply bg-success text-success-text;
-    }
-
-    .buy-buttons__error {
-        margin: 0;
-    }
-
-    .shopify-payment-button-wrapper,
-    .shopify-payment-button {
-        @apply w-full;
-    }
-}
-
-/* =========================================================
-Pagination
-
-Reusable across collection, blog, and other paginated sections.
-Consumed via snippets/pagination.liquid.
-========================================================= */
-@layer components {
-    .pagination {
-        list-style: none;
-    }
-
-    .pagination__inner {
-        @apply mx-auto flex w-fit max-w-full items-center;
-        gap: 0.25rem;
-    }
-
-    /* ---- shared button base ---- */
-    .pagination__button {
-        @apply inline-flex h-10 shrink-0 items-center justify-center gap-1 rounded px-2 whitespace-nowrap;
-
-        font-family: inherit;
-        font-size: var(--pagination-font-size);
-        border-radius: var(--pagination-radius);
-
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(.pagination__button--disabled) {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
-
-        &:active:not(.pagination__button--disabled) {
-            transform: scale(0.98);
-        }
-    }
-
-    .pagination__button--disabled {
-        @apply pointer-events-none cursor-default;
-        opacity: 0.4;
-    }
-
-    /* ---- page number base ---- */
-    .pagination__page {
-        @apply inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded px-2;
-
-        font-family: inherit;
-        font-size: var(--pagination-font-size);
-        border-radius: var(--pagination-radius);
-
-        /* The scrollable pages wrap clips overflow, so the ring is drawn inside the page link. */
-        &:focus-visible {
-            outline-offset: -2px;
-        }
-    }
-
-    a.pagination__page {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover {
-                background-color: rgba(var(--color-foreground), 0.08);
-            }
-        }
-
-        &:active {
-            transform: scale(0.98);
-        }
-    }
-
-    .pagination__page--current {
-        @apply surface-inverted;
-    }
-
-    /* ellipsis */
-    .pagination__page--ellipsis {
-        @apply cursor-default;
-        font-size: var(--pagination-font-size);
-    }
-
-    /* ---- pages container ---- */
-    .pagination__pages-wrap {
-        @apply max-w-full min-w-0 overflow-x-auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-
-    .pagination__pages {
-        @apply mx-auto inline-flex min-w-max items-center;
-        gap: 0.25rem;
     }
 }

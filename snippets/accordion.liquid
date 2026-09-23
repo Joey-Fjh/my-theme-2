@@ -68,7 +68,7 @@
                         {%- assign effective_clear_label = clear_label | default: item_title -%}
                         <a
                             href="{{ clear_url }}"
-                            class="inline-flex items-center justify-center opacity-80 hover:opacity-100"
+                            class="inline-flex items-center justify-center"
                             aria-label="{{ 'accessibility.clear_item' | t: item: effective_clear_label | escape }}"
                             @click.stop
                         >
@@ -212,3 +212,53 @@
         {%- endfor -%}
     {%- endif -%}
 </div>
+
+{% stylesheet %}
+    .accordion__trigger {
+        display: flex;
+        width: 100%;
+        cursor: pointer;
+        align-items: center;
+        justify-content: space-between;
+        padding-block: 1.25rem;
+        text-align: start;
+    }
+
+    .accordion__title {
+        text-align: start;
+    }
+
+    .accordion__icon {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        --_accordion-rotate: rotate(180deg);
+    }
+
+    .accordion__icon--plus {
+        --_accordion-rotate: rotate(45deg);
+    }
+
+    .accordion__icon.is-active {
+        transform: var(--_accordion-rotate);
+    }
+
+    .accordion__panel {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+    }
+
+    .accordion__panel.is-active {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+
+    .accordion__panel-inner {
+        --accordion-focus-safe-inset: 4px;
+        overflow: hidden;
+        margin: calc(-1 * var(--accordion-focus-safe-inset));
+        padding: var(--accordion-focus-safe-inset);
+    }
+{% endstylesheet %}

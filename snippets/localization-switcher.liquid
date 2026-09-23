@@ -25,3 +25,62 @@
         {{ content }}
     {% endform %}
 </div>
+
+{% stylesheet %}
+    .localization-switcher {
+        position: relative;
+        display: inline-block;
+        font-family: var(--font-body-family);
+    }
+
+    .localization-switcher .localization-toggle {
+        display: flex;
+        cursor: pointer;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .localization-switcher .localization-menu {
+        position: absolute;
+        z-index: var(--z-layer-dropdown);
+        top: 100%;
+        inset-inline-start: 0;
+        inset-inline-end: auto;
+        max-width: min(24rem, calc(100vw - 1rem));
+        max-height: min(24rem, calc(100dvh - var(--announcement-bar-height, 0px) - 1rem));
+        margin-top: 0.25rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        border: 1px solid rgb(var(--color-border));
+        background-color: rgb(var(--color-background));
+    }
+
+    .localization-switcher .localization-menu.localization-menu--align-end {
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+    }
+
+    .localization-switcher .localization-item {
+        border-top: 1px solid rgb(var(--color-border));
+    }
+
+    .localization-switcher .localization-item:first-child {
+        border-top-width: 0;
+    }
+
+    .localization-switcher .localization-link {
+        display: flex;
+        cursor: pointer;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+    }
+
+    .localization-switcher .localization-link:focus-visible {
+        outline-offset: -2px;
+    }
+{% endstylesheet %}

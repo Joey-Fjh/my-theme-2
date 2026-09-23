@@ -234,3 +234,82 @@
         ></p>
     {%- endif -%}
 </div>
+
+{% stylesheet %}
+    .quantity-selector {
+        display: flex;
+        width: max-content;
+        flex-direction: column;
+        color: currentColor;
+    }
+
+    .quantity-selector__controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .quantity-selector__feedback {
+        max-width: 100%;
+    }
+
+    .quantity-selector__button {
+        display: inline-flex;
+        height: 2.5rem;
+        width: 2.5rem;
+        flex-shrink: 0;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-selector__button:disabled,
+    .quantity-selector__button[aria-disabled='true'] {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    .quantity-selector__input {
+        width: 4ch;
+        appearance: none;
+        border-bottom: 1px solid currentColor;
+        background-color: transparent;
+        padding: 0;
+        text-align: center;
+        font: inherit;
+        font-variant-numeric: tabular-nums;
+        color: currentColor;
+    }
+
+    .quantity-selector__input:focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    .quantity-selector__input:focus-visible {
+        position: relative;
+        z-index: 1;
+    }
+
+    .quantity-selector__input::-webkit-inner-spin-button,
+    .quantity-selector__input::-webkit-outer-spin-button {
+        appearance: none;
+    }
+
+    @media (width < 48rem) {
+        .quantity-selector__input {
+            font-size: max(16px, 1em);
+        }
+    }
+
+    .quantity-selector--static .quantity-selector__button {
+        pointer-events: none;
+        cursor: default;
+    }
+
+    .quantity-selector--static .quantity-selector__input {
+        pointer-events: none;
+        cursor: default;
+        opacity: 1;
+        -webkit-text-fill-color: currentColor;
+    }
+{% endstylesheet %}
