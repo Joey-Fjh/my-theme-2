@@ -27,7 +27,7 @@
   `center` default would incorrectly override every image focal point.
   Focal-point percentage strings must never enter the fixed `position` whitelist.
 
-    @param {image} image - The image to be rendered
+    @param {image} [image] - The image to be rendered. Without it, the snippet renders a placeholder.
     @param {string} [url] - An optional destination URL for the image
     @param {string} [wrapper] - An optional wrapper element, either 'a' or 'div'. If not provided, it will be 'a' if url is provided, otherwise 'div'.
     @param {string} [wrapper_class] - Optional class added to the image wrapper. Canonical name; `class` is a deprecated alias merged into this.

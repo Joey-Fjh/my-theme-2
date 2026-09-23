@@ -81,10 +81,3 @@ field
     min-height: 12rem;
     resize: vertical;
 }
-
-@utility field-select {
-    @apply field;
-
-    appearance: none;
-    cursor: pointer;
-}

@@ -179,7 +179,6 @@
         "decrease_quantity": "Decrease quantity",
         "increase_quantity": "Increase quantity",
         "remove_item": "Remove {{ item }}",
-        "clear_item": "Clear {{ item }}",
         "loading": "Loading",
         "quantity": "Quantity"
     }

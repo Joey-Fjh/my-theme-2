@@ -11,10 +11,8 @@
     @param {string} [contents] - '|'-delimited HTML content strings (used when blocks is not provided).
     @param {string} [item_title] - Single-item mode: title text. Presence activates single-item mode.
     @param {string} [item_content] - Single-item mode: HTML content.
-    @param {boolean} [show_clear] - Single-item mode: show a clear/remove button. Default: false.
-    @param {string} [clear_url] - Single-item mode: URL for the clear button link.
-    @param {string} [clear_label] - Single-item mode: accessible label for the clear button. Defaults to item_title.
-    @param {number} [initial_active] - Index of initially expanded item. Pass 'null' to close all. Default: 0.
+    @param {number} [initial_active] - Index of initially expanded item. Default: 0.
+    @param {boolean} [collapsed] - Start with every item closed. Overrides initial_active. Default: false.
     @param {string} [icon_type] - Icon style: 'chevron' | 'plus'. Default: 'chevron'.
     @param {string} [wrapper_class] - CSS class for the outermost container.
     @param {string} [item_class] - CSS class for each accordion item.
@@ -40,61 +38,49 @@
 <div
     x-data="accordion"
     data-module-id="accordion"
-    data-initial-active="{% if has_single_item %}{% if init_state == 'null' %}null{% else %}0{% endif %}{% else %}{{ init_state }}{% endif %}"
+    data-initial-active="{% if collapsed %}null{% elsif has_single_item %}0{% else %}{{ init_state }}{% endif %}"
     data-title-active-class="{{ title_active_class | default: 'accordion__title--active' | escape }}"
     data-title-inactive-class="{{ title_inactive_class | default: 'accordion__title--inactive' | escape }}"
     class="{{ wrapper_class | default: 'flex flex-col gap-8' }}"
 >
     {%- if has_single_item -%}
         <div class="{{ item_class | default: 'border-t border-theme-border/20 first:border-t-0' }}">
-            <button
-                type="button"
-                data-index="0"
-                @click="toggle($el.dataset.index)"
-                :aria-expanded="isActive($el.dataset.index)"
-                aria-controls="accordion-panel-{{ id_prefix | default: 'default' }}-0"
-                class="group accordion__trigger"
-            >
-                <div class="flex min-w-0 flex-1 items-center gap-3">
-                    <h2
+            <h2>
+                <button
+                    type="button"
+                    data-index="0"
+                    @click="toggle($el.dataset.index)"
+                    :aria-expanded="isActive($el.dataset.index)"
+                    aria-controls="accordion-panel-{{ id_prefix | default: 'default' }}-0"
+                    class="group accordion__trigger"
+                >
+                    <span
                         data-index="0"
                         class="accordion__title {{ title_class }}"
                         :class="titleClass($el.dataset.index)"
                     >
                         {{ item_title }}
-                    </h2>
+                    </span>
 
-                    {%- if show_clear and clear_url != blank -%}
-                        {%- assign effective_clear_label = clear_label | default: item_title -%}
-                        <a
-                            href="{{ clear_url }}"
-                            class="inline-flex items-center justify-center"
-                            aria-label="{{ 'accessibility.clear_item' | t: item: effective_clear_label | escape }}"
-                            @click.stop
-                        >
-                            {% render 'icons', icon: 'icon-close' %}
-                        </a>
-                    {%- endif -%}
-                </div>
-
-                <span
-                    data-index="0"
-                    class="ms-4 {{ icon_variant_class }}"
-                    :class="isActive($el.dataset.index) && 'is-active'"
-                >
-                    {%- if icon_style == 'chevron' -%}
-                        {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
-                    {%- elsif icon_style == 'plus' -%}
-                        {% render 'icons', icon: 'icon-plus', size: 'sm' %}
-                    {%- endif -%}
-                </span>
-            </button>
+                    <span
+                        data-index="0"
+                        class="ms-4 {{ icon_variant_class }}"
+                        :class="isActive($el.dataset.index) && 'is-active'"
+                    >
+                        {%- if icon_style == 'chevron' -%}
+                            {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
+                        {%- elsif icon_style == 'plus' -%}
+                            {% render 'icons', icon: 'icon-plus', size: 'sm' %}
+                        {%- endif -%}
+                    </span>
+                </button>
+            </h2>
 
             <div
                 id="accordion-panel-{{ id_prefix | default: 'default' }}-0"
                 data-index="0"
                 class="accordion__panel"
-                :class="isActive($el.dataset.index) && 'is-active'"
+                :class="!isActive($el.dataset.index) && 'is-collapsed'"
                 :inert="!isActive($el.dataset.index)"
                 :aria-hidden="(!isActive($el.dataset.index)).toString()"
             >
@@ -114,40 +100,42 @@
                 class="{{ item_class | default: 'border-t border-theme-border/20 first:border-t-0' }}"
                 {{ block.shopify_attributes }}
             >
-                <button
-                    type="button"
-                    data-index="{{ forloop.index0 }}"
-                    @click="toggle($el.dataset.index)"
-                    :aria-expanded="isActive($el.dataset.index)"
-                    aria-controls="accordion-panel-{{ block.id }}"
-                    class="group accordion__trigger"
-                >
-                    <h2
+                <h2>
+                    <button
+                        type="button"
                         data-index="{{ forloop.index0 }}"
-                        class="accordion__title {{ accordion_block_title_class }}"
-                        :class="titleClass($el.dataset.index)"
+                        @click="toggle($el.dataset.index)"
+                        :aria-expanded="isActive($el.dataset.index)"
+                        aria-controls="accordion-panel-{{ block.id }}"
+                        class="group accordion__trigger"
                     >
-                        {{ block.settings.title }}
-                    </h2>
+                        <span
+                            data-index="{{ forloop.index0 }}"
+                            class="accordion__title {{ accordion_block_title_class }}"
+                            :class="titleClass($el.dataset.index)"
+                        >
+                            {{ block.settings.title }}
+                        </span>
 
-                    <span
-                        data-index="{{ forloop.index0 }}"
-                        class="ms-4 {{ icon_variant_class }}"
-                        :class="isActive($el.dataset.index) && 'is-active'"
-                    >
-                        {%- if icon_style == 'chevron' -%}
-                            {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
-                        {%- elsif icon_style == 'plus' -%}
-                            {% render 'icons', icon: 'icon-plus', size: 'sm' %}
-                        {%- endif -%}
-                    </span>
-                </button>
+                        <span
+                            data-index="{{ forloop.index0 }}"
+                            class="ms-4 {{ icon_variant_class }}"
+                            :class="isActive($el.dataset.index) && 'is-active'"
+                        >
+                            {%- if icon_style == 'chevron' -%}
+                                {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
+                            {%- elsif icon_style == 'plus' -%}
+                                {% render 'icons', icon: 'icon-plus', size: 'sm' %}
+                            {%- endif -%}
+                        </span>
+                    </button>
+                </h2>
 
                 <div
                     id="accordion-panel-{{ block.id }}"
                     data-index="{{ forloop.index0 }}"
                     class="accordion__panel"
-                    :class="isActive($el.dataset.index) && 'is-active'"
+                    :class="!isActive($el.dataset.index) && 'is-collapsed'"
                     :inert="!isActive($el.dataset.index)"
                     :aria-hidden="(!isActive($el.dataset.index)).toString()"
                 >
@@ -165,40 +153,42 @@
 
         {%- for title in title_array -%}
             <div class="{{ item_class | default: 'border-t border-theme-border/20 first:border-t-0' }}">
-                <button
-                    type="button"
-                    data-index="{{ forloop.index0 }}"
-                    @click="toggle($el.dataset.index)"
-                    :aria-expanded="isActive($el.dataset.index)"
-                    aria-controls="accordion-panel-{{ id_prefix | default: 'default' }}-{{ forloop.index0 }}"
-                    class="group accordion__trigger"
-                >
-                    <h2
+                <h2>
+                    <button
+                        type="button"
                         data-index="{{ forloop.index0 }}"
-                        class="accordion__title {{ title_class }}"
-                        :class="titleClass($el.dataset.index)"
+                        @click="toggle($el.dataset.index)"
+                        :aria-expanded="isActive($el.dataset.index)"
+                        aria-controls="accordion-panel-{{ id_prefix | default: 'default' }}-{{ forloop.index0 }}"
+                        class="group accordion__trigger"
                     >
-                        {{ title }}
-                    </h2>
+                        <span
+                            data-index="{{ forloop.index0 }}"
+                            class="accordion__title {{ title_class }}"
+                            :class="titleClass($el.dataset.index)"
+                        >
+                            {{ title }}
+                        </span>
 
-                    <span
-                        data-index="{{ forloop.index0 }}"
-                        class="ms-4 {{ icon_variant_class }}"
-                        :class="isActive($el.dataset.index) && 'is-active'"
-                    >
-                        {%- if icon_style == 'chevron' -%}
-                            {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
-                        {%- elsif icon_style == 'plus' -%}
-                            {% render 'icons', icon: 'icon-plus', size: 'sm' %}
-                        {%- endif -%}
-                    </span>
-                </button>
+                        <span
+                            data-index="{{ forloop.index0 }}"
+                            class="ms-4 {{ icon_variant_class }}"
+                            :class="isActive($el.dataset.index) && 'is-active'"
+                        >
+                            {%- if icon_style == 'chevron' -%}
+                                {% render 'icons', icon: 'icon-chevron-down', size: 'sm' %}
+                            {%- elsif icon_style == 'plus' -%}
+                                {% render 'icons', icon: 'icon-plus', size: 'sm' %}
+                            {%- endif -%}
+                        </span>
+                    </button>
+                </h2>
 
                 <div
                     id="accordion-panel-{{ id_prefix | default: 'default' }}-{{ forloop.index0 }}"
                     data-index="{{ forloop.index0 }}"
                     class="accordion__panel"
-                    :class="isActive($el.dataset.index) && 'is-active'"
+                    :class="!isActive($el.dataset.index) && 'is-collapsed'"
                     :inert="!isActive($el.dataset.index)"
                     :aria-hidden="(!isActive($el.dataset.index)).toString()"
                 >
@@ -244,15 +234,15 @@
         transform: var(--_accordion-rotate);
     }
 
+    /* Panels render open; only the Alpine-bound is-collapsed class closes one, so content stays readable without JavaScript. */
     .accordion__panel {
         display: grid;
-        grid-template-rows: 0fr;
-        opacity: 0;
+        grid-template-rows: 1fr;
     }
 
-    .accordion__panel.is-active {
-        grid-template-rows: 1fr;
-        opacity: 1;
+    .accordion__panel.is-collapsed {
+        grid-template-rows: 0fr;
+        opacity: 0;
     }
 
     .accordion__panel-inner {

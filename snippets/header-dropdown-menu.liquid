@@ -23,7 +23,7 @@
                             id="HeaderMenu-{{ link.handle }}"
                             :aria-expanded="$el.parentElement.open"
                         >
-                            {% capture link_content %}
+                            <span class="flex items-center gap-3">
                                 <span>
                                     {{ link.title | escape }}
                                 </span>
@@ -31,13 +31,7 @@
                                     icon: 'icon-chevron-down',
                                     class: 'dropdown-icon dropdown-icon--down'
                                 %}
-                            {% endcapture %}
-
-                            {% render 'link',
-                                content: link_content,
-                                variant: 'underline',
-                                class: 'flex items-center gap-3'
-                            %}
+                            </span>
                         </summary>
 
                         <ul
