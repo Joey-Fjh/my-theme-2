@@ -1,6 +1,6 @@
 <div
     data-section-id="{{ section.id }}"
-    class="main-page-contact-section full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="full-width color-{{ section.settings.color_scheme }} surface-section"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -37,7 +37,7 @@
                     -%}
                     {%- if form.posted_successfully? -%}
                         <div
-                            class="rounded p-4 text-center"
+                            class="p-4 text-center"
                             role="status"
                         >
                             {{ success_message }}
@@ -47,7 +47,7 @@
                     {%- if form.errors -%}
                         <div
                             id="ContactFormErrors-{{ section.id }}"
-                            class="rounded p-4 text-error-text"
+                            class="p-4 text-error-text"
                             role="alert"
                         >
                             {{ form.errors | default_errors }}

@@ -143,9 +143,21 @@ Rich text (RTE) — shared merchant HTML output
         height: auto;
     }
 
+    .rte :is(iframe, embed, object) {
+        max-width: 100%;
+    }
+
+    /* Sections do not clip overflow, so wide tables and code scroll inside the text. */
     .rte table {
-        width: 100%;
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
         border-collapse: collapse;
+    }
+
+    .rte pre {
+        max-width: 100%;
+        overflow-x: auto;
     }
 
     .rte > *:first-child {

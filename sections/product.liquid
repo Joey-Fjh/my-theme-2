@@ -24,7 +24,7 @@
 
 <div
     data-section-id="{{ section.id }}"
-    class="product-section full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="full-width color-{{ section.settings.color_scheme }} surface-section"
     style="
         --section-padding-top: {{ section.settings.padding_top | default: 0 }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
@@ -44,7 +44,7 @@
             >
                 <div class="flex w-full min-w-0 flex-col gap-8">
                     <div
-                        class="min-w-0 overflow-hidden"
+                        class="min-w-0"
                         data-product-media-panel
                     >
                         {%- assign id = 'product-gallery-' | append: section.id -%}
@@ -60,7 +60,7 @@
             <div class="min-w-0" data-product-info-panel>
                 <div class="self-start px-6 py-4 pc:px-10 pc:py-6">
                     <div
-                        class="product-info-blocks product-info-blocks--product product-info-blocks--form flex flex-col gap-6"
+                        class="product-info-blocks product-info-blocks--product flex flex-col gap-6"
                         id="ProductInfo-{{ section.id }}-form"
                     >
                         {%- for block in section.blocks -%}
@@ -87,11 +87,11 @@
                                 {%- when 'price' -%}
                                     {%- assign current_variant = product.selected_or_first_available_variant -%}
                                     <div {{ block.shopify_attributes }}>
-                                        <p class="product-info-blocks__price body-3xl text-theme-text">
+                                        <p class="body-3xl text-theme-text">
                                             {{ current_variant.price | money }}
                                         </p>
                                         {%- render 'product-tax-note',
-                                            class: 'mt-2 body-sm text-theme-text/80'
+                                            class: 'mt-2 body-sm text-theme-text'
                                         -%}
                                     </div>
                                 {%- when 'description' -%}
@@ -205,7 +205,6 @@
         .product-info-blocks {
             max-height: 100%;
             min-height: 0;
-            overflow: hidden;
         }
 
         .product-info-blocks > * {
@@ -221,11 +220,11 @@
 
     .product-info-blocks__title {
         min-width: 0;
-        color: rgba(var(--color-foreground), 0.8);
+        color: rgb(var(--color-foreground));
     }
 
     .product-info-blocks__vendor {
-        letter-spacing: 0.04em;
+        letter-spacing: var(--font-body-letter-spacing);
     }
 
     .product-info-blocks--product .product-info-blocks__vendor {
@@ -249,7 +248,7 @@
         max-width: none;
         overscroll-behavior: contain;
         padding-right: 0.25rem;
-        color: rgba(var(--color-foreground), 0.8);
+        color: rgb(var(--color-foreground));
     }
 
     @media (width >= 48rem) {
@@ -260,7 +259,7 @@
 
     .product-info-blocks__description {
         scrollbar-width: thin;
-        scrollbar-color: rgba(var(--color-foreground), 0.35) transparent;
+        scrollbar-color: rgb(var(--color-border)) transparent;
     }
 
     .product-info-blocks__description::-webkit-scrollbar {
@@ -272,12 +271,11 @@
     }
 
     .product-info-blocks__description::-webkit-scrollbar-thumb {
-        border-radius: 999px;
-        background-color: rgba(var(--color-foreground), 0.35);
+        background-color: rgb(var(--color-border));
     }
 
     .product-info-blocks__description.rte :is(h1, h2, h3, h4, h5, h6) {
-        color: rgba(var(--color-foreground), 0.8);
+        color: rgb(var(--color-foreground));
     }
 
     .product-info-blocks__inventory-notice {

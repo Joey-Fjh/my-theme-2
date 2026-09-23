@@ -15,9 +15,8 @@
                 {%- if has_header_menu -%}
                     <nav
                         aria-label="{{ 'accessibility.mobile_menu' | t }}"
-                        class="max-h-[70vh] overflow-y-auto"
                     >
-                        <ul class="flex flex-col gap-2 py-2">
+                        <ul class="flex flex-col gap-2 px-1 py-2">
                             {%- for link in header_menu.links -%}
                                 <li>
                                     {%- render 'link',
@@ -84,7 +83,7 @@
             </div>
 
             <div
-                class="header-menu flex items-center justify-center max-pc:hidden"
+                class="flex items-center justify-center max-pc:hidden"
                 style="grid-area: menu"
             >
                 {%- if has_header_menu -%}
@@ -98,7 +97,7 @@
             >
                 <a
                     href="{{ routes.search_url }}"
-                    class="header-search__right inline-flex h-10 w-10 shrink-0 items-center justify-center"
+                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center"
                     aria-label="{{ 'accessibility.search' | t }}"
                 >
                     {% render 'icons', icon: 'icon-search', class: size_class %}
@@ -113,7 +112,7 @@
                     <span
                         x-cloak
                         x-show="$store.cart && $store.cart.item_count > 0"
-                        class="header__cart-count inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-theme-text px-1 body-xs text-theme-bg"
+                        class="header__cart-count inline-flex h-5 min-w-5 items-center justify-center bg-theme-text px-1 body-xs text-theme-bg"
                         x-text="$store.cart.item_count"
                     ></span>
                 </a>
@@ -146,10 +145,6 @@
 </header>
 
 {% stylesheet %}
-    .site-header > header:has(.header-menu details.dropdown[open]) {
-        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.06);
-    }
-
     .header-section {
         .header__cols {
             grid-template-areas: 'mobile-menu logo navigation';

@@ -1,6 +1,6 @@
 <div
     data-section-id="{{ section.id }}"
-    class="blog-section full-width relative"
+    class="full-width relative"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -42,10 +42,8 @@
                     class="blog-articles-grid grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
                 >
                     {% for article in blog.articles %}
-                        <article
-                            class="group"
-                        >
-                            <div class="mb-4 block aspect-4/3 overflow-hidden rounded-sm">
+                        <article>
+                            <div class="mb-4 block aspect-4/3">
                                 {%- capture sizes -%}
                                     (max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw
                                 {%- endcapture -%}
@@ -79,7 +77,7 @@
                                     assign article_excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 30
                                 -%}
                                 {%- if article_excerpt != blank -%}
-                                    <p class="my-6 body-lg text-theme-text/80">
+                                    <p class="my-6 body-lg text-theme-text">
                                         {{- article_excerpt | escape_once -}}
                                     </p>
                                 {%- endif -%}

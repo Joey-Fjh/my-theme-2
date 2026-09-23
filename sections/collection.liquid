@@ -1,6 +1,6 @@
 <div
     data-section-id="{{ section.id }}"
-    class="collection-section full-width color-{{ section.settings.color_scheme }} surface-section"
+    class="full-width color-{{ section.settings.color_scheme }} surface-section"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div class="layout container-page overflow-clip!">
+    <div class="layout container-page">
         <div data-collection-dynamic-content class="flex flex-col gap-6 pc:gap-6">
             <div class="relative w-full">
                 {% render 'loading', overlay: true, size: 'large' %}
@@ -43,7 +43,7 @@
                 {% paginate collection.products by section.settings.products_per_page %}
                     <div class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3">
                         {%- for product in collection.products -%}
-                            <div class="group">
+                            <div>
                                 {%- liquid
                                     assign card_aspect_ratio = blank
                                     case settings.product_card_image_ratio
@@ -80,7 +80,7 @@
                     </div>
 
                     <div
-                        class="collection-pagination-wrapper mt-8"
+                        class="mt-8"
                         @click="
                             let link = $event.target.closest('[data-pagination-nav] a');
                             if (link) {

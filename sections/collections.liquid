@@ -1,6 +1,6 @@
 <div
     data-section-id="{{ section.id }}"
-    class="collections-section full-width h-full color-{{ section.settings.color_scheme }} surface-section"
+    class="full-width h-full color-{{ section.settings.color_scheme }} surface-section"
     style="
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -36,10 +36,10 @@
                     {%- for collection in collections -%}
                         <a
                             href="{{ collection.url }}"
-                            class="block overflow-hidden bg-theme-bg"
+                            class="block bg-theme-bg"
                         >
                             {%- comment -%} Image {%- endcomment -%}
-                            <div class="relative aspect-square overflow-hidden bg-theme-bg">
+                            <div class="relative aspect-square bg-theme-bg">
                                 {%- capture sizes -%}
                                         (max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw
                                     {%- endcapture -%}
@@ -73,7 +73,8 @@
                                     sizes: sizes,
                                     widths: widths,
                                     loading: image_loading,
-                                    wrapper_class: 'h-full w-full'
+                                    wrapper_class: 'h-full w-full',
+                                    img_class: 'h-full w-full object-cover'
                                 -%}
                             </div>
 

@@ -107,7 +107,7 @@ Exact tier ratios and token math live in `tailwind/tailwind.typography.css`.
 - The first configured color scheme is the `:root` token fallback; it is not the implicit visible page-canvas decision.
 - `settings.page_canvas_color_scheme` explicitly owns the visible `<body>` canvas behind sections, during overscroll, and in areas without their own color-scheme scope.
 - Section, overlay, drawer, modal, and component color-scheme scopes override the body canvas normally.
-- Use one surface role per node: `color-{{ section.settings.color_scheme }}`, `surface-section`, `surface-component`, `surface-inverted`, or local opacity effects.
+- Use one surface role per node: `color-{{ section.settings.color_scheme }}`, `surface-section`, or `surface-component`.
 - Use semantic tokens or scheme utilities for theme UI; avoid hardcoded brand colors unless documented as a platform bridge or local effect.
 - Allowed inline styles: scoped CSS custom properties from Liquid, platform-required media values, and per-render geometry that static utilities cannot express.
 - Use semantic z-index utilities or variables for layered UI.
