@@ -2,7 +2,6 @@ const components = {
     cartPage() {
         return {
             errors: {},
-            noteError: '',
             _unregisterCartSection: null,
 
             init() {
@@ -19,16 +18,6 @@ const components = {
                     await this.$store.cart.change(itemKey, quantity, [sectionId]);
                 } catch (err) {
                     this.errors[key] = this.$store.cart.messageFromError(err);
-                }
-            },
-
-            async updateCart(data) {
-                this.noteError = '';
-
-                try {
-                    await this.$store.cart.update(data);
-                } catch (err) {
-                    this.noteError = this.$store.cart.messageFromError(err);
                 }
             },
 

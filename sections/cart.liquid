@@ -9,12 +9,6 @@
     data-module-id="cart-page"
     :class="{ 'opacity-50 pointer-events-none': $store.cart.loading }"
 >
-    {%- liquid
-        assign cart_shop_more_link = section.settings.shop_more_link
-        if cart_shop_more_link == blank or cart_shop_more_link == '/'
-            assign cart_shop_more_link = routes.root_url
-        endif
-    -%}
     <div class="layout container-page">
         <h1 class="heading-3xl">{{ 'cart.title' | t }}</h1>
 
@@ -25,14 +19,14 @@
                 {%- assign link_text = 'cart.shop_more' | t -%}
                 {%- render 'link',
                     text: link_text,
-                    href: cart_shop_more_link,
+                    href: routes.root_url,
                     variant: 'underline',
                     class: 'body-xl'
                 -%}
             </div>
         {%- else -%}
-            <div class="mt-10 grid grid-cols-1 gap-10 pc:grid-cols-[minmax(0,1fr)_auto]">
-                <div class="flex flex-col gap-10 pc:gap-30">
+            <div class="mt-10 flex flex-col gap-10">
+                <div class="flex flex-col">
                     <ul class="flex flex-col">
                         {%- for item in cart.items -%}
                             <li class="grid grid-cols-3 gap-x-2 gap-y-3 border-b border-theme-border/20 py-3 first:pt-0 pc:grid-cols-[minmax(7.75rem,1fr)_minmax(0,3fr)_minmax(8rem,1fr)] pc:gap-6 pc:py-6">
@@ -303,118 +297,72 @@
                             </li>
                         {%- endfor -%}
                     </ul>
-
-                    <div class="text-center">
-                        {%- assign link_text = 'cart.shop_more' | t -%}
-                        {%- render 'link',
-                            text: link_text,
-                            href: cart_shop_more_link,
-                            variant: 'underline',
-                            class: 'body-xl'
-                        -%}
-                    </div>
                 </div>
 
-                <aside class="self-start">
-                    <div class="w-full p-5 pc:p-6">
-                        <h2 class="heading-h2">{{ 'cart.order_summary' | t }}</h2>
-
-                        <div class="mt-6">
-                            <label class="mb-2 block body-md" for="Cart-note-{{ section.id }}">
-                                {{ 'cart.order_special_instruction' | t }}
-                            </label>
-                            <textarea
-                                id="Cart-note-{{ section.id }}"
-                                name="note"
-                                form="{{ cart_form_id }}"
-                                class="min-h-20 field w-full resize-y"
-                                placeholder="{{ 'cart.note_placeholder' | t }}"
-                                @change="updateCart({ note: $event.target.value })"
-                            >{{- cart.note | escape -}}</textarea>
-                            <p
-                                x-show="noteError"
-                                x-cloak
-                                role="alert"
-                                class="mt-2 body-md text-error-text"
-                                x-text="noteError"
-                            ></p>
+                <div>
+                    {%- if cart.cart_level_discount_applications.size > 0 -%}
+                        <div class="mb-4">
+                            <p class="font-medium">{{ 'cart.discounts' | t }}</p>
+                            <ul
+                                class="mt-2 space-y-1"
+                                aria-label="{{ 'cart.discounts' | t }}"
+                            >
+                                {%- for discount_application in cart.cart_level_discount_applications -%}
+                                    <li class="flex items-baseline justify-between gap-4 text-theme-text/80">
+                                        <span>{{ discount_application.title }}</span>
+                                        <span
+                                            >-
+                                            {{-
+                                                discount_application.total_allocated_amount
+                                                | money
+                                            -}}
+                                        </span>
+                                    </li>
+                                {%- endfor -%}
+                            </ul>
                         </div>
+                    {%- endif -%}
 
-                        <div class="mt-10 border-t border-theme-border/20 pt-10">
-                            {%- if cart.cart_level_discount_applications.size > 0 -%}
-                                <div class="mb-4">
-                                    <p class="font-medium">{{ 'cart.discounts' | t }}</p>
-                                    <ul
-                                        class="mt-2 space-y-1"
-                                        aria-label="{{ 'cart.discounts' | t }}"
-                                    >
-                                        {%- for discount_application in cart.cart_level_discount_applications -%}
-                                            <li class="flex items-baseline justify-between gap-4 text-theme-text/80">
-                                                <span>{{ discount_application.title }}</span>
-                                                <span
-                                                    >-
-                                                    {{-
-                                                        discount_application.total_allocated_amount
-                                                        | money
-                                                    -}}
-                                                </span>
-                                            </li>
-                                        {%- endfor -%}
-                                    </ul>
-                                </div>
-                            {%- endif -%}
+                    <div class="flex items-baseline justify-between gap-4 body-lg">
+                        <span>
+                            {{- 'cart.estimate_total' | t -}}
+                        </span>
+                        <span>
+                            {{- cart.total_price | money -}}
+                        </span>
+                    </div>
+                    {%- render 'product-tax-note', class: 'mt-4 text-theme-text/80' -%}
 
-                            {%- if cart.total_discount > 0 -%}
-                                <div class="mb-4 flex items-baseline justify-between gap-4">
-                                    <span>{{ 'cart.you_saved' | t }}</span>
-                                    <span class="text-theme-text/80"
-                                        >-{{ cart.total_discount | money -}}
-                                    </span>
-                                </div>
-                            {%- endif -%}
-
-                            <div class="flex items-baseline justify-between gap-4 body-lg">
-                                <span>
-                                    {{- 'cart.estimate_total' | t -}}
-                                </span>
-                                <span>
-                                    {{- cart.total_price | money -}}
-                                </span>
-                            </div>
-                            {%- render 'product-tax-note', class: 'mt-10 text-theme-text/80' -%}
-                        </div>
-
-                        <form
-                            id="{{ cart_form_id }}"
-                            action="{{ routes.cart_url }}"
-                            method="post"
-                            class="mt-5"
-                        >
-                            <noscript>
-                                <button
-                                    type="submit"
-                                    name="update"
-                                    class="btn-secondary mb-3 w-full body-xl"
-                                >
-                                    {{- 'cart.update' | t -}}
-                                </button>
-                            </noscript>
+                    <form
+                        id="{{ cart_form_id }}"
+                        action="{{ routes.cart_url }}"
+                        method="post"
+                        class="mt-5"
+                    >
+                        <noscript>
                             <button
                                 type="submit"
-                                name="checkout"
-                                class="btn-primary w-full body-xl"
+                                name="update"
+                                class="btn-secondary mb-3 w-full body-xl"
                             >
-                                {{ 'cart.checkout' | t }}
+                                {{- 'cart.update' | t -}}
                             </button>
-                        </form>
+                        </noscript>
+                        <button
+                            type="submit"
+                            name="checkout"
+                            class="btn-primary w-full body-xl"
+                        >
+                            {{ 'cart.checkout' | t }}
+                        </button>
+                    </form>
 
-                        {%- if additional_checkout_buttons -%}
-                            <div class="additional-checkout-buttons mt-4">
-                                {{ content_for_additional_checkout_buttons }}
-                            </div>
-                        {%- endif -%}
-                    </div>
-                </aside>
+                    {%- if additional_checkout_buttons -%}
+                        <div class="additional-checkout-buttons mt-4">
+                            {{ content_for_additional_checkout_buttons }}
+                        </div>
+                    {%- endif -%}
+                </div>
             </div>
         {%- endif -%}
     </div>
@@ -434,12 +382,6 @@
             "id": "color_scheme",
             "label": "t:sections.cart.settings.color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "url",
-            "id": "shop_more_link",
-            "label": "t:sections.cart.settings.shop_more_link",
-            "default": "/"
         },
         {
             "type": "header",

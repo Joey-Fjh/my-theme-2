@@ -318,7 +318,6 @@
         "cart": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "shop_more_link": "Shop more link",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
