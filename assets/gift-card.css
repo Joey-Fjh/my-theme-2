@@ -2,10 +2,6 @@
     --color-background: 246, 242, 235;
     --color-foreground: 31, 29, 26;
     --color-border: 31, 29, 26;
-    --color-focus-ring: 31, 29, 26;
-    --color-primary-button: 31, 29, 26;
-    --color-primary-button-text: 255, 252, 247;
-    --color-primary-button-border: 31, 29, 26;
 
     color: rgb(var(--color-foreground));
     background:

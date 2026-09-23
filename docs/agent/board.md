@@ -37,8 +37,10 @@ Last updated: 2026-09-23.
   - Found 2026-09-23 (CSS batch): `assets/base.js` measures an announcement bar to set `--announcement-bar-height`, which `assets/base.css` and the dropdown max-height consume; check whether any section still renders an announcement bar.
 
 - **CSS outside the 2026-09-23 CSS batch (user: discuss before the JS cleanup).** Section, block, and snippet `{% stylesheet %}` blocks were not audited for business leftovers, and `snippets/product-variant-picker.liquid` still has a hardcoded `#fff`.
-
-- **Cart wallet buttons and the button settings (from the payment-button fix, 2026-09-22).** The product page element `shopify-accelerated-checkout` takes the theme's button radius, shadow, and skeleton color; the cart page element `shopify-accelerated-checkout-cart` has no theme rule and keeps Shopify's defaults (4px radius). Bridging it is new behavior and needs the user's decision.
+  - Combined browser pass (user, 2026-09-23, "统一做完吧"): batch A was committed without its own browser pass; its checks join the pass after batches B and C: keyboard focus on header, product, cart, and contact; buttons and fields on 404, contact, search, cart, product add-to-cart and buy-now, gift card, article comments, password, and variant select; the header cart count and icons; and in the theme editor, no Input, Button, or Focus group, with each color scheme showing only the kept colors and a working preview.
+  - Batch B acceptance input (from batch A review 3, 2026-09-23; accessibility launch blockers): a selected variant swatch must show a distinct focus indicator (today its selected ring and the focus outline share width and offset); unavailable variant pills stay focusable, so their focus indicator must reach 3:1 against the surface (today `opacity: 0.4` fades it to about 2.14:1 in scheme 2).
+  - Batch C acceptance input (from batch A review 3, 2026-09-23; accessibility launch blockers): image-link focus rings must not be clipped by `overflow: hidden` frames (`sections/blog.liquid`, `sections/cart.liquid`), and mobile menu link rings must not be clipped by the `overflow-y-auto` nav in `sections/header.liquid`.
+  - Batch C input (from batch A review 2, 2026-09-23): `.layout` clips overflow, so with a section `padding_top` of 0 the first row of focusable content (for example collection product links) loses the top of its focus ring. Decide the section layout rule in batch C.
 
 ## Settled here, not yet migrated
 

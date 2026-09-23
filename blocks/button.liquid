@@ -1,13 +1,6 @@
-{%- liquid
-    assign button_class = 'btn-primary'
-    if block.settings.style == 'secondary'
-        assign button_class = 'btn-secondary'
-    endif
--%}
-
 {%- if block.settings.label != blank and block.settings.link != blank -%}
     <div class="theme-block-button" {{ block.shopify_attributes }}>
-        <a class="{{ button_class }}" href="{{ block.settings.link }}">
+        <a class="btn" href="{{ block.settings.link }}">
             {{- block.settings.label | escape -}}
         </a>
     </div>
@@ -44,22 +37,6 @@
             "id": "link",
             "label": "t:blocks.button.settings.link",
             "default": "/collections/all"
-        },
-        {
-            "type": "select",
-            "id": "style",
-            "label": "t:blocks.button.settings.style",
-            "options": [
-                {
-                    "value": "primary",
-                    "label": "t:blocks.button.options.primary"
-                },
-                {
-                    "value": "secondary",
-                    "label": "t:blocks.button.options.secondary"
-                }
-            ],
-            "default": "primary"
         }
     ],
     "presets": [

@@ -50,32 +50,10 @@
 
             --color-border: {{ scheme.settings.border_color.red }}, {{ scheme.settings.border_color.green }}, {{ scheme.settings.border_color.blue }};
 
-            --color-focus-ring: {{ scheme.settings.focus_ring_color.red }}, {{ scheme.settings.focus_ring_color.green }}, {{ scheme.settings.focus_ring_color.blue }};
-
-            --color-input-text: {{ scheme.settings.input_text_color.red }}, {{ scheme.settings.input_text_color.green }}, {{ scheme.settings.input_text_color.blue }};
-            --color-input-background: {{ scheme.settings.input_background_color.red }}, {{ scheme.settings.input_background_color.green }}, {{ scheme.settings.input_background_color.blue }};
-            --color-input-border: {{ scheme.settings.input_border_color.red }}, {{ scheme.settings.input_border_color.green }}, {{ scheme.settings.input_border_color.blue }};
-            --color-input-placeholder: {{ scheme.settings.input_placeholder_color.red }}, {{ scheme.settings.input_placeholder_color.green }}, {{ scheme.settings.input_placeholder_color.blue }};
-
-            --color-primary-button: {{ scheme.settings.primary_button_background_color.red }}, {{ scheme.settings.primary_button_background_color.green }}, {{ scheme.settings.primary_button_background_color.blue }};
-            --color-primary-button-text: {{ scheme.settings.primary_button_label_color.red }}, {{ scheme.settings.primary_button_label_color.green }}, {{ scheme.settings.primary_button_label_color.blue }};
-            --color-primary-button-border: {{ scheme.settings.primary_button_border_color.red }}, {{ scheme.settings.primary_button_border_color.green }}, {{ scheme.settings.primary_button_border_color.blue }};
-            --color-secondary-button: {{ scheme.settings.secondary_button_background_color.red }}, {{ scheme.settings.secondary_button_background_color.green }}, {{ scheme.settings.secondary_button_background_color.blue }};
-            --color-secondary-button-text: {{ scheme.settings.secondary_button_label_color.red }}, {{ scheme.settings.secondary_button_label_color.green }}, {{ scheme.settings.secondary_button_label_color.blue }};
-            --color-secondary-button-border: {{ scheme.settings.secondary_button_border_color.red }}, {{ scheme.settings.secondary_button_border_color.green }}, {{ scheme.settings.secondary_button_border_color.blue }};
-
-            --color-badge-background: {{ scheme.settings.badge_background_color.red }}, {{ scheme.settings.badge_background_color.green }}, {{ scheme.settings.badge_background_color.blue }};
-            --color-badge-foreground: {{ scheme.settings.badge_label_color.red }}, {{ scheme.settings.badge_label_color.green }}, {{ scheme.settings.badge_label_color.blue }};
-            --color-badge-border: {{ scheme.settings.badge_border_color.red }}, {{ scheme.settings.badge_border_color.green }}, {{ scheme.settings.badge_border_color.blue }};
-
             --color-success-background: {{ scheme.settings.success_background_color.red }}, {{ scheme.settings.success_background_color.green }}, {{ scheme.settings.success_background_color.blue }};
             --color-success-foreground: {{ scheme.settings.success_foreground_color.red }}, {{ scheme.settings.success_foreground_color.green }}, {{ scheme.settings.success_foreground_color.blue }};
-            --color-warning-background: {{ scheme.settings.warning_background_color.red }}, {{ scheme.settings.warning_background_color.green }}, {{ scheme.settings.warning_background_color.blue }};
-            --color-warning-foreground: {{ scheme.settings.warning_foreground_color.red }}, {{ scheme.settings.warning_foreground_color.green }}, {{ scheme.settings.warning_foreground_color.blue }};
             --color-error-background: {{ scheme.settings.error_background_color.red }}, {{ scheme.settings.error_background_color.green }}, {{ scheme.settings.error_background_color.blue }};
             --color-error-foreground: {{ scheme.settings.error_foreground_color.red }}, {{ scheme.settings.error_foreground_color.green }}, {{ scheme.settings.error_foreground_color.blue }};
-            --color-info-background: {{ scheme.settings.info_background_color.red }}, {{ scheme.settings.info_background_color.green }}, {{ scheme.settings.info_background_color.blue }};
-            --color-info-foreground: {{ scheme.settings.info_foreground_color.red }}, {{ scheme.settings.info_foreground_color.green }}, {{ scheme.settings.info_foreground_color.blue }};
         }
     {% endfor %}
 
@@ -115,30 +93,6 @@
         --font-heading-text-transform: {{ settings.heading_text_transform }};
         --font-heading-scale: {{ settings.heading_scale | divided_by: 100.0 }};
 
-        {% comment %} input Variables {% endcomment %}
-        --input-radius: {{ settings.input_radius }}px;
-        --input-border-width: {{ settings.input_border_thickness }}px;
-        --input-padding-x: {{ settings.input_padding_horizontal }}px;
-        --input-padding-y: {{ settings.input_padding_vertical }}px;
-
-        --input-shadow-opacity: {{ settings.input_shadow_opacity | divided_by: 100.0 }};
-        --input-shadow-horizontal-offset: {{ settings.input_shadow_horizontal_offset }}px;
-        --input-shadow-vertical-offset: {{ settings.input_shadow_vertical_offset }}px;
-        --input-shadow-blur-radius: {{ settings.input_shadow_blur }}px;
-
-        {% comment %} Button Variables {% endcomment %}
-        --button-padding-x: {{ settings.button_padding_horizontal }}px;
-        --button-padding-y: {{ settings.button_padding_vertical }}px;
-
-        --button-radius: {{ settings.button_radius }}px;
-
-        --button-border-width: {{ settings.button_border_thickness }}px;
-
-        --button-shadow-opacity: {{ settings.button_shadow_opacity | divided_by: 100.0 }};
-        --button-shadow-horizontal-offset: {{ settings.button_shadow_horizontal_offset }}px;
-        --button-shadow-vertical-offset: {{ settings.button_shadow_vertical_offset }}px;
-        --button-shadow-blur-radius: {{ settings.button_shadow_blur }}px;
-
         {% comment %} Motion Variables {% endcomment %}
         --motion-duration: 500ms;
         --motion-duration-fast: 250ms;
@@ -149,9 +103,5 @@
         --motion-ease-default: var(--motion-ease);
         --motion-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
         --motion-ease-exit: cubic-bezier(0.55, 0, 1, 0.45);
-
-        {% comment %} Focus Ring {% endcomment %}
-        --focus-ring-width: {{ settings.focus_ring_width | default: 2 }}px;
-        --focus-ring-offset: {{ settings.focus_ring_offset | default: 2 }}px;
     }
 {% endstyle %}

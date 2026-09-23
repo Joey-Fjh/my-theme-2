@@ -68,7 +68,7 @@
                                     </p>
                                     <a
                                         href="{{ item.url }}"
-                                        class="cart__product-link mt-3 block body-xl interactive-link pc:mt-5"
+                                        class="cart__product-link mt-3 block body-xl hover:underline pc:mt-5"
                                     >
                                         {{ item.product.title }}
                                     </a>
@@ -181,7 +181,7 @@
                                                         {%- if property_upload_url != blank -%}
                                                             <a
                                                                 href="{{ property_upload_url | escape }}"
-                                                                class="ms-1 interactive-link"
+                                                                class="ms-1 hover:underline"
                                                             >
                                                                 {{- property_upload_filename | escape -}}
                                                             </a>
@@ -343,7 +343,7 @@
                             <button
                                 type="submit"
                                 name="update"
-                                class="btn-secondary mb-3 w-full body-xl"
+                                class="mb-3 btn w-full body-xl"
                             >
                                 {{- 'cart.update' | t -}}
                             </button>
@@ -351,7 +351,7 @@
                         <button
                             type="submit"
                             name="checkout"
-                            class="btn-primary w-full body-xl"
+                            class="btn w-full body-xl"
                         >
                             {{ 'cart.checkout' | t }}
                         </button>

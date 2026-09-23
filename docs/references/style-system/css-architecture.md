@@ -23,7 +23,7 @@ Tailwind scans every token in the `@source` Liquid files, including `{% schema %
 
 | Source | Owns | Notes |
 | --- | --- | --- |
-| `snippets/css-variables.liquid` | Merchant settings, color-scheme RGB triplets, typography, motion, button/input geometry | Runtime CSS custom-property source |
+| `snippets/css-variables.liquid` | Merchant settings, color-scheme RGB triplets, typography, motion | Runtime CSS custom-property source |
 | `tailwind/tailwind.input.css` | Tailwind `@theme inline` bridge | Only bridge values that need Tailwind utility consumption |
 | Snippet/section inline custom properties | Per-render dynamic variables | Valid only when scoped to that render tree |
 | `tailwind/tailwind.*.css` | CSS consumption of tokens | Prefer direct `var()` for geometry/motion internals |
@@ -34,18 +34,16 @@ Bridge a CSS variable into `@theme inline` only when Liquid markup needs a Tailw
 
 Do not bridge variables that are only consumed inside CSS layer rules. Examples that intentionally stay direct `var()` consumption:
 
-- `--button-*`, `--input-*`
 - `--motion-duration-*`, `--motion-ease-*`
-- `--focus-ring-*`
 - snippet-local variables such as `--pagination-*`
 
 ## Layer Ownership
 
 | Layer/file | Owns | Does not own |
 | --- | --- | --- |
-| `assets/base.css` | document defaults, native elements, `[x-cloak]`, universal helpers | reusable component chrome |
+| `assets/base.css` | document defaults, native elements, global `:focus-visible`, `[x-cloak]`, universal helpers | reusable component chrome |
 | `tailwind.typography.css` | project typography tiers and custom size tiers | section-specific headings or Tailwind `text-*` heading shortcuts |
-| `tailwind.elements.css` | single-element primitives: `btn`, `field`, `badge`, links, icons, focus ring | composite layouts |
+| `tailwind.elements.css` | single-element base styles for native controls | composite layouts |
 | `tailwind.components.css` | reusable composite APIs with 2+ unrelated consumers | section-root scoped overrides |
 | `tailwind.utilities.css` | cross-cutting placement/surface/z-index utilities | business BEM styling |
 | `tailwind.animates.css` | motion capabilities, keyframes, reduced-motion rules | trigger logic |
@@ -122,13 +120,7 @@ Exact tier ratios and token math live in `tailwind/tailwind.typography.css`.
 
 ## Platform Bridge Exceptions
 
-The following platform selectors may live in `elements.css` because they bridge Shopify-controlled markup into the theme button system:
-
-- `button.shopify-payment-button__button--unbranded` (hover specificity override)
-- `shopify-accelerated-checkout` (product page wallet buttons: radius, shadow, and skeleton color bridges)
-- `.shopify-payment-button-wrapper` and `.shopify-payment-button` (width)
-
-The cart page element `shopify-accelerated-checkout-cart` has no theme rule and keeps Shopify's defaults.
+Shopify-rendered payment buttons are styled only through supported selectors and custom properties where the platform exposes them. The cart page element `shopify-accelerated-checkout-cart` has no theme rule and keeps Shopify's defaults.
 
 Branded accelerated checkout buttons render in closed shadow DOM; only supported CSS custom-property bridges should be used.
 

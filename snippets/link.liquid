@@ -16,20 +16,14 @@
 
 {% liquid
     assign link_href = href
-    assign link_base_class = 'links'
+    assign link_base_class = 'inline-flex w-fit items-center'
     assign link_variant_class = ''
 
     if variant == 'plain'
         assign link_base_class = ''
         assign link_variant_class = ''
     elsif variant == 'underline'
-        assign link_variant_class = 'links-underline'
-    elsif variant == 'default'
-        assign link_variant_class = 'links-default'
-    elsif variant
-        assign link_variant_class = variant | prepend: 'links-'
-    else
-        assign link_variant_class = 'links-default'
+        assign link_variant_class = 'underline underline-offset-4'
     endif
 %}
 

@@ -67,7 +67,6 @@
                         height: logo_height,
                         alt: logo_alt,
                         url: routes.root_url,
-                        interactive: false,
                         sizes: sizes,
                         widths: widths,
                         loading: 'eager',
@@ -99,7 +98,7 @@
             >
                 <a
                     href="{{ routes.search_url }}"
-                    class="header-search__right header-icon-button"
+                    class="header-search__right inline-flex h-10 w-10 shrink-0 items-center justify-center"
                     aria-label="{{ 'accessibility.search' | t }}"
                 >
                     {% render 'icons', icon: 'icon-search', class: size_class %}
@@ -107,14 +106,14 @@
 
                 <a
                     href="{{ routes.cart_url }}"
-                    class="header-icon-button relative"
+                    class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center"
                     aria-label="{{ 'accessibility.cart' | t }}"
                 >
                     {% render 'icons', icon: 'icon-cart', class: size_class %}
                     <span
                         x-cloak
                         x-show="$store.cart && $store.cart.item_count > 0"
-                        class="header__cart-count badge-cart"
+                        class="header__cart-count inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-theme-text px-1 body-xs text-theme-bg"
                         x-text="$store.cart.item_count"
                     ></span>
                 </a>
@@ -122,7 +121,7 @@
                 {%- if shop.customer_accounts_enabled -%}
                     <shopify-account
                         menu="customer-account-main-menu"
-                        class="header-icon-button"
+                        class="inline-flex h-10 w-10 shrink-0 items-center justify-center"
                     >
                         <span slot="signed-out-avatar">
                             {%- render 'icons', icon: 'icon-account', class: size_class -%}

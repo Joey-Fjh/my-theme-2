@@ -38,6 +38,10 @@ Preferred usage:
 @utility surface-inverted {
     background-color: rgb(var(--color-foreground));
     color: rgb(var(--color-background));
+
+    & :focus-visible {
+        outline-color: rgb(var(--color-background));
+    }
 }
 
 /* =========================================================

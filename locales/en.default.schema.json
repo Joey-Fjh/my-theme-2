@@ -61,77 +61,22 @@
         },
         "colors": {
             "general": "General colors",
-            "inputs": "Inputs",
-            "primary_button": "Primary button",
-            "secondary_button": "Secondary button",
-            "badges": "Badges",
             "feedback_messages": "Feedback messages",
             "page_canvas_color_scheme": "Page background color scheme",
             "page_canvas_color_scheme_info": "Used behind sections and for areas without their own color scheme.",
             "background_gradient": "Background gradient",
             "background_gradient_info": "The background gradient will replace the background color at all applicable positions.",
             "border_color": "Border color",
-            "focus_ring_color": "Focus ring color",
-            "input_text_color": "Input text",
-            "input_background_color": "Input background",
-            "input_border_color": "Input border",
-            "input_placeholder_color": "Input placeholder",
-            "primary_button_label_color": "Primary button label color",
-            "secondary_button_label_color": "Secondary button label color",
-            "primary_button_background_color": "Primary button background color",
-            "primary_button_border_color": "Primary button border color",
-            "secondary_button_background_color": "Secondary button background color",
-            "secondary_button_border_color": "Secondary button border color",
             "text_color": "Text color",
-            "badge_background_color": "Badge background color",
-            "badge_label_color": "Badge label color",
-            "badge_border_color": "Badge border color",
             "success_background_color": "Success background color",
             "success_foreground_color": "Success foreground color",
-            "warning_background_color": "Warning background color",
-            "warning_foreground_color": "Warning foreground color",
             "error_background_color": "Error background color",
-            "error_foreground_color": "Error foreground color",
-            "info_background_color": "Info background color",
-            "info_foreground_color": "Info foreground color"
-        },
-        "input": {
-            "name": "Input",
-            "spacing": "Spacing",
-            "border": "Border",
-            "border_thickness": "Input border thickness",
-            "radius": "Input radius",
-            "shadow": "Shadow",
-            "shadow_opacity": "Input shadow opacity",
-            "shadow_horizontal_offset": "Input shadow horizontal offset",
-            "shadow_vertical_offset": "Input shadow vertical offset",
-            "shadow_blur": "Input shadow blur",
-            "padding_horizontal": "Input horizontal padding",
-            "padding_vertical": "Input vertical padding"
-        },
-        "button": {
-            "name": "Button",
-            "spacing": "Spacing",
-            "padding_horizontal": "Button horizontal padding",
-            "padding_vertical": "Button vertical padding",
-            "border": "Border",
-            "border_thickness": "Button border thickness",
-            "radius": "Button radius",
-            "shadow": "Shadow",
-            "shadow_opacity": "Button shadow opacity",
-            "shadow_horizontal_offset": "Button shadow horizontal offset",
-            "shadow_vertical_offset": "Button shadow vertical offset",
-            "shadow_blur": "Button shadow blur"
+            "error_foreground_color": "Error foreground color"
         },
         "product_cards": {
             "name": "Product cards",
             "image": "Image",
             "image_ratio": "Image ratio"
-        },
-        "focus": {
-            "name": "Focus",
-            "ring_width": "Focus ring width",
-            "ring_offset": "Focus ring offset"
         },
         "social_icon": {
             "name": "Social icon",
@@ -243,12 +188,7 @@
             "name": "Button",
             "settings": {
                 "label": "Button label",
-                "link": "Button link",
-                "style": "Button style"
-            },
-            "options": {
-                "primary": "Primary",
-                "secondary": "Secondary"
+                "link": "Button link"
             },
             "defaults": {
                 "label": "Shop now"

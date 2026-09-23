@@ -338,106 +338,6 @@
                         "default": "#111827"
                     },
                     {
-                        "type": "color",
-                        "id": "focus_ring_color",
-                        "label": "t:config.colors.focus_ring_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "header",
-                        "content": "t:config.colors.inputs"
-                    },
-                    {
-                        "type": "color",
-                        "id": "input_text_color",
-                        "label": "t:config.colors.input_text_color",
-                        "default": "#151515"
-                    },
-                    {
-                        "type": "color",
-                        "id": "input_background_color",
-                        "label": "t:config.colors.input_background_color",
-                        "default": "#FFFFFF"
-                    },
-                    {
-                        "type": "color",
-                        "id": "input_border_color",
-                        "label": "t:config.colors.input_border_color",
-                        "default": "#767676"
-                    },
-                    {
-                        "type": "color",
-                        "id": "input_placeholder_color",
-                        "label": "t:config.colors.input_placeholder_color",
-                        "default": "#717171"
-                    },
-                    {
-                        "type": "header",
-                        "content": "t:config.colors.primary_button"
-                    },
-                    {
-                        "type": "color",
-                        "id": "primary_button_background_color",
-                        "label": "t:config.colors.primary_button_background_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "color",
-                        "id": "primary_button_label_color",
-                        "label": "t:config.colors.primary_button_label_color",
-                        "default": "#FFFFFF"
-                    },
-                    {
-                        "type": "color",
-                        "id": "primary_button_border_color",
-                        "label": "t:config.colors.primary_button_border_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "header",
-                        "content": "t:config.colors.secondary_button"
-                    },
-                    {
-                        "type": "color",
-                        "id": "secondary_button_background_color",
-                        "label": "t:config.colors.secondary_button_background_color",
-                        "default": "#FFFFFF"
-                    },
-                    {
-                        "type": "color",
-                        "id": "secondary_button_label_color",
-                        "label": "t:config.colors.secondary_button_label_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "color",
-                        "id": "secondary_button_border_color",
-                        "label": "t:config.colors.secondary_button_border_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "header",
-                        "content": "t:config.colors.badges"
-                    },
-                    {
-                        "type": "color",
-                        "id": "badge_background_color",
-                        "label": "t:config.colors.badge_background_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
-                        "type": "color",
-                        "id": "badge_label_color",
-                        "label": "t:config.colors.badge_label_color",
-                        "default": "#FFFFFF"
-                    },
-                    {
-                        "type": "color",
-                        "id": "badge_border_color",
-                        "label": "t:config.colors.badge_border_color",
-                        "default": "#1D4ED8"
-                    },
-                    {
                         "type": "header",
                         "content": "t:config.colors.feedback_messages"
                     },
@@ -455,18 +355,6 @@
                     },
                     {
                         "type": "color",
-                        "id": "warning_background_color",
-                        "label": "t:config.colors.warning_background_color",
-                        "default": "#FFFBEB"
-                    },
-                    {
-                        "type": "color",
-                        "id": "warning_foreground_color",
-                        "label": "t:config.colors.warning_foreground_color",
-                        "default": "#92400E"
-                    },
-                    {
-                        "type": "color",
                         "id": "error_background_color",
                         "label": "t:config.colors.error_background_color",
                         "default": "#FEF2F2"
@@ -476,18 +364,6 @@
                         "id": "error_foreground_color",
                         "label": "t:config.colors.error_foreground_color",
                         "default": "#991B1B"
-                    },
-                    {
-                        "type": "color",
-                        "id": "info_background_color",
-                        "label": "t:config.colors.info_background_color",
-                        "default": "#F4F4F5"
-                    },
-                    {
-                        "type": "color",
-                        "id": "info_foreground_color",
-                        "label": "t:config.colors.info_foreground_color",
-                        "default": "#27272A"
                     }
                 ],
                 "role": {
@@ -497,13 +373,13 @@
                     },
                     "icons": "text_color",
                     "links": "text_color",
-                    "on_primary_button": "primary_button_label_color",
-                    "on_secondary_button": "secondary_button_label_color",
-                    "primary_button": "primary_button_background_color",
-                    "primary_button_border": "primary_button_border_color",
-                    "secondary_button": "secondary_button_background_color",
-                    "secondary_button_border": "secondary_button_border_color",
-                    "text": "text_color"
+                    "text": "text_color",
+                    "primary_button": "text_color",
+                    "primary_button_border": "text_color",
+                    "on_secondary_button": "text_color",
+                    "secondary_button_border": "text_color",
+                    "on_primary_button": "background_color",
+                    "secondary_button": "background_color"
                 }
             },
             {
@@ -512,200 +388,6 @@
                 "label": "t:config.colors.page_canvas_color_scheme",
                 "info": "t:config.colors.page_canvas_color_scheme_info",
                 "default": "scheme-2"
-            }
-        ]
-    },
-    {
-        "name": "t:config.input.name",
-        "settings": [
-            {
-                "type": "header",
-                "content": "t:config.input.spacing"
-            },
-            {
-                "type": "range",
-                "id": "input_padding_horizontal",
-                "min": 8,
-                "max": 32,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.input.padding_horizontal",
-                "default": 16
-            },
-            {
-                "type": "range",
-                "id": "input_padding_vertical",
-                "min": 6,
-                "max": 24,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.input.padding_vertical",
-                "default": 12
-            },
-            {
-                "type": "header",
-                "content": "t:config.input.border"
-            },
-            {
-                "type": "range",
-                "id": "input_border_thickness",
-                "min": 0,
-                "max": 10,
-                "step": 1,
-                "unit": "px",
-                "label": "t:config.input.border_thickness",
-                "default": 1
-            },
-            {
-                "type": "range",
-                "id": "input_radius",
-                "min": 0,
-                "max": 40,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.input.radius",
-                "default": 8
-            },
-            {
-                "type": "header",
-                "content": "t:config.input.shadow"
-            },
-            {
-                "type": "range",
-                "id": "input_shadow_opacity",
-                "min": 0,
-                "max": 100,
-                "step": 5,
-                "unit": "%",
-                "label": "t:config.input.shadow_opacity",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "input_shadow_horizontal_offset",
-                "min": -12,
-                "max": 12,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.input.shadow_horizontal_offset",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "input_shadow_vertical_offset",
-                "min": -12,
-                "max": 12,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.input.shadow_vertical_offset",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "input_shadow_blur",
-                "min": 0,
-                "max": 20,
-                "step": 5,
-                "unit": "px",
-                "label": "t:config.input.shadow_blur",
-                "default": 0
-            }
-        ]
-    },
-    {
-        "name": "t:config.button.name",
-        "settings": [
-            {
-                "type": "header",
-                "content": "t:config.button.spacing"
-            },
-            {
-                "type": "range",
-                "id": "button_padding_horizontal",
-                "min": 12,
-                "max": 48,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.padding_horizontal",
-                "default": 24
-            },
-            {
-                "type": "range",
-                "id": "button_padding_vertical",
-                "min": 6,
-                "max": 24,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.padding_vertical",
-                "default": 12
-            },
-            {
-                "type": "header",
-                "content": "t:config.button.border"
-            },
-            {
-                "type": "range",
-                "id": "button_border_thickness",
-                "min": 0,
-                "max": 10,
-                "step": 1,
-                "unit": "px",
-                "label": "t:config.button.border_thickness",
-                "default": 1
-            },
-            {
-                "type": "range",
-                "id": "button_radius",
-                "min": 0,
-                "max": 40,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.radius",
-                "default": 8
-            },
-            {
-                "type": "header",
-                "content": "t:config.button.shadow"
-            },
-            {
-                "type": "range",
-                "id": "button_shadow_opacity",
-                "min": 0,
-                "max": 100,
-                "step": 5,
-                "unit": "%",
-                "label": "t:config.button.shadow_opacity",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "button_shadow_horizontal_offset",
-                "min": -12,
-                "max": 12,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.shadow_horizontal_offset",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "button_shadow_vertical_offset",
-                "min": -12,
-                "max": 12,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.shadow_vertical_offset",
-                "default": 0
-            },
-            {
-                "type": "range",
-                "id": "button_shadow_blur",
-                "min": 0,
-                "max": 20,
-                "step": 2,
-                "unit": "px",
-                "label": "t:config.button.shadow_blur",
-                "default": 0
             }
         ]
     },
@@ -739,31 +421,6 @@
                     }
                 ],
                 "default": "adapt"
-            }
-        ]
-    },
-    {
-        "name": "t:config.focus.name",
-        "settings": [
-            {
-                "type": "range",
-                "id": "focus_ring_width",
-                "min": 1,
-                "max": 6,
-                "step": 1,
-                "unit": "px",
-                "label": "t:config.focus.ring_width",
-                "default": 2
-            },
-            {
-                "type": "range",
-                "id": "focus_ring_offset",
-                "min": 0,
-                "max": 8,
-                "step": 1,
-                "unit": "px",
-                "label": "t:config.focus.ring_offset",
-                "default": 2
             }
         ]
     },
