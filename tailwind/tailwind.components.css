@@ -160,6 +160,11 @@ Rich text (RTE) — shared merchant HTML output
         overflow-x: auto;
     }
 
+    /* Scroll containers clip outside rings; draw the ring inside the link. */
+    .rte :is(table, pre) :focus-visible {
+        outline-offset: -2px;
+    }
+
     .rte > *:first-child {
         margin-top: 0;
     }

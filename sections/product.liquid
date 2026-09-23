@@ -30,7 +30,7 @@
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
 >
-    <div class="layout container-page overflow-visible!">
+    <div class="layout container-page">
         <div
             class="grid w-full min-w-0 grid-cols-1 items-start gap-8 pc:grid-cols-[minmax(0,var(--product-media-fr))_minmax(0,var(--product-info-fr))] pc:items-stretch pc:gap-10 fw:gap-12"
             style="
@@ -203,17 +203,6 @@
 
     @media (width >= 48rem) {
         .product-info-blocks {
-            max-height: 100%;
-            min-height: 0;
-        }
-
-        .product-info-blocks > * {
-            flex-shrink: 0;
-        }
-    }
-
-    @media (width >= 48rem) {
-        .product-info-blocks {
             --product-block-row-gap: 1.5rem;
         }
     }
@@ -246,32 +235,7 @@
 
     .product-info-blocks__description {
         max-width: none;
-        overscroll-behavior: contain;
-        padding-right: 0.25rem;
         color: rgb(var(--color-foreground));
-    }
-
-    @media (width >= 48rem) {
-        .product-info-blocks__description {
-            overflow-y: auto;
-        }
-    }
-
-    .product-info-blocks__description {
-        scrollbar-width: thin;
-        scrollbar-color: rgb(var(--color-border)) transparent;
-    }
-
-    .product-info-blocks__description::-webkit-scrollbar {
-        width: 0.375rem;
-    }
-
-    .product-info-blocks__description::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .product-info-blocks__description::-webkit-scrollbar-thumb {
-        background-color: rgb(var(--color-border));
     }
 
     .product-info-blocks__description.rte :is(h1, h2, h3, h4, h5, h6) {

@@ -6,7 +6,7 @@ Last updated: 2026-09-23.
 
 ## Plan: batch C, section layer to Skeleton minimal practice
 
-**Status:** executed; waiting on independent review (step 7).
+**Status:** executed; independent review PASS (review 5, 2026-09-23); waiting on the combined A–D browser pass by the user after batch D.
 
 **Authorization:** the user authorized this batch on 2026-09-23 ("授权"). Section schema convergence, decided in the same message, is batch D, not this batch.
 
@@ -194,4 +194,27 @@ Pre-existing, recorded on the board: `snippets/product-media.liquid` receives `a
 Pre-existing, already on the board: `snippets/product-media.liquid` does not pass `aspect_ratio`.
 
 - Correction validation: `npm.cmd run build:tw` exit 0; `npm.cmd run lint` exit 0; `npm.cmd test` exit 0; prettier passes on `docs/agent/context.md`, `sections/blog.liquid`, and `tailwind/tailwind.components.css`.
-- Status: waiting on third independent review (step 7).
+- Review 3 (2026-09-23): FAIL, below.
+
+### Review 3 (2026-09-23): FAIL, one focus-clipping defect; corrected by the coordinator
+
+1. `sections/product.liquid` gave `.product-info-blocks__description` `overflow-y: auto` at desktop widths with only right padding. `overflow-y: auto` also computes `overflow-x` to `auto`, so a description link at the left edge lost the left side of its 2px ring at 2px offset. The rule was dead scroll-panel scaffolding: `.product-info-blocks` got `max-height: 100%`, but its parent (`self-start` wrapper) has no definite height, so the description never scrolled. It was a leftover of the sticky side-panel design, which `docs/project.md` leaves to derived themes. The coordinator removed the scroll set: the description's `overflow-y`, `overscroll-behavior`, `padding-right`, and scrollbar styling, and the `.product-info-blocks` `max-height` / `min-height` / child `flex-shrink: 0` rules. `git grep` found no JS or doc consumer of `data-product-info-panel` or `product-info-blocks` sizing.
+2. Same root cause: `overflow-visible!` on `.layout` in `sections/product.liquid` (1) and `sections/search.liquid` (2) only overrode the removed `.layout { overflow: hidden }`, so they were removed.
+
+- Remaining `overflow` in the surface: `sections/header.liquid` `.header-logo__text` (on the link itself, which does not clip its own outline; see the earlier coordinator correction) and `overflow-wrap` in `assets/base.css`.
+- Correction validation: `npm.cmd run build:tw` exit 0 (drops `overflow-visible!` from the output); `npm.cmd run lint` exit 0; `npm.cmd test` exit 0; prettier passes on `sections/product.liquid` and `sections/search.liquid`.
+- Review 4 (2026-09-23): FAIL, below.
+
+### Review 4 (2026-09-23): FAIL, one focus-clipping defect; corrected by the coordinator
+
+1. The review 1 fix made `.rte table` and `.rte pre` `overflow-x: auto` scroll containers, which clip a descendant link's 2px ring at 2px offset at their edges (article, page, and product description content). Fixed in `tailwind/tailwind.components.css` with the inset-ring pattern already used by `snippets/pagination.liquid` and `snippets/localization-switcher.liquid`: `.rte :is(table, pre) :focus-visible { outline-offset: -2px; }`. The ring stays inside the focused element's box, so the scroll container cannot clip it. Cascade: `assets/base.css` is imported `layer(base)` in `tailwind/tailwind.input.css`, so the components-layer rule overrides the global `outline-offset: 2px`.
+
+- Correction validation: `npm.cmd run build:tw` exit 0 (output contains the rule); `npm.cmd run scan:compat` exit 0; `npm.cmd run lint` exit 0; `npm.cmd test` exit 0; prettier passes on `tailwind/tailwind.components.css` and this file.
+- Status: waiting on fifth independent review (step 7). Scope: commit 026ecf0 plus the uncommitted working-tree changes.
+- Review 5 (2026-09-23): PASS, below.
+
+### Review 5 (2026-09-23): PASS
+
+No blocking findings. The verifier re-ran `npm.cmd run build:tw` (hash unchanged), `scan:compat`, `lint`, `test`, prettier on the 24 changed non-generated files, and `git diff --check 026ecf0~1`; all passed (Theme Check: 65 files, 0 offenses). It confirmed the `.rte :is(table, pre) :focus-visible` inset wins by layer order, and its exhaustive clipping sweep found no clipped focus ring: `.rte table` / `.rte pre` (inset ring), `.header-logo__text` (clips its own content only), `.sr-only` (sibling indicators), `.accordion__panel-inner` (4px inset), `.theme-image` / `.media-placeholder-frame` (linked image is the clipping element), `.localization-menu` and `.pagination__pages-wrap` (inset rings), `.variant-picker__swatch` (no focusable child). Outside the surface, `assets/gift-card.css` clips no focusable descendant.
+
+- Remaining verification: the combined A–D browser pass (user) after batch D, with this batch's list under "Browser pass" above.

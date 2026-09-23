@@ -10,7 +10,7 @@
         --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
     "
 >
-    <div class="layout container-page overflow-visible!{% unless search.performed %} py-16 pc:py-20{% endunless %}">
+    <div class="layout container-page{% unless search.performed %} py-16 pc:py-20{% endunless %}">
         <div class="mx-auto w-full px-4 pc:max-w-1/2 pc:px-0{% if search.performed %} py-10{% endif %}">
             <h1 class="sr-only">{{ 'search.title' | t }}</h1>
 
@@ -43,7 +43,7 @@
     </div>
 
     {%- if search.performed -%}
-        <div class="layout container-page overflow-visible! pb-10">
+        <div class="layout container-page pb-10">
             {%- paginate search.results by section.settings.search_per_page -%}
                 {%- if search.results_count == 0 -%}
                     <p class="py-10 text-center body-lg">

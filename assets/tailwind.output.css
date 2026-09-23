@@ -656,9 +656,6 @@
   .self-start {
     align-self: flex-start;
   }
-  .overflow-visible\! {
-    overflow: visible !important;
-  }
   .rounded-full {
     border-radius: calc(infinity * 1px);
   }
@@ -1680,6 +1677,9 @@
   .rte pre {
     max-width: 100%;
     overflow-x: auto;
+  }
+  .rte :is(table, pre) :focus-visible {
+    outline-offset: -2px;
   }
   .rte > *:first-child {
     margin-top: 0;
