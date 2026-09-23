@@ -18,6 +18,18 @@ This is an internal Shopify Skeleton Theme mother template for building future t
 - Action feedback stays local to the control or form that triggered it.
 - Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes.
 
+## Cleanup Test
+
+Use this test when cleaning business content out of the theme. Delete down to the minimal practice, but do not delete a framework or architecture file merely because nothing uses it yet.
+
+- Keep (the frame) when any of these holds:
+  - it is listed in Accepted Scope;
+  - it is a framework capability documented in a reference, for example `SectionRefresher.updateText()`, the Theme Editor event forwarding, or the `image.liquid` `position` parameter;
+  - it belongs to a selected architecture direction, such as GSAP or Swiper, including its skills or adapters;
+  - it is a Shopify platform requirement.
+- Delete (business content): anything that serves only a specific feature of an earlier theme, such as CSS classes, events, schema settings, and locale keys left by removed features, or styles written for one old section. The removed `PRODUCT_SELLING_PLAN_CHANGED` event is an example.
+- List unclear items for the user; the agent does not decide them.
+
 ## Status
 
 - The mother-template goal is met: the storefront primitives, runtime, style system, and Agent layer are accepted after independent review. `npm.cmd run lint` and `npm.cmd test` pass. The template stays compatible with Theme Store submission but does not implement every submission requirement.

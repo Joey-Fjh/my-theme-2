@@ -33,6 +33,26 @@ Apply at SOP step 7 (`AGENTS.md` Batch SOP):
 - Do not promote preferences to blockers unless project rules make them blockers.
 - Do not claim independent verification when only old or partial evidence is available.
 
+## Review prompt template
+
+For an Ask-tier batch (`AGENTS.md` Batch SOP, "Review tiers"), the coordinator fills this in and hands it to the user to run in a separate session:
+
+```text
+You are the Verifier for <repository> (<path>). Read AGENTS.md, then .agents/roles/verifier.md, and follow that role: read-only, no edits, no commits, no subagents.
+
+Batch under review: "<plan title>". The plan, the user's authorization, the acceptance checks, and the implementer's validation claims are in docs/agent/context.md. Do not inherit those claims; re-run everything yourself.
+
+Scope: <uncommitted working-tree changes (`git diff`) | commits <range>>. Implementation surface: <paths>. Changes to the record files docs/agent/board.md and docs/agent/context.md are never a scope violation; any other change outside the surface is a defect.
+
+Verify:
+1. Each acceptance check in docs/agent/context.md, with fresh evidence.
+2. <batch-specific risks: consumers of deleted or renamed items, moved text against its source, cited paths and symbols, recorded approval for rule changes>
+
+Run: <the plan's validators>, `npx prettier --check <changed files>`, `git diff --stat`.
+
+Output per verifier.md: findings first by impact (file:line, defect, evidence), then proven / unproven, commands run with their output, and a verdict: PASS or FAIL.
+```
+
 ## Output
 
 Report findings first in impact order, then state what was proven, what remains unproven, checks run, exact evidence, blockers or remaining risks, and the next proving action.
