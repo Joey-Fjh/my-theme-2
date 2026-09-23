@@ -6,10 +6,6 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    {%- liquid
-        assign article_title_text = article.title | strip_html | strip
-        assign article_heading_override = section.settings.heading | strip_html | strip
-    -%}
     <div class="layout container-page py-10">
         <article class="w-full min-w-0">
             {%- capture sizes -%}
@@ -21,16 +17,10 @@
             {%- endcapture -%}
 
             {%- assign image = article.image -%}
-            {%- if section.settings.image -%}
-                {%- assign image = section.settings.image -%}
-            {%- endif -%}
 
             {%- if image != blank -%}
                 <div class="mb-8">
-                    {%- assign image_alt = image.alt
-                        | default: section.settings.image_alt
-                        | escape
-                    -%}
+                    {%- assign image_alt = image.alt | escape -%}
                     {%- render 'image',
                         image: image,
                         alt: image_alt,
@@ -45,14 +35,6 @@
                 class="flex flex-col gap-4 border-b border-theme-border pb-6"
             >
                 <h1 class="heading-2xl">{{ article.title }}</h1>
-
-                {%- if article_heading_override != blank
-                    and article_heading_override != article_title_text
-                -%}
-                    <p class="body-xl">
-                        {{ section.settings.heading }}
-                    </p>
-                {%- endif -%}
 
                 {%- assign date = article.published_at | time_tag: format: 'date' -%}
                 <p class="body-xl">
@@ -289,22 +271,6 @@
             "id": "color_scheme",
             "label": "t:sections.article.settings.content_color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "image_picker",
-            "id": "image",
-            "label": "t:sections.article.settings.image"
-        },
-        {
-            "type": "text",
-            "id": "image_alt",
-            "default": "t:sections.article.defaults.image_alt",
-            "label": "t:sections.article.settings.image_alt_text"
-        },
-        {
-            "type": "inline_richtext",
-            "id": "heading",
-            "label": "t:sections.article.settings.heading"
         },
         {
             "type": "header",

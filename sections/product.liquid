@@ -1,11 +1,6 @@
-{% assign desktop_media_width = section.settings.desktop_media_width | default: 60 | plus: 0 %}
-{% assign desktop_info_width = 100 | minus: desktop_media_width %}
-{% assign media_aspect_ratio = section.settings.media_aspect_ratio | default: 'portrait_3_4' %}
+{% assign desktop_media_width = 60 %}
+{% assign desktop_info_width = 40 %}
 {% assign gallery_aspect_ratio = '3/4' %}
-{% case media_aspect_ratio %}
-    {% when 'square_1_1' %}
-        {% assign gallery_aspect_ratio = '1/1' %}
-{% endcase %}
 {% assign product_form_id = 'product-form-' | append: section.id %}
 {% assign purchase_anchor_type = '' %}
 {% for candidate_block in section.blocks %}
@@ -126,7 +121,8 @@
                                                 product_form_id: product_form_id,
                                                 section_id: section.id,
                                                 context: 'product',
-                                                quantity_block: quantity_block
+                                                quantity_block: quantity_block,
+                                                show_dynamic_checkout: true
                                             -%}
                                         {%- else -%}
                                             {%- render 'quantity-selector',
@@ -145,13 +141,14 @@
                                             product_form_id: product_form_id,
                                             section_id: section.id,
                                             context: 'product',
-                                            quantity_block: quantity_block
+                                            quantity_block: quantity_block,
+                                            show_dynamic_checkout: true
                                         -%}
                                     {%- endif -%}
                                 {%- when 'inventory_notice' -%}
                                     {%- liquid
                                         assign inventory_variant = product.selected_or_first_available_variant
-                                        assign low_stock_threshold = block.settings.low_stock_threshold | default: 5 | plus: 0
+                                        assign low_stock_threshold = 5
                                         assign inventory_quantity = inventory_variant.inventory_quantity | default: 0 | plus: 0
                                         assign show_inventory_notice = false
                                         if inventory_variant.inventory_management != blank and inventory_variant.inventory_policy == 'deny' and inventory_quantity > 0 and inventory_quantity <= low_stock_threshold
@@ -163,14 +160,10 @@
                                             class="product-info-blocks__inventory-notice"
                                             {{ block.shopify_attributes }}
                                         >
-                                            {%- if block.settings.show_stock_number -%}
-                                                {{
-                                                    'products.product.only_in_stock_html'
-                                                    | t: quantity: inventory_quantity
-                                                }}
-                                            {%- else -%}
-                                                {{ 'products.product.low_stock' | t }}
-                                            {%- endif -%}
+                                            {{
+                                                'products.product.only_in_stock_html'
+                                                | t: quantity: inventory_quantity
+                                            }}
                                         </div>
                                     {%- endif -%}
                                 {%- when 'collapsible_tab' -%}
@@ -180,7 +173,7 @@
                                     {%- render 'accordion',
                                         item_title: block.settings.collapsible_tab_heading,
                                         item_content: collapsible_content,
-                                        initial_active: block.settings.open_by_default,
+                                        initial_active: 'null',
                                         id_prefix: block.id,
                                         icon_type: 'plus'
                                     -%}
@@ -273,32 +266,6 @@
             "default": "scheme-2"
         },
         {
-            "type": "range",
-            "id": "desktop_media_width",
-            "min": 40,
-            "max": 60,
-            "step": 1,
-            "unit": "%",
-            "label": "t:sections.product.settings.desktop_media_width",
-            "default": 60
-        },
-        {
-            "type": "select",
-            "id": "media_aspect_ratio",
-            "label": "t:sections.product.settings.media_aspect_ratio",
-            "options": [
-                {
-                    "value": "portrait_3_4",
-                    "label": "t:sections.product.options.portrait_3_4"
-                },
-                {
-                    "value": "square_1_1",
-                    "label": "t:sections.product.options.square_1_1"
-                }
-            ],
-            "default": "portrait_3_4"
-        },
-        {
             "type": "header",
             "content": "t:sections.product.content.padding"
         },
@@ -350,45 +317,7 @@
         {
             "type": "variant_picker",
             "name": "t:sections.product.blocks.variant_picker",
-            "limit": 1,
-            "settings": [
-                {
-                    "type": "select",
-                    "id": "picker_type",
-                    "label": "t:sections.product.block_settings.style",
-                    "options": [
-                        {
-                            "value": "dropdown",
-                            "label": "t:sections.product.options.dropdown"
-                        },
-                        {
-                            "value": "button",
-                            "label": "t:sections.product.options.pills"
-                        }
-                    ],
-                    "default": "button"
-                },
-                {
-                    "type": "select",
-                    "id": "swatch_shape",
-                    "label": "t:sections.product.block_settings.swatch_shape",
-                    "options": [
-                        {
-                            "value": "circle",
-                            "label": "t:sections.product.options.circle"
-                        },
-                        {
-                            "value": "square",
-                            "label": "t:sections.product.options.square"
-                        },
-                        {
-                            "value": "none",
-                            "label": "t:sections.product.options.none"
-                        }
-                    ],
-                    "default": "circle"
-                }
-            ]
+            "limit": 1
         },
         {
             "type": "quantity_selector",
@@ -398,39 +327,12 @@
         {
             "type": "inventory_notice",
             "name": "t:sections.product.blocks.inventory_notice",
-            "limit": 1,
-            "settings": [
-                {
-                    "type": "range",
-                    "id": "low_stock_threshold",
-                    "min": 1,
-                    "max": 50,
-                    "step": 1,
-                    "label": "t:sections.product.block_settings.low_stock_threshold",
-                    "info": "t:sections.product.block_info.the_low_stock_notice_displays_if_your_in",
-                    "default": 5
-                },
-                {
-                    "type": "checkbox",
-                    "id": "show_stock_number",
-                    "label": "t:sections.product.block_settings.display_stock_number",
-                    "default": true
-                }
-            ]
+            "limit": 1
         },
         {
             "type": "buy_buttons",
             "name": "t:sections.product.blocks.buy_buttons",
-            "limit": 1,
-            "settings": [
-                {
-                    "type": "checkbox",
-                    "id": "show_dynamic_checkout",
-                    "label": "t:sections.product.block_settings.show_dynamic_checkout_buttons",
-                    "info": "t:sections.product.block_info.using_the_payment_methods_available_on_y",
-                    "default": true
-                }
-            ]
+            "limit": 1
         },
         {
             "type": "custom_liquid",
@@ -447,12 +349,6 @@
             "type": "collapsible_tab",
             "name": "t:sections.product.blocks.collapsible_tab",
             "settings": [
-                {
-                    "type": "checkbox",
-                    "id": "open_by_default",
-                    "label": "t:sections.product.block_settings.open_tab_by_default",
-                    "default": false
-                },
                 {
                     "type": "inline_richtext",
                     "id": "collapsible_tab_heading",

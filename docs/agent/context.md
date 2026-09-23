@@ -1,8 +1,235 @@
 # Project Context
 
-Holds the plan currently under execution and its status. Nothing else. Unresolved discussion lives in `docs/agent/board.md`; durable contracts live in `AGENTS.md`, the matching reference, code, or configuration.
+Holds the plan currently under execution and its status. Nothing else. Batch C stays only as an executed, reviewed plan waiting on the user's combined A–D browser pass. Unresolved discussion lives in `docs/agent/board.md`; durable contracts live in `AGENTS.md`, the matching reference, code, or configuration.
 
 Last updated: 2026-09-23.
+
+## Plan: batch D, section settings to Skeleton minimal
+
+**Status:** executed; independent review accepted (review 2, 2026-09-23; one pre-existing accordion finding deferred by the user); waiting on the combined A–D browser pass by the user.
+
+**Authorization:** the user authorized this batch on 2026-09-23 ("开始吧。授权，基本上把。其余项也没必要，对于skeleton而言"), including removing the removed settings' values from `templates/*.json` and `sections/*-group.json`.
+
+**Decision (user, 2026-09-23; `docs/agent/board.md`, "theme content goes to official-Skeleton minimal practice", item 5):** section settings keep only color scheme, font, and padding; everything else goes. The coordinator applied the official Skeleton baseline (fetched 2026-09-23 from `raw.githubusercontent.com/Shopify/skeleton-theme/main`): its sections have `"settings": []` except `header` and `footer` (`menu`), and its theme blocks keep their content and layout settings. So a setting also stays when the section or block renders nothing useful without it (a menu, custom Liquid, a theme block's own content). No section has a font setting today.
+
+**Review tier:** Ask (deletions; Liquid markup and schema; merchant JSON; external execution prompt).
+
+**Outcome:** every section schema holds only the Keep list below; the storefront renders what the removed settings' schema defaults rendered, with copy from resource data or locale keys; no Liquid, CSS, locale key, or merchant JSON value is left for a removed setting.
+
+**Dependencies:** none. Batch C is reviewed; its browser pass joins the combined A–D pass after this batch.
+
+### Keep
+
+- Every section: `color_scheme`, `padding_top`, `padding_bottom` where present.
+- `sections/header.liquid`: `menu`. `sections/footer.liquid`: `link_column` block `heading`, `menu`.
+- `sections/custom-liquid.liquid`: `custom_liquid`. `sections/product.liquid` blocks: `custom_liquid` `custom_liquid`; `collapsible_tab` `collapsible_tab_heading`, `collapsible_tab_text`.
+- `blocks/*.liquid`: unchanged (`text`, `heading` with `semantic_level`, `button` `label` and `link`, `group` `direction`, `alignment`, `gap`).
+
+### Remove
+
+| Section | Settings |
+| --- | --- |
+| `404` | `heading_line1`, `heading_line2`, `description`, `show_button`, `button_text`, `button_link` |
+| `article` | `image`, `image_alt`, `heading` |
+| `blog` | `header`, `description`, `articles_per_page`, `link_text` |
+| `collection` | `header`, `description`, `products_per_page` |
+| `collections` | `heading`, `description`, `collections_per_page` |
+| `custom-liquid` | `section_width` |
+| `footer` | `enable_follow_on_shop` |
+| `header` | `enable_country_selector`, `enable_language_selector` |
+| `main-page-contact` | `heading`, `description`, `button_text`, `success_message` |
+| `password` | `heading`, `message`, `placeholder` |
+| `product` | `desktop_media_width`, `media_aspect_ratio`; blocks: `variant_picker` `picker_type`, `swatch_shape`; `inventory_notice` `low_stock_threshold`, `show_stock_number`; `buy_buttons` `show_dynamic_checkout`; `collapsible_tab` `open_by_default` |
+| `search` | `search_per_page` |
+
+Replacement rule, per removed setting:
+
+- Behavior settings (counts, ratios, widths, selects, checkboxes): hardcode the value of the setting's schema `default`, so the storefront keeps its default behavior. Then remove the Liquid branches, CSS, and locale keys that only a non-default value reached. JavaScript is out of scope: if a JS path becomes dead, record it for the JS leftover cleanup instead of editing it.
+- Copy settings (headings, descriptions, button and link text, messages, placeholders): use the resource's own data where it exists (`collection.title`, `collection.description`, `blog.title`, `page.title`, `page.content`, `article.title`, `article.image`, `shop.password_message`); otherwise use an existing locale key or add one to `locales/en.default.json`, with the schema default's text as the English value. (Amended by the user on 2026-09-23 after coordinator review, below: descriptions and intros come only from resource data and render nothing without it; locale text is used only where a page needs copy to work, and it is written for shoppers, never merchant instructions.) Non-empty merchant text in `templates/*.json` is dropped with the setting (authorized).
+- A snippet whose only consumer was a removed setting (for example `snippets/rte-compact-prose.liquid`, which reads `section.settings.description`) is deleted after `git grep` finds no other consumer.
+
+### Implementation surface
+
+- `sections/*.liquid` (schema and the Liquid, markup, and `{% stylesheet %}` driven by removed settings); `snippets/*.liquid` that read removed settings or become unused (`buy-buttons`, `product-variant-picker`, `rte-compact-prose`, and any found by grep).
+- `locales/en.default.json`, `locales/en.default.schema.json`: remove keys used only by removed settings or removed branches; add storefront keys for moved copy.
+- `templates/*.json`, `sections/header-group.json`, `sections/footer-group.json`: delete only the keys of removed settings; every other value stays byte-identical.
+- `docs/references/**`: only where a statement becomes untrue; content-neutral.
+- `assets/tailwind.output.css`: regenerate with `npm.cmd run build:tw` if class usage changes.
+
+Forbidden: `config/*`, `blocks/*`, `assets/*.js`, `layout/*`, `tailwind/*`, vendor assets, hand edits to `assets/tailwind.output.css`, and any change to schema IDs, block types, section types, or preset names that stay.
+
+### Acceptance checks
+
+1. A schema inventory (every `settings` entry with an `id` in each section schema and its blocks) prints exactly the Keep list; the implementer records the command and output.
+2. `git grep -n -E "settings\.(heading_line1|heading_line2|show_button|button_text|button_link|image_alt|articles_per_page|link_text|products_per_page|collections_per_page|section_width|enable_follow_on_shop|enable_country_selector|enable_language_selector|success_message|desktop_media_width|media_aspect_ratio|picker_type|swatch_shape|low_stock_threshold|show_stock_number|show_dynamic_checkout|open_by_default|search_per_page)\b" -- sections snippets blocks layout` prints nothing; the removed `header`, `heading`, `description`, `message`, `placeholder`, and `image` ids are shown gone by the inventory in check 1, and `git grep -n -E "section\.settings\.(header|heading|description|message|placeholder|image)\b" -- sections snippets` prints nothing.
+3. `templates/*.json` and `sections/*-group.json` parse as JSON; their diff deletes only removed-setting keys (plus comma fixes); the implementer lists each deleted key and value.
+4. Progress records, per removed setting, its schema default and what now renders (hardcoded value, resource data, or locale key).
+5. No locale key is left that nothing references, and every new `t` call resolves: `npm.cmd run lint:i18n` passes.
+6. Every deleted snippet has no remaining `render` or `include` consumer (`git grep` output recorded).
+7. `npm.cmd run lint` and `npm.cmd test` pass; `npx prettier --check` passes on every changed file; `git diff --stat` stays inside the surface (record files excepted); `assets/tailwind.output.css` matches a fresh build.
+
+### Browser pass
+
+Combined A–D pass after this batch (user). This batch adds: 404, article, blog, collection, collections list, contact, password, product (gallery layout, variant picker, inventory notice, buy buttons with dynamic checkout, collapsible tab), search, header localization selectors, and footer; and in the theme editor, each section shows only the kept settings.
+
+## Progress (batch D)
+
+### Per-setting decisions (schema default → what renders now)
+
+| Section | Setting | Schema default | Now renders |
+| --- | --- | --- | --- |
+| `404` | `heading_line1` | `"404"` | locale `404.title` |
+| `404` | `heading_line2` | `t:sections.404.defaults.heading_line_2` ("Not Found") | locale `404.heading_line_2` |
+| `404` | `description` | `t:sections.404.defaults.description_html` | locale `404.description_html` (English updated to schema default text) |
+| `404` | `show_button` | `true` | button always shown |
+| `404` | `button_text` | `t:sections.404.defaults.button_text` ("Back to Home") | locale `404.button_text` |
+| `404` | `button_link` | `"/"` | `routes.root_url` |
+| `article` | `image` | none | `article.image` only |
+| `article` | `image_alt` | `t:sections.article.defaults.image_alt` | `image.alt` |
+| `article` | `heading` | none | removed (title override branch deleted; `article.title` is the sole h1) |
+| `blog` | `header` | `t:sections.blog.defaults.header` ("Blog") | `blog.title` (replacement rule: resource data) |
+| `blog` | `description` | `t:sections.blog.defaults.description` | locale `blog.description_html` (English updated to schema default text) |
+| `blog` | `articles_per_page` | `12` | hardcoded `12` in `{% paginate %}` |
+| `blog` | `link_text` | `t:sections.blog.defaults.link_text` ("Read more") | locale `blog.read_more` |
+| `collection` | `header` | `t:sections.collection.defaults.header` | `collection.title` |
+| `collection` | `description` | `t:sections.collection.defaults.description` | `collection.description`, else locale `collections.description_html` |
+| `collection` | `products_per_page` | `12` | hardcoded `12` |
+| `collections` | `heading` | `t:sections.collections.defaults.heading` | locale `collections.list_heading` |
+| `collections` | `description` | `t:sections.collections.defaults.description` | locale `collections.list_description` |
+| `collections` | `collections_per_page` | `12` | hardcoded `12` |
+| `custom-liquid` | `section_width` | `"fixed"` | always `layout container-page` wrapper |
+| `footer` | `enable_follow_on_shop` | `true` | always shown when `shop.features.follow_on_shop?` |
+| `header` | `enable_country_selector` | `true` | localization snippets always rendered (mobile + desktop) |
+| `header` | `enable_language_selector` | `true` | localization snippets always rendered (mobile + desktop) |
+| `main-page-contact` | `heading` | `t:sections.main-page-contact.defaults.heading` | `page.title` |
+| `main-page-contact` | `description` | `t:sections.main-page-contact.defaults.description` | `page.content` if present, else locale `contact.description_html` |
+| `main-page-contact` | `button_text` | `t:sections.main-page-contact.defaults.button_text` | locale `sections.main-page-contact.defaults.button_text` |
+| `main-page-contact` | `success_message` | `t:sections.main-page-contact.defaults.success_message` | locale `sections.main-page-contact.defaults.success_message` |
+| `password` | `heading` | `t:sections.password.defaults.heading` | locale `password.title` |
+| `password` | `message` | `t:sections.password.defaults.message` | `shop.password_message` if present, else locale `password.message_html` |
+| `password` | `placeholder` | `t:sections.password.defaults.placeholder` ("Email") | locale `password.email_placeholder` |
+| `product` | `desktop_media_width` | `60` | hardcoded `60` / `40` grid split |
+| `product` | `media_aspect_ratio` | `portrait_3_4` | hardcoded gallery `3/4` |
+| `product` / `variant_picker` | `picker_type` | `button` | hardcoded button mode in `snippets/product-variant-picker.liquid` (dropdown branch removed) |
+| `product` / `variant_picker` | `swatch_shape` | `circle` | hardcoded circle swatches |
+| `product` / `inventory_notice` | `low_stock_threshold` | `5` | hardcoded `5` |
+| `product` / `inventory_notice` | `show_stock_number` | `true` | always shows `products.product.only_in_stock_html` |
+| `product` / `buy_buttons` | `show_dynamic_checkout` | `true` | `show_dynamic_checkout: true` on `{% render 'buy-buttons' %}`; snippet default `true` |
+| `product` / `collapsible_tab` | `open_by_default` | `false` | hardcoded `initial_active: false` |
+| `search` | `search_per_page` | `12` | hardcoded `12` |
+
+### Deleted merchant JSON keys
+
+| File | Key | Value |
+| --- | --- | --- |
+| `templates/index.json` | `sections.main.settings.section_width` | `"page"` |
+| `templates/product.json` | `sections.main.blocks.variant_picker.settings.picker_type` | `"button"` |
+| `templates/product.json` | `sections.main.blocks.buy_buttons.settings.show_dynamic_checkout` | `true` |
+| `sections/header-group.json` | `sections.header.settings.enable_country_selector` | `true` |
+| `sections/header-group.json` | `sections.header.settings.enable_language_selector` | `true` |
+
+No keys deleted from `sections/footer-group.json` or other templates (they already held only kept settings).
+
+### Snippet audit
+
+`git grep -n "rte-compact-prose" -- sections snippets` → consumers remain in `sections/blog.liquid`, `sections/collection.liquid`; snippet kept (not deleted).
+
+`snippets/buy-buttons.liquid` and `snippets/product-variant-picker.liquid` updated in surface; still consumed by `sections/product.liquid`.
+
+### JS leftovers (record only; `assets/*.js` out of scope)
+
+None found in `assets/*.js` for `picker_type`, `swatch_shape`, or `show_dynamic_checkout`. `VariantPicker` has no setting-specific branches; dropdown markup removal is Liquid/CSS only.
+
+### Check 1 (schema inventory)
+
+Command:
+
+```powershell
+node -e "const fs=require('fs');const path=require('path');const dir='sections';const keep={};const files=fs.readdirSync(dir).filter(f=>f.endsWith('.liquid'));for(const file of files){const text=fs.readFileSync(path.join(dir,file),'utf8');const m=text.match(/\{% schema %\}([\s\S]*?)\{% endschema %\}/);if(!m) continue;const schema=JSON.parse(m[1]);const ids=[];for(const s of schema.settings||[]) if(s.id) ids.push(s.id);for(const b of schema.blocks||[]){for(const s of b.settings||[]) if(s.id) ids.push(b.type+'.'+s.id);}keep[file]=ids.sort();}console.log(JSON.stringify(keep,null,2));"
+```
+
+Output matches Keep list: every section has only `color_scheme` + padding where applicable; `header` has `menu`; `footer` blocks have `link_column.heading` / `link_column.menu`; `custom-liquid` has `custom_liquid`; `product` blocks keep `custom_liquid.custom_liquid` and `collapsible_tab.collapsible_tab_heading` / `collapsible_tab.collapsible_tab_text` only.
+
+### Check 2 (removed-setting grep)
+
+```powershell
+git grep -n -E "settings\.(heading_line1|heading_line2|show_button|button_text|button_link|image_alt|articles_per_page|link_text|products_per_page|collections_per_page|section_width|enable_follow_on_shop|enable_country_selector|enable_language_selector|success_message|desktop_media_width|media_aspect_ratio|picker_type|swatch_shape|low_stock_threshold|show_stock_number|show_dynamic_checkout|open_by_default|search_per_page)\b" -- sections snippets blocks layout assets
+git grep -n -E "section\.settings\.(header|heading|description|message|placeholder|image)\b" -- sections snippets
+```
+
+Both: *(empty — exit 1)*.
+
+### Check 3
+
+All `templates/*.json` and `sections/*-group.json` parse; diffs delete only the keys listed above.
+
+### Check 5
+
+```powershell
+npm.cmd run lint:i18n
+```
+
+Exit 0 — i18n lint passed; unused locale key lint passed.
+
+### Check 6
+
+No snippets deleted. `git grep` output recorded under Snippet audit.
+
+### Check 7
+
+```powershell
+npm.cmd run lint
+npm.cmd test
+npm.cmd run build:tw
+```
+
+- `npm.cmd run lint` — exit 0 (includes `format:check` pass).
+- `npm.cmd test` — exit 0 (Theme Check: 65 files, 0 offenses).
+- `npm.cmd run build:tw` — exit 0; removed unused `variant-picker__swatch--square` output; second run hash unchanged (idempotent).
+- `git diff --stat` — only implementation-surface paths plus `docs/agent/board.md`, `docs/agent/context.md`, and `assets/tailwind.output.css`.
+
+```powershell
+git diff --stat
+git status --short
+```
+
+```
+ docs/agent/board.md                    |   5 +-
+ docs/agent/context.md                  | ...
+ locales/en.default.json                |  16 +-
+ locales/en.default.schema.json         | 107 +-----------
+ sections/*.liquid (12 files)          | ...
+ snippets/*.liquid (3 files)           | ...
+ templates/index.json, product.json     |   9 +-
+ sections/header-group.json             |   4 +-
+ assets/tailwind.output.css             |  54 deletions
+```
+
+### Blockers
+
+None.
+
+### Coordinator review and correction (2026-09-23)
+
+The coordinator reviewed the implementation diff before the independent review and found two defects, both caused by the plan's own rules. The user decided both on 2026-09-23.
+
+1. Merchant instructions rendered on the storefront. The copy rule ("the schema default's text as the English value") turned editor guidance into shopper copy: the 404 description became "Explain that the page could not be found…", and blog and collections-list intros read "Introduce your journal…" and "Introduce the collections…". Collection and contact also fell back to "Describe the products…" and "Tell customers how…" (as before this batch). User decision: resource data only. Corrected: `sections/blog.liquid` renders no intro; `sections/collection.liquid` renders `collection.description` only when it is not blank; `sections/collections.liquid` renders its heading only; `sections/main-page-contact.liquid` renders `page.content` only when present; `sections/404.liquid` goes back to its previous storefront copy (`404.description_html` "The page you're looking for has moved…" and `404.back_to_shopping` "Back to shopping"). Deleted locale keys: `blog.description_html`, `collections.description_html`, `collections.list_description`, `contact.description_html`, `404.button_text`. Kept: `password.message_html` as the storefront fallback for a blank `shop.password_message`. The `snippets/rte-compact-prose.liquid` example now uses `collection.description`; its only consumer is `sections/collection.liquid`.
+2. The variant picker's dropdown mode was removed, while `docs/project.md` Accepted Scope named "variant picker with shared dropdown". User decision: keep buttons with swatches (the former default) and change the Accepted Scope entry to "variant picker (buttons with swatches)"; the user approved this `docs/project.md` change. `field-select` in `tailwind/tailwind.elements.css` now has no consumer; `tailwind/` is outside this surface, so it is recorded on `docs/agent/board.md`.
+
+- Correction validation: `npm.cmd run build:tw` exit 0; `npm.cmd run lint:i18n` exit 0; `npm.cmd run lint` exit 0; `npm.cmd test` exit 0; prettier passes on the five corrected sections, `snippets/rte-compact-prose.liquid`, `locales/en.default.json`, and `docs/project.md`.
+
+### Review 1 (2026-09-23): FAIL, one default-behavior defect; corrected by the coordinator
+
+The verifier confirmed the Keep list exactly, the other removed behavior settings, copy, picker semantics, deletions, merchant JSON, and references. One defect: `sections/product.liquid` passed `initial_active: false` to `snippets/accordion.liquid`, whose `initial_active | default: 0` turns `false` into `0`, so collapsible tabs opened on load instead of matching `open_by_default`'s default (closed). The same path existed at HEAD. Fixed by passing the snippet's documented closed value, `initial_active: 'null'`, which renders `data-initial-active="null"`; `assets/alpine.components.ui.js` then sets `active = null`. The snippet and JS are unchanged.
+
+- Correction validation: `npm.cmd run lint` exit 0; `npm.cmd test` exit 0; prettier passes on `sections/product.liquid`.
+- Review 2 (2026-09-23): FAIL on one pre-existing item, below.
+
+### Review 2 (2026-09-23): batch items pass; one pre-existing finding deferred by the user
+
+The verifier confirmed the review 1 fix (tabs start closed with JavaScript), traced every falsy value and `| default:` path in the batch to its HEAD schema default, and re-ran acceptance checks 1–7 and the correction spot-checks; all pass. Validators: `build:tw` (hash unchanged), `lint:i18n`, `lint`, `test` (65 files, 0 offenses), `lint:doc-paths`, prettier, `git diff --check`, all passing.
+
+FAIL item (asked by the coordinator's review prompt, not by the plan): without JavaScript, `snippets/accordion.liquid` panels stay collapsed (`.accordion__panel` is `grid-template-rows: 0fr; opacity: 0` until Alpine adds `is-active`), so collapsible tab content is unreachable. This was already true at HEAD, and `snippets/accordion.liquid` is outside this batch's surface. User decision (2026-09-23): defer it to the small-items batch with the accordion's nested clear link (`docs/agent/board.md`), and accept batch D with this finding recorded.
 
 ## Plan: batch C, section layer to Skeleton minimal practice
 
@@ -63,7 +290,7 @@ Forbidden: `config/*`, `templates/*.json`, `sections/*-group.json`, `locales/*`,
 
 The combined pass after batch D covers batches A, B, C, and D (list on `docs/agent/board.md`). This batch adds: every section at mobile and desktop widths (404, article with comments, blog, cart, collection, collections list, custom Liquid, custom section with blocks, footer, header with mobile menu, contact page, page, password page, product page, search), the gift card page, and keyboard focus on blog and cart image links and on the mobile menu.
 
-## Progress
+## Progress (batch C)
 
 ### Per-file summary (removed → kept)
 

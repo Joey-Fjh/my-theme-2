@@ -5,8 +5,7 @@
     @param {string} [content_class] - Additional classes for typography, spacing, or alignment.
 
     @example
-    {%- assign description_html = 'collections.description_html' | t -%}
-    {%- render 'rte-compact-prose', content: section.settings.description | default: description_html -%}
+    {%- render 'rte-compact-prose', content: collection.description -%}
 {% enddoc %}
 
 {%- liquid

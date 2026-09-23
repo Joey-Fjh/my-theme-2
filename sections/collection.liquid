@@ -13,24 +13,13 @@
 >
     <div class="layout container-page pb-8">
         <div class="flex flex-col gap-4">
-            {%- liquid
-                assign resolved_heading = collection.title
-                if section.settings.header != blank
-                    assign resolved_heading = section.settings.header
-                endif
-                assign resolved_description = collection.description
-                if section.settings.description != blank
-                    assign resolved_description = section.settings.description
-                endif
-                if resolved_description == blank
-                    assign resolved_description = 'collections.description_html' | t
-                endif
-            -%}
-            <h1 class="heading-4xl">{{ resolved_heading }}</h1>
-            {%- render 'rte-compact-prose',
-                content: resolved_description,
-                content_class: 'body-xl'
-            -%}
+            <h1 class="heading-4xl">{{ collection.title }}</h1>
+            {%- if collection.description != blank -%}
+                {%- render 'rte-compact-prose',
+                    content: collection.description,
+                    content_class: 'body-xl'
+                -%}
+            {%- endif -%}
         </div>
     </div>
 
@@ -40,7 +29,7 @@
                 {% render 'loading', overlay: true, size: 'large' %}
 
                 {%- assign first_row_count = 2 -%}
-                {% paginate collection.products by section.settings.products_per_page %}
+                {% paginate collection.products by 12 %}
                     <div class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3">
                         {%- for product in collection.products -%}
                             <div>
@@ -111,27 +100,6 @@
             "id": "color_scheme",
             "label": "t:sections.collection.settings.content_color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "inline_richtext",
-            "id": "header",
-            "default": "t:sections.collection.defaults.header",
-            "label": "t:sections.collection.settings.header"
-        },
-        {
-            "type": "richtext",
-            "id": "description",
-            "default": "t:sections.collection.defaults.description",
-            "label": "t:sections.collection.settings.description"
-        },
-        {
-            "type": "range",
-            "id": "products_per_page",
-            "min": 3,
-            "max": 24,
-            "step": 3,
-            "default": 12,
-            "label": "t:sections.collection.settings.products_per_page"
         },
         {
             "type": "header",

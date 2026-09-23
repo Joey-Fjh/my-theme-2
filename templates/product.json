@@ -23,9 +23,7 @@
         },
         "variant_picker": {
           "type": "variant_picker",
-          "settings": {
-            "picker_type": "button"
-          }
+          "settings": {}
         },
         "quantity_selector": {
           "type": "quantity_selector",
@@ -33,9 +31,7 @@
         },
         "buy_buttons": {
           "type": "buy_buttons",
-          "settings": {
-            "show_dynamic_checkout": true
-          }
+          "settings": {}
         },
         "description": {
           "type": "description",

@@ -16,28 +16,14 @@
     >
         <div class="pt-10 pb-8">
             <div>
-                {%- liquid
-                    assign resolved_heading = blog.title
-                    if section.settings.header != blank
-                        assign resolved_heading = section.settings.header
-                    endif
-                    assign resolved_description = section.settings.description
-                    if resolved_description == blank
-                        assign resolved_description = 'blog.description_html' | t
-                    endif
-                -%}
-                <h1 class="heading-3xl">{{ resolved_heading }}</h1>
-                {%- render 'rte-compact-prose',
-                    content: resolved_description,
-                    content_class: 'body-xl'
-                -%}
+                <h1 class="heading-3xl">{{ blog.title }}</h1>
             </div>
         </div>
 
         <div class="relative w-full">
             {% render 'loading', overlay: true, size: 'large' %}
 
-            {% paginate blog.articles by section.settings.articles_per_page %}
+            {% paginate blog.articles by 12 %}
                 <div
                     class="blog-articles-grid grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
                 >
@@ -83,9 +69,10 @@
                                 {%- endif -%}
 
                                 {%- if article.url != blank -%}
+                                    {%- assign read_more_text = 'blog.read_more' | t -%}
                                     {%- render 'link',
                                         href: article.url,
-                                        text: section.settings.link_text,
+                                        text: read_more_text,
                                         variant: 'underline',
                                         class: 'body-xl'
                                     -%}
@@ -122,37 +109,10 @@
     },
     "settings": [
         {
-            "type": "inline_richtext",
-            "id": "header",
-            "default": "t:sections.blog.defaults.header",
-            "label": "t:sections.blog.settings.header"
-        },
-        {
-            "type": "richtext",
-            "id": "description",
-            "default": "t:sections.blog.defaults.description",
-            "label": "t:sections.blog.settings.description"
-        },
-        {
             "type": "color_scheme",
             "id": "color_scheme",
             "label": "t:sections.blog.settings.content_color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "range",
-            "id": "articles_per_page",
-            "min": 3,
-            "max": 24,
-            "step": 3,
-            "default": 12,
-            "label": "t:sections.blog.settings.articles_per_page"
-        },
-        {
-            "type": "text",
-            "id": "link_text",
-            "label": "t:sections.blog.settings.link_text",
-            "default": "t:sections.blog.defaults.link_text"
         },
         {
             "type": "header",

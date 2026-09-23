@@ -29,18 +29,12 @@
                         </ul>
                     </nav>
                 {%- endif -%}
-                {%- if section.settings.enable_country_selector -%}
-                    <div class="pc:hidden">
-                        {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
-                    </div>
-                {%- endif -%}
-                {%- if section.settings.enable_language_selector -%}
-                    <div class="pc:hidden">
-                        {%- render 'language-localization',
-                            localPosition: 'HeaderLanguageMobile'
-                        -%}
-                    </div>
-                {%- endif -%}
+                <div class="pc:hidden">
+                    {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
+                </div>
+                <div class="pc:hidden">
+                    {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
+                </div>
             </div>
 
             <div
@@ -128,17 +122,13 @@
                     </shopify-account>
                 {%- endif -%}
 
-                {%- if section.settings.enable_country_selector -%}
-                    <div class="max-pc:hidden">
-                        {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
-                    </div>
-                {%- endif -%}
+                <div class="max-pc:hidden">
+                    {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
+                </div>
 
-                {%- if section.settings.enable_language_selector -%}
-                    <div class="max-pc:hidden">
-                        {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
-                    </div>
-                {%- endif -%}
+                <div class="max-pc:hidden">
+                    {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
+                </div>
             </div>
         </div>
     </div>
@@ -268,28 +258,6 @@
             "id": "menu",
             "label": "t:labels.menu",
             "default": "main-menu"
-        },
-        {
-            "type": "header",
-            "content": "t:sections.header.content.localization_settings"
-        },
-        {
-            "type": "paragraph",
-            "content": "t:sections.header.content.localization_large_screens_only"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_country_selector",
-            "default": true,
-            "label": "t:sections.header.settings.country_region_selector",
-            "info": "t:sections.header.info.manage_countries_regions"
-        },
-        {
-            "type": "checkbox",
-            "id": "enable_language_selector",
-            "default": true,
-            "label": "t:sections.header.settings.language_selector",
-            "info": "t:sections.header.info.manage_languages"
         }
     ]
 }

@@ -44,7 +44,7 @@
 
     {%- if search.performed -%}
         <div class="layout container-page pb-10">
-            {%- paginate search.results by section.settings.search_per_page -%}
+            {%- paginate search.results by 12 -%}
                 {%- if search.results_count == 0 -%}
                     <p class="py-10 text-center body-lg">
                         {{ 'search.no_results_html' | t: terms: terms }}
@@ -94,15 +94,6 @@
             "id": "color_scheme",
             "label": "t:sections.search.settings.color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "range",
-            "id": "search_per_page",
-            "min": 3,
-            "max": 24,
-            "step": 3,
-            "default": 12,
-            "label": "t:sections.search.settings.search_per_page"
         },
         {
             "type": "header",

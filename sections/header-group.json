@@ -15,9 +15,7 @@
             "type": "header",
             "settings": {
                 "color_scheme": "scheme-1",
-                "menu": "main-menu",
-                "enable_country_selector": true,
-                "enable_language_selector": true
+                "menu": "main-menu"
             }
         }
     },

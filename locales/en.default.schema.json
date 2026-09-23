@@ -202,57 +202,31 @@
         "404": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "heading_line_1": "Heading line 1",
-                "heading_line_2": "Heading line 2",
-                "description": "Description",
-                "show_button": "Show button",
-                "button_text": "Button label",
-                "button_link": "Button link",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "heading_line_2": "Not Found",
-                "description_html": "<p>Explain that the page could not be found and guide customers back to shopping.</p>",
-                "button_text": "Back to Home"
             }
         },
         "article": {
             "settings": {
                 "content_color_scheme": "Content color scheme",
-                "image": "Image",
-                "image_alt_text": "Image alt text",
-                "heading": "Heading",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "image_alt": "About Us"
             }
         },
         "blog": {
             "settings": {
                 "content_color_scheme": "Content color scheme",
-                "header": "Header",
-                "description": "Description",
-                "articles_per_page": "Articles per page",
-                "link_text": "Link text",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "header": "Blog",
-                "description": "<p>Introduce your journal and the topics customers can explore.</p>",
-                "link_text": "Read more"
             }
         },
         "cart": {
@@ -268,35 +242,21 @@
         "collection": {
             "settings": {
                 "content_color_scheme": "Content color scheme",
-                "header": "Header",
-                "description": "Description",
-                "products_per_page": "Products per page",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "header": "Products",
-                "description": "<p>Describe the products and purpose of this collection.</p>"
             }
         },
         "collections": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "collections_per_page": "Collections per page",
                 "padding_top": "Padding top",
-                "padding_bottom": "Padding bottom",
-                "heading": "Heading",
-                "description": "Description"
+                "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "heading": "Collections",
-                "description": "Introduce the collections customers can browse on this page."
             }
         },
         "custom-section": {
@@ -321,14 +281,9 @@
             },
             "settings": {
                 "color_scheme": "Color scheme",
-                "section_width": "Section width",
                 "custom_liquid": "Custom liquid",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
-            },
-            "options": {
-                "fixed_width": "Fixed width",
-                "full_width": "Full width"
             },
             "presets": {
                 "custom_liquid": "Custom Liquid"
@@ -339,11 +294,7 @@
         },
         "footer": {
             "settings": {
-                "color_scheme": "Color scheme",
-                "enable_follow_on_shop_button": "Enable Follow on Shop button"
-            },
-            "content": {
-                "follow_on_shop": "Follow on Shop"
+                "color_scheme": "Color scheme"
             },
             "blocks": {
                 "link_column": "Link column"
@@ -360,39 +311,19 @@
             }
         },
         "header": {
-            "content": {
-                "localization_settings": "Public settings",
-                "localization_large_screens_only": "Only displayed on large screens"
-            },
             "settings": {
-                "color_scheme": "Color scheme",
-                "country_region_selector": "Country/region selector",
-                "language_selector": "Language selector"
-            },
-            "info": {
-                "manage_countries_regions": "[Manage countries/regions](/admin/settings/markets)",
-                "manage_languages": "[Manage languages](/admin/settings/languages)"
+                "color_scheme": "Color scheme"
             }
         },
         "main-page-contact": {
             "name": "Contact us",
             "settings": {
                 "color_scheme": "Color scheme",
-                "heading": "Heading",
-                "description": "Description",
-                "button_text": "Button label",
-                "success_message": "Success message",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "heading": "We're here to help",
-                "description": "<p>Tell customers how and when your team can help.</p>",
-                "button_text": "Send",
-                "success_message": "Thank you for your message. We will get back to you soon."
             }
         },
         "page": {
@@ -408,37 +339,18 @@
         "password": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "heading": "Heading",
-                "message": "Message",
-                "placeholder": "Email placeholder",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
             "content": {
                 "padding": "Padding"
-            },
-            "defaults": {
-                "heading": "Opening soon",
-                "message": "<p>Be the first to know about new collections and exclusive offers.</p>",
-                "placeholder": "Email"
             }
         },
         "product": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "desktop_media_width": "Desktop media width",
-                "media_aspect_ratio": "Media aspect ratio",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
-            },
-            "options": {
-                "portrait_3_4": "Portrait (3:4)",
-                "square_1_1": "Square (1:1)",
-                "dropdown": "Dropdown",
-                "pills": "Pills",
-                "circle": "Circle",
-                "square": "Square",
-                "none": "None"
             },
             "content": {
                 "padding": "Padding"
@@ -456,19 +368,9 @@
                 "collapsible_tab": "Collapsible tab"
             },
             "block_settings": {
-                "style": "Style",
-                "swatch_shape": "Swatch shape",
-                "low_stock_threshold": "Low stock threshold",
-                "display_stock_number": "Display stock number",
-                "show_dynamic_checkout_buttons": "Show dynamic checkout buttons",
                 "custom_liquid": "Custom liquid",
                 "heading": "Heading",
-                "text": "Text",
-                "open_tab_by_default": "Open tab by default"
-            },
-            "block_info": {
-                "the_low_stock_notice_displays_if_your_in": "The low stock notice displays if your inventory is equal to or lower than this number.",
-                "using_the_payment_methods_available_on_y": "Using the payment methods available on your store, customers see their preferred option, like PayPal or Apple Pay."
+                "text": "Text"
             },
             "blocks_defaults": {
                 "collapsible_tab_heading": "Collapsible tab",
@@ -478,7 +380,6 @@
         "search": {
             "settings": {
                 "color_scheme": "Color scheme",
-                "search_per_page": "Search per page",
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },

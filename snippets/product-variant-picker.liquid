@@ -1,9 +1,9 @@
 {% doc %}
     Renders product variant picker (Tailwind + Alpine.js).
-    Supports Schema-driven picker_type (dropdown / button) and swatch_shape (circle / square / none).
+    Uses button-style pills with circle swatches for color options.
 
     @param {product} product - Product object.
-    @param [block] - Block object for shopify_attributes and settings (picker_type, swatch_shape). Optional when rendered outside section blocks (e.g. quick-view).
+    @param [block] - Block object for shopify_attributes. Optional when rendered outside section blocks (e.g. quick-view).
     @param {string} [product_form_id] - Form ID to associate inputs with. Defaults to 'product-form-' + section_id.
     @param {string} [context] - Rendering context: 'product' (PDP) or 'featured' (home/quick-view). Default: 'featured'.
     @param {string} [section_id] - Section ID for Alpine sync and element IDs. Expected from caller.
@@ -62,9 +62,6 @@
     >
         {%- for option in product.options_with_values -%}
             {%- liquid
-                assign picker_type = block.settings.picker_type | default: 'button'
-                assign swatch_shape = block.settings.swatch_shape | default: 'circle'
-
                 assign is_color = false
                 assign downcase_option = option.name | downcase
                 if downcase_option contains 'color' or downcase_option contains 'colour'
@@ -74,186 +71,79 @@
                 assign option_name_escaped = option.name | escape
             -%}
 
-            {%- if picker_type == 'dropdown' -%}
-                {%- comment -%} ═══ Dropdown mode ═══ {%- endcomment -%}
-                <div class="flex flex-col">
-                    <label
-                        for="OptionDropdown-{{ section_id }}-{{ forloop.index0 }}"
+            <fieldset
+                class="flex flex-col"
+                role="radiogroup"
+                aria-label="{{ option.name | escape }}"
+            >
+                <legend>
+                    {{ option.name }}:
+                    <span
+                        data-option-name="{{ option_name_escaped }}"
+                        x-text="selectedOptions[$el.dataset.optionName]"
+                        class="ms-1 font-medium text-theme-text"
                     >
-                        {{ option.name }}:
-                        <span
-                            data-option-name="{{ option_name_escaped }}"
-                            x-text="selectedOptions[$el.dataset.optionName]"
-                            class="ms-1 font-medium text-theme-text"
-                        >
-                            {{- option.selected_value -}}
-                        </span>
-                    </label>
+                        {{- option.selected_value -}}
+                    </span>
+                </legend>
 
-                    <div class="relative mt-5 p-0.5">
-                        <select
-                            id="OptionDropdown-{{ section_id }}-{{ forloop.index0 }}"
-                            class="field-select"
-                            name="options[{{ option_name_escaped }}]"
-                            form="{{ product_form_id }}"
-                            data-option-name="{{ option_name_escaped }}"
-                            x-model="selectedOptions[$el.dataset.optionName]"
-                            @change="onVariantChange()"
-                        >
-                            {%- for value in option.values -%}
-                                {%- assign escaped_value = value | escape -%}
-                                <option
-                                    class="bg-theme-bg text-theme-text"
+                <div class="mt-5 flex flex-wrap gap-5 p-0.5">
+                    {%- for value in option.values -%}
+                        {%- liquid
+                            assign swatch_bg = null
+                            if value.swatch.image
+                                assign image_url = value.swatch.image | image_url: width: 50
+                                assign swatch_bg = 'url(' | append: image_url | append: ')'
+                            elsif value.swatch.color
+                                assign swatch_bg = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                            endif
+
+                            assign escaped_value = value | escape
+                            assign render_swatch = false
+                            if swatch_bg or is_color
+                                assign render_swatch = true
+                            endif
+                        -%}
+
+                        {%- capture input_id -%}VariantOption-{{ section_id }}-{{ option.position }}-{{ forloop.index0 }}{%- endcapture -%}
+
+                        {%- if render_swatch -%}
+                            {%- comment -%} ——— Swatch ——— {%- endcomment -%}
+                            <label class="relative cursor-pointer" for="{{ input_id }}">
+                                <input
+                                    type="radio"
+                                    id="{{ input_id }}"
+                                    class="peer sr-only"
+                                    name="{{ option_name_escaped }}"
                                     value="{{ escaped_value }}"
+                                    form="{{ product_form_id }}"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    x-model="selectedOptions[$el.dataset.optionName]"
+                                    @change="onVariantChange()"
+                                    data-option-value-id="{{ value.id }}"
+                                    {% if value == option.selected_value %}
+                                        checked
+                                    {% endif %}
+                                >
+                                <span
+                                    class="variant-picker__swatch variant-picker__swatch--circle{% unless value.available %} is-unavailable{% endunless %}"
                                     data-option-name="{{ option_name_escaped }}"
                                     data-option-value="{{ escaped_value }}"
-                                    data-sold-out-label="{{ 'products.product.sold_out' | t | escape }}"
-                                    data-option-value-id="{{ value.id }}"
-                                    {% unless value.available %}
-                                        disabled
-                                    {% endunless %}
-                                    :disabled="!isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)"
-                                    x-text="isValueAvailable($el.dataset.optionName, $el.dataset.optionValue) ? $el.dataset.optionValue : ($el.dataset.optionValue + ' — ' + $el.dataset.soldOutLabel)"
-                                >
-                                    {%- if value.available -%}
-                                        {{- value -}}
-                                    {%- else -%}
-                                        {{- value }} — {{ 'products.product.sold_out' | t }}
-                                    {%- endif -%}
-                                </option>
-                            {%- endfor -%}
-                        </select>
-                        <span
-                            class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-theme-text/60"
-                            aria-hidden="true"
-                        >
-                            {%- render 'icons', icon: 'icon-chevron-down' -%}
-                        </span>
-                    </div>
-                </div>
-
-            {%- else -%}
-                {%- comment -%} ═══ Button mode (pills + swatches) ═══ {%- endcomment -%}
-                <fieldset
-                    class="flex flex-col"
-                    role="radiogroup"
-                    aria-label="{{ option.name | escape }}"
-                >
-                    <legend>
-                        {{ option.name }}:
-                        <span
-                            data-option-name="{{ option_name_escaped }}"
-                            x-text="selectedOptions[$el.dataset.optionName]"
-                            class="ms-1 font-medium text-theme-text"
-                        >
-                            {{- option.selected_value -}}
-                        </span>
-                    </legend>
-
-                    <div class="mt-5 flex flex-wrap gap-5 p-0.5">
-                        {%- for value in option.values -%}
-                            {%- liquid
-                                assign swatch_bg = null
-                                if value.swatch.image
-                                    assign image_url = value.swatch.image | image_url: width: 50
-                                    assign swatch_bg = 'url(' | append: image_url | append: ')'
-                                elsif value.swatch.color
-                                    assign swatch_bg = 'rgb(' | append: value.swatch.color.rgb | append: ')'
-                                endif
-
-                                assign escaped_value = value | escape
-                                assign render_swatch = false
-                                if swatch_bg or is_color
-                                    if swatch_shape != 'none'
-                                        assign render_swatch = true
-                                    endif
-                                endif
-                            -%}
-
-                            {%- capture input_id -%}VariantOption-{{ section_id }}-{{ option.position }}-{{ forloop.index0 }}{%- endcapture -%}
-
-                            {%- if render_swatch -%}
-                                {%- comment -%} ——— Swatch ——— {%- endcomment -%}
-                                <label class="relative cursor-pointer" for="{{ input_id }}">
-                                    <input
-                                        type="radio"
-                                        id="{{ input_id }}"
-                                        class="peer sr-only"
-                                        name="{{ option_name_escaped }}"
-                                        value="{{ escaped_value }}"
-                                        form="{{ product_form_id }}"
-                                        data-option-name="{{ option_name_escaped }}"
-                                        x-model="selectedOptions[$el.dataset.optionName]"
-                                        @change="onVariantChange()"
-                                        data-option-value-id="{{ value.id }}"
-                                        {% if value == option.selected_value %}
-                                            checked
-                                        {% endif %}
-                                    >
+                                    :class="
+                                        {
+                                            'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
+                                            'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
+                                        }
+                                    "
+                                    {%- if swatch_bg %}
+                                        style="background: {{ swatch_bg }}; background-size: cover;"
+                                    {%- elsif is_color %}
+                                        style="background-color: {{ value | handle }};"
+                                    {%- endif %}
+                                ></span>
+                                <span class="sr-only">
+                                    {{ escaped_value }}
                                     <span
-                                        class="variant-picker__swatch variant-picker__swatch--{{ swatch_shape }}{% unless value.available %} is-unavailable{% endunless %}"
-                                        data-option-name="{{ option_name_escaped }}"
-                                        data-option-value="{{ escaped_value }}"
-                                        :class="
-                                            {
-                                                'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
-                                                'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
-                                            }
-                                        "
-                                        {%- if swatch_bg %}
-                                            style="background: {{ swatch_bg }}; background-size: cover;"
-                                        {%- elsif is_color %}
-                                            style="background-color: {{ value | handle }};"
-                                        {%- endif %}
-                                    ></span>
-                                    <span class="sr-only">
-                                        {{ escaped_value }}
-                                        <span
-                                            data-option-name="{{ option_name_escaped }}"
-                                            data-option-value="{{ escaped_value }}"
-                                            {% if value.available %}
-                                                hidden
-                                            {% endif %}
-                                            :hidden="isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)"
-                                        >
-                                            - {{ 'products.product.sold_out' | t }}
-                                        </span>
-                                    </span>
-                                </label>
-
-                            {%- else -%}
-                                {%- comment -%} ——— Pill ——— {%- endcomment -%}
-                                <label class="relative cursor-pointer" for="{{ input_id }}">
-                                    <input
-                                        type="radio"
-                                        id="{{ input_id }}"
-                                        class="peer sr-only"
-                                        name="{{ option_name_escaped }}"
-                                        value="{{ escaped_value }}"
-                                        form="{{ product_form_id }}"
-                                        data-option-name="{{ option_name_escaped }}"
-                                        x-model="selectedOptions[$el.dataset.optionName]"
-                                        @change="onVariantChange()"
-                                        data-option-value-id="{{ value.id }}"
-                                        {% if value == option.selected_value %}
-                                            checked
-                                        {% endif %}
-                                    >
-                                    <span
-                                        class="variant-picker__pill{% unless value.available %} is-unavailable{% endunless %}"
-                                        data-option-name="{{ option_name_escaped }}"
-                                        data-option-value="{{ escaped_value }}"
-                                        :class="
-                                            {
-                                                'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
-                                                'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
-                                            }
-                                        "
-                                    >
-                                        {{ value }}
-                                    </span>
-                                    <span
-                                        class="sr-only"
                                         data-option-name="{{ option_name_escaped }}"
                                         data-option-value="{{ escaped_value }}"
                                         {% if value.available %}
@@ -261,14 +151,58 @@
                                         {% endif %}
                                         :hidden="isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)"
                                     >
-                                        {{- 'products.product.sold_out' | t -}}
+                                        - {{ 'products.product.sold_out' | t }}
                                     </span>
-                                </label>
-                            {%- endif -%}
-                        {%- endfor -%}
-                    </div>
-                </fieldset>
-            {%- endif -%}
+                                </span>
+                            </label>
+
+                        {%- else -%}
+                            {%- comment -%} ——— Pill ——— {%- endcomment -%}
+                            <label class="relative cursor-pointer" for="{{ input_id }}">
+                                <input
+                                    type="radio"
+                                    id="{{ input_id }}"
+                                    class="peer sr-only"
+                                    name="{{ option_name_escaped }}"
+                                    value="{{ escaped_value }}"
+                                    form="{{ product_form_id }}"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    x-model="selectedOptions[$el.dataset.optionName]"
+                                    @change="onVariantChange()"
+                                    data-option-value-id="{{ value.id }}"
+                                    {% if value == option.selected_value %}
+                                        checked
+                                    {% endif %}
+                                >
+                                <span
+                                    class="variant-picker__pill{% unless value.available %} is-unavailable{% endunless %}"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    data-option-value="{{ escaped_value }}"
+                                    :class="
+                                        {
+                                            'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
+                                            'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
+                                        }
+                                    "
+                                >
+                                    {{ value }}
+                                </span>
+                                <span
+                                    class="sr-only"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    data-option-value="{{ escaped_value }}"
+                                    {% if value.available %}
+                                        hidden
+                                    {% endif %}
+                                    :hidden="isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)"
+                                >
+                                    {{- 'products.product.sold_out' | t -}}
+                                </span>
+                            </label>
+                        {%- endif -%}
+                    {%- endfor -%}
+                </div>
+            </fieldset>
         {%- endfor -%}
     </div>
 {%- endunless -%}
@@ -323,10 +257,6 @@
 
     .variant-picker__swatch--circle {
         border-radius: 9999px;
-    }
-
-    .variant-picker__swatch--square {
-        border-radius: 0.125rem;
     }
 
     .variant-picker__pill {

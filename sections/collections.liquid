@@ -6,27 +6,16 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    {%- liquid
-        assign collections_heading = section.settings.heading
-        assign collections_description = section.settings.description
-    -%}
     <div class="layout container-page">
         <div class="relative mb-8 pt-14 text-center pc:mb-10 pc:pt-25">
             <div class="mx-auto flex flex-col gap-3 pc:gap-6">
-                {%- if collections_heading != blank -%}
-                    <h1 class="heading-2xl">
-                        {{ collections_heading }}
-                    </h1>
-                {%- endif -%}
-                {%- if collections_description != blank -%}
-                    <p class="body-xl">
-                        {{ collections_description }}
-                    </p>
-                {%- endif -%}
+                <h1 class="heading-2xl">
+                    {{ 'collections.list_heading' | t }}
+                </h1>
             </div>
         </div>
 
-        {%- paginate collections by section.settings.collections_per_page -%}
+        {%- paginate collections by 12 -%}
             <div>
                 {% comment %} Collection Grid {% endcomment %}
                 <div
@@ -109,27 +98,6 @@
             "id": "color_scheme",
             "label": "t:sections.collections.settings.color_scheme",
             "default": "scheme-2"
-        },
-        {
-            "type": "inline_richtext",
-            "id": "heading",
-            "label": "t:sections.collections.settings.heading",
-            "default": "t:sections.collections.defaults.heading"
-        },
-        {
-            "type": "inline_richtext",
-            "id": "description",
-            "label": "t:sections.collections.settings.description",
-            "default": "t:sections.collections.defaults.description"
-        },
-        {
-            "type": "range",
-            "id": "collections_per_page",
-            "min": 4,
-            "max": 24,
-            "step": 4,
-            "default": 12,
-            "label": "t:sections.collections.settings.collections_per_page"
         },
         {
             "type": "header",

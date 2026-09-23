@@ -14,7 +14,6 @@
       "type": "custom-liquid",
       "settings": {
         "color_scheme": "scheme-2",
-        "section_width": "page",
         "padding_top": 32,
         "padding_bottom": 32
       }

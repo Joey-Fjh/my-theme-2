@@ -13,7 +13,7 @@
     @param [quantity_block] - Optional quantity selector block rendered in the purchase row
     @param {string} [context] - Rendering context: 'product' or 'featured' (default: 'featured')
     @param {boolean} [show_buy_now] - Show "Buy it now" button; when true with context 'product', Add to Cart becomes secondary (default: false)
-    @param {boolean} [show_dynamic_checkout] - Show Shopify dynamic checkout buttons; falls back to block.settings.show_dynamic_checkout (default: false)
+    @param {boolean} [show_dynamic_checkout] - Show Shopify dynamic checkout buttons (default: true)
     @param {string} [success_message] - Success message on add (default: localized 'Added to cart!')
     @param [request_sections] - Section IDs to refresh via SRA after add; false to skip (default: standard SRA)
     @param {string} [quantity_wrapper_class] - Escape hatch: forwarded to quantity-selector wrapper_class.
@@ -31,10 +31,7 @@
     {%- assign success_message = 'products.product.added_to_cart' | t -%}
 {%- endif -%}
 {%- assign show_buy_now = show_buy_now | default: false -%}
-{%- assign show_dynamic_checkout = show_dynamic_checkout
-    | default: block.settings.show_dynamic_checkout
-    | default: false
--%}
+{%- assign show_dynamic_checkout = show_dynamic_checkout | default: true -%}
 {%- assign show_quantity_control = false -%}
 {%- if quantity_block != blank or show_quantity == true or show_quantity == 'true' -%}
     {%- assign show_quantity_control = true -%}
