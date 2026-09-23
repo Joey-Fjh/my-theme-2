@@ -63,8 +63,7 @@
                                             alt: '',
                                             width: 120,
                                             height: 120,
-                                            fit: 'contain',
-                                            motion_reveal: false
+                                            fit: 'contain'
                                         %}
                                     {%- endif -%}
                                 </div>
@@ -260,7 +259,7 @@
                                 <div class="flex items-center justify-end self-end py-1 pc:col-span-1">
                                     <a
                                         href="{{ item.url_to_remove }}"
-                                        class="inline-flex items-center justify-center text-current opacity-50 transition-opacity hover:opacity-100"
+                                        class="inline-flex items-center justify-center text-current opacity-50 hover:opacity-100"
                                         aria-label="{{ 'accessibility.remove_item' | t: item: item.product.title | escape }}"
                                         data-item-key="{{ item.key | escape }}"
                                         data-section-id="{{ section.id }}"

@@ -49,7 +49,7 @@ Do not bridge variables that are only consumed inside CSS layer rules. Examples 
 | `tailwind.components.css` | reusable composite APIs with 2+ unrelated consumers | section-root scoped overrides |
 | `tailwind.snippets.css` | retired import stub only (no class rules) | new component CSS; do not add selectors here |
 | `tailwind.utilities.css` | cross-cutting placement/surface/z-index utilities | business BEM styling |
-| `tailwind.animates.css` | motion capabilities, reveal states, keyframes, reduced-motion kill switches | trigger logic |
+| `tailwind.animates.css` | motion capabilities, keyframes, reduced-motion rules | trigger logic |
 | section/block/snippet `{% stylesheet %}` | primary home for component-owned CSS scoped to one render tree (plain CSS only) | cross-render-tree selectors, Tailwind directives, shared vocabulary |
 
 ## Promotion Thresholds
@@ -139,7 +139,7 @@ Branded accelerated checkout buttons render in closed shadow DOM; only supported
 Theme setting / token source
   -> css-variables.liquid (`--motion-duration-*`, `--motion-ease-*`)
   -> CSS consumers through direct `var()` usage
-  -> tailwind.animates.css owns reveal/keyframe capabilities
+  -> tailwind.animates.css owns keyframe and animation capabilities
   -> Alpine component factories registered through the adapter own trigger state and teardown
 ```
 
@@ -180,7 +180,7 @@ Three Shopify platform constraints govern `{% stylesheet %}` and `{% javascript 
 4. Is this reused by 2+ unrelated consumers? Use `tailwind.components.css`.
 5. Is this owned by one section, block, or snippet render tree? Use that file's `{% stylesheet %}` block (plain CSS). Classes may be used only in that file or files it directly renders.
 6. Is this cross-cutting layout/surface/z-index? Use `tailwind.utilities.css`.
-7. Is this motion capability/reveal/keyframe CSS? Use `tailwind.animates.css`.
+7. Is this motion capability/keyframe CSS? Use `tailwind.animates.css`.
 8. Must it survive subsetting when the defining Liquid file is absent? Keep it in the Tailwind build (steps 2–4, 6, or 7). Do not place it in a `{% stylesheet %}` block outside its render tree.
 
 Never edit `vendor-*.min.css` manually. CSS source changes require `npm.cmd run build:tw`; never manually edit `assets/tailwind.output.css`.

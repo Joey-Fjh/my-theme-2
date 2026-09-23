@@ -63,11 +63,6 @@ const CSS_GLOBS = ['tailwind/**/*.css', 'assets/*.css'];
 
 const { extractBlocks } = require('./lint-embedded-compat.cjs');
 
-const MOTION_TARGET_SELECTOR_RE = /\[data-motion-reveal(?:=['"][^'"]*['"])?\]/;
-const MOTION_RUNTIME_STATE_SELECTOR_RE =
-    /\[data-motion-(?:state|resetting|staging|critical-runtime)(?:=|]|$)/;
-const MOTION_HIDING_DECL_RE =
-    /\b(?:opacity\s*:\s*0\b|visibility\s*:\s*hidden\b|display\s*:\s*none\b)/;
 const INVALID_RGB_ALPHA_RE = /rgba?\(\s*var\(--color-[a-z0-9-]+\)\s*\//i;
 const INVALID_RGB_ALPHA_MESSAGE =
     'Scheme color variables are comma-separated RGB triplets. ' +
@@ -318,32 +313,6 @@ function collectInvalidRgbAlphaFailures(cssText, file, failures, options = {}) {
     }
 }
 
-function collectMotionActivationFailures(cssText, file, failures, options = {}) {
-    const { baseOffset = 0, lineText = cssText } = options;
-
-    for (const rule of splitCssRules(cssText)) {
-        if (!MOTION_TARGET_SELECTOR_RE.test(rule.selector)) {
-            continue;
-        }
-
-        if (!MOTION_HIDING_DECL_RE.test(rule.decls)) {
-            continue;
-        }
-
-        if (MOTION_RUNTIME_STATE_SELECTOR_RE.test(rule.selector)) {
-            continue;
-        }
-
-        failures.push({
-            file,
-            line: lineAt(lineText, baseOffset + rule.offset),
-            message:
-                'Motion targets must not be hidden without a runtime state attribute in the selector. ' +
-                'Require [data-motion-state], [data-motion-resetting], [data-motion-staging], or [data-motion-critical-runtime].',
-        });
-    }
-}
-
 async function runThemeLint(root) {
     const failures = [];
     const files = await fg(LIQUID_GLOBS, { cwd: root, dot: false, onlyFiles: true });
@@ -370,10 +339,6 @@ async function runThemeLint(root) {
                 baseOffset: block.offset,
                 lineText: text,
             });
-            collectMotionActivationFailures(block.code, file, failures, {
-                baseOffset: block.offset,
-                lineText: text,
-            });
         }
     }
 
@@ -382,7 +347,6 @@ async function runThemeLint(root) {
     for (const file of cssFiles.map(formatPath)) {
         const text = await fs.readFile(path.join(root, file), 'utf8');
         collectInvalidRgbAlphaFailures(text, file, failures);
-        collectMotionActivationFailures(text, file, failures);
     }
 
     return failures;
@@ -419,7 +383,6 @@ module.exports = {
     collectProtectedRuntimeNameFailures,
     collectBundledAssetTagFailures,
     collectTabFailures,
-    collectMotionActivationFailures,
     collectInvalidRgbAlphaFailures,
     splitCssRules,
     stripCssComments,

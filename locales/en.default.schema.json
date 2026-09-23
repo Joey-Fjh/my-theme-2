@@ -128,10 +128,6 @@
             "image": "Image",
             "image_ratio": "Image ratio"
         },
-        "animations": {
-            "name": "Animations",
-            "motion_enabled": "Enable motion"
-        },
         "focus": {
             "name": "Focus",
             "ring_width": "Focus ring width",

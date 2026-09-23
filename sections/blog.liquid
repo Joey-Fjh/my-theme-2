@@ -14,14 +14,8 @@
     <div
         class="layout container-page color-{{ section.settings.color_scheme }} surface-section"
     >
-        <div
-            class="pt-10 pb-8"
-            x-data="motionRevealSection()"
-            data-module-id="motion-reveal-section"
-            data-module-lazy
-            data-motion-section
-        >
-            <div data-motion-reveal data-motion-critical>
+        <div class="pt-10 pb-8">
+            <div>
                 {%- liquid
                     assign resolved_heading = blog.title
                     if section.settings.header != blank
@@ -46,15 +40,10 @@
             {% paginate blog.articles by section.settings.articles_per_page %}
                 <div
                     class="blog-articles-grid grid grid-cols-1 gap-8 pb-10 pc:grid-cols-3"
-                    x-data="motionRevealSection()"
-                    data-module-id="motion-reveal-section"
-                    data-module-lazy
-                    data-motion-section
                 >
                     {% for article in blog.articles %}
                         <article
                             class="group"
-                            data-motion-reveal
                         >
                             <div class="mb-4 block aspect-4/3 overflow-hidden rounded-sm">
                                 {%- capture sizes -%}
@@ -73,8 +62,7 @@
                                     alt: article.title,
                                     width: article.image.width,
                                     sizes: sizes,
-                                    widths: widths,
-                                    motion_reveal: false
+                                    widths: widths
                                 -%}
                             </div>
 

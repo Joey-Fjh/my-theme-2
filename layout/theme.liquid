@@ -45,8 +45,6 @@
                     "cart-page": "{{ 'cart-page.js' | asset_url }}",
                     "dropdown": "{{ 'dropdown.js' | asset_url }}",
                     "localization-switcher": "{{ 'localization-switcher.js' | asset_url }}",
-                    "motion-reveal-batch": "{{ 'motion-reveal-batch.js' | asset_url }}",
-                    "motion-reveal-section": "{{ 'motion-reveal-section.js' | asset_url }}",
                     "product-gallery": "{{ 'product-gallery.js' | asset_url }}",
                     "quantity-selector": "{{ 'quantity-selector.js' | asset_url }}",
                     "section-pagination": "{{ 'section-pagination.js' | asset_url }}",
@@ -77,9 +75,6 @@
         data-cart-error-server-error="{{ 'cart.errors.server_error' | t | escape }}"
         data-cart-error-timeout="{{ 'cart.errors.timeout' | t | escape }}"
         data-cart-error-network-error="{{ 'cart.errors.network_error' | t | escape }}"
-        {% if settings.motion_enabled == false %}
-            data-motion-enabled="false"
-        {% endif %}
     >
         <a class="skip-link" href="#MainContent">
             {{- 'accessibility.skip_to_content' | t -}}

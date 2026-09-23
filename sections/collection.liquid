@@ -12,15 +12,7 @@
     data-module-lazy
 >
     <div class="layout container-page pb-8">
-        <div
-            class="flex flex-col gap-4"
-            x-data="motionRevealSection()"
-            data-module-id="motion-reveal-section"
-            data-module-lazy
-            data-motion-section
-            data-motion-reveal
-            data-motion-critical
-        >
+        <div class="flex flex-col gap-4">
             {%- liquid
                 assign resolved_heading = collection.title
                 if section.settings.header != blank
@@ -49,15 +41,9 @@
 
                 {%- assign first_row_count = 2 -%}
                 {% paginate collection.products by section.settings.products_per_page %}
-                    <div
-                        class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3"
-                        x-data="motionRevealSection()"
-                        data-module-id="motion-reveal-section"
-                        data-module-lazy
-                        data-motion-section
-                    >
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-8 pb-10 pc:grid-cols-3">
                         {%- for product in collection.products -%}
-                            <div class="group" data-motion-reveal>
+                            <div class="group">
                                 {%- liquid
                                     assign card_aspect_ratio = blank
                                     case settings.product_card_image_ratio
@@ -80,7 +66,6 @@
                                         alt: '',
                                         sizes: '(min-width: 48rem) 25vw, 50vw',
                                         loading: card_loading,
-                                        motion_reveal: false,
                                         aspect_ratio: card_aspect_ratio
                                     -%}
                                     <h2 class="heading-h6">{{ product.title }}</h2>

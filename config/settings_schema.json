@@ -743,17 +743,6 @@
         ]
     },
     {
-        "name": "t:config.animations.name",
-        "settings": [
-            {
-                "type": "checkbox",
-                "id": "motion_enabled",
-                "label": "t:config.animations.motion_enabled",
-                "default": true
-            }
-        ]
-    },
-    {
         "name": "t:config.focus.name",
         "settings": [
             {

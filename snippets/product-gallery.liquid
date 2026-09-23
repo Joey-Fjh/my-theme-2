@@ -2,7 +2,6 @@
     Minimal product media gallery — renders kept `product-media` items directly.
 {% endcomment %}
 
-{%- assign gallery_motion_reveal = motion_reveal | default: true, allow_false: true -%}
 {%- assign gallery_items = media -%}
 {%- if gallery_items == blank -%}
     {%- assign gallery_items = images -%}
@@ -33,8 +32,7 @@
                 aspect_ratio: aspect_ratio,
                 sizes: '(min-width: 48rem) 50vw, 100vw',
                 loading: media_loading,
-                fetchpriority: media_fetchpriority,
-                motion_reveal: gallery_motion_reveal
+                fetchpriority: media_fetchpriority
             -%}
         {%- endfor -%}
     </div>

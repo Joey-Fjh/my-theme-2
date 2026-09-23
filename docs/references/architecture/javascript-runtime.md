@@ -36,8 +36,8 @@ Component roots declare a module identifier and an Alpine factory name:
 
 ```html
 <footer
-    x-data="motionRevealSection()"
-    data-module-id="motion-reveal-section"
+    x-data="accordion"
+    data-module-id="accordion"
     data-module-lazy
 ></footer>
 ```
@@ -182,14 +182,12 @@ Inspect the store module for configure/init APIs instead of copying historical e
 
 ## Motion Runtime Boundary
 
-Ordinary motion uses the public `data-motion-*` protocol, the native adapter registered from `motion-reveal-section.js` as `motionRevealSection()`, and CSS rules in `tailwind/tailwind.animates.css` that activate only after runtime state attributes appear.
-
 The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary motion work. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
 
 ## CSS / Alpine Boundary
 
 - Alpine owns state and trigger behaviour through adapter-registered factories and stores.
-- `tailwind.animates.css` owns animation capability and reveal CSS.
+- `tailwind.animates.css` owns animation capability CSS.
 - GSAP is optional narrative choreography only and must not share `opacity` or `transform` ownership with Alpine/CSS on the same element.
 
 ## File Ownership

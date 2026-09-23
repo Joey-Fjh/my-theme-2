@@ -10,8 +10,8 @@
 
 ## Project boundary
 
-This skill is agent documentation reference only. It does not authorize vendoring or loading the GSAP runtime, and it does not add storefront payload. Project motion policy in `docs/references/architecture/motion-architecture.md` takes precedence: ordinary section reveal stays on the native `data-motion-*` plus Intersection Observer path; use this skill only after that reference classifies work as explicit complex choreography.
+This skill is agent documentation reference only. It does not authorize vendoring or loading the GSAP runtime, and it does not add storefront payload. Project motion policy in `docs/references/architecture/motion-architecture.md` takes precedence: the mother template ships no section reveal, and derived themes define ordinary reveal under that policy; use this skill only after that reference classifies work as explicit complex choreography.
 
 ## When to use (project routing)
 
-Read this skill when sequencing or orchestrating multi-step GSAP animation timelines for work already classified as explicit complex choreography. Do not reach for it for ordinary section reveal or simple one-off transitions covered by the native motion protocol.
+Read this skill when sequencing or orchestrating multi-step GSAP animation timelines for work already classified as explicit complex choreography. Do not reach for it for ordinary section reveal or simple one-off transitions.

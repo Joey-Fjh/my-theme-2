@@ -43,32 +43,6 @@ Search page input — body-xl tier with mobile zoom floor
 }
 
 /* =========================================================
-Link With Icon Motion
-
-Composition class for links that render child icons through snippets/icons.liquid.
-The base underline primitive stays in elements.css; child icon choreography belongs here.
-========================================================= */
-@layer components {
-    .link-with-icon-motion {
-        .icons {
-            transition:
-                transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-                opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
-        }
-
-        &:hover .icons,
-        &:focus-visible .icons {
-            transform: translateX(0.2rem);
-        }
-
-        [dir='rtl'] &:hover .icons,
-        [dir='rtl'] &:focus-visible .icons {
-            transform: translateX(-0.2rem);
-        }
-    }
-}
-
-/* =========================================================
 Localization Switcher
 ========================================================= */
 @layer components {
@@ -142,13 +116,6 @@ Dropdown
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-
-            transition: visibility 0s linear var(--motion-duration-fast);
-        }
-
-        /* Panel-motion variants own open keyframe animation — avoid opacity/transform transitions */
-        .dropdown-panel.panel-motion {
-            transition: visibility 0s linear var(--motion-duration-fast);
         }
 
         .dropdown-open {
@@ -158,7 +125,6 @@ Dropdown
                 opacity: 1;
                 visibility: visible;
                 pointer-events: auto;
-                transition-delay: 0s;
             }
         }
 
@@ -166,10 +132,6 @@ Dropdown
             display: inline-block;
             align-items: center;
             justify-content: center;
-
-            transition:
-                transform var(--motion-duration-fast) var(--motion-ease-enter),
-                opacity var(--motion-duration-fast) var(--motion-ease-default);
         }
 
         .dropdown-icon--down {
@@ -191,181 +153,6 @@ Dropdown
 }
 
 /* =========================================================
-Panel motion — shared dropdown / menu / disclosure variants
-
-Policy: stateful UI micro-motion (button/icon interaction boundary).
-Governed by prefers-reduced-motion only. Independent from scroll/section
-reveal and content/media reveal systems.
-
-Contract:
-- Pair `.panel-motion` + a variant on the panel element.
-- OPEN motion uses keyframe animations on state selectors (not transition from
-  closed styles) so panels are visible when mounting via details[open] or x-show.
-- Child stagger uses keyed item animations on the same open selectors.
-
-Variants:
-- scale — header primary dropdown
-- flyout — header nested horizontal submenu
-- layered — header super / mega menu
-- compact — sort, localization, horizontal filter list panels
-- disclosure — password header and other small details expansions
-- popover — rich attached panels (predictive search)
-========================================================= */
-@layer components {
-    .panel-motion {
-        transform-origin: top center;
-        transition:
-            box-shadow var(--motion-duration-fast) var(--motion-ease-default),
-            border-color var(--motion-duration-fast) var(--motion-ease-default);
-    }
-
-    /* --- Scale from trigger (global default) --- */
-    .panel-motion-scale {
-        --panel-motion-dur: var(--panel-motion-duration-scale);
-    }
-
-    details[open] > .panel-motion-scale,
-    [aria-expanded='true'] > .panel-motion-scale,
-    [data-dropdown][open] > .panel-motion-scale,
-    .localization-toggle[aria-expanded='true'] ~ .panel-motion-scale {
-        animation: panel-motion-scale-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
-    }
-
-    /* --- Compact snap (localization) --- */
-    .panel-motion-compact {
-        --panel-motion-dur: var(--panel-motion-duration-compact);
-        --panel-motion-stagger-step: var(--panel-motion-stagger-step-compact);
-    }
-
-    .localization-menu.panel-motion-compact {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-    }
-
-    details[open] > .panel-motion-compact,
-    [aria-expanded='true'] > .panel-motion-compact,
-    [data-dropdown][open] > .panel-motion-compact,
-    .localization-toggle[aria-expanded='true'] ~ .panel-motion-compact {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        animation: panel-motion-compact-in var(--panel-motion-dur) var(--panel-motion-ease-enter)
-            both;
-    }
-
-    /* --- Directional flyout (nested submenu — inline axis) --- */
-    .panel-motion-flyout {
-        --panel-motion-dur: var(--panel-motion-duration-flyout);
-        transform-origin: top inline-start;
-    }
-
-    [dir='rtl'] .panel-motion-flyout {
-        transform-origin: top inline-end;
-    }
-
-    details[open] > .panel-motion-flyout[class*='inset-s-full'],
-    [data-dropdown][open] > .panel-motion-flyout[class*='inset-s-full'] {
-        animation: panel-motion-flyout-in var(--panel-motion-dur) var(--panel-motion-ease-enter)
-            both;
-    }
-
-    [dir='rtl'] details[open] > .panel-motion-flyout[class*='inset-s-full'],
-    [dir='rtl'] [data-dropdown][open] > .panel-motion-flyout[class*='inset-s-full'] {
-        animation-name: panel-motion-flyout-in-rtl;
-    }
-
-    details[open] > .panel-motion-flyout:not([class*='inset-s-full']),
-    [aria-expanded='true'] > .panel-motion-flyout:not([class*='inset-s-full']),
-    [data-dropdown][open] > .panel-motion-flyout:not([class*='inset-s-full']) {
-        animation: panel-motion-flyout-down-in var(--panel-motion-dur)
-            var(--panel-motion-ease-enter) both;
-        transform-origin: top center;
-    }
-
-    /* --- Disclosure (details-based panels, e.g. password access) --- */
-
-    /* Unbounded lists (e.g. pickup store list) — open state must not clip after enter. */
-
-    /* --- Child item stagger (open-state keyframe animations) --- */
-    details[open]
-        > :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item),
-    [data-dropdown][open] > :is(.panel-motion-scale, .panel-motion-compact) > [role='option'],
-    .localization-toggle[aria-expanded='true']
-        ~ :is(.panel-motion-scale, .panel-motion-compact)
-        > .localization-item {
-        animation: panel-motion-item-in var(--panel-motion-duration-item)
-            var(--panel-motion-ease-enter) both;
-    }
-
-    details[open] > .panel-motion-flyout > li,
-    [data-dropdown][open] > .panel-motion-flyout > li {
-        animation: panel-motion-item-flyout-in var(--panel-motion-duration-item)
-            var(--panel-motion-ease-enter) both;
-    }
-
-    [dir='rtl'] details[open] > .panel-motion-flyout > li,
-    [dir='rtl'] [data-dropdown][open] > .panel-motion-flyout > li {
-        animation-name: panel-motion-item-flyout-in-rtl;
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(1) {
-        animation-delay: calc(var(--panel-motion-content-delay, 70ms) + 0ms);
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(2) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms)
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(3) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 2
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(4) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 3
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(5) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 4
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(6) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 5
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(7) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 6
-        );
-    }
-
-    :is(.panel-motion-scale, .panel-motion-compact)
-        > :is(li, [role='option'], .localization-item):nth-child(8) {
-        animation-delay: calc(
-            var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 7
-        );
-    }
-}
-
-/* =========================================================
 Accordion
 
 CSS promoted from snippets.css (Phase 5B layer promotion).
@@ -380,9 +167,6 @@ Consumers: sections/promise-section, sections/cart, snippets/filters-groups
     .accordion__title {
         @apply text-start;
         opacity: 0.7;
-        transition:
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     }
 
     .accordion__title--active {
@@ -396,7 +180,6 @@ Consumers: sections/promise-section, sections/cart, snippets/filters-groups
     .accordion__icon {
         @apply inline-flex shrink-0 items-center justify-center;
         --_accordion-rotate: rotate(180deg);
-        transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     }
 
     .accordion__icon--plus {
@@ -411,9 +194,6 @@ Consumers: sections/promise-section, sections/cart, snippets/filters-groups
         display: grid;
         grid-template-rows: 0fr;
         opacity: 0;
-        transition:
-            grid-template-rows var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     }
 
     .accordion__panel.is-active {
@@ -595,7 +375,7 @@ Used to style backend rich-text HTML output:
     }
 
     .rte a {
-        @apply underline underline-offset-4 transition-opacity hover:opacity-80;
+        @apply underline underline-offset-4 hover:opacity-80;
     }
 
     .rte blockquote {
@@ -766,12 +546,6 @@ Consumed via snippets/quantity-selector.liquid and inline in cart sections.
         @apply control-icon;
 
         border: 1px solid transparent;
-        transition:
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 
         @media (hover: hover) and (pointer: fine) {
             &:hover:not(:disabled):not([aria-disabled='true']) {
@@ -856,7 +630,7 @@ Not included: pickup-availability-inline__retry-action (pickup owner delta in sn
     }
 
     .buy-buttons__label {
-        @apply inline-block transition-opacity;
+        @apply inline-block;
     }
 
     .buy-buttons__label.is-loading {
@@ -896,11 +670,6 @@ Consumed via snippets/pagination.liquid.
         font-family: inherit;
         font-size: var(--pagination-font-size);
         border-radius: var(--pagination-radius);
-        transition:
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 
         &:focus-visible {
             outline: var(--focus-ring-width) solid
@@ -910,12 +679,6 @@ Consumed via snippets/pagination.liquid.
 
         &:active:not(.pagination__button--disabled) {
             transform: scale(0.98);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            &:active:not(.pagination__button--disabled) {
-                transform: none;
-            }
         }
     }
 
@@ -966,11 +729,6 @@ Consumed via snippets/pagination.liquid.
         font-family: inherit;
         font-size: var(--pagination-font-size);
         border-radius: var(--pagination-radius);
-        transition:
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-            transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 
         &:focus-visible {
             outline: var(--focus-ring-width) solid
@@ -982,12 +740,6 @@ Consumed via snippets/pagination.liquid.
     a.pagination__page {
         &:active {
             transform: scale(0.98);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            &:active {
-                transform: none;
-            }
         }
     }
 

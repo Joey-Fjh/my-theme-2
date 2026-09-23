@@ -3,10 +3,6 @@ icon
 ========================================================= */
 @utility icons {
     @apply inline-flex items-center justify-center;
-    transition:
-        color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 }
 
 /* =========================================================
@@ -16,7 +12,6 @@ link
     @apply fixed start-4 top-4 bg-theme-bg px-4 py-3 body-md text-theme-text shadow-lg;
     z-index: var(--z-layer-skip-link);
     transform: translateY(calc(-100% - 2rem));
-    transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
 
     &:focus,
     &:focus-visible {
@@ -29,7 +24,6 @@ link
 
 @utility links {
     @apply inline-flex w-fit cursor-pointer items-center text-theme-text no-underline outline-none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 
     position: relative;
 
@@ -49,7 +43,6 @@ link
         width: 100%;
         height: 2px;
         background-color: currentColor;
-        transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
     }
 }
 
@@ -90,48 +83,6 @@ link
 button
 ========================================================= */
 
-@property --btn-reverse-fill-pct {
-    syntax: '<percentage>';
-    inherits: false;
-    initial-value: 0%;
-}
-
-@property --btn-reverse-text-pct {
-    syntax: '<percentage>';
-    inherits: false;
-    initial-value: 0%;
-}
-
-@property --btn-reverse-border-pct {
-    syntax: '<percentage>';
-    inherits: false;
-    initial-value: 0%;
-}
-
-@keyframes btn-soft-reverse-breath {
-    0%,
-    100% {
-        --btn-reverse-fill-pct: var(--btn-reverse-fill-rest);
-        --btn-reverse-text-pct: var(--btn-reverse-text-rest);
-        --btn-reverse-border-pct: var(--btn-reverse-border-rest);
-        transform: translateY(0) scale(1);
-        animation-timing-function: ease-in;
-    }
-
-    38%,
-    62% {
-        --btn-reverse-fill-pct: calc(
-            var(--btn-reverse-fill-hover) + var(--btn-reverse-fill-breath)
-        );
-        --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-        --btn-reverse-border-pct: calc(
-            var(--btn-reverse-border-hover) - var(--btn-reverse-border-breath)
-        );
-        transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
-        animation-timing-function: ease-out;
-    }
-}
-
 /* base button */
 @utility btn {
     @apply inline-flex cursor-pointer items-center justify-center gap-2 border font-body outline-none;
@@ -142,21 +93,12 @@ button
     --btn-reverse-fill-pct: 0%;
     --btn-reverse-text-pct: 0%;
     --btn-reverse-border-pct: 0%;
-    --btn-reverse-fill-rest: 10%;
-    --btn-reverse-text-rest: 10%;
-    --btn-reverse-border-rest: 100%;
-    /* Hover animation breathes between the readable rest state and the reverse target */
+    /* Hover end-state targets for color-mix reverse */
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
-    --btn-reverse-cycle: 2.5s;
-    --btn-reverse-ease: ease-in-out;
-    --btn-ui-transition-duration: 200ms;
-    --btn-ui-transition-ease: ease;
 
     --btn-hover-filter: none;
     --btn-active-filter: brightness(0.95);
@@ -168,15 +110,6 @@ button
     --btn-shadow-hover-opacity: calc(
         var(--button-shadow-opacity) * var(--btn-hover-shadow-opacity)
     );
-
-    transition:
-        color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        background-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        border-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-        transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
 
     padding: var(--button-padding-y) var(--button-padding-x);
 
@@ -204,19 +137,6 @@ button
     color: rgb(var(--btn-text-rgb));
 
     @supports (background-color: color-mix(in srgb, black, white)) {
-        transition:
-            --btn-reverse-fill-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            --btn-reverse-text-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            --btn-reverse-border-pct var(--motion-duration-fast, 250ms)
-                var(--motion-ease-enter, ease),
-            background-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease),
-            box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-            opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-            filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease),
-            transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
-
         background-color: color-mix(
             in srgb,
             rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)),
@@ -238,8 +158,11 @@ button
             &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not(
                     [aria-busy='true']
                 ) {
-                animation: btn-soft-reverse-breath var(--btn-reverse-cycle) var(--btn-reverse-ease)
-                    infinite;
+                --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
+                --btn-reverse-text-pct: var(--btn-reverse-text-hover);
+                --btn-reverse-border-pct: var(--btn-reverse-border-hover);
+                transform: translateY(var(--btn-reverse-lift-y))
+                    scale(var(--btn-reverse-scale-peak));
                 box-shadow: var(--button-shadow-horizontal-offset) var(--btn-shadow-hover-y)
                     var(--btn-shadow-hover-blur)
                     rgba(var(--color-foreground), var(--btn-shadow-hover-opacity));
@@ -247,30 +170,11 @@ button
         }
 
         &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-            animation: none;
             transform: scale(var(--btn-active-scale));
             --btn-reverse-fill-pct: 6%;
             --btn-reverse-text-pct: 4%;
             --btn-reverse-border-pct: 5%;
             filter: var(--btn-active-filter);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            @media (hover: hover) and (pointer: fine) {
-                &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not(
-                        [aria-busy='true']
-                    ) {
-                    animation: none;
-                    --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
-                    --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-                    --btn-reverse-border-pct: var(--btn-reverse-border-hover);
-                    transform: none;
-                }
-            }
-
-            &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-                transform: scale(var(--btn-active-scale));
-            }
         }
     }
 
@@ -312,14 +216,9 @@ button
     --btn-bg-rgb: var(--color-primary-button);
     --btn-text-rgb: var(--color-primary-button-text);
     --btn-border-rgb: var(--color-primary-button-border);
-    --btn-reverse-fill-rest: 12%;
-    --btn-reverse-text-rest: 12%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
     --btn-hover-filter: brightness(1.06);
@@ -334,14 +233,9 @@ button
     --btn-bg-rgb: var(--color-secondary-button);
     --btn-text-rgb: var(--color-secondary-button-text);
     --btn-border-rgb: var(--color-secondary-button-border);
-    --btn-reverse-fill-rest: 8%;
-    --btn-reverse-text-rest: 16%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 42%;
     --btn-reverse-text-hover: 65%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 5%;
-    --btn-reverse-border-breath: 4%;
     --btn-reverse-scale-peak: 1.014;
     --btn-reverse-lift-y: -1.5px;
     --btn-hover-filter: brightness(0.97);
@@ -361,7 +255,7 @@ button
  *   .shopify-payment-button__button--unbranded:hover:not([disabled])
  * with specificity (0,3,0), which overrides the theme btn-primary hover
  * background-color. The selector below exceeds Shopify specificity so
- * soft-reverse color-mix and animation are preserved on dynamic checkout.
+ * soft-reverse color-mix is preserved on dynamic checkout.
  */
 button.shopify-payment-button__button--unbranded:hover:not([disabled]) {
     @supports (background-color: color-mix(in srgb, black, white)) {
@@ -449,13 +343,6 @@ field
 
     outline: none;
 
-    transition:
-        color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        outline-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
-
     &::placeholder {
         color: var(--color-field-placeholder);
         opacity: 0.8;
@@ -541,16 +428,11 @@ Exclude: slideshow/hero, logo, static editorial, decorative media, PDP main LCP 
     --media-interaction-brightness-hover: 1.04;
     --media-interaction-brightness-focus: 1.02;
     --media-interaction-brightness-active: 0.97;
-    --media-interaction-duration: var(--motion-duration-fast, 250ms);
-    --media-interaction-ease: var(--motion-ease-default, ease);
 
     & .image_img,
     & img {
         transform: scale(1);
         transform-origin: center;
-        transition:
-            transform var(--media-interaction-duration) var(--media-interaction-ease),
-            filter var(--media-interaction-duration) var(--media-interaction-ease);
     }
 
     @media (hover: hover) and (pointer: fine) {
@@ -571,7 +453,6 @@ Exclude: slideshow/hero, logo, static editorial, decorative media, PDP main LCP 
     &:active:not(:disabled):not([aria-disabled='true']) img {
         transform: scale(var(--media-interaction-scale-active));
         filter: brightness(var(--media-interaction-brightness-active));
-        transition-duration: calc(var(--media-interaction-duration) * 0.75);
     }
 
     &:disabled,
@@ -583,24 +464,6 @@ Exclude: slideshow/hero, logo, static editorial, decorative media, PDP main LCP 
         & img {
             transform: none;
             filter: none;
-        }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        @media (hover: hover) and (pointer: fine) {
-            &:hover:not(:active):not(:disabled):not([aria-disabled='true']) .image_img,
-            &:hover:not(:active):not(:disabled):not([aria-disabled='true']) img {
-                transform: scale(1.01);
-                filter: brightness(1.02);
-            }
-        }
-
-        &:focus-visible:not(:disabled):not([aria-disabled='true']) .image_img,
-        &:focus-visible:not(:disabled):not([aria-disabled='true']) img,
-        &:active:not(:disabled):not([aria-disabled='true']) .image_img,
-        &:active:not(:disabled):not([aria-disabled='true']) img {
-            transform: none;
-            filter: brightness(1.02);
         }
     }
 }
@@ -646,7 +509,7 @@ badge
 }
 
 /* =========================================================
-close-button — dismiss control (icons-animate-pop)
+close-button — dismiss control
 
 Variants:
 - close-button-corner — absolute top-end placement for dialogs/overlays
@@ -654,13 +517,7 @@ Variants:
 - close-button-on-overlay — muted white on dark media/lightbox overlays
 ========================================================= */
 @utility close-button {
-    @apply inline-flex h-10 w-10 shrink-0 icons-animate-pop cursor-pointer items-center justify-center rounded;
-
-    transition:
-        color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
+    @apply inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded;
 
     &:focus-visible {
         outline: var(--focus-ring-width) solid
@@ -683,15 +540,13 @@ Variants:
 }
 
 /* =========================================================
-header-icon-button — icon-only header nav control (icons-animate-breathe)
+header-icon-button — icon-only header nav control
 
 Apply on the control shell (<button> or icon-only <a>), not on child .icons.
 Consumers: header menu, search, cart, account entry points.
 ========================================================= */
 @utility header-icon-button {
-    @apply inline-flex h-10 w-10 shrink-0 icons-animate-breathe cursor-pointer items-center justify-center text-current;
-
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
+    @apply inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center text-current;
 
     &:focus-visible {
         outline: var(--focus-ring-width) solid
@@ -710,8 +565,6 @@ Consumers: header menu, search, cart, account entry points.
 /* =========================================================
 control-icon — compact square icon control (quantity, carousel arrows)
 
-Stateful micro-interaction: respects prefers-reduced-motion only;
-independent from body[data-motion-enabled] page/brand motion.
 Consumers: quantity-selector (default size).
 ========================================================= */
 @utility control-icon {
@@ -719,11 +572,6 @@ Consumers: quantity-selector (default size).
 
     width: var(--control-icon-size, 2.5rem);
     height: var(--control-icon-size, 2.5rem);
-
-    transition:
-        color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease),
-        transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
 
     @media (hover: hover) and (pointer: fine) {
         &:hover:not(:disabled):not([aria-disabled='true']) {
@@ -747,11 +595,5 @@ Consumers: quantity-selector (default size).
         cursor: not-allowed;
         opacity: 0.4;
         pointer-events: none;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        &:active:not(:disabled):not([aria-disabled='true']) {
-            transform: none;
-        }
     }
 }

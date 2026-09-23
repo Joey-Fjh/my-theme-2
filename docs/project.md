@@ -13,7 +13,7 @@ This is an internal Shopify Skeleton Theme mother template for building future t
 
 ## Accepted Scope
 
-- Project-owned additions: the component lifecycle/runtime, native section motion, and Agent/tooling configuration.
+- Project-owned additions: the component lifecycle/runtime and Agent/tooling configuration.
 - Generic storefront primitives: cart page (the only built-in cart presentation), quantity selector, variant picker with shared dropdown, buy buttons, product media gallery, pagination with section refresh, localization switcher, accordion, header nested-menu dropdown, header search entry, and product card (neutral linked image/title/price in the collection grid, with one global image-ratio setting; derived themes own card appearance).
 - Action feedback stays local to the control or form that triggered it.
 - Design-specific behavior (sticky or hide-on-scroll headers, sticky side panels, blog tabs, back-to-top, decorative icons) belongs to derived themes.

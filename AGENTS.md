@@ -9,7 +9,7 @@ This file is the always-on entry point and the canonical rule source for agents 
 - Shopify Liquid sections, snippets, JSON templates, and locale files
 - Tailwind CSS v4 with CSS-based config and `@theme inline`
 - Alpine.js v3 for reactive UI state
-- GSAP + ScrollTrigger (optional, for complex narrative motion only; not the default for ordinary section reveal)
+- GSAP + ScrollTrigger (optional, for complex narrative motion only)
 - Swiper as the selected carousel library
 - Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `defer`, `mount`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
 

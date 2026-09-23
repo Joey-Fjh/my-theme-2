@@ -145,16 +145,10 @@
         --motion-duration-base: 400ms;
         --motion-duration-slow: 500ms;
 
-        --motion-reveal-duration-base: 1080ms;
-        --motion-reveal-opacity-duration: 620ms;
-        --motion-reveal-stagger: 170ms;
-        --motion-reveal-rise-distance: clamp(40px, 5vw, 64px);
-
         --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
         --motion-ease-default: var(--motion-ease);
         --motion-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
         --motion-ease-exit: cubic-bezier(0.55, 0, 1, 0.45);
-        --motion-reveal-ease: cubic-bezier(0.25, 0.4, 0.4, 1);
 
         {% comment %} Focus Ring {% endcomment %}
         --focus-ring-width: {{ settings.focus_ring_width | default: 2 }}px;

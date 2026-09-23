@@ -17,8 +17,6 @@
     --radius-md: 0.375rem;
     --animate-spin: spin 1s linear infinite;
     --blur-sm: 8px;
-    --default-transition-duration: 150ms;
-    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
     --color-field-placeholder: rgb(var(--color-input-placeholder));
@@ -30,7 +28,6 @@
     --z-layer-drawer-backdrop: 200;
     --z-layer-drawer: 201;
     --z-layer-skip-link: 700;
-    --animate-icon-breathe: icon-breathe 0.9s ease-in-out infinite;
   }
 }
 @layer base {
@@ -187,27 +184,10 @@
     height: calc(var(--spacing) * 10);
     width: calc(var(--spacing) * 10);
     flex-shrink: 0;
-    will-change: transform, opacity;
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        animation: var(--animate-icon-breathe);
-        animation-delay: calc(var(--i, 0) * 60ms);
-      }
-    }
-    &:focus-visible {
-      animation: var(--animate-icon-breathe);
-      animation-delay: calc(var(--i, 0) * 60ms);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &:hover, &:focus-visible {
-        animation: none;
-      }
-    }
     cursor: pointer;
     align-items: center;
     justify-content: center;
     color: currentcolor;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
     &:focus-visible {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
       outline-offset: var(--focus-ring-offset);
@@ -232,12 +212,6 @@
     --btn-reverse-fill-pct: 0%;
     --btn-reverse-text-pct: 0%;
     --btn-reverse-border-pct: 0%;
-    --btn-reverse-fill-rest: 10%;
-    --btn-reverse-text-rest: 10%;
-    --btn-reverse-cycle: 2.5s;
-    --btn-reverse-ease: ease-in-out;
-    --btn-ui-transition-duration: 200ms;
-    --btn-ui-transition-ease: ease;
     --btn-hover-filter: none;
     --btn-active-filter: brightness(0.95);
     --btn-hover-y: -1px;
@@ -248,7 +222,6 @@
     --btn-shadow-hover-opacity: calc(
         var(--button-shadow-opacity) * var(--btn-hover-shadow-opacity)
     );
-    transition: color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), background-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), border-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
     padding: var(--button-padding-y) var(--button-padding-x);
     border-radius: var(--button-radius);
     border-width: var(--button-border-width);
@@ -267,7 +240,6 @@
     background-color: rgb(var(--btn-bg-rgb));
     color: rgb(var(--btn-text-rgb));
     @supports (background-color: color-mix(in srgb, black, white)) {
-      transition: --btn-reverse-fill-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-text-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-border-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
       background-color: rgb(var(--btn-bg-rgb));
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix( in srgb, rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)), rgb(var(--btn-text-rgb)) var(--btn-reverse-fill-pct) );
@@ -282,31 +254,19 @@
       }
       @media (hover: hover) and (pointer: fine) {
         &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-          animation: btn-soft-reverse-breath var(--btn-reverse-cycle) var(--btn-reverse-ease) infinite;
+          --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
+          --btn-reverse-text-pct: var(--btn-reverse-text-hover);
+          --btn-reverse-border-pct: var(--btn-reverse-border-hover);
+          transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
           box-shadow: var(--button-shadow-horizontal-offset) var(--btn-shadow-hover-y) var(--btn-shadow-hover-blur) rgba(var(--color-foreground), var(--btn-shadow-hover-opacity));
         }
       }
       &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-        animation: none;
         transform: scale(var(--btn-active-scale));
         --btn-reverse-fill-pct: 6%;
         --btn-reverse-text-pct: 4%;
         --btn-reverse-border-pct: 5%;
         filter: var(--btn-active-filter);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        @media (hover: hover) and (pointer: fine) {
-          &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-            animation: none;
-            --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
-            --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-            --btn-reverse-border-pct: var(--btn-reverse-border-hover);
-            transform: none;
-          }
-        }
-        &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-          transform: scale(var(--btn-active-scale));
-        }
       }
     }
     @supports not (background-color: color-mix(in srgb, black, white)) {
@@ -335,14 +295,9 @@
     --btn-bg-rgb: var(--color-primary-button);
     --btn-text-rgb: var(--color-primary-button-text);
     --btn-border-rgb: var(--color-primary-button-border);
-    --btn-reverse-fill-rest: 12%;
-    --btn-reverse-text-rest: 12%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
     --btn-hover-filter: brightness(1.06);
@@ -366,18 +321,10 @@
     --btn-reverse-fill-pct: 0%;
     --btn-reverse-text-pct: 0%;
     --btn-reverse-border-pct: 0%;
-    --btn-reverse-fill-rest: 10%;
-    --btn-reverse-text-rest: 10%;
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
-    --btn-reverse-cycle: 2.5s;
-    --btn-reverse-ease: ease-in-out;
-    --btn-ui-transition-duration: 200ms;
-    --btn-ui-transition-ease: ease;
     --btn-hover-filter: none;
     --btn-active-filter: brightness(0.95);
     --btn-hover-y: -1px;
@@ -388,7 +335,6 @@
     --btn-shadow-hover-opacity: calc(
         var(--button-shadow-opacity) * var(--btn-hover-shadow-opacity)
     );
-    transition: color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), background-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), border-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
     padding: var(--button-padding-y) var(--button-padding-x);
     border-radius: var(--button-radius);
     border-width: var(--button-border-width);
@@ -407,7 +353,6 @@
     background-color: rgb(var(--btn-bg-rgb));
     color: rgb(var(--btn-text-rgb));
     @supports (background-color: color-mix(in srgb, black, white)) {
-      transition: --btn-reverse-fill-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-text-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-border-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
       background-color: rgb(var(--btn-bg-rgb));
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix( in srgb, rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)), rgb(var(--btn-text-rgb)) var(--btn-reverse-fill-pct) );
@@ -422,31 +367,19 @@
       }
       @media (hover: hover) and (pointer: fine) {
         &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-          animation: btn-soft-reverse-breath var(--btn-reverse-cycle) var(--btn-reverse-ease) infinite;
+          --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
+          --btn-reverse-text-pct: var(--btn-reverse-text-hover);
+          --btn-reverse-border-pct: var(--btn-reverse-border-hover);
+          transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
           box-shadow: var(--button-shadow-horizontal-offset) var(--btn-shadow-hover-y) var(--btn-shadow-hover-blur) rgba(var(--color-foreground), var(--btn-shadow-hover-opacity));
         }
       }
       &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-        animation: none;
         transform: scale(var(--btn-active-scale));
         --btn-reverse-fill-pct: 6%;
         --btn-reverse-text-pct: 4%;
         --btn-reverse-border-pct: 5%;
         filter: var(--btn-active-filter);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        @media (hover: hover) and (pointer: fine) {
-          &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-            animation: none;
-            --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
-            --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-            --btn-reverse-border-pct: var(--btn-reverse-border-hover);
-            transform: none;
-          }
-        }
-        &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-          transform: scale(var(--btn-active-scale));
-        }
       }
     }
     @supports not (background-color: color-mix(in srgb, black, white)) {
@@ -475,14 +408,9 @@
     --btn-bg-rgb: var(--color-secondary-button);
     --btn-text-rgb: var(--color-secondary-button-text);
     --btn-border-rgb: var(--color-secondary-button-border);
-    --btn-reverse-fill-rest: 8%;
-    --btn-reverse-text-rest: 16%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 42%;
     --btn-reverse-text-hover: 65%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 5%;
-    --btn-reverse-border-breath: 4%;
     --btn-reverse-scale-peak: 1.014;
     --btn-reverse-lift-y: -1.5px;
     --btn-hover-filter: brightness(0.97);
@@ -506,20 +434,11 @@
     --btn-reverse-fill-pct: 0%;
     --btn-reverse-text-pct: 0%;
     --btn-reverse-border-pct: 0%;
-    --btn-reverse-fill-rest: 10%;
-    --btn-reverse-text-rest: 10%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
-    --btn-reverse-cycle: 2.5s;
-    --btn-reverse-ease: ease-in-out;
-    --btn-ui-transition-duration: 200ms;
-    --btn-ui-transition-ease: ease;
     --btn-hover-filter: none;
     --btn-active-filter: brightness(0.95);
     --btn-hover-y: -1px;
@@ -530,7 +449,6 @@
     --btn-shadow-hover-opacity: calc(
         var(--button-shadow-opacity) * var(--btn-hover-shadow-opacity)
     );
-    transition: color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), background-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), border-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
     padding: var(--button-padding-y) var(--button-padding-x);
     border-radius: var(--button-radius);
     border-width: var(--button-border-width);
@@ -549,7 +467,6 @@
     background-color: rgb(var(--btn-bg-rgb));
     color: rgb(var(--btn-text-rgb));
     @supports (background-color: color-mix(in srgb, black, white)) {
-      transition: --btn-reverse-fill-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-text-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-border-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
       background-color: rgb(var(--btn-bg-rgb));
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix( in srgb, rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)), rgb(var(--btn-text-rgb)) var(--btn-reverse-fill-pct) );
@@ -564,31 +481,19 @@
       }
       @media (hover: hover) and (pointer: fine) {
         &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-          animation: btn-soft-reverse-breath var(--btn-reverse-cycle) var(--btn-reverse-ease) infinite;
+          --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
+          --btn-reverse-text-pct: var(--btn-reverse-text-hover);
+          --btn-reverse-border-pct: var(--btn-reverse-border-hover);
+          transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
           box-shadow: var(--button-shadow-horizontal-offset) var(--btn-shadow-hover-y) var(--btn-shadow-hover-blur) rgba(var(--color-foreground), var(--btn-shadow-hover-opacity));
         }
       }
       &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-        animation: none;
         transform: scale(var(--btn-active-scale));
         --btn-reverse-fill-pct: 6%;
         --btn-reverse-text-pct: 4%;
         --btn-reverse-border-pct: 5%;
         filter: var(--btn-active-filter);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        @media (hover: hover) and (pointer: fine) {
-          &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-            animation: none;
-            --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
-            --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-            --btn-reverse-border-pct: var(--btn-reverse-border-hover);
-            transform: none;
-          }
-        }
-        &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-          transform: scale(var(--btn-active-scale));
-        }
       }
     }
     @supports not (background-color: color-mix(in srgb, black, white)) {
@@ -626,12 +531,9 @@
     --media-interaction-brightness-hover: 1.04;
     --media-interaction-brightness-focus: 1.02;
     --media-interaction-brightness-active: 0.97;
-    --media-interaction-duration: var(--motion-duration-fast, 250ms);
-    --media-interaction-ease: var(--motion-ease-default, ease);
     & .image_img, & img {
       transform: scale(1);
       transform-origin: center;
-      transition: transform var(--media-interaction-duration) var(--media-interaction-ease), filter var(--media-interaction-duration) var(--media-interaction-ease);
     }
     @media (hover: hover) and (pointer: fine) {
       &:hover:not(:active):not(:disabled):not([aria-disabled='true']) .image_img, &:hover:not(:active):not(:disabled):not([aria-disabled='true']) img {
@@ -646,7 +548,6 @@
     &:active:not(:disabled):not([aria-disabled='true']) .image_img, &:active:not(:disabled):not([aria-disabled='true']) img {
       transform: scale(var(--media-interaction-scale-active));
       filter: brightness(var(--media-interaction-brightness-active));
-      transition-duration: calc(var(--media-interaction-duration) * 0.75);
     }
     &:disabled, &[aria-disabled='true'] {
       cursor: not-allowed;
@@ -654,18 +555,6 @@
       & .image_img, & img {
         transform: none;
         filter: none;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      @media (hover: hover) and (pointer: fine) {
-        &:hover:not(:active):not(:disabled):not([aria-disabled='true']) .image_img, &:hover:not(:active):not(:disabled):not([aria-disabled='true']) img {
-          transform: scale(1.01);
-          filter: brightness(1.02);
-        }
-      }
-      &:focus-visible:not(:disabled):not([aria-disabled='true']) .image_img, &:focus-visible:not(:disabled):not([aria-disabled='true']) img, &:active:not(:disabled):not([aria-disabled='true']) .image_img, &:active:not(:disabled):not([aria-disabled='true']) img {
-        transform: none;
-        filter: brightness(1.02);
       }
     }
   }
@@ -694,7 +583,6 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     z-index: var(--z-layer-skip-link);
     transform: translateY(calc(-100% - 2rem));
-    transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
     &:focus, &:focus-visible {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
       outline-offset: var(--focus-ring-offset);
@@ -710,7 +598,6 @@
       width: 100%;
       height: 2px;
       background-color: currentColor;
-      transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
     }
     &::after {
       transform: scaleX(0);
@@ -729,7 +616,6 @@
       width: 100%;
       height: 2px;
       background-color: currentColor;
-      transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease);
     }
     &:hover::after, &:focus-visible::after {
       transform: translateY(-2px);
@@ -764,7 +650,6 @@
     text-decoration-line: none;
     --tw-outline-style: none;
     outline-style: none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     position: relative;
     &:focus-visible {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
@@ -913,7 +798,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
   }
   .block {
     display: block;
@@ -987,7 +871,6 @@
     border-radius: var(--input-radius);
     box-shadow: var(--input-shadow-horizontal-offset) var(--input-shadow-vertical-offset) var(--input-shadow-blur-radius) rgba(var(--color-foreground), var(--input-shadow-opacity));
     outline: none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), outline-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &::placeholder {
       color: var(--color-field-placeholder);
       opacity: 0.8;
@@ -1028,7 +911,6 @@
     border-radius: var(--input-radius);
     box-shadow: var(--input-shadow-horizontal-offset) var(--input-shadow-vertical-offset) var(--input-shadow-blur-radius) rgba(var(--color-foreground), var(--input-shadow-opacity));
     outline: none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), outline-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &::placeholder {
       color: var(--color-field-placeholder);
       opacity: 0.8;
@@ -1060,7 +942,6 @@
     border-radius: var(--input-radius);
     box-shadow: var(--input-shadow-horizontal-offset) var(--input-shadow-vertical-offset) var(--input-shadow-blur-radius) rgba(var(--color-foreground), var(--input-shadow-opacity));
     outline: none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), outline-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &::placeholder {
       color: var(--color-field-placeholder);
       opacity: 0.8;
@@ -1799,16 +1680,6 @@
     -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
     backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
   }
-  .transition {
-    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
-  .transition-opacity {
-    transition-property: opacity;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
   .outline-none {
     --tw-outline-style: none;
     outline-style: none;
@@ -2215,41 +2086,6 @@
   --font-body-text-transform: none;
   --font-heading-text-transform: none;
 }
-@property --btn-reverse-fill-pct {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-@property --btn-reverse-text-pct {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-@property --btn-reverse-border-pct {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-@keyframes btn-soft-reverse-breath {
-  0%, 100% {
-    --btn-reverse-fill-pct: var(--btn-reverse-fill-rest);
-    --btn-reverse-text-pct: var(--btn-reverse-text-rest);
-    --btn-reverse-border-pct: var(--btn-reverse-border-rest);
-    transform: translateY(0) scale(1);
-    animation-timing-function: ease-in;
-  }
-  38%, 62% {
-    --btn-reverse-fill-pct: calc(
-            var(--btn-reverse-fill-hover) + var(--btn-reverse-fill-breath)
-        );
-    --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-    --btn-reverse-border-pct: calc(
-            var(--btn-reverse-border-hover) - var(--btn-reverse-border-breath)
-        );
-    transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
-    animation-timing-function: ease-out;
-  }
-}
 .shopify-payment-button-wrapper, .shopify-payment-button {
   width: 100%;
 }
@@ -2304,7 +2140,6 @@ shopify-accelerated-checkout {
     border-radius: var(--input-radius);
     box-shadow: var(--input-shadow-horizontal-offset) var(--input-shadow-vertical-offset) var(--input-shadow-blur-radius) rgba(var(--color-foreground), var(--input-shadow-opacity));
     outline: none;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), outline-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &::placeholder {
       color: var(--color-field-placeholder);
       opacity: 0.8;
@@ -2340,12 +2175,6 @@ shopify-accelerated-checkout {
     --btn-reverse-fill-pct: 0%;
     --btn-reverse-text-pct: 0%;
     --btn-reverse-border-pct: 0%;
-    --btn-reverse-fill-rest: 10%;
-    --btn-reverse-text-rest: 10%;
-    --btn-reverse-cycle: 2.5s;
-    --btn-reverse-ease: ease-in-out;
-    --btn-ui-transition-duration: 200ms;
-    --btn-ui-transition-ease: ease;
     --btn-hover-filter: none;
     --btn-active-filter: brightness(0.95);
     --btn-hover-y: -1px;
@@ -2356,7 +2185,6 @@ shopify-accelerated-checkout {
     --btn-shadow-hover-opacity: calc(
         var(--button-shadow-opacity) * var(--btn-hover-shadow-opacity)
     );
-    transition: color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), background-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), border-color var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
     padding: var(--button-padding-y) var(--button-padding-x);
     border-radius: var(--button-radius);
     border-width: var(--button-border-width);
@@ -2375,7 +2203,6 @@ shopify-accelerated-checkout {
     background-color: rgb(var(--btn-bg-rgb));
     color: rgb(var(--btn-text-rgb));
     @supports (background-color: color-mix(in srgb, black, white)) {
-      transition: --btn-reverse-fill-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-text-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), --btn-reverse-border-pct var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-enter, ease), box-shadow var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), opacity var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), filter var(--btn-ui-transition-duration) var(--btn-ui-transition-ease), transform var(--btn-ui-transition-duration) var(--btn-ui-transition-ease);
       background-color: rgb(var(--btn-bg-rgb));
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix( in srgb, rgb(var(--btn-bg-rgb)) calc(100% - var(--btn-reverse-fill-pct)), rgb(var(--btn-text-rgb)) var(--btn-reverse-fill-pct) );
@@ -2390,31 +2217,19 @@ shopify-accelerated-checkout {
       }
       @media (hover: hover) and (pointer: fine) {
         &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-          animation: btn-soft-reverse-breath var(--btn-reverse-cycle) var(--btn-reverse-ease) infinite;
+          --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
+          --btn-reverse-text-pct: var(--btn-reverse-text-hover);
+          --btn-reverse-border-pct: var(--btn-reverse-border-hover);
+          transform: translateY(var(--btn-reverse-lift-y)) scale(var(--btn-reverse-scale-peak));
           box-shadow: var(--button-shadow-horizontal-offset) var(--btn-shadow-hover-y) var(--btn-shadow-hover-blur) rgba(var(--color-foreground), var(--btn-shadow-hover-opacity));
         }
       }
       &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-        animation: none;
         transform: scale(var(--btn-active-scale));
         --btn-reverse-fill-pct: 6%;
         --btn-reverse-text-pct: 4%;
         --btn-reverse-border-pct: 5%;
         filter: var(--btn-active-filter);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        @media (hover: hover) and (pointer: fine) {
-          &:hover:not(:active):not(:disabled):not([aria-disabled='true']):not( [aria-busy='true'] ) {
-            animation: none;
-            --btn-reverse-fill-pct: var(--btn-reverse-fill-hover);
-            --btn-reverse-text-pct: var(--btn-reverse-text-hover);
-            --btn-reverse-border-pct: var(--btn-reverse-border-hover);
-            transform: none;
-          }
-        }
-        &:active:not(:disabled):not([aria-disabled='true']):not([aria-busy='true']) {
-          transform: scale(var(--btn-active-scale));
-        }
       }
     }
     @supports not (background-color: color-mix(in srgb, black, white)) {
@@ -2443,14 +2258,9 @@ shopify-accelerated-checkout {
     --btn-bg-rgb: var(--color-primary-button);
     --btn-text-rgb: var(--color-primary-button-text);
     --btn-border-rgb: var(--color-primary-button-border);
-    --btn-reverse-fill-rest: 12%;
-    --btn-reverse-text-rest: 12%;
-    --btn-reverse-border-rest: 100%;
     --btn-reverse-fill-hover: 88%;
     --btn-reverse-text-hover: 90%;
     --btn-reverse-border-hover: 100%;
-    --btn-reverse-fill-breath: 4%;
-    --btn-reverse-border-breath: 3%;
     --btn-reverse-scale-peak: 1.02;
     --btn-reverse-lift-y: -2.5px;
     --btn-hover-filter: brightness(1.06);
@@ -2480,19 +2290,6 @@ shopify-accelerated-checkout {
     }
     @media (width < 48rem) {
       font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
-    }
-  }
-}
-@layer components {
-  .link-with-icon-motion {
-    .icons {
-      transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
-    }
-    &:hover .icons, &:focus-visible .icons {
-      transform: translateX(0.2rem);
-    }
-    [dir='rtl'] &:hover .icons, [dir='rtl'] &:focus-visible .icons {
-      transform: translateX(-0.2rem);
     }
   }
 }
@@ -2580,24 +2377,18 @@ shopify-accelerated-checkout {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: visibility 0s linear var(--motion-duration-fast);
-    }
-    .dropdown-panel.panel-motion {
-      transition: visibility 0s linear var(--motion-duration-fast);
     }
     .dropdown-open {
       details[open] > &, [data-dropdown][open] > &, [aria-expanded='true'] > & {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
-        transition-delay: 0s;
       }
     }
     .dropdown-icon {
       display: inline-block;
       align-items: center;
       justify-content: center;
-      transition: transform var(--motion-duration-fast) var(--motion-ease-enter), opacity var(--motion-duration-fast) var(--motion-ease-default);
     }
     .dropdown-icon--down {
       transform: rotate(0deg);
@@ -2614,83 +2405,6 @@ shopify-accelerated-checkout {
   }
 }
 @layer components {
-  .panel-motion {
-    transform-origin: top center;
-    transition: box-shadow var(--motion-duration-fast) var(--motion-ease-default), border-color var(--motion-duration-fast) var(--motion-ease-default);
-  }
-  .panel-motion-scale {
-    --panel-motion-dur: var(--panel-motion-duration-scale);
-  }
-  details[open] > .panel-motion-scale, [aria-expanded='true'] > .panel-motion-scale, [data-dropdown][open] > .panel-motion-scale, .localization-toggle[aria-expanded='true'] ~ .panel-motion-scale {
-    animation: panel-motion-scale-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
-  }
-  .panel-motion-compact {
-    --panel-motion-dur: var(--panel-motion-duration-compact);
-    --panel-motion-stagger-step: var(--panel-motion-stagger-step-compact);
-  }
-  .localization-menu.panel-motion-compact {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-  details[open] > .panel-motion-compact, [aria-expanded='true'] > .panel-motion-compact, [data-dropdown][open] > .panel-motion-compact, .localization-toggle[aria-expanded='true'] ~ .panel-motion-compact {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    animation: panel-motion-compact-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
-  }
-  .panel-motion-flyout {
-    --panel-motion-dur: var(--panel-motion-duration-flyout);
-    transform-origin: top inline-start;
-  }
-  [dir='rtl'] .panel-motion-flyout {
-    transform-origin: top inline-end;
-  }
-  details[open] > .panel-motion-flyout[class*='inset-s-full'], [data-dropdown][open] > .panel-motion-flyout[class*='inset-s-full'] {
-    animation: panel-motion-flyout-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
-  }
-  [dir='rtl'] details[open] > .panel-motion-flyout[class*='inset-s-full'], [dir='rtl'] [data-dropdown][open] > .panel-motion-flyout[class*='inset-s-full'] {
-    animation-name: panel-motion-flyout-in-rtl;
-  }
-  details[open] > .panel-motion-flyout:not([class*='inset-s-full']), [aria-expanded='true'] > .panel-motion-flyout:not([class*='inset-s-full']), [data-dropdown][open] > .panel-motion-flyout:not([class*='inset-s-full']) {
-    animation: panel-motion-flyout-down-in var(--panel-motion-dur) var(--panel-motion-ease-enter) both;
-    transform-origin: top center;
-  }
-  details[open] > :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item), [data-dropdown][open] > :is(.panel-motion-scale, .panel-motion-compact) > [role='option'], .localization-toggle[aria-expanded='true'] ~ :is(.panel-motion-scale, .panel-motion-compact) > .localization-item {
-    animation: panel-motion-item-in var(--panel-motion-duration-item) var(--panel-motion-ease-enter) both;
-  }
-  details[open] > .panel-motion-flyout > li, [data-dropdown][open] > .panel-motion-flyout > li {
-    animation: panel-motion-item-flyout-in var(--panel-motion-duration-item) var(--panel-motion-ease-enter) both;
-  }
-  [dir='rtl'] details[open] > .panel-motion-flyout > li, [dir='rtl'] [data-dropdown][open] > .panel-motion-flyout > li {
-    animation-name: panel-motion-item-flyout-in-rtl;
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(1) {
-    animation-delay: calc(var(--panel-motion-content-delay, 70ms) + 0ms);
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(2) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(3) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 2 );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(4) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 3 );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(5) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 4 );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(6) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 5 );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(7) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 6 );
-  }
-  :is(.panel-motion-scale, .panel-motion-compact) > :is(li, [role='option'], .localization-item):nth-child(8) {
-    animation-delay: calc( var(--panel-motion-content-delay, 70ms) + var(--panel-motion-stagger-step, 32ms) * 7 );
-  }
-}
-@layer components {
   .accordion__trigger {
     display: flex;
     width: 100%;
@@ -2703,7 +2417,6 @@ shopify-accelerated-checkout {
   .accordion__title {
     text-align: start;
     opacity: 0.7;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
   }
   .accordion__title--active {
     opacity: 1;
@@ -2717,7 +2430,6 @@ shopify-accelerated-checkout {
     align-items: center;
     justify-content: center;
     --_accordion-rotate: rotate(180deg);
-    transition: transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
   }
   .accordion__icon--plus {
     --_accordion-rotate: rotate(45deg);
@@ -2729,7 +2441,6 @@ shopify-accelerated-checkout {
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
-    transition: grid-template-rows var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), opacity var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
   }
   .accordion__panel.is-active {
     grid-template-rows: 1fr;
@@ -2916,9 +2627,6 @@ shopify-accelerated-checkout {
   .rte a {
     text-decoration-line: underline;
     text-underline-offset: 4px;
-    transition-property: opacity;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
     &:hover {
       @media (hover: hover) {
         opacity: 80%;
@@ -3096,7 +2804,6 @@ shopify-accelerated-checkout {
     color: currentcolor;
     width: var(--control-icon-size, 2.5rem);
     height: var(--control-icon-size, 2.5rem);
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     @media (hover: hover) and (pointer: fine) {
       &:hover:not(:disabled):not([aria-disabled='true']) {
         background-color: rgba(var(--color-foreground), 0.08);
@@ -3115,13 +2822,7 @@ shopify-accelerated-checkout {
       opacity: 0.4;
       pointer-events: none;
     }
-    @media (prefers-reduced-motion: reduce) {
-      &:active:not(:disabled):not([aria-disabled='true']) {
-        transform: none;
-      }
-    }
     border: 1px solid transparent;
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), box-shadow var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     @media (hover: hover) and (pointer: fine) {
       &:hover:not(:disabled):not([aria-disabled='true']) {
         border-color: rgba(var(--color-foreground), 0.16);
@@ -3235,9 +2936,6 @@ shopify-accelerated-checkout {
   }
   .buy-buttons__label {
     display: inline-block;
-    transition-property: opacity;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
   .buy-buttons__label.is-loading {
     opacity: 0%;
@@ -3275,18 +2973,12 @@ shopify-accelerated-checkout {
     font-family: inherit;
     font-size: var(--pagination-font-size);
     border-radius: var(--pagination-radius);
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &:focus-visible {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
       outline-offset: var(--focus-ring-offset);
     }
     &:active:not(.pagination__button--disabled) {
       transform: scale(0.98);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &:active:not(.pagination__button--disabled) {
-        transform: none;
-      }
     }
   }
   .pagination__button--disabled {
@@ -3344,7 +3036,6 @@ shopify-accelerated-checkout {
     font-family: inherit;
     font-size: var(--pagination-font-size);
     border-radius: var(--pagination-radius);
-    transition: color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), background-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), border-color var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease), transform var(--motion-duration-fast, 250ms) var(--motion-ease-default, ease);
     &:focus-visible {
       outline: var(--focus-ring-width) solid rgba(var(--color-focus-ring), var(--focus-ring-opacity, 0.4));
       outline-offset: var(--focus-ring-offset);
@@ -3353,11 +3044,6 @@ shopify-accelerated-checkout {
   a.pagination__page {
     &:active {
       transform: scale(0.98);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &:active {
-        transform: none;
-      }
     }
   }
   .pagination__page--hover-default {
@@ -3444,183 +3130,6 @@ shopify-accelerated-checkout {
   }
   .z-layer-drawer {
     z-index: var(--z-layer-drawer);
-  }
-}
-@keyframes icon-pop-turn {
-  0% {
-    transform: rotate(0deg) scale(1);
-    animation-timing-function: linear;
-  }
-  38% {
-    transform: rotate(270deg) scale(var(--icon-pop-peak-scale, 1.32));
-    animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
-  }
-  72% {
-    transform: rotate(270deg) scale(var(--icon-pop-settle-scale, 1.14));
-  }
-  100% {
-    transform: rotate(270deg) scale(var(--icon-pop-rest-scale, 1.16));
-  }
-}
-body[data-motion-enabled='false'] [data-rotating-badge-motion] {
-  animation: none !important;
-  transform: none !important;
-}
-@media (prefers-reduced-motion: reduce) {
-  [data-rotating-badge-motion] {
-    animation: none !important;
-    transform: none !important;
-  }
-}
-[data-motion-reveal][data-motion-state='pending']:not([data-motion-critical]) {
-  opacity: 0;
-  transform: translate3d(0, var(--motion-reveal-rise-distance, clamp(40px, 5vw, 64px)), 0);
-  will-change: opacity, transform;
-}
-[data-motion-reveal][data-motion-state='pending'] {
-  transition: opacity var(--motion-reveal-opacity-duration, 620ms) var(--motion-reveal-ease, cubic-bezier(0.25, 0.4, 0.4, 1)), transform var(--motion-reveal-duration-base, 1080ms) var(--motion-reveal-ease, cubic-bezier(0.25, 0.4, 0.4, 1));
-}
-[data-motion-reveal][data-motion-state='revealed'] {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  will-change: auto;
-  transition: opacity var(--motion-reveal-opacity-duration, 620ms) var(--motion-reveal-ease, cubic-bezier(0.25, 0.4, 0.4, 1)), transform var(--motion-reveal-duration-base, 1080ms) var(--motion-reveal-ease, cubic-bezier(0.25, 0.4, 0.4, 1));
-  transition-delay: calc( var(--motion-reveal-base-delay, 0ms) + var(--motion-index, 0) * var(--motion-reveal-stagger, 170ms) );
-}
-:is([data-motion-critical], [data-motion-critical-runtime])[data-motion-state] {
-  opacity: 1 !important;
-  clip-path: none !important;
-}
-:is([data-motion-critical], [data-motion-critical-runtime])[data-motion-state='pending'] {
-  transform: translate3d(0, var(--motion-reveal-rise-distance, clamp(40px, 5vw, 64px)), 0);
-}
-:is([data-motion-critical], [data-motion-critical-runtime])[data-motion-state='revealed'] {
-  transform: translate3d(0, 0, 0);
-  transition-delay: calc( var(--motion-reveal-base-delay, 0ms) + var(--motion-index, 0) * var(--motion-reveal-stagger, 170ms) );
-}
-body[data-motion-enabled='false'] [data-motion-reveal] {
-  opacity: 1 !important;
-  transform: none !important;
-  clip-path: none !important;
-  transition: none !important;
-  animation: none !important;
-}
-@media (prefers-reduced-motion: reduce) {
-  [data-motion-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-    clip-path: none !important;
-    transition: none !important;
-    animation: none !important;
-  }
-  [data-flip-digit-motion-layer='top'] {
-    display: none !important;
-  }
-  [data-flip-digit-motion-layer='bottom'] {
-    transform: rotateX(0deg) !important;
-    transition: none !important;
-  }
-}
-:root {
-  --panel-motion-duration-compact: 185ms;
-  --panel-motion-duration-scale: 260ms;
-  --panel-motion-duration-popover: 280ms;
-  --panel-motion-duration-layered: 280ms;
-  --panel-motion-duration-flyout: 240ms;
-  --panel-motion-duration-disclosure: 260ms;
-  --panel-motion-duration-item: 200ms;
-  --panel-motion-stagger-step: 32ms;
-  --panel-motion-stagger-step-compact: 24ms;
-  --panel-motion-content-delay: 70ms;
-  --panel-motion-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
-  --panel-motion-ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes panel-motion-scale-in {
-  from {
-    opacity: 0;
-    transform: translateY(-14px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes panel-motion-compact-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes panel-motion-flyout-in {
-  from {
-    opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes panel-motion-flyout-in-rtl {
-  from {
-    opacity: 0;
-    transform: translateX(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes panel-motion-flyout-down-in {
-  from {
-    opacity: 0;
-    transform: translateY(-12px) scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@keyframes panel-motion-item-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes panel-motion-item-flyout-in {
-  from {
-    opacity: 0;
-    transform: translateX(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@keyframes panel-motion-item-flyout-in-rtl {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  :is( .panel-motion-scale, .panel-motion-compact, .panel-motion-flyout, :is(.panel-motion-scale, .panel-motion-compact, .panel-motion-flyout) > :is(li, [role='option'], .localization-item) ) {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
   }
 }
 @property --tw-border-style {
@@ -3860,16 +3369,6 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
     transform: rotate(360deg);
   }
 }
-@keyframes icon-breathe {
-  0%, 100% {
-    transform: translateY(0) scale(1) rotate(0deg);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-2px) scale(1.08) rotate(1.5deg);
-    opacity: 0.85;
-  }
-}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -3922,9 +3421,6 @@ body[data-motion-enabled='false'] [data-motion-reveal] {
       --tw-backdrop-opacity: initial;
       --tw-backdrop-saturate: initial;
       --tw-backdrop-sepia: initial;
-      --btn-reverse-fill-pct: 0%;
-      --btn-reverse-text-pct: 0%;
-      --btn-reverse-border-pct: 0%;
       --tw-ordinal: initial;
       --tw-slashed-zero: initial;
       --tw-numeric-figure: initial;

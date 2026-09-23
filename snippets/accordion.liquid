@@ -68,7 +68,7 @@
                         {%- assign effective_clear_label = clear_label | default: item_title -%}
                         <a
                             href="{{ clear_url }}"
-                            class="inline-flex items-center justify-center opacity-80 transition-opacity hover:opacity-100"
+                            class="inline-flex items-center justify-center opacity-80 hover:opacity-100"
                             aria-label="{{ 'accessibility.clear_item' | t: item: effective_clear_label | escape }}"
                             @click.stop
                         >

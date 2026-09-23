@@ -5,10 +5,6 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()"
-    data-module-id="motion-reveal-section"
-    data-module-lazy
-    data-motion-section
 >
     <div class="layout container-page py-16 pc:py-20">
         <div class="flex flex-col gap-8">
@@ -21,7 +17,7 @@
             {%- endif -%}
 
             {%- comment -%} Main Content {%- endcomment -%}
-            <div class="relative p-3" data-motion-reveal data-motion-critical>
+            <div class="relative p-3">
                 <h1 class="heading-3xl">
                     {{ heading_line1 -}}
                     <br>

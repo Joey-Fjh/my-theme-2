@@ -5,21 +5,13 @@
         --section-padding-top: {{ section.settings.padding_top }}px;
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
-    x-data="motionRevealSection()"
-    data-module-id="motion-reveal-section"
-    data-module-lazy
-    data-motion-section
 >
     {%- liquid
         assign collections_heading = section.settings.heading
         assign collections_description = section.settings.description
     -%}
     <div class="layout container-page">
-        <div
-            class="relative mb-8 pt-14 text-center pc:mb-10 pc:pt-25"
-            data-motion-reveal
-            data-motion-critical
-        >
+        <div class="relative mb-8 pt-14 text-center pc:mb-10 pc:pt-25">
             <div class="mx-auto flex flex-col gap-3 pc:gap-6">
                 {%- if collections_heading != blank -%}
                     <h1 class="heading-2xl">
@@ -45,7 +37,6 @@
                         <a
                             href="{{ collection.url }}"
                             class="block overflow-hidden bg-theme-bg"
-                            data-motion-reveal
                         >
                             {%- comment -%} Image {%- endcomment -%}
                             <div class="relative aspect-square overflow-hidden bg-theme-bg">
@@ -82,8 +73,7 @@
                                     sizes: sizes,
                                     widths: widths,
                                     loading: image_loading,
-                                    wrapper_class: 'h-full w-full',
-                                    motion_reveal: false
+                                    wrapper_class: 'h-full w-full'
                                 -%}
                             </div>
 
