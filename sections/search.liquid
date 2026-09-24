@@ -53,6 +53,7 @@
 {% stylesheet %}
     @media (width < 48rem) {
         .search-section__input {
+            /* lint-allow settings-chain-css-typography: iOS Safari zoom floor for search inputs */
             font-size: max(16px, calc(var(--font-body-size-mobile) * 1.125));
         }
     }

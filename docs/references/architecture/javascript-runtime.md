@@ -194,6 +194,32 @@ Inspect the store module for configure/init APIs instead of copying historical e
 | `quantity-constraints.js` | relative `./quantity-constraints.js` from feature files | Pure quantity min/max/step math |
 | `performance.js` | dynamic import from `base.js` when `?debug=true` or `Shopify.designMode` | Debug-only CWV logging |
 
+## One outlet per side effect
+
+`lint:theme` keeps a single owner for each runtime side effect in `assets/*.js` (except `vendor-*`, `*.min.js`, and `gift-card.js`):
+
+| API | Owner |
+| --- | --- |
+| `window.Alpine` / `Alpine.` | `alpine.adapter.js` |
+| `fetch(` / `XMLHttpRequest` | `https.js` |
+| `/cart/` paths and `routes.cart_` | `cart.contract.js` |
+| Global listeners: `document.addEventListener` / `window.addEventListener` | `base.js`, `events.js`, `https.js`, `utils.js`, `alpine.adapter.js` |
+
+`gift-card.js` renders outside the module graph (`templates/gift_card.liquid`) and is excluded from these outlet checks. It uses classic `defer` scripts and may attach `document` listeners directly.
+
+Components may read the DOM (`document.querySelector`, `this.$el`). Only global listeners belong to the core; components use `ThemeEvents` or Alpine `.window` / `.document` modifiers instead.
+
+## Module graph contracts
+
+- Every `x-data` root carries `data-module-id` on the same opening tag. The identifier has an import-map entry that maps through `asset_url` to the asset named after it (`accordion` → `accordion.js`); a missing or mismapped entry is a browser `TypeError` or a silently wrong module.
+- Every import-map entry maps through `asset_url` to a file that exists in `assets/`.
+- Every import-map entry is referenced by a `data-module-id` or a static `import` in `assets/*.js`.
+- Below-the-fold or non-critical modules should carry `data-module-lazy`; the core loads them through `IntersectionObserver`.
+- Preload a first-viewport module chain only when the page truly needs it before interaction (for example `modulepreload` on the product form chain, or preload on hover for a predictable next step). Do not preload every module on every page.
+- The cart contract and `base.js` stay in the static graph because derived themes keep cart drawer or redirect logic on every page.
+
+Alpine remains the deliberate UI runtime for this theme; do not add parallel Web Components for the same responsibilities.
+
 ## Motion Runtime Boundary
 
 The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary motion work. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.

@@ -5,6 +5,21 @@ const path = require('node:path');
 const espree = require('espree');
 const fg = require('fast-glob');
 const { parseLiquidAst, walk } = require('./lib/liquid-ast');
+const { parseLineAllows, pushFailure } = require('./lib/lint-allow');
+const {
+    CHECK,
+    collectSettingsChainLiquidFailures,
+    collectSettingsChainCssFailures,
+    collectTypographyTierFailures,
+    collectStylesheetPlacementFailures,
+    collectStylesheetDirectiveFailures,
+    collectJsOutletFailures,
+    collectJsCopyChainFailures,
+    collectModuleRegistrationFailures,
+    collectSectionColorSchemeFailures,
+    collectVendorNoticeFailures,
+    collectLintAllowReasonFailures,
+} = require('./lib/theme-contracts');
 
 const LIQUID_GLOBS = [
     'layout/**/*.liquid',
@@ -56,11 +71,19 @@ const PROTECTED_RUNTIME_NAMES = new Set([
     'theme',
 ]);
 
+const LEGACY_CHECK = {
+    PROTECTED_RUNTIME: 'protected-runtime-name',
+    TAB_ARIA: 'tab-aria',
+    BUNDLED_ASSET: 'bundled-asset-tag',
+    ALPINE_EXPRESSION: 'alpine-expression',
+    INVALID_RGB_ALPHA: 'invalid-rgb-alpha',
+};
+
 const TAB_ARIA_SELECTED_ATTRS = ['aria-selected', ':aria-selected', 'x-bind:aria-selected'];
 const TAB_ARIA_CONTROLS_ATTRS = ['aria-controls', ':aria-controls', 'x-bind:aria-controls'];
 
 const BUNDLED_ASSET_TAG_NAMES = ['stylesheet', 'javascript'];
-const CSS_GLOBS = ['tailwind/**/*.css', 'assets/*.css'];
+const CSS_SOURCE_GLOBS = ['tailwind/**/*.css', 'assets/base.css', 'assets/gift-card.css'];
 
 const { extractBlocks } = require('./lint-embedded-compat.cjs');
 
@@ -104,7 +127,7 @@ function maskNonExecutableLiquid(text) {
     return masked;
 }
 
-function collectProtectedRuntimeNameFailures(ast, text, file, failures) {
+function collectProtectedRuntimeNameFailures(ast, text, file, failures, allowsByLine) {
     walk(ast, (node) => {
         if (node.type !== 'LiquidTag') {
             return;
@@ -120,11 +143,14 @@ function collectProtectedRuntimeNameFailures(ast, text, file, failures) {
             return;
         }
 
-        failures.push({
+        pushFailure(
+            failures,
+            allowsByLine,
             file,
-            line: lineAt(text, node.position?.start ?? 0),
-            message: `Do not ${node.name} over protected Shopify Liquid runtime name "${name}".`,
-        });
+            lineAt(text, node.position?.start ?? 0),
+            LEGACY_CHECK.PROTECTED_RUNTIME,
+            `Do not ${node.name} over protected Shopify Liquid runtime name "${name}".`,
+        );
     });
 }
 
@@ -156,7 +182,7 @@ function getHtmlAttributeValue(attributes, name) {
     return '';
 }
 
-function collectTabFailures(ast, text, file, failures) {
+function collectTabFailures(ast, text, file, failures, allowsByLine) {
     walk(ast, (node) => {
         if (!node.attributes) return;
 
@@ -175,15 +201,17 @@ function collectTabFailures(ast, text, file, failures) {
 
         if (missing.length === 0) return;
 
-        failures.push({
+        pushFailure(
+            failures,
+            allowsByLine,
             file,
-            line: lineAt(text, node.position?.start ?? 0),
-            message: `role="tab" is missing ${missing.join(', ')}.`,
-        });
+            lineAt(text, node.position?.start ?? 0),
+            LEGACY_CHECK.TAB_ARIA,
+            `role="tab" is missing ${missing.join(', ')}.`,
+        );
     });
 }
 
-// Alpine directives whose value is not a JavaScript expression.
 const ALPINE_NON_EXPRESSION_DIRECTIVES = new Set([
     'x-cloak',
     'x-ignore',
@@ -210,7 +238,6 @@ function isAlpineExpressionAttribute(name) {
     return !ALPINE_NON_EXPRESSION_DIRECTIVES.has(name.split(/[:.]/)[0]);
 }
 
-// Returns the decoded value, or null when it holds an entity this check cannot read.
 function decodeHtmlEntities(value) {
     let unknown = false;
     const decoded = value.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z][a-z0-9]*);/gi, (match, entity) => {
@@ -254,10 +281,8 @@ function findFunctionOrSequence(node, allowSequence) {
     return null;
 }
 
-// Parses the attribute as one JavaScript expression and returns why it is not simple, or null.
 const NOT_SINGLE_EXPRESSION = 'statements or invalid JavaScript (not a single expression)';
 
-// Module source type allows Alpine's top-level `await`.
 function parseSingleExpression(code) {
     const wrapped = `(${code}\n)`;
     let program;
@@ -273,7 +298,6 @@ function parseSingleExpression(code) {
 
     if (program.body.length !== 1 || program.body[0].type !== 'ExpressionStatement') return null;
 
-    // The wrapper's opening parenthesis must close only at the last token; otherwise the value escaped it.
     let depth = 0;
     const { tokens } = program;
     for (let index = 0; index < tokens.length; index += 1) {
@@ -292,7 +316,6 @@ function parseSingleExpression(code) {
 function describeAlpineExpressionProblem(name, code) {
     if (code.trim() === '') return null;
 
-    // x-for="(item, index) in items": only the binding on the left may be a comma list.
     const forParts = name.startsWith('x-for')
         ? code.match(/^\s*([\s\S]+?)\s+(?:in|of)\s+([\s\S]+)$/)
         : null;
@@ -309,7 +332,6 @@ function describeAlpineExpressionProblem(name, code) {
     return null;
 }
 
-// Attributes inside {% if %} / {% unless %} / {% case %} branches sit in LiquidTag children.
 function flattenAttributes(attributes, result = []) {
     for (const attr of attributes ?? []) {
         if (Array.isArray(attr.name)) {
@@ -323,7 +345,7 @@ function flattenAttributes(attributes, result = []) {
     return result;
 }
 
-function collectAlpineExpressionFailures(ast, text, file, failures) {
+function collectAlpineExpressionFailures(ast, text, file, failures, allowsByLine) {
     walk(ast, (node) => {
         for (const attr of flattenAttributes(node.attributes)) {
             const name = attr.name.map((part) => part.value || '').join('');
@@ -336,7 +358,6 @@ function collectAlpineExpressionFailures(ast, text, file, failures) {
                 reasons.push('Liquid');
             }
 
-            // A Liquid part stands in as a number so the rest of the expression still parses.
             const decoded = decodeHtmlEntities(
                 parts.map((part) => (part.type === 'TextNode' ? part.value || '' : '0')).join(''),
             );
@@ -350,16 +371,19 @@ function collectAlpineExpressionFailures(ast, text, file, failures) {
 
             if (reasons.length === 0) continue;
 
-            failures.push({
+            pushFailure(
+                failures,
+                allowsByLine,
                 file,
-                line: lineAt(text, attr.position?.start ?? node.position?.start ?? 0),
-                message: `Alpine attribute "${name}" contains ${reasons.join(', ')}; ${ALPINE_EXPRESSION_MESSAGE}`,
-            });
+                lineAt(text, attr.position?.start ?? node.position?.start ?? 0),
+                LEGACY_CHECK.ALPINE_EXPRESSION,
+                `Alpine attribute "${name}" contains ${reasons.join(', ')}; ${ALPINE_EXPRESSION_MESSAGE}`,
+            );
         }
     });
 }
 
-function collectBundledAssetTagFailures(ast, text, file, failures) {
+function collectBundledAssetTagFailures(ast, text, file, failures, allowsByLine) {
     const tagsByName = Object.fromEntries(BUNDLED_ASSET_TAG_NAMES.map((name) => [name, []]));
 
     walk(ast, (node) => {
@@ -379,13 +403,15 @@ function collectBundledAssetTagFailures(ast, text, file, failures) {
 
         for (let index = 1; index < tags.length; index += 1) {
             const node = tags[index];
-            failures.push({
+            pushFailure(
+                failures,
+                allowsByLine,
                 file,
-                line: lineAt(text, node.blockStartPosition?.start ?? node.position?.start ?? 0),
-                message:
-                    `Only one {% ${tagName} %} tag is allowed per file (found ${tags.length}). ` +
+                lineAt(text, node.blockStartPosition?.start ?? node.position?.start ?? 0),
+                LEGACY_CHECK.BUNDLED_ASSET,
+                `Only one {% ${tagName} %} tag is allowed per file (found ${tags.length}). ` +
                     'Multiple tags cause a syntax error in the theme editor.',
-            });
+            );
         }
 
         for (const node of tags) {
@@ -395,95 +421,50 @@ function collectBundledAssetTagFailures(ast, text, file, failures) {
 
             walk(node.body, (inner) => {
                 if (inner.type === 'LiquidVariableOutput') {
-                    failures.push({
+                    pushFailure(
+                        failures,
+                        allowsByLine,
                         file,
-                        line: lineAt(text, inner.position?.start ?? 0),
-                        message:
-                            `Liquid output tags are not allowed inside {% ${tagName} %} blocks. ` +
+                        lineAt(text, inner.position?.start ?? 0),
+                        LEGACY_CHECK.BUNDLED_ASSET,
+                        `Liquid output tags are not allowed inside {% ${tagName} %} blocks. ` +
                             'Liquid is not rendered in bundled asset tags.',
-                    });
+                    );
                 }
 
                 if (inner.type === 'LiquidTag') {
-                    failures.push({
+                    pushFailure(
+                        failures,
+                        allowsByLine,
                         file,
-                        line: lineAt(text, inner.position?.start ?? 0),
-                        message:
-                            `Liquid tags are not allowed inside {% ${tagName} %} blocks. ` +
+                        lineAt(text, inner.position?.start ?? 0),
+                        LEGACY_CHECK.BUNDLED_ASSET,
+                        `Liquid tags are not allowed inside {% ${tagName} %} blocks. ` +
                             'Liquid is not rendered in bundled asset tags.',
-                    });
+                    );
                 }
             });
         }
     }
 }
 
-function stripCssComments(text) {
-    return text.replace(/\/\*[\s\S]*?\*\//g, (match) => match.replace(/[^\n\r]/g, ' '));
-}
-
-function splitCssRules(text, rangeStart = 0, rangeEnd = text.length) {
-    const segment = text.slice(rangeStart, rangeEnd);
-    const stripped = stripCssComments(segment);
-    const rules = [];
-    let depth = 0;
-    let ruleStart = 0;
-
-    for (let index = 0; index < stripped.length; index += 1) {
-        const char = stripped[index];
-
-        if (char === '{') {
-            depth += 1;
-        } else if (char === '}') {
-            depth -= 1;
-
-            if (depth !== 0) {
-                continue;
-            }
-
-            const chunk = stripped.slice(ruleStart, index + 1);
-            const brace = chunk.indexOf('{');
-
-            if (brace !== -1) {
-                const selectorPart = chunk.slice(0, brace);
-                const selectorTrimmed = selectorPart.trim();
-                const leadingWhitespace = selectorPart.length - selectorPart.trimStart().length;
-                const absoluteOffset = rangeStart + ruleStart + leadingWhitespace;
-
-                if (selectorTrimmed.startsWith('@')) {
-                    const nestedStart = rangeStart + ruleStart + brace + 1;
-                    const nestedEnd = rangeStart + ruleStart + index;
-                    rules.push(...splitCssRules(text, nestedStart, nestedEnd));
-                } else {
-                    rules.push({
-                        selector: selectorTrimmed,
-                        decls: chunk.slice(brace + 1, -1),
-                        offset: absoluteOffset,
-                    });
-                }
-            }
-
-            ruleStart = index + 1;
-        }
-    }
-
-    return rules;
-}
-
-function collectInvalidRgbAlphaFailures(cssText, file, failures, options = {}) {
+function collectInvalidRgbAlphaFailures(cssText, file, failures, allowsByLine, options = {}) {
     const { baseOffset = 0, lineText = cssText } = options;
     const lines = cssText.split('\n');
     let offset = 0;
 
     for (const line of lines) {
-        const strippedLine = stripCssComments(line);
+        const strippedLine = line.replace(/\/\*[\s\S]*?\*\//g, (match) => match.replace(/[^\n\r]/g, ' '));
 
         if (INVALID_RGB_ALPHA_RE.test(strippedLine)) {
-            failures.push({
+            pushFailure(
+                failures,
+                allowsByLine,
                 file,
-                line: lineAt(lineText, baseOffset + offset),
-                message: INVALID_RGB_ALPHA_MESSAGE,
-            });
+                lineAt(lineText, baseOffset + offset),
+                LEGACY_CHECK.INVALID_RGB_ALPHA,
+                INVALID_RGB_ALPHA_MESSAGE,
+            );
         }
 
         offset += line.length + 1;
@@ -496,6 +477,8 @@ async function runThemeLint(root) {
 
     for (const file of files.map(formatPath)) {
         const text = await fs.readFile(path.join(root, file), 'utf8');
+        const allowsByLine = parseLineAllows(text);
+        collectLintAllowReasonFailures(text, file, failures);
         const { ast, error } = parseLiquidAst(text);
 
         if (error) {
@@ -507,24 +490,63 @@ async function runThemeLint(root) {
             continue;
         }
 
-        collectProtectedRuntimeNameFailures(ast, text, file, failures);
-        collectBundledAssetTagFailures(ast, text, file, failures);
-        collectTabFailures(ast, text, file, failures);
-        collectAlpineExpressionFailures(ast, text, file, failures);
+        collectProtectedRuntimeNameFailures(ast, text, file, failures, allowsByLine);
+        collectBundledAssetTagFailures(ast, text, file, failures, allowsByLine);
+        collectTabFailures(ast, text, file, failures, allowsByLine);
+        collectAlpineExpressionFailures(ast, text, file, failures, allowsByLine);
+        collectSettingsChainLiquidFailures(ast, text, file, failures, allowsByLine);
+        collectTypographyTierFailures(ast, text, file, failures, allowsByLine);
+        collectStylesheetPlacementFailures(ast, text, file, failures, allowsByLine, { file });
 
         for (const block of extractBlocks(text, 'stylesheet')) {
-            collectInvalidRgbAlphaFailures(block.code, file, failures, {
+            collectInvalidRgbAlphaFailures(block.code, file, failures, allowsByLine, {
+                baseOffset: block.offset,
+                lineText: text,
+            });
+            collectSettingsChainCssFailures(block.code, file, failures, allowsByLine, {
+                baseOffset: block.offset,
+                lineText: text,
+            });
+            collectStylesheetDirectiveFailures(block.code, file, failures, allowsByLine, {
                 baseOffset: block.offset,
                 lineText: text,
             });
         }
     }
 
-    const cssFiles = await fg(CSS_GLOBS, { cwd: root, dot: false, onlyFiles: true });
+    const cssFiles = await fg(CSS_SOURCE_GLOBS, { cwd: root, dot: false, onlyFiles: true });
 
     for (const file of cssFiles.map(formatPath)) {
         const text = await fs.readFile(path.join(root, file), 'utf8');
-        collectInvalidRgbAlphaFailures(text, file, failures);
+        const allowsByLine = parseLineAllows(text);
+        collectLintAllowReasonFailures(text, file, failures);
+        collectInvalidRgbAlphaFailures(text, file, failures, allowsByLine);
+        collectSettingsChainCssFailures(text, file, failures, allowsByLine);
+    }
+
+    const hasThemeLayout = await fs
+        .access(path.join(root, 'layout/theme.liquid'))
+        .then(() => true)
+        .catch(() => false);
+    const hasAssets = await fs.access(path.join(root, 'assets')).then(() => true).catch(() => false);
+    const hasVendorNotices = await fs
+        .access(path.join(root, 'THIRD_PARTY_NOTICES.md'))
+        .then(() => true)
+        .catch(() => false);
+
+    if (hasAssets) {
+        collectJsOutletFailures(root, failures);
+        collectJsCopyChainFailures(root, failures);
+    }
+
+    if (hasThemeLayout) {
+        collectModuleRegistrationFailures(root, failures);
+    }
+
+    collectSectionColorSchemeFailures(root, failures);
+
+    if (hasAssets && hasVendorNotices) {
+        collectVendorNoticeFailures(root, failures);
     }
 
     return failures;
@@ -556,12 +578,13 @@ if (require.main === module) {
 
 module.exports = {
     PROTECTED_RUNTIME_NAMES,
+    CHECK,
+    LEGACY_CHECK,
     maskNonExecutableLiquid,
     runThemeLint,
     collectProtectedRuntimeNameFailures,
     collectBundledAssetTagFailures,
     collectTabFailures,
     collectInvalidRgbAlphaFailures,
-    splitCssRules,
-    stripCssComments,
+    parseLineAllows,
 };

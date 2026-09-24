@@ -4,15 +4,7 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
     --spacing: 0.25rem;
-    --font-weight-medium: 500;
-    --animate-spin: spin 1s linear infinite;
-    --default-font-family: var(--font-sans);
-    --default-mono-font-family: var(--font-mono);
     --z-layer-dropdown: 20;
     --z-layer-popover: 30;
     --z-layer-skip-link: 700;
@@ -235,6 +227,15 @@
       max-width: 80rem;
     }
   }
+  .spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: spinner-turn var(--motion-duration-base) var(--motion-ease) infinite;
+  }
   .btn {
     display: inline-flex;
     cursor: pointer;
@@ -281,20 +282,18 @@
   .inline-block {
     display: inline-block;
   }
+  .spinner-lg {
+    width: 3rem;
+    height: 3rem;
+  }
   .h-4 {
     height: calc(var(--spacing) * 4);
-  }
-  .h-5 {
-    height: calc(var(--spacing) * 5);
   }
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
   .h-8 {
     height: calc(var(--spacing) * 8);
-  }
-  .h-12 {
-    height: calc(var(--spacing) * 12);
   }
   .field-textarea {
     width: 100%;
@@ -337,17 +336,11 @@
   .w-4 {
     width: calc(var(--spacing) * 4);
   }
-  .w-5 {
-    width: calc(var(--spacing) * 5);
-  }
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
-  }
-  .w-12 {
-    width: calc(var(--spacing) * 12);
   }
   .w-full {
     width: 100%;
@@ -364,9 +357,6 @@
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
-  .animate-spin {
-    animation: var(--animate-spin);
-  }
   .flex-col {
     flex-direction: column;
   }
@@ -382,25 +372,9 @@
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
-  .rounded-full {
-    border-radius: calc(infinity * 1px);
-  }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
-  }
-  .border-2 {
-    border-style: var(--tw-border-style);
-    border-width: 2px;
-  }
-  .border-current {
-    border-color: currentcolor;
-  }
-  .border-theme-text {
-    border-color: rgb(var(--color-foreground));
-  }
-  .border-t-transparent {
-    border-top-color: transparent;
   }
   .surface-component {
     background-color: rgb(var(--color-background));
@@ -632,10 +606,6 @@
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-  }
-  .font-medium {
-    --tw-font-weight: var(--font-weight-medium);
-    font-weight: var(--font-weight-medium);
   }
   .text-current {
     color: currentcolor;
@@ -1012,6 +982,17 @@
     z-index: var(--z-layer-popover);
   }
 }
+@keyframes spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .spinner-lg {
+    animation: none;
+    opacity: 0.65;
+  }
+}
 @property --tw-rotate-x {
   syntax: "*";
   inherits: false;
@@ -1036,10 +1017,6 @@
   syntax: "*";
   inherits: false;
   initial-value: solid;
-}
-@property --tw-font-weight {
-  syntax: "*";
-  inherits: false;
 }
 @property --tw-outline-style {
   syntax: "*";
@@ -1099,11 +1076,6 @@
   syntax: "*";
   inherits: false;
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -1113,7 +1085,6 @@
       --tw-skew-x: initial;
       --tw-skew-y: initial;
       --tw-border-style: solid;
-      --tw-font-weight: initial;
       --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;

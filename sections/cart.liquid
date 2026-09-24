@@ -171,7 +171,9 @@
         <div>
             {%- if cart.cart_level_discount_applications.size > 0 -%}
                 <div>
-                    <p class="font-medium">{{ 'cart.discounts' | t }}</p>
+                    <p class="body-md">
+                        <strong>{{ 'cart.discounts' | t }}</strong>
+                    </p>
                     <ul aria-label="{{ 'cart.discounts' | t }}">
                         {%- for discount_application in cart.cart_level_discount_applications -%}
                             <li class="text-theme-text">

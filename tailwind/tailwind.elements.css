@@ -61,6 +61,7 @@ field
     color: currentColor;
 
     @media (width < theme(--breakpoint-pc)) {
+        /* lint-allow settings-chain-css-typography: iOS Safari zoom floor for native fields */
         font-size: max(16px, 1em);
     }
 

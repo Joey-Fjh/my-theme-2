@@ -4,7 +4,7 @@ This reference stores motion decision boundaries that are too long for `AGENTS.m
 
 Inspect current source for exact selectors, timing values, and runtime internals.
 
-The mother template ships no concrete motion recipes; derived themes add them under this policy. The one exception is Tailwind's built-in `animate-spin` on loading indicators (`snippets/buy-buttons.liquid`, `snippets/loading.liquid`), kept as functional loading feedback.
+The mother template ships one loading recipe: `.spinner` / `.spinner-lg` in `tailwind/tailwind.animates.css`, used by `snippets/buy-buttons.liquid` and `snippets/loading.liquid`. Derived themes add further recipes under this policy.
 
 ## Motion Goals
 

@@ -18,6 +18,21 @@
     --breakpoint-pc: 48rem;
     --breakpoint-fw: 80rem;
 
+    /* Reset default Tailwind namespaces; project bridges follow. */
+    --font-*: initial;
+    --text-*: initial;
+    --font-weight-*: initial;
+    --leading-*: initial;
+    --tracking-*: initial;
+    --color-*: initial;
+    --ease-*: initial;
+    --animate-*: initial;
+
+    /* Keyword colors survive a --color-* reset (Tailwind v4 theme docs). */
+    --color-transparent: transparent;
+    --color-current: currentColor;
+    --color-inherit: inherit;
+
     /* font */
     --font-heading: var(--font-heading-family);
     --font-body: var(--font-body-family);

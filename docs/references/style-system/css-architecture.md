@@ -28,13 +28,47 @@ Tailwind scans every token in the `@source` Liquid files, including `{% schema %
 | Snippet/section inline custom properties | Per-render dynamic variables | Valid only when scoped to that render tree |
 | `tailwind/tailwind.*.css` | CSS consumption of tokens | Prefer direct `var()` for geometry/motion internals |
 
-## Bridge Rules
+## Global settings chain
 
-Bridge a CSS variable into `@theme inline` only when Liquid markup needs a Tailwind utility such as `bg-*`, `text-*`, spacing, breakpoint, or z-index utility.
+Typography and color flow only through `config/settings_schema.json` → `snippets/css-variables.liquid` → tokens → tier or scheme classes. Do not bypass the chain with default Tailwind typography or palette utilities, arbitrary values (`text-[14px]`, `bg-[#fff]`), or literal typography/color properties in first-party CSS.
 
-Do not bridge variables that are only consumed inside CSS layer rules. Examples that intentionally stay direct `var()` consumption:
+`tailwind/tailwind.input.css` resets Tailwind default namespaces to `initial` for font family, font size, font weight, line height, letter spacing, palette colors, easing, and animation (as breakpoints already are). Project bridges remain; keyword colors `transparent`, `current`, and `inherit` are re-declared after the color reset so utilities such as `text-current` keep working.
 
-- `--motion-duration-*`, `--motion-ease-*`
+A typography value passes when it derives from the chain or from the inherited, already-derived value: `var(--font-*)` alone or inside `calc()` / `max()` / `min()` / `clamp()`, `inherit`, `unset`, `bolder`, `lighter`, or an `em` / `%` size. Literals such as `bold`, `600`, `1rem`, or `14px` fail, because a settings change would not reach them.
+
+```css
+/* Don't: a literal that ignores the heading weight setting */
+.card__title { font-weight: 600; }
+
+/* Do: take the value from the chain */
+.card__title { font-weight: var(--font-heading-weight); }
+```
+
+`lint:theme` enforces Liquid class usage and first-party CSS (`tailwind/**/*.css`, `assets/base.css`, `assets/gift-card.css`, and `{% stylesheet %}` blocks). Regenerate `assets/tailwind.output.css` with `npm.cmd run build:tw`; do not hand-edit it.
+
+**Accepted `lint-allow` exceptions (document every new one here):**
+
+| Location | Check id | Reason |
+| --- | --- | --- |
+| `sections/search.liquid` (`{% stylesheet %}`) | `settings-chain-css-typography` | iOS Safari zoom floor for search inputs (`max(16px, …)`). |
+| `snippets/quantity-selector.liquid` (`{% stylesheet %}`) | `settings-chain-css-typography` | iOS Safari zoom floor for quantity inputs. |
+| `tailwind/tailwind.elements.css` (`.field`) | `settings-chain-css-typography` | iOS Safari zoom floor for native fields. |
+
+## Bridge and recipe rules
+
+Two valid chains exist:
+
+1. **Bridge to a utility** — add a variable to `@theme inline` only when Liquid markup needs an atomic Tailwind utility (`bg-theme-bg`, `font-heading`, breakpoints, z-index layers).
+2. **Recipe in a CSS layer** — typography tiers (`tailwind.typography.css`), motion capabilities (`tailwind.animates.css`), and other shared recipes consume tokens through plain CSS `var()` and `@utility` definitions in the Tailwind build. Do not bridge recipe-only tokens such as `--motion-duration-*` or `--motion-ease-*` into `@theme inline`.
+
+Don't bridge motion duration or easing into `@theme`; use a recipe class instead:
+
+```css
+/* tailwind/tailwind.animates.css */
+@utility spinner {
+    animation: spinner-turn var(--motion-duration-base) var(--motion-ease) infinite;
+}
+```
 
 ## Layer Ownership
 
@@ -64,7 +98,8 @@ Typography tier CSS lives in `tailwind/tailwind.typography.css`. Native heading 
 The Skeleton's stable typography interface is `--font-body-*` and `--font-heading-*`, emitted from theme settings by `snippets/css-variables.liquid`. Derived themes change the values through settings or by redefining the properties, and add further roles (such as a subtitle or eyebrow style) themselves.
 
 - Semantic `h1`–`h6` level is chosen for document outline; visual `heading-h*` tier is chosen independently for design size. Example: `<h3 class="heading-h2">` when outline needs `h3` but the visual target is a larger tier.
-- `heading-h*` classes remain restricted to semantic heading elements. No lint checks this yet; review enforces it.
+- `heading-h*` classes remain restricted to semantic heading elements (`lint:theme`, `typography-tier-heading`).
+- `body-*` tiers belong on non-heading elements only (`lint:theme`, `typography-tier-body-on-heading`).
 - Display tiers such as `heading-4xl` through `heading-xl` remain valid where intended. Section subtitles use a `body-*` size tier alone and inherit body font settings.
 - `body-*` tiers are for non-heading body semantics only; do not put them on headings.
 - Default body copy inherits global body settings; do not add section-level body text-size settings for ordinary paragraphs.
@@ -128,17 +163,11 @@ Branded accelerated checkout buttons render in closed shadow DOM; only supported
 ```text
 Theme setting / token source
   -> css-variables.liquid (`--motion-duration-*`, `--motion-ease-*`)
-  -> CSS consumers through direct `var()` usage
-  -> tailwind.animates.css owns keyframe and animation capabilities
-  -> Alpine component factories registered through the adapter own trigger state and teardown
+  -> tailwind.animates.css recipe classes (for example `.spinner`)
+  -> Alpine component factories own trigger state and teardown
 ```
 
-Rules:
-
-- Do not restore `snippets/motion-transition.liquid`. <!-- doc-paths: ignore -->
-- Do not scatter `x-transition:*` recipes for ordinary state motion.
-- Do not hide critical first-viewport content behind animation completion.
-- Use `docs/references/architecture/motion-architecture.md` for motion classification.
+Don't use `animate-spin` or `x-transition:*` for ordinary loading or state motion; use a motion recipe class such as `.spinner` in `tailwind/tailwind.animates.css`. Do not hide critical first-viewport content behind animation completion. Use `docs/references/architecture/motion-architecture.md` for classification.
 
 ## Stylesheet Placement Constraints
 
