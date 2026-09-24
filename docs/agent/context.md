@@ -4,4 +4,4 @@ Holds the plan currently under execution and its status. Nothing else. Unresolve
 
 Last updated: 2026-09-24.
 
-No plan is under execution. Batch G is complete; its record lives in Git.
+No plan is under execution. Batch H is complete; its record lives in Git.
