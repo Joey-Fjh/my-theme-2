@@ -69,8 +69,6 @@ If `img_class` already contains an `object-*` utility, including responsive vari
 - `image.liquid` is the base image primitive.
 - Frame mode is the default for current callers: product media, the product card, cart line items, collection and blog cards, and the article image. The header logo passes `mode: 'natural'`.
 - `placeholder_style: 'plain'` and `position` are available API with no current caller; keep them working when changing the snippet.
-- Natural-mode is used for cases where preserving intrinsic ratio matters.
-- Focal points are owned by Shopify `image_tag` unless the caller passes an explicit whitelist `position`.
 
 ## Review Checklist
 

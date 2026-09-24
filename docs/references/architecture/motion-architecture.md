@@ -26,7 +26,7 @@ The mother template ships one loading recipe: `.spinner` / `.spinner-lg` in `tai
 | Motion need | Default path | Do not |
 | --- | --- | --- |
 | Hover/focus, loader, decorative loop, pause/running | CSS capability utility | GSAP |
-| Open/close, show/hide, active/inactive, loading visibility | Alpine state + direct CSS/state classes when needed | GSAP, restored `motion-transition` |
+| Open/close, show/hide, active/inactive, loading visibility | Alpine state + direct CSS/state classes when needed | GSAP, `x-transition` (`lint:theme`) |
 | Section or media reveal | Derived theme defines it under this policy | GSAP unless classified as complex choreography |
 | Complex narrative choreography | GSAP only after explicit classification and approval | — |
 

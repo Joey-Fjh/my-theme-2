@@ -10,22 +10,10 @@ when_to_use: >
 
 Use this skill for project-level i18n validation. Read `docs/references/code-review/i18n-checklist.md` for locale ownership, classification, and review boundaries.
 
-## When To Run
-
-Run after changes to:
-
-- `locales/**/*.json`
-- Liquid visible text or accessible attributes (`aria-label`, `alt`, `placeholder`, `title`)
-- Section, Theme Block, or theme settings schema copy
-- Preset names or categories
-
-Skip this skill for merchant-owned content, product data, or runtime variables. Do not rewrite theme files just to satisfy the linter.
-
 ## Commands
 
-- Fast i18n lint: `npm.cmd run lint:i18n`
-- Focused automated checks: `npm.cmd run test:i18n`
-- Aggregate gate that includes i18n lint: `npm.cmd run lint`
+- `npm.cmd run lint:i18n` after the changes listed in the checklist's "Read when" line; `npm.cmd run test:i18n` after validator changes.
+- Merchant-owned content, product data, and runtime variables are out of scope. Do not rewrite theme files just to satisfy the linter.
 
 Shopify Theme Check remains the platform authority. This validator supplements Theme Check with duplicate keys, missing project locale keys, unused locale keys (`lint-i18n-unused.js`; intentional keeps go in its `ALLOWLISTED_PREFIXES` with a reason), hardcoded user-visible copy, and schema/preset boundary checks.
 

@@ -2,9 +2,7 @@
 
 Internal Shopify Skeleton Theme mother template for building maintainable and extensible themes.
 
-This repository is the engineering baseline for future Shopify themes. Its storefront inventory follows Shopify's official `skeleton-theme`, with only explicitly accepted project additions such as the lifecycle/runtime and Agent configuration. It aims to stay minimal, modular, extensible, maintainable, and verifiable; derived themes own business features, page design, visual uniqueness, and Theme Store submission features.
-
-Project rules and task routing live in [AGENTS.md](AGENTS.md). Short cross-session state lives in [docs/agent/context.md](docs/agent/context.md).
+Identity, inventory boundary, and accepted scope: [docs/project.md](docs/project.md). Rules, task routing, and validation commands: [AGENTS.md](AGENTS.md).
 
 ## Requirements
 
@@ -130,16 +128,14 @@ Then deploy through Git:
 
 ## Repository Boundaries
 
-- Do not edit `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` without explicit authorization.
-- Do not manually edit generated Tailwind output, generated icons, or minified vendor assets.
-- `icons/` is a temporary SVG input directory. Create it only when importing icons, run `npm.cmd run build:svg`, then clear the staging input.
-- `AGENTS.md` is the canonical rule entry. `docs/agent/context.md` holds the plan under execution and its status; `docs/agent/board.md` holds open decisions.
+Merchant-owned configuration, generated and vendor files, and the `icons/` staging directory follow [AGENTS.md](AGENTS.md) (Core Rules and Gotchas).
 
 ## Documentation
 
 - [AGENTS.md](AGENTS.md): canonical repository rules and validation commands
 - [docs/project.md](docs/project.md): this repository's identity, inventory boundary, and accepted scope
-- [docs/agent/context.md](docs/agent/context.md): short current-state and cross-session handoff
+- [docs/agent/board.md](docs/agent/board.md): open decisions and deferred ideas
+- [docs/agent/context.md](docs/agent/context.md): the plan under execution and its status; empty when no plan runs
 - [docs/references/](docs/references/): on-demand architecture and review references
 
 ## License

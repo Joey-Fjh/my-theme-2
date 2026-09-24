@@ -56,8 +56,5 @@ Reviews use the output format in the Output section of `.agents/roles/verifier.m
 
 ## Gate Validation
 
-- During development, run the smallest command that proves each change; see `AGENTS.md`.
+- Commands per change surface and for release gates: `AGENTS.md` Validation. Icon import: `css-architecture.md` "SVG Icons".
 - Tooling enforces many architecture, i18n, and compatibility rules; review-only gaps remain launch blockers when user-facing.
-- Before PR, version/release, or Theme Store submission, run `npm.cmd run lint` and `npm.cmd test`.
-- Run `npm.cmd run scan:compat` when Tailwind source changed.
-- Run `npm.cmd run build:svg` when an icon is staged for import or replacement, review the resulting asset, and clear the ignored staging input.

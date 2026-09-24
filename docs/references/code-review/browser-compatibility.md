@@ -41,11 +41,7 @@ The following remain release-test responsibilities, not static lint guarantees:
 
 ## Commands
 
-- `npm.cmd run lint:compat` — static compatibility scan for first-party CSS, JS, and embedded Liquid stylesheet/javascript blocks.
-- `npm.cmd run lint:compat:embedded` — embedded Liquid block scan; invoked by `lint:compat`.
-- `npm.cmd run scan:compat` — rebuild Tailwind output, then run compatibility checks. Use after Tailwind source changes.
-
-Detailed allowlists and generated-artifact rules live in lint source and config, not in this reference.
+Commands: `AGENTS.md` Validation. `lint:compat` covers first-party CSS, JS, and embedded Liquid blocks; `scan:compat` rebuilds Tailwind output first. Detailed allowlists and generated-artifact rules live in lint source and config, not in this reference.
 
 ## Source Adoption Rules
 

@@ -10,16 +10,13 @@ when_to_use: >
 
 Use this skill for project-level architecture and static compatibility validation. Shopify Theme Check remains the platform authority for schema validity, parser-blocking scripts, and other built-in theme rules. This skill supplements Theme Check with project contracts enforced by `lint:theme`.
 
-## Command Families
+## Commands
 
-- `npm.cmd run lint:theme` — every check listed under **What `lint:theme` Covers** below.
-- `npm.cmd run lint:liquid-syntax` — strict Liquid output parsing guard beyond ordinary Theme Check usage.
-- `npm.cmd run lint:compat` — first-party CSS, JS, and embedded Liquid `{% stylesheet %}` / `{% javascript %}` compatibility checks.
-- `npm.cmd run lint:compat:embedded` — embedded Liquid block scan; part of `lint:compat`, not `lint:theme`.
-- `npm.cmd run scan:compat` — rebuild Tailwind output, then run all compatibility checks.
-- `npm.cmd run test:theme-architecture` — focused fixture tests for the scripts above.
-- `npm.cmd run test:section-stylesheet-carry` — DOM tests for `SectionRefresher.carryInnerSectionStylesheet` in `assets/https.js`.
-- `npm.cmd run lint` — aggregate gate that includes the commands above when a broader check is requested.
+Which command proves which change: `AGENTS.md` Validation. Skill-specific additions:
+
+- `npm.cmd run test:theme-architecture` — fixture tests for `lint:theme`, `lint:liquid-syntax`, and `lint:compat:embedded`; run after changing those scripts.
+- `npm.cmd run test:section-stylesheet-carry` — DOM tests for `SectionRefresher.carryInnerSectionStylesheet` in `assets/https.js`; run after changing it.
+- `lint:compat:embedded` is part of `lint:compat`, not `lint:theme`.
 
 ## Exception comments
 
@@ -52,25 +49,12 @@ Liquid files under `layout/`, `sections/`, `snippets/`, `blocks/`, and `template
 | `raw-svg` | No raw `<svg>` outside `snippets/icons.liquid`. |
 | `bare-img` | No bare `<img>` outside `snippets/image.liquid` (`templates/gift_card.liquid` excepted). |
 | `x-transition` | No `x-transition*` in Liquid; use CSS motion recipes. |
-| `js-alpine-outlet` | `window.Alpine` / `Alpine.` only in `alpine.adapter.js`. |
-| `js-fetch-outlet` | `fetch(` / `XMLHttpRequest` only in `https.js`. |
-| `js-cart-route-outlet` | `/cart/` and `routes.cart_` only in `cart.contract.js`. |
-| `js-document-outlet` | Global listeners (`document.addEventListener` / `window.addEventListener`) only in `base.js`, `events.js`, `https.js`, `utils.js`, `alpine.adapter.js`. |
+| `js-alpine-outlet`, `js-fetch-outlet`, `js-cart-route-outlet`, `js-document-outlet` | One outlet per side effect (Alpine, HTTP, cart routes, global listeners); owners in `javascript-runtime.md` "One outlet per side effect". |
 | `js-user-visible-copy` | No user-visible string literals in `textContent` / `innerText` / `innerHTML`, `setAttribute` for `aria-label` / `title` / `placeholder` / `alt`, or `alert(`. |
-| `module-data-module-id` | Every `x-data` opening tag carries `data-module-id` on the same tag. |
-| `module-import-map` | Every import-map entry maps through `asset_url` to an existing asset; every `data-module-id` has an entry that maps to the asset named after it (`accordion` → `accordion.js`). |
-| `module-import-map-unused` | Every import-map entry is used by a `data-module-id` or an `import` in `assets/*.js`. |
+| `module-data-module-id`, `module-import-map`, `module-import-map-unused` | Module registration and import-map mapping; contract in `javascript-runtime.md` "Module graph contracts". |
 | `section-color-scheme` | Sections with a `color_scheme` setting apply `color-{{ section.settings.color_scheme }}` on the frame. |
 | `vendor-notices` | Every `assets/vendor-*` file has a `THIRD_PARTY_NOTICES.md` entry. |
 | `lint-allow-reason` | `lint-allow` comments must include a check id and reason. |
-
-## When To Run
-
-- After Liquid, CSS, JS, or `tailwind/tailwind.input.css` changes that touch the checks above.
-- After embedded stylesheet/javascript block changes: run `lint:compat`.
-- After Tailwind source changes: run `scan:compat`.
-- After changes to `SectionRefresher.carryInnerSectionStylesheet` in `assets/https.js`: run `test:section-stylesheet-carry`.
-- Do not auto-fix merchant-owned configuration or content while resolving lint failures.
 
 ## Reporting
 

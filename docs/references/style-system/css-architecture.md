@@ -101,7 +101,6 @@ The Skeleton's stable typography interface is `--font-body-*` and `--font-headin
 - `heading-h*` classes remain restricted to semantic heading elements (`lint:theme`, `typography-tier-heading`).
 - `body-*` tiers belong on non-heading elements only (`lint:theme`, `typography-tier-body-on-heading`).
 - Display tiers such as `heading-4xl` through `heading-xl` remain valid where intended. Section subtitles use a `body-*` size tier alone and inherit body font settings.
-- `body-*` tiers are for non-heading body semantics only; do not put them on headings.
 - Default body copy inherits global body settings; do not add section-level body text-size settings for ordinary paragraphs.
 - Component-owned typography exceptions may live in component/snippet CSS when part of a reusable API. If a component overrides body size, it must not imply body sliders still control it unless wired to its own scoped API.
 - `.rte h1` through `.rte h6` map rich-text/merchant HTML headings and are independent from page outline semantics.
@@ -112,36 +111,18 @@ The Skeleton's stable typography interface is `--font-body-*` and `--font-headin
 <h2 class="heading-h6">{{ product.title }}</h2>
 ```
 
-**Scale at default settings** (`html { font-size: 62.5%; }`, mobile and desktop body base 16px):
+Tier sizes are computed in `tailwind/tailwind.typography.css` from `--font-heading-scale` and `--font-body-size` / `--font-body-size-mobile`. `body-md`, `body-sm`, and `body-xs` keep mobile floors of 14px, 13px, and 12px through `max()`.
 
-| Tier | Mobile | Desktop |
-| --- | --- | --- |
-| heading-h1 | 30px | 40px |
-| heading-h2 | 22px | 26px |
-| heading-h3 | 18px | 20px |
-| heading-h4 | 16px | 18px |
-| heading-h5 | 15px | 16px |
-| heading-h6 | 14px | 14px |
-| body-3xl | 22px | 24px |
-| body-2xl | 20px | 22px |
-| body-xl | 18px | 20px |
-| body-lg | 16px | 18px |
-| body-md | 14px (floor) | 16px |
-| body-sm | 13px (floor) | 14px |
-| body-xs | 12px (floor) | 12px |
-
-`heading-4xl` through `heading-xl` are unchanged. `body-md`, `body-sm`, and `body-xs` use `max()` floors on mobile so small ratios never drop below 14px, 13px, or 12px.
-
-Exact tier ratios and token math live in `tailwind/tailwind.typography.css`.
+Add a tier only in `tailwind/tailwind.typography.css` on the `heading-base` / `body-base` stack; do not add unbounded tiers such as `body-8xl`. A one-off size keeps the tier stack and overrides `font-size` through a local CSS variable derived from `--font-*`.
 
 ## Color, Surface, And Inline Style
 
 - Merchant color schemes produce RGB custom properties through `snippets/css-variables.liquid`.
-- Those properties are comma-separated triplets (`r, g, b`). Write alpha as `rgba(var(--color-foreground), 0.55)`. The form `rgb(var(--color-foreground) / 0.55)` expands to `rgb(r, g, b / 0.55)`, which browsers reject and drop silently. `lint:theme` fails `rgb(var(--color-*) / alpha)` in `{% stylesheet %}` blocks and first-party CSS (`tailwind/**/*.css`, `assets/*.css`).
+- Those properties are comma-separated triplets (`r, g, b`). Write alpha as `rgba(var(--color-foreground), 0.55)`. The form `rgb(var(--color-foreground) / 0.55)` expands to `rgb(r, g, b / 0.55)`, which browsers reject and drop silently. `lint:theme` fails `rgb(var(--color-*) / alpha)` in `{% stylesheet %}` blocks and first-party CSS (`tailwind/**/*.css`, `assets/base.css`, `assets/gift-card.css`).
 - The first configured color scheme is the `:root` token fallback; it is not the implicit visible page-canvas decision.
 - `settings.page_canvas_color_scheme` explicitly owns the visible `<body>` canvas behind sections, during overscroll, and in areas without their own color-scheme scope.
 - Section, overlay, drawer, modal, and component color-scheme scopes override the body canvas normally.
-- Use one surface role per node: `color-{{ section.settings.color_scheme }}` on the section frame, or `surface-component` on nested overlays such as dropdown panels.
+- Use one surface role per node: `color-{{ section.settings.color_scheme }}` on the section frame, or `surface-component` on nested overlays such as dropdown panels. `lint:theme` (`section-color-scheme`) fails a section with a `color_scheme` setting whose root lacks the class.
 - Use semantic tokens or scheme utilities for theme UI; avoid hardcoded brand colors unless documented as a platform bridge or local effect.
 - Allowed inline styles: scoped CSS custom properties from Liquid, platform-required media values, and per-render geometry that static utilities cannot express.
 - Use semantic z-index utilities or variables for layered UI.
@@ -167,7 +148,7 @@ Theme setting / token source
   -> Alpine component factories own trigger state and teardown
 ```
 
-Don't use `animate-spin` or `x-transition:*` for ordinary loading or state motion; use a motion recipe class such as `.spinner` in `tailwind/tailwind.animates.css`. Do not hide critical first-viewport content behind animation completion. Use `docs/references/architecture/motion-architecture.md` for classification.
+Don't use `animate-spin` or `x-transition:*` for ordinary loading or state motion; use a motion recipe class such as `.spinner` in `tailwind/tailwind.animates.css`. Classification, first-viewport visibility, and reduced motion: `docs/references/architecture/motion-architecture.md`.
 
 ## Stylesheet Placement Constraints
 

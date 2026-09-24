@@ -1,6 +1,6 @@
 # Internationalization Checklist
 
-Read when: changing locale JSON, translated Liquid strings, schema labels, preset copy, or hardcoded user-visible text.
+Read when: changing locale JSON, translated Liquid strings, accessible attributes (`aria-label`, `alt`, `placeholder`, `title`), section, block, or theme-settings schema copy, preset names or categories, or hardcoded user-visible text.
 
 Shopify-specific locale ownership boundaries. `AGENTS.md` remains authoritative.
 
@@ -40,8 +40,8 @@ Context matters. Only inspect Shopify-supported schema-locale fields inside sche
 
 ## Validation
 
-For locale or i18n changes during development, run `npm.cmd run lint:i18n`. For focused regression checks on the project validator itself, run `npm.cmd run test:i18n`.
+Commands: `AGENTS.md` Validation and `.agents/skills/check-i18n/SKILL.md`.
 
 The project validator detects user-visible static text with Unicode letters, not English-only copy. It still ignores Liquid expressions, URLs, machine tokens in schema defaults, and merchant/runtime data. Uppercase storefront copy such as `SALE` or `OK` is not globally exempt.
 
-Reserve `npm.cmd run lint` and `npm.cmd test` for explicit user request or before opening a PR, version/release, or Theme Store submission. Inspect `locales/en.default.json` and `locales/en.default.schema.json` directly for the current key set.
+Inspect `locales/en.default.json` and `locales/en.default.schema.json` directly for the current key set.

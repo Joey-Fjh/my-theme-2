@@ -241,9 +241,9 @@ The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary 
 | Feature modules | `accordion.js`, `buy-buttons.js`, `cart-page.js`, `dropdown.js`, `localization-switcher.js`, `product-gallery.js`, `quantity-selector.js`, `section-pagination.js`, `variant-picker.js` — each holds its Alpine factory and `define()` call |
 | Alpine stores | `alpine.store.cart.js` |
 | HTTP and section refresh | `https.js` |
-| Shared utilities | `utils.js`, `quantity-constraints.js`, motion helpers |
+| Shared utilities | `utils.js`, `quantity-constraints.js` |
 | Gift card (outside module graph) | `gift-card.js` |
 
 ## Inspection Rule
 
-For section lifecycle, cart flow, HTTP refresh, events, accessibility semantics, and script loading, inspect current `layout/theme.liquid`, `sections/`, `snippets/`, and `assets/` implementations instead of deleted pre-migration patterns.
+For section lifecycle, cart flow, HTTP refresh, events, accessibility semantics, and script loading, inspect current `layout/theme.liquid`, `sections/`, `snippets/`, and `assets/` implementations.
