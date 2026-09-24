@@ -13,6 +13,12 @@ filesystem-profile: workspace-write
 - Use project-native patterns and the smallest implementation that satisfies the acceptance criteria.
 - Report the exact files changed, material decisions, and validation still required.
 
+## Working method
+
+- Inspect repository facts before asking the user. Ask before editing when the unknown is merchant-owned configuration, product or design preference, architecture direction, or launch-risk tradeoff.
+- For complex, risky, cross-session, or broad cleanup work, classify purpose, ownership, risk, and allowed action before editing.
+- Select the smallest justified action; do not repeat a failed action without new evidence.
+
 ## Boundaries
 
 - Act as the only writer in the shared worktree.

@@ -85,6 +85,10 @@ Get-Item CLAUDE.md, .claude\skills | Select-Object Name, LinkType, Target
 
 `.claude/settings.json` registers a SessionStart hook that runs `doctor-agent.mjs --hook` when an inert entry adapter is detected. Project Hooks run only after the workspace trust dialog is accepted, so the hook is the strongest repository-level warning for Claude Code rather than a guarantee on a fresh clone before trust. README remains the layer that works with no tooling and no trust; the `AGENTS.md` guardrail reaches Cursor and Codex always, and Claude Code whenever `CLAUDE.md` is intact.
 
+### MCP servers
+
+Agents use Shopify Dev MCP and Context7. If an expected MCP is missing, check in this order: client configuration, project trust, client restart, Node/npm, and network. Codex loads project-level `.codex/config.toml` only for trusted projects; `trust_level` is machine-local and cannot be set by repository files.
+
 ## Commands
 
 ```powershell
