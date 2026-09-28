@@ -48,7 +48,7 @@ Do not redesign sections, rename schema identifiers, change business logic while
 - `.gitignore` controls version-control scope.
 - `.prettierignore` controls formatting scope only.
 
-Tracked governance files such as `AGENTS.md`, `.agents/`, and `docs/references/` must remain in Git and must be excluded from Shopify upload. Formatting scope for these files follows `.prettierignore`; do not add broad ignore patterns that hide source files, runtime files, schemas, locales, sections, snippets, templates, or config from review.
+Tracked governance files such as `AGENTS.md`, `.agents/`, and `docs/references/` must remain in Git and must be excluded from Shopify upload. Formatting scope for these files follows `.prettierignore`; do not add broad ignore patterns that hide source files, runtime files, schemas, locales, sections, snippets, templates, or config from review. The one formatting exception is merchant-owned JSON that the Shopify GitHub integration writes back (`templates/*.json`, `config/settings_data.json`, `sections/*-group.json`): Shopify controls its formatting, so `.prettierignore` excludes it, while it stays tracked in Git and in review.
 
 ## Review Output
 
