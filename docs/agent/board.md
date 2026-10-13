@@ -22,7 +22,22 @@ Last updated: 2026-10-14.
 
 ## Open decisions
 
-None.
+- **Decided for now (user, 2026-10-14): Refero for references and Stitch as the design agent; motion and inspiration come from the user's other bookmarked sites** (Godly, Pinterest, Lovart, MotionSites, React Bits, Uiverse, Aceternity, Designeer, a card-image gallery, and Utopia for fluid scales). Provisional: the points listed under "Not verified" below are still open and are answered by the first real use. The history of the decision follows.
+  - **What exists:** the procedure, the places a value maps to, and the layout and contrast checks.
+  - **What is undecided:** what the input of step 1 is for a theme produced in a batch, and what turns it into `design.md`.
+  - **Earlier decisions in the source record, still the user's unless changed:** a design gives intent, never values; values come from the theme's own scales; "we replace the designer"; design production is the user's base design plus a design tool or agent constrained by our vocabulary, with the tool not chosen and its ability to take our tokens as constraints not checked.
+  - **Decided (user, 2026-10-14): a design draft is the input, and it is read for its values.** The derived theme could only adjust tokens because its implementation already existed; a theme started from this repository has no such constraint. The entry is this repository's `design.md` and token defaults; the design draft replaces or supplements them, and the theme is written from the draft. This replaces "a design gives intent, never values" for themes made from this repository, so the Principle section of `docs/references/style-system/design-to-delivery.md` has to change (a rule change, with the user's approval, in its own small batch).
+  - **Constraint (user, 2026-10-14):** Figma is out because it works badly with agents: its MCP is paid and limited. The source of the design draft has to be one an agent can read freely.
+  - **Still open:** which source. First search (coordinator, 2026-10-14, one web search per candidate, third-party pages only, nothing verified against official documentation):
+    - **Google Stitch:** reported to hand a design to a coding agent three ways: a DESIGN.md file (tokens, typography, spacing, component rules), an MCP server authenticated with an API key from Stitch's settings, and HTML/CSS from its code panel. The DESIGN.md format this repository already follows is published by Google Labs. To verify from Google's own pages: whether the export is that format, whether Stitch accepts an existing DESIGN.md as a constraint, the MCP's cost and limits, and which clients are supported.
+    - **Penpot:** its own page describes a free, open, self-hostable MCP server built on its plugin API, with design tokens readable by agents. It is a drawing tool, so someone or something still has to make the design in it.
+  - **User's intent (2026-10-14):** a dedicated design agent makes the design. The user's candidates are Stitch (the design agent) and Refero (references).
+  - **Verification attempt (coordinator, 2026-10-14):**
+    - **Verified from the primary source** (`https://github.com/google-labs-code/design.md` and its README): the format is alpha; its CLI `@google/design.md` has `lint` (structure, broken token references, WCAG contrast, JSON output), `diff` (token-level changes between two files), `export` (`css-tailwind`: a Tailwind v4 `@theme` block; `json-tailwind`; `dtcg`) and `spec`. The repository's About section links to Stitch's documentation for the specification.
+    - **Verified to exist, content not readable:** Stitch has official documentation pages titled "What is DESIGN.md? - Stitch Docs" and "Stitch via MCP - Stitch Docs" (`stitch.withgoogle.com/docs/…`). They render in the browser only, so the fetch returned the titles and no body. Refero's page (`refero.design/mcp`) likewise.
+    - **Not verified:** whether Stitch accepts an existing DESIGN.md as a constraint; the MCP's cost, quota and supported clients; what Refero's MCP costs. Third-party pages say: the Stitch MCP is a remote server at `stitch.googleapis.com` authenticated with an API key header or Google Cloud OAuth; Refero Styles is a library of DESIGN.md files extracted from real sites, and Refero has an MCP server.
+    - **Next:** the user opens the two Stitch pages and pastes their text, or a short hands-on trial outside this repository answers the open points.
+  - **Researched and not adopted (2026-10-13):** `ui-ux-pro-max`, `taste-skill` `design-taste-frontend`, Playwright MCP. Not checked: whether `taste-skill` `stitch-skill` exports the DESIGN.md format this repository uses.
 
 ## Evidence
 

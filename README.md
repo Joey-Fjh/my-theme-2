@@ -133,7 +133,7 @@ After starting, the derived theme makes these edits:
 - `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
 - Rewrite `docs/project.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
 - Empty `docs/agent/board.md` and `docs/agent/context.md`.
-- Follow [Design to delivery](docs/references/style-system/design-to-delivery.md) to get from a design to the theme's settings, default preset, and sections.
+- Follow [Design to delivery](docs/references/style-system/design-to-delivery.md) to get from a design to the theme's settings, default preset, and sections. The starting point is the baseline [design.md](docs/design/design.md), which the theme replaces or supplements from its design draft.
 - Resetting `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` needs its own authorization in the derived theme.
 
 Then deploy through Git:
