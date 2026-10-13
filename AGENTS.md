@@ -54,7 +54,7 @@ Classify ambiguous issues before fixing them. If an issue could be code, configu
 - `docs/project.md` defines this repository's identity, inventory boundary, and accepted scope. Shopify best practices govern how retained code and approved additions are implemented.
 - Theme Store submission completeness is a gate only when the user scopes a batch or theme to submission; adopting its accessibility and browser baselines does not import its feature inventory. Shopify Horizon is a reference for organization only (section and block structure): do not copy its code or features. Storefront features and review standards come only from Shopify's official documentation via Shopify Dev MCP.
 - Project additions require an explicit accepted decision.
-- The agent rules (`AGENTS.md`, `docs/project.md`, `docs/references/`, `.agents/`, and the client adapters) and the validator wiring (`package.json` scripts and `.github/workflows/ci.yml`) are the harness that constrains agents, and the user owns them. Agents propose rule changes and wait for explicit approval; they never add, strengthen, weaken, or move a rule on their own. When a mistake recurs, propose a computational check (lint, test, or hook) before adding prose.
+- The agent rules (`AGENTS.md`, `docs/project.md`, `docs/references/`, `.agents/`, and the client adapters) and the validator wiring (`package.json` scripts and the workflows under `.github/workflows/`) are the harness that constrains agents, and the user owns them. Agents propose rule changes and wait for explicit approval; they never add, strengthen, weaken, or move a rule on their own. When a mistake recurs, propose a computational check (lint, test, or hook) before adding prose.
 - In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
 - Keep one writer per shared worktree.
 - Do not retain code merely because it already exists.
@@ -74,7 +74,7 @@ Hard implementation rules:
 
 The coordinator (the agent the user is talking to) owns steps 1–6 unless execution is delegated. Delegation does not transfer execution authority; one-writer and independent-review rules still apply.
 
-The coordinator does not spawn subagents on its own, because each one rebuilds context and multiplies token use. When a step would benefit from one (step 7 independent review, a broad read-only search, a large batch), propose the role, client, and model (default: inherit the main model) and wait for the user's decision.
+The coordinator does not spawn subagents on its own, because each one rebuilds context and multiplies token use. When a step would benefit from one (step 7 independent review, a broad read-only search, a large batch), propose the role, client, and model and wait for the user's decision. Default model: inherit the main model; for a mechanical, high-volume task whose plan fixes the surface and acceptance checks, propose Sonnet (the latest Sonnet model) instead. Model choice stays out of the adapter files; roles stay model-agnostic.
 
 | Step | Owner | Action | Stop condition |
 | --- | --- | --- | --- |
@@ -105,6 +105,7 @@ The coordinator does not spawn subagents on its own, because each one rebuilds c
 **Sources:**
 
 - Use Shopify Dev MCP for Shopify platform claims. Use Context7 for third-party library docs when current-version sources matter, resolving the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available.
+- Use Chrome DevTools MCP against `shopify theme dev` when a claim depends on rendered or runtime behavior. Examples: console errors, network requests, and focus and keyboard behavior after a JS or interaction change; screenshots at 390 and 1440 for visual batches; performance traces for Lighthouse ownership classification.
 - If an expected MCP is missing, troubleshoot per `README.md` ("MCP servers") before falling back to the official website, and state that degraded source explicitly.
 
 ## Task Routing
@@ -124,7 +125,20 @@ Read only the matching reference for the current task:
 
 ## Agent Skills
 
-Project skills in `.agents/skills/`: the executable validators `check-i18n` and `check-theme-architecture`, and the vendored GreenSock documentation skills `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, and `gsap-performance` (MIT; agent documentation only, no storefront payload). Read the GSAP skills only after the motion reference classifies work as complex choreography.
+Project skills in `.agents/skills/`:
+
+- The executable validators `check-i18n` and `check-theme-architecture`.
+- The vendored GreenSock documentation skills `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, and `gsap-performance` (MIT). These are agent documentation only, with no storefront payload.
+- The vendored Anthropic skill `frontend-design` (Apache 2.0), a design reference only (`.agents/skills/frontend-design/UPSTREAM.md`).
+- The vendored Emil Kowalski skill `review-animations` (MIT), a motion review aid only (`.agents/skills/review-animations/UPSTREAM.md`).
+
+All vendored skills rank below Shopify's official sources and the project rules.
+
+Triggers. A batch whose surface matches one of these uses the skill and records its output in `docs/agent/context.md`:
+
+- **`review-animations`:** the batch adds or changes motion: CSS `transition`, `animation` or `@keyframes`, motion tokens, reduced-motion handling, Alpine-driven visibility transitions, or GSAP. Read its `SKILL.md` and `STANDARDS.md` by path and review the motion diff before step 7. The motion reference wins on conflict.
+- **GSAP skills:** the work touches a GSAP consumer, or the motion reference classifies new work as complex choreography. Read `gsap-core`, plus `gsap-scrolltrigger`, `gsap-timeline`, or `gsap-performance` as the change needs.
+- **`frontend-design`:** a design or polish batch whose plan changes visual direction (typography, layout composition, colour composition). Read it at the start of the batch, and discuss its suggestions with the user before adopting them.
 
 Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks.
 
