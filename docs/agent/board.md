@@ -16,20 +16,20 @@ Last updated: 2026-10-14.
 | BP-2 | Entry scripts snippet, loader by init interception, three framework defects | Done, `05e79a6` |
 | SK-1 | Design-to-delivery procedure, the document part of BP-4 | Done, `c653009`; not run end to end |
 | BP-3 | CSS architecture: the chain and its vocabulary, the rules, and the check capability (`theme-checks.config.json`) | Done, `781acb8`; accepted on the round 2 evidence |
-| BP-4 | The test tools (`layout-check`, `contrast-report`) and the third-party libraries with their adapters (Intersect plugin, Swiper, GSAP with ScrollTrigger), in one batch. The self-implemented dialog layer and toast store stay out | Executed 2026-10-14; not accepted. Independent review (Ask) has not been run |
+| BP-4 | The test tools (`layout-check`, `contrast-report`) and the third-party libraries with their adapters (Intersect plugin, Swiper, GSAP with ScrollTrigger). The self-implemented dialog layer and toast store stay out | Done, `2cdd0b8` |
 
-All of it is on branch `backport/agent-layer`, not merged into `main`; the remote branch stops at `0372d44`.
+**The migration is complete.** Left for the user to decide: pushing the branch, merging into `main` (a pull request lets CI run the new `playwright-core` dependency and the `doctor:agent` step in a clean environment), and a new version. All of it is on branch `backport/agent-layer`, not merged into `main`; the remote branch stops at `0372d44`.
 
 ## Open decisions
 
-None. The BP-4 stop (tool files naming the derived theme) was decided by the coordinator on 2026-10-14: the tool files come over with the small edits listed under "BP-4: plan amendment after the stop" in `docs/agent/context.md`; fixtures stay as test data.
+None.
 
 ## Evidence
 
 - **BP-3 inventory, first numbers** (coordinator, 2026-10-13; `wc -l`, this repository against `388f58e`): `tailwind/tailwind.input.css` 66 / 156; `tailwind.typography.css` 181 / 205; `tailwind.elements.css` 84 / 948; `tailwind.components.css` 177 / 2164; `tailwind.utilities.css` 24 / 178; `tailwind.animates.css` 35 / 1143; `snippets/css-variables.liquid` 106 / 324; `assets/base.css` 165 / 196; `config/settings_schema.json` 486 / 1399. Most of the difference in `elements`, `components`, `animates` and the schema is expected to be content; the inventory separates framework from content file by file.
 - **Validator libraries there, not here:** `colour-setting-lint.js`, `dead-setting-lint.js`, `font-weight-lint.js`, `migration-lint.js`, `page-frame-lint.js`, `raw-colour-lint.js`, `schema-block.js`, `section-placement-lint.js`, `stylesheet-ownership-lint.js`. Each is judged with the code it checks. Ten checks carry that theme's data, and the checks cannot be switched or configured there; a configuration mechanism has to be built here.
 - **`dead-setting` on this repository:** the nine `social_*_link` settings it reported are read by `sections/header.liquid` through `settings[organization_social_setting_id]`. The check must learn dynamic reads before it is switched on here.
-- **Stale line in `docs/project.md`:** "Settled: no Playwright". BP-4 changes it. The rest of "Settled" and "Status" has not been checked against the source record.
+- **`docs/project.md` "Status":** BP-4 replaced the "no Playwright" line. The rest of "Status" was written for v1.0.0 and has not been checked line by line against what the four batches changed.
 - **Framework JavaScript:** the remaining differences in `assets/events.js`, `assets/utils.js` and `assets/alpine.store.cart.js` are that theme's event names, a scroll-velocity helper for its marquee, and a toast hook; they stay out, as do the self-implemented dialog layer and toast store. **Revised (user, 2026-10-14):** the third-party libraries come over without waiting for a consumer (BP-5). This replaces "a module arrives with its first consumer" for them, and it changes the `AGENTS.md` rule "A selected library is vendored only when an accepted consumer exists", which BP-5 rewrites with the user's approval.
 - **BP-5 facts** (`git -C ../my-theme-1 ls-tree -r -l 388f58e assets`): `vendor-alpine-intersect.min.js` 897 bytes (3.15.3); `vendor-swiper.min.js` 155,178 and `vendor-swiper.min.css` 14,424 (12.1.2); `vendor-gsap.min.js` 72,927 and `vendor-gsap-scrolltrigger.min.js` 44,575 (3.15.0); adapters `carousel-swiper.js` 1,859 and `motion-gsap.js` 1,767. There, `base.js` imports the Intersect plugin statically, and `tailwind/tailwind.input.css` imports the Swiper stylesheet into the base layer. **Decided (user, 2026-10-14):** loading is on demand in principle. Something small may load globally (the Intersect plugin); the Swiper and GSAP scripts and the Swiper stylesheet load with the adapter that needs them.
 - **Review bar for this repository** (user, 2026-10-14): like Shopify's official skeleton, it has almost no look of its own. Reviews prove that mechanisms work; no screenshots, no size measuring, no judgement of appearance.
