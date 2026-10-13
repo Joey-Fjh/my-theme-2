@@ -17,7 +17,7 @@ Runtime constraints:
 - Do not introduce React, Vue, TypeScript, or nested runtime asset structures unless the user explicitly approves an architecture change. Theme assets stay flat under `assets/`.
 - Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision. Browserslist drives static compatibility checks only, not Tailwind v4's build target.
 
-Third-party libraries are vendored files behind project adapters, not npm runtime packages. A selected library is vendored only when an accepted consumer exists. Every vendored library has an entry in `THIRD_PARTY_NOTICES.md`, updated in the same change that adds, replaces, or upgrades it.
+Third-party libraries are vendored files behind project adapters, not npm runtime packages. The selected libraries (Alpine with its Intersect plugin, Swiper, GSAP with ScrollTrigger) are vendored behind their adapters and load on demand; a further library needs an accepted decision. Every vendored library has an entry in `THIRD_PARTY_NOTICES.md`, updated in the same change that adds, replaces, or upgrades it.
 
 ## Agent Adapters
 
@@ -155,6 +155,7 @@ Run scripts through `npm.cmd` in this Windows PowerShell workspace. Default to t
 | `assets/*.js`, embedded Liquid blocks | `npm.cmd run lint:compat` + `npm.cmd run lint:theme` |
 | Strict Liquid output parsing (filter-arg guard) | `npm.cmd run lint:liquid-syntax` |
 | Agent rules, skills, roles, adapters, references | Link/syntax check on changed files + `npm.cmd run lint:doc-paths` + `npm.cmd run doctor:agent` |
+| Liquid, CSS, or JS that can move layout (end of batch) | `npm.cmd run test:layout` with `npm.cmd run shopify:dev` running. |
 | Release / PR / Theme Store gate | `npm.cmd run lint` and `npm.cmd run test` |
 
 Build helpers: `npm.cmd run build:tw` (Tailwind iteration), `npm.cmd run build:svg` (staged icons in `icons/`). Do not run rewriting formatters unless the user asks.

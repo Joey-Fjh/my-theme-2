@@ -651,7 +651,7 @@ async function runThemeLint(root) {
     }
 
     if (hasThemeLayout) {
-        collectModuleRegistrationFailures(root, failures);
+        collectModuleRegistrationFailures(root, failures, checksConfig.checks?.['module-import-map-unused']);
     }
 
     collectSectionColorSchemeFailures(root, failures);

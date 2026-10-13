@@ -16,13 +16,13 @@ Last updated: 2026-10-14.
 | BP-2 | Entry scripts snippet, loader by init interception, three framework defects | Done, `05e79a6` |
 | SK-1 | Design-to-delivery procedure, the document part of BP-4 | Done, `c653009`; not run end to end |
 | BP-3 | CSS architecture: the chain and its vocabulary, the rules, and the check capability (`theme-checks.config.json`) | Done, `781acb8`; accepted on the round 2 evidence |
-| BP-4 | The test tools (`layout-check`, `contrast-report`) and the third-party libraries with their adapters (Intersect plugin, Swiper, GSAP with ScrollTrigger), in one batch. The self-implemented dialog layer and toast store stay out | Planned in `docs/agent/context.md`; not authorized yet |
+| BP-4 | The test tools (`layout-check`, `contrast-report`) and the third-party libraries with their adapters (Intersect plugin, Swiper, GSAP with ScrollTrigger), in one batch. The self-implemented dialog layer and toast store stay out | Executed 2026-10-14; not accepted. Independent review (Ask) has not been run |
 
 All of it is on branch `backport/agent-layer`, not merged into `main`; the remote branch stops at `0372d44`.
 
 ## Open decisions
 
-None yet. BP-3 starts with a read-only inventory (below); its results bring the decisions.
+None. The BP-4 stop (tool files naming the derived theme) was decided by the coordinator on 2026-10-14: the tool files come over with the small edits listed under "BP-4: plan amendment after the stop" in `docs/agent/context.md`; fixtures stay as test data.
 
 ## Evidence
 

@@ -1314,6 +1314,22 @@ test('import map entry without a consumer fails', async () => {
     });
 });
 
+test('configured import map entries may stay unreferenced and an unlisted entry still fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeEntryScripts(
+            root,
+            `{"imports":{"carousel-swiper":"{{ 'carousel-swiper.js' | asset_url }}","motion-gsap":"{{ 'motion-gsap.js' | asset_url }}","orphan":"{{ 'orphan.js' | asset_url }}"}}`,
+        );
+        writeFile(root, 'assets/carousel-swiper.js', `export const id = 'carousel-swiper';\n`);
+        writeFile(root, 'assets/motion-gsap.js', `export const id = 'motion-gsap';\n`);
+        writeFile(root, 'assets/orphan.js', `export const id = 'orphan';\n`);
+        const failures = await runThemeLint(root);
+        const unused = failures.filter((failure) => failure.checkId === 'module-import-map-unused');
+        assert.equal(unused.length, 1, failureMessages(failures));
+        assert.match(unused[0].message, /"orphan"/);
+    });
+});
+
 test('import map entry used by an asset import passes', async () => {
     await withTempThemeAsync(async (root) => {
         writeEntryScripts(root, `{"imports":{"utils":"{{ 'utils.js' | asset_url }}"}}`);

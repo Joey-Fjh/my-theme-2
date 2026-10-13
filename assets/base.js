@@ -1,3 +1,4 @@
+import './vendor-alpine-intersect.min.js';
 import ThemeEvents from 'events';
 import * as adapter from 'alpine-adapter';
 import { createCartContract } from 'cart-contract';

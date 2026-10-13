@@ -56,6 +56,9 @@
             "allowedNumericWeights": ["400", "700"],
             "rejectedUtilities": ["thin", "extralight", "light", "medium", "semibold", "extrabold", "black"]
         },
+        "module-import-map-unused": {
+            "allowedEntries": ["carousel-swiper", "motion-gsap"]
+        },
         "dead-setting": {
             "enabled": true,
             "liquidGlobs": [

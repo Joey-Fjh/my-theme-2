@@ -621,7 +621,8 @@ function openingTagAt(text, index) {
 
 const ENTRY_SCRIPTS_SNIPPET = 'snippets/scripts.liquid';
 
-function collectModuleRegistrationFailures(root, failures) {
+function collectModuleRegistrationFailures(root, failures, unusedConfig = null) {
+    const allowedEntries = new Set(unusedConfig?.allowedEntries ?? []);
     const fsSync = require('node:fs');
     const themeLiquid = fsSync.readFileSync(path.join(root, 'layout/theme.liquid'), 'utf8');
     if (!/\{%-?\s*render\s+['"]scripts['"]\s*-?%\}/.test(themeLiquid)) {
@@ -722,7 +723,7 @@ function collectModuleRegistrationFailures(root, failures) {
     for (const key of importMapKeys) {
         const usedByModuleId = moduleIds.has(key);
         const usedByImport = new RegExp(`from\\s+['"]${key}['"]`).test(jsSources);
-        if (!usedByModuleId && !usedByImport) {
+        if (!usedByModuleId && !usedByImport && !allowedEntries.has(key)) {
             failures.push({
                 file: ENTRY_SCRIPTS_SNIPPET,
                 line: 1,

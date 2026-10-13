@@ -12,6 +12,7 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | --- | --- | --- | --- |
 | Core | `base.js`, `events.js` | Static | Layout measurement, module scanning and lazy loading, DOM teardown coordination, Theme Editor event forwarding, store bootstrap |
 | Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `holdUntilReady`, `mount`, `releaseHold`, `unmount`, `store`, `data` |
+| Vendor plugin | `vendor-alpine-intersect.min.js` | Static | Alpine Intersect plugin (`x-intersect`), imported by `base.js` for its side effect |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
 | UI state bridges | `alpine.store.cart.js` | Static | Cart UI store registered by the core through the adapter |
 | On-demand modules | `utils.js`, feature entry files (`accordion.js`, `buy-buttons.js`, …) | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
@@ -28,7 +29,7 @@ The core does not import component names. It reads `data-module-id` on DOM roots
 2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
 3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can register its init interceptor and queue store registration first).
 
-There is no classic path for theme stores, utilities, or component definitions. The one page outside this graph is `templates/gift_card.liquid`: it renders without the layout and loads Shopify's `qrcode.js` and `assets/gift-card.js` as classic `defer` scripts. GSAP and Swiper are selected libraries; vendored files are added only when an accepted consumer exists, with the version recorded at vendoring time. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
+There is no classic path for theme stores, utilities, or component definitions. The one page outside this graph is `templates/gift_card.liquid`: it renders without the layout and loads Shopify's `qrcode.js` and `assets/gift-card.js` as classic `defer` scripts. Swiper and GSAP with ScrollTrigger are vendored behind `carousel-swiper.js` and `motion-gsap.js` and load on demand. A section passes the script URL on `data-swiper-src`, or `data-gsap-src` and `data-scrolltrigger-src`. A section that uses the carousel adapter renders `vendor-swiper.min.css` itself with `stylesheet_tag`; that stylesheet is not part of the Tailwind build. Versions are recorded in `THIRD_PARTY_NOTICES.md`. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
 
 ## Module Discovery Contract
 
@@ -219,7 +220,7 @@ Components may read the DOM (`document.querySelector`, `this.$el`). Only global 
 
 - Every `x-data` root carries `data-module-id` on the same opening tag. The identifier has an import-map entry that maps through `asset_url` to the asset named after it (`accordion` → `accordion.js`); a missing or mismapped entry is a browser `TypeError` or a silently wrong module.
 - Every import-map entry maps through `asset_url` to a file that exists in `assets/`.
-- Every import-map entry is referenced by a `data-module-id` or a static `import` in `assets/*.js`.
+- Every import-map entry is referenced by a `data-module-id` or a static `import` in `assets/*.js`, except entries listed in `theme-checks.config.json` under `module-import-map-unused.allowedEntries`. The on-demand adapters `carousel-swiper` and `motion-gsap` are listed there until a section asks for them.
 - Below-the-fold or non-critical modules should carry `data-module-lazy`; the core loads them through `IntersectionObserver`.
 - Preload a first-viewport module chain only when the page truly needs it before interaction (for example `modulepreload` on the product form chain, or preload on hover for a predictable next step). Do not preload every module on every page.
 - The cart contract and `base.js` stay in the static graph because derived themes keep cart drawer or redirect logic on every page.
@@ -228,7 +229,7 @@ Alpine remains the deliberate UI runtime for this theme; do not add parallel Web
 
 ## Motion Runtime Boundary
 
-The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary motion work. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
+GSAP is optional narrative choreography only. The vendored runtime loads on demand through `assets/motion-gsap.js`; only that adapter touches `window.gsap` and `window.ScrollTrigger`. A consumer entry module uses one `gsap.context()` per root, reverts it in `destroy()`, gates on `body[data-motion-enabled='false']`, and uses `gsap.matchMedia()` for reduced motion. Read `docs/references/architecture/motion-architecture.md` for classification and ownership.
 
 ## CSS / Alpine Boundary
 
@@ -240,7 +241,8 @@ The theme has no active GSAP runtime namespace. Do not add GSAP during ordinary 
 
 | Area | Location |
 | --- | --- |
-| Vendor runtime | `vendor-alpine*.min.js` (never edit) |
+| Vendor runtime | `vendor-alpine*.min.js`, `vendor-swiper.min.js`, `vendor-swiper.min.css`, `vendor-gsap.min.js`, `vendor-gsap-scrolltrigger.min.js` (never edit) |
+| On-demand library adapters | `carousel-swiper.js`, `motion-gsap.js` |
 | Core | `base.js`, `events.js` |
 | Adapter | `alpine.adapter.js` |
 | Cart contract | `cart.contract.js` |
