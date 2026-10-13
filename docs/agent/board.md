@@ -10,7 +10,7 @@ None.
 
 ## Evidence
 
-- **Backport from `my-theme-1`** (user, 2026-10-13): the derived theme's framework improvements come back by layer, each a batch here: (1) agent layer and harness, BP-1; (2) validators; (3) runtime JavaScript; (4) CSS and tokens, with the layout and contrast tools; (5) the design chain. The layer list and the per-layer decisions are kept on the board of `../my-theme-1` until the backport is finished, because the source and its history are there.
+- **Backport from `my-theme-1`** (user, 2026-10-13): the derived theme's framework improvements come back by layer, each a batch here: (1) agent layer and harness, BP-1, done on branch `backport/agent-layer` (`b676754`; plan and reviews: `git show b676754:docs/agent/context.md`), not merged into `main` until the last layer; (2) validators; (3) runtime JavaScript; (4) CSS and tokens, with the layout and contrast tools; (5) the design chain. The layer list and the per-layer decisions are kept on the board of `../my-theme-1` until the backport is finished, because the source and its history are there.
 - **Known limit, `.github/workflows/lighthouse.yml`** (BP-1 review, 2026-10-13): the job is skipped by testing the repository name `Joey-Fjh/my-skeleton-theme`. If this repository is renamed or transferred, update that condition, or Lighthouse starts running here without secrets.
 
 ## Deferred ideas
