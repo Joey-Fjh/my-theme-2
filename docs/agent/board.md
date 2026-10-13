@@ -6,7 +6,7 @@ Last updated: 2026-10-13.
 
 ## Open decisions
 
-None. The design-to-delivery procedure was decided on 2026-10-13 (one short reference, no tools, skills or values); its plan is SK-1 in `docs/agent/context.md`.
+None.
 
 ## Judged and left out (coordinator, 2026-10-13)
 
@@ -22,6 +22,7 @@ Each candidate was tested with "would a theme of a completely different design n
 
 - **Scope of what comes into the skeleton** (user, 2026-10-13): this repository decides what it lacks; `../my-theme-1` is a reference only, never an authority, and is never written to. The earlier by-layer backport driven from that repository is stopped. Only the outer, business-independent layer belongs here: skills, MCP, documents, lint, CI, and the JavaScript and CSS frameworks. Architecture comes over, not content: no sections, feature modules, component CSS, concrete values or setting inventories. For lint and baselines, where one is needed at all, the skeleton keeps the capability (the mechanism), not a derived theme's accumulated list of specific rules; later themes add their own. Test for every candidate: would a theme of a completely different design need it?
 - **Done on branch `backport/agent-layer`, not merged into `main`, not pushed:** BP-1, agent layer and harness (`b676754`; plan and reviews: `git show b676754:docs/agent/context.md`); BP-2, entry scripts snippet, loader by init interception, three framework defects (`05e79a6`; plan and three review rounds: `git show 05e79a6:docs/agent/context.md`).
+- **Also done there:** SK-1, the design-to-delivery procedure as one short reference (`c653009`; plan and two review rounds: `git show c653009:docs/agent/context.md`). With it the skeleton has no open item against the scope above. The procedure has not been run end to end; the first theme to run it corrects `docs/references/style-system/design-to-delivery.md`.
 - **Known limit, collection pagination** (BP-2 review, 2026-10-13): the `?sections=` request sends `Accept: */*` because the dev storefront answers 404 when `Accept` names JSON. Whether a live storefront answers the same way has not been measured.
 - **Known limit, `.github/workflows/lighthouse.yml`** (BP-1 review, 2026-10-13): the job is skipped by testing the repository name `Joey-Fjh/my-skeleton-theme`. If this repository is renamed or transferred, update that condition, or Lighthouse starts running here without secrets.
 
