@@ -117,6 +117,7 @@ Read only the matching reference for the current task:
 - Shared abstraction boundaries, snippet parameter API, and whether to extend an existing utility/component: `docs/references/architecture/abstraction-boundaries.md`
 - Theme Block inventory, Container host, blank-content and editor placeholder behavior, generic-block responsibility: `docs/references/architecture/theme-blocks.md`
 - CSS layer ownership, typography tiers, color/surface rules, token/bridge contract, placement audits: `docs/references/style-system/css-architecture.md`
+- Starting a theme's design, its `design.md`, mapping design values to settings and the default preset: `docs/references/style-system/design-to-delivery.md`
 - Image snippet display behavior and `image.liquid` mode/fit contract: `docs/references/style-system/image-display-contract.md`
 - i18n keys, locale structure, schema translation, hardcoded copy review: `docs/references/code-review/i18n-checklist.md`
 - Shopify browser matrix, Tailwind build boundary, static compatibility checks, progressive enhancement, and WebKit guardrails: `docs/references/code-review/browser-compatibility.md`

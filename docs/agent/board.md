@@ -6,7 +6,17 @@ Last updated: 2026-10-13.
 
 ## Open decisions
 
-None.
+None. The design-to-delivery procedure was decided on 2026-10-13 (one short reference, no tools, skills or values); its plan is SK-1 in `docs/agent/context.md`.
+
+## Judged and left out (coordinator, 2026-10-13)
+
+Each candidate was tested with "would a theme of a completely different design need it?". These are recorded so they are not proposed again without new evidence.
+
+- **CSS vocabulary from the derived theme** (space steps, extra colour roles, hover variants): the chain and its rules are already here for typography, colour and motion; the names and steps are that theme's content. Tailwind's default spacing scale stays available. Left out.
+- **The `dead-setting` check and "nine dead `social_*_link` settings":** the settings are not dead. `sections/header.liquid` reads them through `settings[organization_social_setting_id]` for the Organization `sameAs` list. The check as written is wrong for this code. Left out.
+- **A switch or configuration file for checks, and baselines or ratchets:** no theme needs one yet; `lint-allow <check-id>: <reason>` is the existing capability for exceptions. Left out until a theme has to switch a check off.
+- **`layout-check`, `contrast-report`, Playwright MCP:** `docs/project.md` settles no Playwright; they depend on a page frame and tokens this repository does not have. Left out.
+- **Stage-1 design skills** (`ui-ux-pro-max`, `taste-skill`): adopt none; `frontend-design` is already vendored with a named trigger.
 
 ## Evidence
 
