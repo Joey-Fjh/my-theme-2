@@ -42,8 +42,8 @@ The section:
 | Block | File | Responsibility |
 | --- | --- | --- |
 | `group` | `blocks/group.liquid` | Child composition. Flex direction, alignment, and gap settings; renders nested blocks through `{% content_for 'blocks' %}`. |
-| `heading` | `blocks/heading.liquid` | Heading text. Settings: the heading text (`heading`) and the semantic level (`semantic_level` → `h1`–`h6` tag). There is no size setting; the visual tier is fixed at `heading-h2`. See `../style-system/css-architecture.md` for tier rules. |
-| `text` | `blocks/text.liquid` | Non-heading rich text. Renders `block.settings.text` with the fixed `body-base` tier; there is no size setting. |
+| `heading` | `blocks/heading.liquid` | Heading text. Settings: the heading text (`heading`) and the semantic level (`semantic_level` → `h1`–`h6` tag). There is no size setting; the visual step is fixed at `title-m`. See `../style-system/css-architecture.md` for the type scale. |
+| `text` | `blocks/text.liquid` | Non-heading rich text. Renders `block.settings.text` with the fixed `copy-m` step; there is no size setting. |
 | `button` | `blocks/button.liquid` | Navigation-style call to action. Renders a link when both `label` and `link` are present. |
 
 ## Blank-content rule and current coverage
@@ -56,7 +56,7 @@ The section:
 | --- | --- | --- | --- |
 | `heading` | Yes | Renders nothing | Placeholder `<div>` with `blocks.heading.placeholders.empty` locale key |
 | `button` | Yes | Renders nothing (when `label` or `link` is blank) | Placeholder `<div>` with `blocks.button.placeholders.empty` locale key |
-| `text` | No | Always renders the `body-base` wrapper, including when `text` is empty | Same as storefront |
+| `text` | No | Always renders the `copy-m` wrapper, including when `text` is empty | Same as storefront |
 | `group` | No | Always renders the flex wrapper, including when it has no child blocks | Same as storefront |
 
 Do not assume all four blocks implement the blank-content rule. Extending the rule to `text` or `group` is a separate decision.

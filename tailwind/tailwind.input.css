@@ -12,11 +12,24 @@
 @source '../blocks/**/*.liquid';
 @source '../templates/**/*.liquid';
 
+/* Hover capability: the only two hover conditions. Liquid stylesheets write the same media queries. */
+@custom-variant can-hover {
+    @media (hover: hover) and (pointer: fine) {
+        @slot;
+    }
+}
+@custom-variant no-hover {
+    @media not ((hover: hover) and (pointer: fine)) {
+        @slot;
+    }
+}
+
 @theme inline {
     /* Breakpoints */
     --breakpoint-*: initial;
-    --breakpoint-pc: 48rem;
-    --breakpoint-fw: 80rem;
+    --breakpoint-tablet: 48rem;
+    --breakpoint-desktop: 64rem;
+    --breakpoint-wide: 80rem;
 
     /* Reset default Tailwind namespaces; project bridges follow. */
     --font-*: initial;
@@ -49,10 +62,62 @@
     --color-error: rgb(var(--color-error-background));
     --color-error-text: rgb(var(--color-error-foreground));
 
+    /* Colours, layer 2: derived roles. Each consumes one layer 1 step from css-variables.liquid.
+       Sections and snippets use these roles, never a raw alpha.
+       Scheme-dependent roles are re-declared per scheme in css-variables.liquid with the same value, because a
+       custom property resolves where it is declared: CSS var() consumers would otherwise get the :root scheme.
+       lint:theme colour-role-sync keeps the two in step. */
+    --color-muted: rgba(var(--color-foreground), var(--alpha-80));
+    --color-subtle: rgba(var(--color-foreground), var(--alpha-72));
+    --color-faint: rgba(var(--color-foreground), var(--alpha-20));
+    --color-line: rgba(var(--color-border), var(--alpha-20));
+    --color-line-strong: rgba(var(--color-border), var(--alpha-35));
+    /* Lines on an inverted fill (a foreground-coloured card or chip) */
+    --color-line-inverse: rgba(var(--color-background), var(--alpha-20));
+    --color-surface-muted: rgba(var(--color-foreground), var(--alpha-5));
+    --color-surface-strong: rgba(var(--color-foreground), var(--alpha-10));
+    /* State indicators: carousel dots, step and progress bars */
+    --color-indicator: rgba(var(--color-foreground), var(--alpha-35));
+    --color-indicator-strong: rgba(var(--color-foreground), var(--alpha-50));
+    --color-veil: rgba(var(--color-background), var(--alpha-80));
+    /* Scrims cover any content, so they are fixed black / white, not scheme colours */
+    --color-scrim: rgba(0, 0, 0, var(--alpha-50));
+    --color-scrim-strong: rgba(0, 0, 0, var(--alpha-80));
+    --color-scrim-solid: rgb(0, 0, 0);
+    --color-on-scrim: rgb(255, 255, 255);
+    --color-on-scrim-muted: rgba(255, 255, 255, var(--alpha-80));
+
+    /* Shadows: three elevation roles; steps rise on dark schemes (css-variables.liquid) */
+    --shadow-*: initial;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, var(--alpha-shadow-sm));
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, var(--alpha-shadow-md));
+    --shadow-lg: 0 14px 36px rgba(0, 0, 0, var(--alpha-shadow-lg));
+
     /* Global z-index layers: semantic overlay ordering */
     --z-layer-dropdown: 20;
     --z-layer-popover: 30;
     --z-layer-skip-link: 700;
+
+    /* Space scale: one base, 6px at 375px to 10px at 1280px (0.6x fluid), times the step
+       multiplier. The step- prefix keeps max-w-xl / max-w-2xl on --container-*. */
+    --spacing-step-3xs: clamp(0.15rem, 0.1086rem + 0.11vw, 0.25rem);
+    --spacing-step-2xs: clamp(0.3rem, 0.2171rem + 0.221vw, 0.5rem);
+    --spacing-step-xs: clamp(0.45rem, 0.3257rem + 0.331vw, 0.75rem);
+    --spacing-step-s: clamp(0.6rem, 0.4343rem + 0.442vw, 1rem);
+    --spacing-step-m: clamp(0.9rem, 0.6514rem + 0.663vw, 1.5rem);
+    --spacing-step-l: clamp(1.2rem, 0.8685rem + 0.884vw, 2rem);
+    --spacing-step-xl: clamp(1.8rem, 1.3028rem + 1.326vw, 3rem);
+    --spacing-step-2xl: clamp(2.4rem, 1.737rem + 1.768vw, 4rem);
+    --spacing-step-3xl: clamp(3.6rem, 2.6055rem + 2.652vw, 6rem);
+    --spacing-step-4xl: clamp(4.8rem, 3.474rem + 3.536vw, 8rem);
+
+    /* Semantic aliases: what agents map design intent to. */
+    --spacing-tight: var(--spacing-step-2xs);
+    --spacing-related: var(--spacing-step-s);
+    --spacing-group: var(--spacing-step-m);
+    --spacing-section: var(--spacing-step-xl);
+
+    --screen-height: 100svh;
 }
 
 @import '../assets/base.css' layer(base);

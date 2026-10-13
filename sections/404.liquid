@@ -6,16 +6,16 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <h1 class="heading-3xl">
+    <h1 class="title-3xl">
         {{ '404.title' | t -}}
         <br>
         {{ '404.heading_line_2' | t }}
     </h1>
-    <div class="rte body-xl">
+    <div class="rte copy-l">
         {{ '404.description_html' | t }}
     </div>
     {%- assign button_text = '404.back_to_shopping' | t -%}
-    <a class="btn body-xl" href="{{ routes.root_url }}">{{ button_text }}</a>
+    <a class="btn copy-l" href="{{ routes.root_url }}">{{ button_text }}</a>
 </div>
 
 {% schema %}

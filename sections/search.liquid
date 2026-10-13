@@ -32,12 +32,12 @@
     {%- if search.performed -%}
         {%- paginate search.results by 12 -%}
             {%- if search.results_count == 0 -%}
-                <p class="body-lg">{{ 'search.no_results_html' | t: terms: terms }}</p>
+                <p class="copy-l">{{ 'search.no_results_html' | t: terms: terms }}</p>
             {%- else -%}
                 <ul>
                     {%- for item in search.results -%}
                         <li>
-                            <a class="body-lg underline underline-offset-4" href="{{ item.url }}">
+                            <a class="copy-l underline underline-offset-4" href="{{ item.url }}">
                                 {{- item.title | escape -}}
                             </a>
                         </li>

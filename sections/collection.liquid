@@ -11,9 +11,9 @@
     data-module-id="section-pagination"
     data-module-lazy
 >
-    <h1 class="heading-4xl">{{ collection.title }}</h1>
+    <h1 class="title-4xl">{{ collection.title }}</h1>
     {%- if collection.description != blank -%}
-        <div class="rte body-xl">{{ collection.description }}</div>
+        <div class="rte copy-l">{{ collection.description }}</div>
     {%- endif -%}
 
     <div class="relative" data-collection-dynamic-content>
@@ -48,12 +48,12 @@
                                 loading: card_loading,
                                 aspect_ratio: card_aspect_ratio
                             -%}
-                            <h2 class="heading-h6">{{ product.title }}</h2>
+                            <h2 class="title-xs">{{ product.title }}</h2>
                             <span>{{ product.price | money }}</span>
                         </a>
                     </div>
                 {%- else -%}
-                    <p class="body-lg">{{ 'collections.no_products' | t }}</p>
+                    <p class="copy-l">{{ 'collections.no_products' | t }}</p>
                 {%- endfor -%}
             </div>
 

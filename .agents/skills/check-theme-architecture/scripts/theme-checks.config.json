@@ -1,0 +1,70 @@
+{
+    "checks": {
+        "raw-colour": {
+            "enabled": true,
+            "exemptFiles": ["tailwind/tailwind.input.css", "assets/gift-card.css"],
+            "colourPrefixes": [
+                "text",
+                "bg",
+                "border",
+                "divide",
+                "ring",
+                "ring-offset",
+                "outline",
+                "from",
+                "via",
+                "to",
+                "fill",
+                "stroke",
+                "decoration",
+                "placeholder",
+                "caret",
+                "accent",
+                "shadow",
+                "inset-shadow",
+                "drop-shadow"
+            ],
+            "allowedShadowUtilities": ["shadow-sm", "shadow-md", "shadow-lg", "shadow-none"],
+            "bridgeTokens": ["theme-bg", "theme-text", "theme-border", "success", "success-text", "error", "error-text"],
+            "alphaSteps": ["5", "10", "20", "35", "50", "72", "80"],
+            "shadowSteps": ["sm", "md", "lg"]
+        },
+        "colour-role-sync": {
+            "enabled": true
+        },
+        "colour-setting": {
+            "enabled": true,
+            "allowlist": {}
+        },
+        "page-token-scope": {
+            "enabled": true,
+            "pageTokenRoots": ["sections/", "snippets/", "blocks/"]
+        },
+        "screen-height-literal": {
+            "enabled": true,
+            "liquidRoots": ["layout/", "sections/", "snippets/", "blocks/", "templates/"]
+        },
+        "stylesheet-media-query": {
+            "enabled": true,
+            "widths": ["48rem", "64rem", "80rem"]
+        },
+        "stylesheet-layer": {
+            "enabled": true
+        },
+        "unloaded-font-weight": {
+            "enabled": true,
+            "allowedNumericWeights": ["400", "700"],
+            "rejectedUtilities": ["thin", "extralight", "light", "medium", "semibold", "extrabold", "black"]
+        },
+        "dead-setting": {
+            "enabled": true,
+            "liquidGlobs": [
+                "layout/**/*.liquid",
+                "sections/**/*.liquid",
+                "snippets/**/*.liquid",
+                "blocks/**/*.liquid",
+                "templates/**/*.liquid"
+            ]
+        }
+    }
+}

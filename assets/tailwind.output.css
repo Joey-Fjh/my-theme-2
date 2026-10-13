@@ -5,9 +5,29 @@
 @layer theme {
   :root, :host {
     --spacing: 0.25rem;
+    --color-muted: rgba(var(--color-foreground), var(--alpha-80));
+    --color-subtle: rgba(var(--color-foreground), var(--alpha-72));
+    --color-faint: rgba(var(--color-foreground), var(--alpha-20));
+    --color-line: rgba(var(--color-border), var(--alpha-20));
+    --color-line-strong: rgba(var(--color-border), var(--alpha-35));
+    --color-line-inverse: rgba(var(--color-background), var(--alpha-20));
+    --color-surface-muted: rgba(var(--color-foreground), var(--alpha-5));
+    --color-surface-strong: rgba(var(--color-foreground), var(--alpha-10));
+    --color-indicator: rgba(var(--color-foreground), var(--alpha-35));
+    --color-indicator-strong: rgba(var(--color-foreground), var(--alpha-50));
+    --color-veil: rgba(var(--color-background), var(--alpha-80));
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, var(--alpha-shadow-sm));
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, var(--alpha-shadow-md));
+    --shadow-lg: 0 14px 36px rgba(0, 0, 0, var(--alpha-shadow-lg));
     --z-layer-dropdown: 20;
     --z-layer-popover: 30;
     --z-layer-skip-link: 700;
+    --spacing-step-3xs: clamp(0.15rem, 0.1086rem + 0.11vw, 0.25rem);
+    --spacing-step-2xs: clamp(0.3rem, 0.2171rem + 0.221vw, 0.5rem);
+    --spacing-step-xs: clamp(0.45rem, 0.3257rem + 0.331vw, 0.75rem);
+    --spacing-step-s: clamp(0.6rem, 0.4343rem + 0.442vw, 1rem);
+    --spacing-step-l: clamp(1.2rem, 0.8685rem + 0.884vw, 2rem);
+    --screen-height: 100svh;
   }
 }
 @layer base {
@@ -170,18 +190,15 @@
     inset-inline-start: calc(var(--spacing) * 4);
     top: calc(var(--spacing) * 4);
     background-color: rgb(var(--color-background));
-    padding-inline: calc(var(--spacing) * 4);
-    padding-block: calc(var(--spacing) * 3);
+    padding-inline: clamp(0.6rem, 0.4343rem + 0.442vw, 1rem);
+    padding-block: clamp(0.45rem, 0.3257rem + 0.331vw, 0.75rem);
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: max(14px, calc(var(--font-body-size-mobile) * 0.875));
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size));
-    }
+    font-size: calc(var(--font-body-scale) * var(--type-step-0));
     color: rgb(var(--color-foreground));
     z-index: var(--z-layer-skip-link);
     transform: translateY(calc(-100% - 2rem));
@@ -223,6 +240,9 @@
     @media (width >= 48rem) {
       max-width: 48rem;
     }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
     @media (width >= 80rem) {
       max-width: 80rem;
     }
@@ -241,7 +261,7 @@
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    gap: calc(var(--spacing) * 2);
+    gap: clamp(0.3rem, 0.2171rem + 0.221vw, 0.5rem);
     padding: 0.75rem 1.5rem;
     border: 1px solid currentColor;
     background-color: rgb(var(--color-foreground));
@@ -260,7 +280,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
     align-items: start;
-    gap: 2rem;
+    gap: var(--spacing-step-l);
   }
   .icons {
     display: inline-flex;
@@ -401,7 +421,51 @@
   .align-middle {
     vertical-align: middle;
   }
-  .heading-2xl {
+  .title-l {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    word-break: break-word;
+    color: rgb(var(--color-foreground));
+    font-size: calc(var(--font-heading-scale) * var(--type-step-4));
+    line-height: var(--font-heading-line-height);
+  }
+  .title-m {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    word-break: break-word;
+    color: rgb(var(--color-foreground));
+    font-size: calc(var(--font-heading-scale) * var(--type-step-2));
+    line-height: var(--font-heading-line-height);
+  }
+  .title-s {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    word-break: break-word;
+    color: rgb(var(--color-foreground));
+    font-size: calc(var(--font-heading-scale) * var(--type-step-1));
+    line-height: var(--font-heading-line-height);
+  }
+  .title-xs {
+    font-family: var(--font-heading-family);
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    word-break: break-word;
+    color: rgb(var(--color-foreground));
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
+    line-height: var(--font-heading-line-height);
+  }
+  .title-2xl {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
@@ -410,12 +474,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 4.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 6rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-6));
   }
-  .heading-3xl {
+  .title-3xl {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
@@ -424,12 +485,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 5.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 7.5rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-7));
   }
-  .heading-4xl {
+  .title-4xl {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
@@ -438,12 +496,9 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 6.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 9rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-8));
   }
-  .heading-h1 {
+  .title-xl {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
@@ -452,160 +507,43 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 3rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 4rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-5));
   }
-  .heading-h2 {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    word-break: break-word;
-    color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 2.2rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2.6rem);
-    }
-  }
-  .heading-h3 {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    word-break: break-word;
-    color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.8rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2rem);
-    }
-  }
-  .heading-h4 {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    word-break: break-word;
-    color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.6rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
-    }
-  }
-  .heading-h6 {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    word-break: break-word;
-    color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.4rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.4rem);
-    }
-  }
-  .heading-xl {
-    font-family: var(--font-heading-family);
-    font-style: var(--font-heading-style);
-    font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
-    letter-spacing: var(--font-heading-letter-spacing);
-    text-transform: var(--font-heading-text-transform);
-    word-break: break-word;
-    color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 3.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 4.5rem);
-    }
-  }
-  .body-2xl {
+  .copy-l {
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * 1.25);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * 1.375);
-    }
+    font-size: calc(var(--font-body-scale) * var(--type-step-1));
   }
-  .body-3xl {
+  .copy-m {
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * 1.375);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * 1.5);
-    }
+    font-size: calc(var(--font-body-scale) * var(--type-step-0));
   }
-  .body-lg {
+  .copy-s {
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile));
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * 1.125);
-    }
+    font-size: calc(var(--font-body-scale) * var(--type-step--1));
   }
-  .body-md {
+  .copy-xl {
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
     letter-spacing: var(--font-body-letter-spacing);
     text-transform: var(--font-body-text-transform);
     word-break: break-word;
-    font-size: max(14px, calc(var(--font-body-size-mobile) * 0.875));
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size));
-    }
-  }
-  .body-sm {
-    font-family: var(--font-body-family);
-    font-style: var(--font-body-style);
-    line-height: var(--font-body-line-height);
-    letter-spacing: var(--font-body-letter-spacing);
-    text-transform: var(--font-body-text-transform);
-    word-break: break-word;
-    font-size: max(13px, calc(var(--font-body-size-mobile) * 0.75));
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * 0.875);
-    }
-  }
-  .body-xl {
-    font-family: var(--font-body-family);
-    font-style: var(--font-body-style);
-    line-height: var(--font-body-line-height);
-    letter-spacing: var(--font-body-letter-spacing);
-    text-transform: var(--font-body-text-transform);
-    word-break: break-word;
-    font-size: calc(var(--font-body-size-mobile) * 1.125);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-body-size) * 1.25);
-    }
-  }
-  .body-base {
-    font-family: var(--font-body-family);
-    font-style: var(--font-body-style);
-    line-height: var(--font-body-line-height);
-    letter-spacing: var(--font-body-letter-spacing);
-    text-transform: var(--font-body-text-transform);
-    word-break: break-word;
+    font-size: calc(var(--font-body-scale) * var(--type-step-2));
   }
   .text-current {
     color: currentcolor;
@@ -652,6 +590,11 @@
     box-sizing: border-box;
     margin: 0;
   }
+  :root {
+    --page-inset: max(var(--page-margin), calc((100% - var(--page-width)) / 2));
+    --page-grid-columns: [full-start] minmax(var(--page-margin), 1fr) [content-start]
+        minmax(0, var(--page-width)) [content-end] minmax(var(--page-margin), 1fr) [full-end];
+  }
   html {
     scrollbar-gutter: stable;
   }
@@ -685,7 +628,7 @@
     margin: 0;
     color: rgb(var(--color-foreground));
     background-color: rgb(var(--color-background));
-    font-size: var(--font-body-size-mobile);
+    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
@@ -698,7 +641,7 @@
   }
   @media (width >= 48rem) {
     body {
-      font-size: var(--font-body-size);
+      font-size: calc(var(--font-body-size) * var(--font-body-scale));
     }
   }
   input, textarea, select, dialog {
@@ -719,50 +662,32 @@
     word-break: break-word;
   }
   h1 {
-    font-size: calc(var(--font-heading-scale) * 3rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-4));
   }
   h2 {
-    font-size: calc(var(--font-heading-scale) * 2.2rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-2));
   }
   h3 {
-    font-size: calc(var(--font-heading-scale) * 1.8rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-1));
   }
-  h4 {
-    font-size: calc(var(--font-heading-scale) * 1.6rem);
-  }
-  h5 {
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
-  }
-  h6 {
-    font-size: calc(var(--font-heading-scale) * 1.4rem);
-  }
-  @media (width >= 48rem) {
-    h1 {
-      font-size: calc(var(--font-heading-scale) * 4rem);
-    }
-    h2 {
-      font-size: calc(var(--font-heading-scale) * 2.6rem);
-    }
-    h3 {
-      font-size: calc(var(--font-heading-scale) * 2rem);
-    }
-    h4 {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
-    }
-    h5 {
-      font-size: calc(var(--font-heading-scale) * 1.6rem);
-    }
-    h6 {
-      font-size: calc(var(--font-heading-scale) * 1.4rem);
-    }
+  h4, h5, h6 {
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
   }
   .shopify-section {
     position: relative;
+    display: grid;
     width: 100%;
+    grid-template-columns: var(--page-grid-columns);
+  }
+  .shopify-section > * {
+    grid-column: content;
+  }
+  .shopify-section > .section, .shopify-section > .full-width {
+    grid-column: full;
   }
   .section {
     padding-block: var(--section-padding-top, 0) var(--section-padding-bottom, 0);
-    padding-inline: max(var(--page-margin), (100% - var(--page-width)) / 2);
+    padding-inline: var(--page-inset);
     background-image: var(--gradient-background);
   }
   [x-cloak] {
@@ -847,80 +772,62 @@
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 3.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 4.5rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-5));
   }
   .rte h2 {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
     letter-spacing: var(--font-heading-letter-spacing);
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 3rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 4rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-4));
+    line-height: var(--font-heading-line-height);
   }
   .rte h3 {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
     letter-spacing: var(--font-heading-letter-spacing);
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 2.2rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2.6rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-2));
+    line-height: var(--font-heading-line-height);
   }
   .rte h4 {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
     letter-spacing: var(--font-heading-letter-spacing);
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.8rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 2rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-1));
+    line-height: var(--font-heading-line-height);
   }
   .rte h5 {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
     letter-spacing: var(--font-heading-letter-spacing);
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.6rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.8rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
+    line-height: var(--font-heading-line-height);
   }
   .rte h6 {
     font-family: var(--font-heading-family);
     font-style: var(--font-heading-style);
     font-weight: var(--font-heading-weight);
-    line-height: var(--font-heading-line-height);
     letter-spacing: var(--font-heading-letter-spacing);
     text-transform: var(--font-heading-text-transform);
     word-break: break-word;
     color: rgb(var(--color-foreground));
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
-    @media (width >= 48rem) {
-      font-size: calc(var(--font-heading-scale) * 1.6rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
+    line-height: var(--font-heading-line-height);
   }
   .rte p {
     margin: 0;

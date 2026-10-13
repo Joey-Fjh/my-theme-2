@@ -85,27 +85,27 @@ Rich text (RTE) — shared merchant HTML output
     }
 
     .rte h1 {
-        @apply heading-xl;
+        @apply title-xl;
     }
 
     .rte h2 {
-        @apply heading-h1;
+        @apply title-l;
     }
 
     .rte h3 {
-        @apply heading-h2;
+        @apply title-m;
     }
 
     .rte h4 {
-        @apply heading-h3;
+        @apply title-s;
     }
 
     .rte h5 {
-        @apply heading-h4;
+        @apply title-xs;
     }
 
     .rte h6 {
-        @apply heading-h5;
+        @apply title-xs;
     }
 
     .rte p {

@@ -37,8 +37,8 @@ Notes on single steps:
 
 - **Step 2.** The file lives at `docs/design/design.md` in the theme. <!-- doc-paths: ignore -->
 - **Step 3.** The chain has two kinds of place today, and the mapping table marks which kind each value goes to:
-    - **Settings-backed:** the typography settings, the color schemes, and the page width and margin. Their values are written in step 5.
-    - **Code-owned tokens:** the motion durations and easings, which `snippets/css-variables.liquid` defines directly and no setting controls. Changing one is a code change in its own batch, not a preset change. Turning one into a merchant setting is an architecture batch, and `docs/references/architecture/motion-architecture.md` limits such settings to policy, not low-level detail.
+    - **Settings-backed:** the typography settings (`body_font_size`, `body_font_size_mobile`, `heading_scale`, and the font pickers), the color schemes, and the page width and margin. Their values are written in step 5. The type scale uses those body sizes as its step-0 bases.
+    - **Code-owned tokens:** the space scale (`--spacing-step-*` in `tailwind/tailwind.input.css`), the type-scale ratio and `--font-body-scale` (a constant `1` in `snippets/css-variables.liquid`), the colour roles (formulas on the scheme colours), and the motion durations and easings. `snippets/css-variables.liquid` defines the type steps, the roles' per-scheme values, and the motion tokens directly; no setting controls the ratio, the role formulas, or the motion values. Changing one is a code change in its own batch, not a preset change. Turning one into a merchant setting is an architecture batch, and `docs/references/architecture/motion-architecture.md` limits motion settings to policy, not low-level detail.
     - A value with no place of either kind is a gap. Each gap is decided one at a time: a new setting or token, which is an architecture batch of its own, or component CSS owned by one section.
 - **Step 5.** Only settings-backed values are written here. `config/settings_data.json` is merchant-owned configuration; writing the default preset needs explicit authorization in that batch's plan.
 - **Step 6.** Anything a section needs outside the chain is a named exception in the plan, not a silent literal.
@@ -52,7 +52,7 @@ The design-language file follows the open DESIGN.md format published at `https:/
 - `##` sections in the specification's order: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts. Any may be omitted.
 - Unknown sections are preserved, so a theme adds its own after them (for example component states, responsive behavior, motion).
 
-The front matter documents the design's values. It is not a token source: the theme's settings-backed values live in the preset, and its code-owned token values live in `snippets/css-variables.liquid`.
+The front matter documents the design's values. It is not a token source: the theme's settings-backed values live in the preset, and its code-owned token values live in the files step 3 names (`tailwind/tailwind.input.css` and `snippets/css-variables.liquid`).
 
 ## What this procedure does not fix
 

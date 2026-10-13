@@ -13,85 +13,42 @@ font head
     color: rgb(var(--color-foreground));
 }
 
-@utility heading-4xl {
+/* Semantic title scale */
+@utility title-xs {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 6.5rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 9rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
+    line-height: var(--font-heading-line-height);
 }
-@utility heading-3xl {
+@utility title-s {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 5.5rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 7.5rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-1));
+    line-height: var(--font-heading-line-height);
 }
-@utility heading-2xl {
+@utility title-m {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 4.5rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 6rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-2));
+    line-height: var(--font-heading-line-height);
 }
-@utility heading-xl {
+@utility title-l {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 3.5rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 4.5rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-4));
+    line-height: var(--font-heading-line-height);
 }
-@utility heading-h1 {
+@utility title-xl {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 3rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 4rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-5));
 }
-@utility heading-h2 {
+@utility title-2xl {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 2.2rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 2.6rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-6));
 }
-@utility heading-h3 {
+@utility title-3xl {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 1.8rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 2rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-7));
 }
-@utility heading-h4 {
+@utility title-4xl {
     @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 1.6rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 1.8rem);
-    }
-}
-@utility heading-h5 {
-    @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 1.6rem);
-    }
-}
-@utility heading-h6 {
-    @apply heading-base;
-    font-size: calc(var(--font-heading-scale) * 1.4rem);
-
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-heading-scale) * 1.4rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-8));
 }
 
 /* =========================================================
@@ -106,59 +63,47 @@ font body
     word-break: break-word;
 }
 
-@utility body-3xl {
+@utility copy-s {
     @apply body-base;
-    font-size: calc(var(--font-body-size-mobile) * 1.375);
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 1.5);
+    font-size: calc(var(--font-body-scale) * var(--type-step--1));
+}
+@utility copy-m {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-0));
+}
+@utility copy-l {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-1));
+}
+@utility copy-xl {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-2));
+}
+
+/* =========================================================
+Custom size utilities. Apply heading-base / body-base; override
+font-size only via local CSS variables.
+========================================================= */
+@utility heading-size-custom {
+    @apply heading-base;
+    font-size: calc(var(--font-heading-scale) * var(--heading-size-custom, 1rem));
+
+    @media (width >= theme(--breakpoint-tablet)) {
+        --heading-size-custom-pc-resolved: var(
+            --heading-size-custom-pc,
+            var(--heading-size-custom, 1rem)
+        );
+        font-size: calc(var(--font-heading-scale) * var(--heading-size-custom-pc-resolved));
     }
 }
 
-@utility body-2xl {
+@utility body-size-custom {
     @apply body-base;
-    font-size: calc(var(--font-body-size-mobile) * 1.25);
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 1.375);
-    }
-}
+    font-size: calc(var(--body-size-custom) * var(--font-body-scale));
 
-@utility body-xl {
-    @apply body-base;
-    font-size: calc(var(--font-body-size-mobile) * 1.125);
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 1.25);
-    }
-}
-
-@utility body-lg {
-    @apply body-base;
-    font-size: calc(var(--font-body-size-mobile));
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 1.125);
-    }
-}
-
-@utility body-md {
-    @apply body-base;
-    font-size: max(14px, calc(var(--font-body-size-mobile) * 0.875));
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size));
-    }
-}
-
-@utility body-sm {
-    @apply body-base;
-    font-size: max(13px, calc(var(--font-body-size-mobile) * 0.75));
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 0.875);
-    }
-}
-
-@utility body-xs {
-    @apply body-base;
-    font-size: max(12px, calc(var(--font-body-size-mobile) * 0.625));
-    @media (width >= theme(--breakpoint-pc)) {
-        font-size: calc(var(--font-body-size) * 0.75);
+    @media (width >= theme(--breakpoint-tablet)) {
+        --body-size-custom-pc-resolved: var(--body-size-custom-pc, var(--body-size-custom));
+        font-size: calc(var(--font-body-scale) * var(--body-size-custom-pc-resolved));
     }
 }
 

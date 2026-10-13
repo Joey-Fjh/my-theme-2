@@ -25,9 +25,9 @@
         {%- endif -%}
 
         <header>
-            <h1 class="heading-2xl">{{ article.title }}</h1>
+            <h1 class="title-2xl">{{ article.title }}</h1>
             {%- assign date = article.published_at | time_tag: format: 'date' -%}
-            <p class="body-xl">
+            <p class="copy-l">
                 {{ 'blog.article_metadata_html' | t: date: date, author: article.author }}
             </p>
         </header>
@@ -39,7 +39,7 @@
                 id="ArticleComments-{{ section.id }}"
                 aria-labelledby="ArticleCommentsHeading-{{ section.id }}"
             >
-                <h2 id="ArticleCommentsHeading-{{ section.id }}" class="heading-h3">
+                <h2 id="ArticleCommentsHeading-{{ section.id }}" class="title-s">
                     {{ 'blog.comments_count_heading' | t: count: article.comments_count }}
                 </h2>
 
@@ -49,8 +49,8 @@
                             {%- for comment in article.comments -%}
                                 <li>
                                     <article id="comment-{{ comment.id }}">
-                                        <div class="rte body-lg">{{ comment.content }}</div>
-                                        <p class="body-sm">
+                                        <div class="rte copy-l">{{ comment.content }}</div>
+                                        <p class="copy-s">
                                             {%- liquid
                                                 assign comment_author = comment.author | escape
                                                 assign comment_date = comment.created_at | time_tag: format: 'date'
@@ -68,7 +68,7 @@
                     {%- endif -%}
                 {% endpaginate %}
 
-                <h3 class="heading-h4">{{ 'blog.comment_form_title' | t }}</h3>
+                <h3 class="title-xs">{{ 'blog.comment_form_title' | t }}</h3>
 
                 {%- form 'new_comment', article -%}
                     {%- if form.posted_successfully? -%}
@@ -88,8 +88,8 @@
                             tabindex="-1"
                             autofocus
                         >
-                            <h4 class="heading-h4">{{ 'blog.comment_form_error_title' | t }}</h4>
-                            <ul class="body-md">
+                            <h4 class="title-xs">{{ 'blog.comment_form_error_title' | t }}</h4>
+                            <ul class="copy-m">
                                 {%- for field in form.errors -%}
                                     {%- if field == 'form' -%}
                                         <li>{{ form.errors.messages[field] }}</li>
@@ -148,7 +148,7 @@
                             {% endif %}
                         >
                         {%- if form.errors contains 'author' -%}
-                            <p id="CommentFormAuthor-error-{{ section.id }}" class="body-md">
+                            <p id="CommentFormAuthor-error-{{ section.id }}" class="copy-m">
                                 {{ form.errors.messages.author }}
                             </p>
                         {%- endif -%}
@@ -172,7 +172,7 @@
                             {% endif %}
                         >
                         {%- if form.errors contains 'email' -%}
-                            <p id="CommentFormEmail-error-{{ section.id }}" class="body-md">
+                            <p id="CommentFormEmail-error-{{ section.id }}" class="copy-m">
                                 {{ form.errors.messages.email }}
                             </p>
                         {%- endif -%}
@@ -194,7 +194,7 @@
                             {% endif %}
                         >{{ form.body | escape }}</textarea>
                         {%- if form.errors contains 'body' -%}
-                            <p id="CommentFormBody-error-{{ section.id }}" class="body-md">
+                            <p id="CommentFormBody-error-{{ section.id }}" class="copy-m">
                                 {{ form.errors.messages.body }}
                             </p>
                         {%- endif -%}

@@ -782,7 +782,7 @@ test('heading-h tier on div fails', async () => {
     await withTempThemeAsync(async (root) => {
         writeFile(root, 'sections/fixture.liquid', `<div class="heading-h2">Title</div>\n`);
         const failures = await runThemeLint(root);
-        assert.match(failureMessages(failures), /heading-h\* tiers belong on h1–h6/);
+        assert.match(failureMessages(failures), /title-\* tiers belong on h1–h6/);
     });
 });
 
@@ -798,7 +798,7 @@ test('body tier on heading fails', async () => {
     await withTempThemeAsync(async (root) => {
         writeFile(root, 'sections/fixture.liquid', `<h2 class="body-md">Title</h2>\n`);
         const failures = await runThemeLint(root);
-        assert.match(failureMessages(failures), /body-\* tiers belong on non-heading/);
+        assert.match(failureMessages(failures), /copy-\* tiers belong on non-heading/);
     });
 });
 
@@ -1322,6 +1322,183 @@ test('import map entry used by an asset import passes', async () => {
         const failures = await runThemeLint(root);
         assert.equal(
             failures.filter((failure) => failure.checkId === 'module-import-map-unused').length,
+            0,
+            failureMessages(failures),
+        );
+    });
+});
+
+test('title tier on div fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `<div class="title-m">Title</div>\n`);
+        const failures = await runThemeLint(root);
+        assert.match(failureMessages(failures), /title-\* tiers belong on h1–h6/);
+    });
+});
+
+test('title tier on h2 passes', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `<h2 class="title-m">Title</h2>\n`);
+        const failures = await runThemeLint(root);
+        assert.equal(
+            failures.filter((failure) => failure.checkId === 'typography-tier-heading').length,
+            0,
+        );
+    });
+});
+
+test('copy tier on heading fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `<h2 class="copy-m">Title</h2>\n`);
+        const failures = await runThemeLint(root);
+        assert.match(failureMessages(failures), /copy-\* tiers belong on non-heading/);
+    });
+});
+
+test('raw-colour markup opacity modifier fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `<p class="text-theme-text/80">Label</p>\n`);
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'raw-colour'));
+    });
+});
+
+test('raw-colour css literal fails and a role passes', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `{% stylesheet %}\n.bad { color: #fff; }\n.ok { color: var(--color-muted); }\n{% endstylesheet %}\n`);
+        const failures = await runThemeLint(root);
+        const raw = failures.filter((failure) => failure.checkId === 'raw-colour');
+        assert.equal(raw.length, 1);
+        assert.match(raw[0].message, /hex colour/);
+    });
+});
+
+test('colour-role-sync requires the same per-scheme value', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'tailwind/tailwind.input.css',
+            '--color-muted: rgba(var(--color-foreground), var(--alpha-80));\n',
+        );
+        writeFile(
+            root,
+            'snippets/css-variables.liquid',
+            '{% for scheme in settings.color_schemes %}\n--color-muted: rgba(var(--color-foreground), var(--alpha-50));\n{% endfor %}\n',
+        );
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'colour-role-sync' && /differs/.test(failure.message)));
+    });
+});
+
+test('colour-setting rejects a colour setting outside the scheme group', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            '{% schema %}\n{ "settings": [{ "type": "color", "id": "accent" }] }\n{% endschema %}\n',
+        );
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'colour-setting' && /accent/.test(failure.message)));
+    });
+});
+
+test('page-token-scope rejects a snippet reading page width', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'snippets/fixture.liquid', `{% stylesheet %}\n.box { padding: var(--page-width); }\n{% endstylesheet %}\n`);
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'page-token-scope'));
+    });
+});
+
+test('screen-height-literal rejects a viewport height literal', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `{% stylesheet %}\n.box { min-height: 100dvh; }\n{% endstylesheet %}\n`);
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'screen-height-literal'));
+    });
+});
+
+test('page-frame checks are switched off independently', () => {
+    const { collectPageFrameLiquidFailures } = require('./lib/page-frame-lint');
+    const text = `{% stylesheet %}\n.box { min-height: 100dvh; padding: var(--page-width); }\n{% endstylesheet %}\n`;
+    const idsFor = (data) => {
+        const failures = [];
+        collectPageFrameLiquidFailures(text, 'sections/fixture.liquid', failures, new Map(), data);
+        return failures.map((failure) => failure.checkId).sort();
+    };
+
+    assert.deepEqual(idsFor({ pageTokenRoots: ['sections/'], liquidRoots: [] }), ['page-token-scope']);
+    assert.deepEqual(idsFor({ pageTokenRoots: [], liquidRoots: ['sections/'] }), ['screen-height-literal']);
+    assert.deepEqual(idsFor({ pageTokenRoots: [], liquidRoots: [] }), []);
+});
+
+test('stylesheet media query rejects px and accepts a tokenized width', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            '{% stylesheet %}\n@media (min-width: 768px) { .a { color: var(--color-muted); } }\n{% endstylesheet %}\n',
+        );
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'stylesheet-media-query'));
+    });
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            '{% stylesheet %}\n@media (width >= 48rem) { .a { color: var(--color-muted); } }\n{% endstylesheet %}\n',
+        );
+        const failures = await runThemeLint(root);
+        assert.equal(
+            failures.filter((failure) => failure.checkId === 'stylesheet-media-query').length,
+            0,
+        );
+    });
+});
+
+test('stylesheet layer inside a stylesheet block fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', '{% stylesheet %}\n@layer utilities { .a { color: var(--color-muted); } }\n{% endstylesheet %}\n');
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'stylesheet-layer'));
+    });
+});
+
+test('unloaded font weight utility fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(root, 'sections/fixture.liquid', `<p class="font-medium">Label</p>\n`);
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'unloaded-font-weight'));
+    });
+});
+
+test('dead-setting unused section setting fails', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'sections/fixture.liquid',
+            '{% schema %}\n{ "settings": [{ "type": "text", "id": "unused_heading" }] }\n{% endschema %}\n',
+        );
+        const failures = await runThemeLint(root);
+        assert.ok(failures.some((failure) => failure.checkId === 'dead-setting' && /unused_heading/.test(failure.message)));
+    });
+});
+
+test('dead-setting counts a quoted list read through settings[id]', async () => {
+    await withTempThemeAsync(async (root) => {
+        writeFile(
+            root,
+            'config/settings_schema.json',
+            '[{ "name": "Social", "settings": [{ "type": "text", "id": "social_facebook_link" }] }]\n',
+        );
+        writeFile(
+            root,
+            'sections/header.liquid',
+            "{% assign ids = 'social_facebook_link' | split: ',' %}\n{% for id in ids %}\n{% assign url = settings[id] %}\n{{ url }}\n{% endfor %}\n",
+        );
+        const failures = await runThemeLint(root);
+        assert.equal(
+            failures.filter((failure) => failure.checkId === 'dead-setting').length,
             0,
             failureMessages(failures),
         );

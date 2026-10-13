@@ -343,26 +343,29 @@ function collectTypographyTierFailures(ast, text, file, failures, allowsByLine) 
         const line = lineAt(text, node.position?.start ?? 0);
 
         if (!HEADING_TAGS.has(tagName)) {
-            if (/\bheading-h[1-6]\b/.test(classValues)) {
+            if (/\bheading-h[1-6]\b/.test(classValues) || /\btitle-(?:xs|s|m|l|xl|2xl|3xl|4xl)\b/.test(classValues)) {
                 pushFailure(
                     failures,
                     allowsByLine,
                     file,
                     line,
                     CHECK.TYPOGRAPHY_TIER_HEADING,
-                    `heading-h* tiers belong on h1–h6 elements, not <${tagName}>.`,
+                    `title-* tiers belong on h1–h6 elements, not <${tagName}>.`,
                 );
             }
         }
 
-        if (HEADING_TAGS.has(tagName) && /\bbody-[\w-]+\b/.test(classValues)) {
+        if (
+            HEADING_TAGS.has(tagName) &&
+            (/\bbody-(?!base\b|size-custom\b)[\w-]+\b/.test(classValues) || /\bcopy-(?:s|m|l|xl)\b/.test(classValues))
+        ) {
             pushFailure(
                 failures,
                 allowsByLine,
                 file,
                 line,
                 CHECK.TYPOGRAPHY_TIER_BODY_ON_HEADING,
-                'body-* tiers belong on non-heading elements, not on headings.',
+                'copy-* tiers belong on non-heading elements, not on headings.',
             );
         }
     });

@@ -1,15 +1,34 @@
+@utility container-page {
+    @apply relative grid w-full;
+
+    grid-template-columns: var(--page-grid-columns);
+
+    & > * {
+        grid-column: content;
+    }
+}
+
 /* The one grid for repeated items (cards, articles, media). Items are not stretched,
    so an image's height follows its aspect ratio instead of the tallest card. */
 @utility grid-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
     align-items: start;
-    gap: 2rem;
+    gap: var(--spacing-step-l);
+}
+
+@utility surface-section {
+    background-image: var(--gradient-background);
 }
 
 @utility surface-component {
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-foreground));
+}
+
+@utility surface-inverted {
+    background-color: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
 }
 
 /* Global z-index layer utilities */
