@@ -9,11 +9,11 @@ This file is the always-on entry point and the canonical rule source for agents 
 - Alpine.js v3 for reactive UI state
 - GSAP + ScrollTrigger (optional, for complex narrative motion only)
 - Swiper as the selected carousel library
-- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `defer`, `mount`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
+- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `holdUntilReady`, `mount`, `releaseHold`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
 
 Runtime constraints:
 
-- No bundler. `layout/theme.liquid` loads theme code as ES modules through an import map (entry `base.js`). Only the vendored Alpine script is a classic `defer` script, and it runs after the entry. Load order: `docs/references/architecture/javascript-runtime.md`.
+- No bundler. `layout/theme.liquid` renders `snippets/scripts.liquid`, which loads theme code as ES modules through an import map (entry `base.js`). Only the vendored Alpine script is a classic `defer` script, and it runs after the entry. Load order: `docs/references/architecture/javascript-runtime.md`.
 - Do not introduce React, Vue, TypeScript, or nested runtime asset structures unless the user explicitly approves an architecture change. Theme assets stay flat under `assets/`.
 - Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision. Browserslist drives static compatibility checks only, not Tailwind v4's build target.
 

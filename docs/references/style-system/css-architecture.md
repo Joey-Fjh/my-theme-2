@@ -66,7 +66,7 @@ Don't bridge motion duration or easing into `@theme`; use a recipe class instead
 ```css
 /* tailwind/tailwind.animates.css */
 @utility spinner {
-    animation: spinner-turn var(--motion-duration-base) var(--motion-ease) infinite;
+    animation: spinner-turn 0.8s linear infinite;
 }
 ```
 

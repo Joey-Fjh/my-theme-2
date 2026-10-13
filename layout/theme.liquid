@@ -20,44 +20,7 @@
         {% # Load and preload the CSS %}
         {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}
 
-        {% comment %}
-            --- 1. Module graph ---
-            Every identifier below is a bare specifier. `data-module-id` in Liquid markup
-            names the component entry the core imports on demand; the core itself holds no
-            component manifest.
-        {% endcomment %}
-        <script type="importmap">
-            {
-                "imports": {
-                    "base": "{{ 'base.js' | asset_url }}",
-                    "events": "{{ 'events.js' | asset_url }}",
-                    "utils": "{{ 'utils.js' | asset_url }}",
-                    "https": "{{ 'https.js' | asset_url }}",
-                    "alpine-adapter": "{{ 'alpine.adapter.js' | asset_url }}",
-                    "cart-contract": "{{ 'cart.contract.js' | asset_url }}",
-                    "accordion": "{{ 'accordion.js' | asset_url }}",
-                    "buy-buttons": "{{ 'buy-buttons.js' | asset_url }}",
-                    "cart-page": "{{ 'cart-page.js' | asset_url }}",
-                    "dropdown": "{{ 'dropdown.js' | asset_url }}",
-                    "localization-switcher": "{{ 'localization-switcher.js' | asset_url }}",
-                    "product-gallery": "{{ 'product-gallery.js' | asset_url }}",
-                    "quantity-selector": "{{ 'quantity-selector.js' | asset_url }}",
-                    "section-pagination": "{{ 'section-pagination.js' | asset_url }}",
-                    "variant-picker": "{{ 'variant-picker.js' | asset_url }}"
-                }
-            }
-        </script>
-
-        {% comment %}
-            --- 2. Core entry ---
-            Must execute before Alpine: Alpine v3 queues `start()` in a microtask as soon as
-            its own script runs, so the core has to claim component roots and queue store
-            registration first.
-        {% endcomment %}
-        <script type="module" src="{{ 'base.js' | asset_url }}"></script>
-
-        {% comment %} --- 3. Alpine.js framework initialization --- {% endcomment %}
-        <script src="{{ 'vendor-alpine.min.js' | asset_url }}" defer></script>
+        {% render 'scripts' %}
 
         {{ content_for_header }}
     </head>

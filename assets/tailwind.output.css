@@ -234,7 +234,7 @@
     border-radius: 50%;
     border: 2px solid currentColor;
     border-top-color: transparent;
-    animation: spinner-turn var(--motion-duration-base) var(--motion-ease) infinite;
+    animation: spinner-turn 0.8s linear infinite;
   }
   .btn {
     display: inline-flex;

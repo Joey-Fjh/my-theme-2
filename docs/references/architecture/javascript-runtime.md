@@ -11,22 +11,22 @@ The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares beh
 | Layer | Files | Loading | Responsibility |
 | --- | --- | --- | --- |
 | Core | `base.js`, `events.js` | Static | Layout measurement, module scanning and lazy loading, DOM teardown coordination, Theme Editor event forwarding, store bootstrap |
-| Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `defer`, `mount`, `unmount`, `store`, `data` |
+| Adapter | `alpine.adapter.js` | Static | Sole Alpine touchpoint: `define`, `holdUntilReady`, `mount`, `releaseHold`, `unmount`, `store`, `data` |
 | Platform state | `cart.contract.js`, `https.js` | Static | Cart API ownership hydrated from `body.dataset.initialCart`, and the HTTP / Section Rendering helpers it depends on |
 | UI state bridges | `alpine.store.cart.js` | Static | Cart UI store registered by the core through the adapter |
 | On-demand modules | `utils.js`, feature entry files (`accordion.js`, `buy-buttons.js`, …) | Dynamic | Shared utilities and Alpine factories, imported when markup asks for them |
 
 Every file marked Static is reached from `base.js` through a static `import`, so it downloads and parses on every page regardless of what the page renders. Only the last row uses dynamic `import()`. Keep the static graph small; measure file sizes when a change adds a static import.
 
-The core does not import component names. It reads `data-module-id` on DOM roots, resolves the identifier through the import map in `layout/theme.liquid`, and calls dynamic `import()`.
+The core does not import component names. It reads `data-module-id` on DOM roots, resolves the identifier through the import map in `snippets/scripts.liquid`, and calls dynamic `import()`.
 
 ## Script Load Order
 
-`layout/theme.liquid` loads, in order:
+`layout/theme.liquid` renders `snippets/scripts.liquid` once in `<head>`, before `content_for_header`; the snippet loads, in order (`lint:theme` fails when the layout does not render it or the snippet has no parsable import map):
 
 1. Import map — bare specifiers such as `base`, `events`, `utils`, `https`, `alpine-adapter`, `cart-contract`, and one specifier per feature module (`accordion`, `buy-buttons`, `cart-page`, …).
 2. One module entry — `<script type="module" src="{{ 'base.js' | asset_url }}">`.
-3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can defer roots and queue store registration first).
+3. One classic vendor script — `vendor-alpine.min.js` (Alpine MUST run after the module entry so the core can register its init interceptor and queue store registration first).
 
 There is no classic path for theme stores, utilities, or component definitions. The one page outside this graph is `templates/gift_card.liquid`: it renders without the layout and loads Shopify's `qrcode.js` and `assets/gift-card.js` as classic `defer` scripts. GSAP and Swiper are selected libraries; vendored files are added only when an accepted consumer exists, with the version recorded at vendoring time. Shopify injects the `es-module-shims` polyfill when needed; the theme ships none.
 
@@ -44,7 +44,11 @@ Component roots declare a module identifier and an Alpine factory name:
 
 Each feature file (for example `buy-buttons.js`) imports shared helpers it needs, calls `define(name, factory)` from `alpine-adapter`, and exports nothing the core reads directly.
 
-The core (`base.js`) scans `[data-module-id]`, imports each identifier once, and calls `adapter.mount(el)` after the module defines its factory. Markup declares lazy-load intent with the boolean attribute `data-module-lazy`; the core reads that attribute and does not hold a list of module names. Roots without `data-module-lazy` load immediately.
+A module's definition arrives asynchronously, while Alpine resolves an `x-data` name synchronously when it initializes an element. The core therefore checks at the moment of initialization, not beforehand: `base.js` registers one init interceptor through `adapter.holdUntilReady()`, and Alpine calls it for every element it is about to initialize, on every path: the first page walk, content cloned from `x-for`, `x-if`, and `x-teleport` templates, HTML inserted by `SectionRefresher` or the Theme Editor, and explicit mounts. When the element is a `[data-module-id]` root whose module has not loaded, the interceptor holds it (Alpine skips its directives and subtree), imports the module once, and mounts it through `adapter.mount(el)` when the module has defined its factory. A root whose import fails stays held; mounting it would only produce expression errors. Markup declares lazy-load intent with the boolean attribute `data-module-lazy`: such a root is held until it nears the viewport, then imported. The core reads that attribute and does not hold a list of module names.
+
+`scanModules()` only downloads ahead: it starts importing the modules of non-lazy roots already in the DOM, and of a held root's descendants, so they are ready or nearly ready when Alpine reaches them. It never holds or mounts anything, and a root it misses still loads through the interceptor. A module may also import the modules its templates render to avoid the first-render wait; that is a performance choice, not a correctness requirement.
+
+Correctness of theme JavaScript must never depend on scanning the DOM and on a lint check that keeps the markup scannable: asynchronous paths are too many to enumerate, and the interceptor covers them all. Scanning `data-*` markers remains appropriate only for progressive enhancement whose miss degrades gracefully.
 
 Pass Liquid-driven runtime values through `data-*`, then read `this.$el.dataset` inside the component factory. Do not embed Liquid JSON or quote-heavy values directly in `x-data`.
 
@@ -69,8 +73,9 @@ Only `alpine.adapter.js` may call `window.Alpine` APIs.
 | Export | Purpose |
 | --- | --- |
 | `define(name, factory)` | Registers `alpine.data(name, factory)` before or during startup |
-| `defer(el)` | Sets `x-ignore` until the module has defined its factory |
-| `mount(el)` | Removes deferral and calls `Alpine.initTree(el)` |
+| `holdUntilReady(shouldHold)` | Registers an `Alpine.interceptInit` callback; when `shouldHold(el)` returns true the element gets `x-ignore` and Alpine skips it and its subtree |
+| `mount(el)` | Removes the hold and calls `Alpine.initTree(el)` |
+| `releaseHold(el)` | Removes the hold without initializing, so Alpine meets the element again if it is reinserted |
 | `unmount(el)` | Calls `Alpine.destroyTree(el)` |
 | `store(name, value?)` | Registers or reads a global Alpine store |
 | `data(el)` | Reads reactive state bound to `el` |
@@ -101,14 +106,15 @@ Do not use bare `document` listeners in Liquid or ad-hoc globals for cross-compo
 
 ## Module Lifecycle And Theme Editor Forwarding
 
-The core coordinates module roots through DOM discovery, not a component registry.
+The core coordinates module roots through Alpine's init interceptor, not a component registry.
 
 | Responsibility | Owner |
 | --- | --- |
-| Initial scan and `shopify:section:load` / `:reorder` reactivation | `scanModules()` in `base.js` |
-| Lazy load when a root carries `data-module-lazy` | `IntersectionObserver` in `base.js` |
-| Lazy observer release on DOM removal | One `MutationObserver` in `base.js` calls `releaseModuleRoots()` only |
-| Alpine teardown on owned DOM replacement | `SectionRefresher.replaceRegion()` calls `adapter.unmount()` before swapping markup, then `scanModules()` and `adapter.mount()` |
+| Hold a root until its module is defined, then mount it | `holdForModule()` in `base.js`, registered through `adapter.holdUntilReady()` |
+| Download ahead on first load and on `shopify:section:load` / `:reorder` | `scanModules()` in `base.js` |
+| Lazy load when a root carries `data-module-lazy` | `IntersectionObserver` in `base.js`, started by `holdForModule()` |
+| Held-root release on DOM removal | One `MutationObserver` in `base.js` calls `releaseModuleRoots()` for removed nodes still detached when it runs (a root moved within one task stays held and observed); it stops the lazy observer and drops the hold through `adapter.releaseHold()`, so a root reinserted later is held again from a clean state |
+| Alpine teardown on owned DOM replacement | `SectionRefresher.replaceRegion()` calls `adapter.unmount()` before swapping markup, then `scanModules()` (download ahead) and `adapter.mount()`; roots whose modules are still loading are held by the interceptor |
 | Alpine teardown on Theme Editor section unload | `shopify:section:unload` handler in `base.js` calls `adapter.unmount()` on every module root in the unloaded section and `releaseModuleRoots()` |
 | Theme Editor select/deselect/reorder | In `Shopify.designMode` only, `base.js` listens for native Shopify events such as `shopify:section:select` and forwards them to affected `[data-module-id]` roots — including ancestor module roots when the selected block is nested inside the root — as project-owned `theme:editor:*` events through `ThemeEvents.emit(..., { target: root })` |
 

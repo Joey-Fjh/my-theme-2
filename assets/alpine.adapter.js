@@ -72,16 +72,23 @@ export function define(name, factory) {
 }
 
 /**
- * Hold an element back from automatic initialization until its module has been defined.
- * Must run before the adapter library walks the DOM.
- * @param {Element} el
+ * Consult `shouldHold(el)` for every element the adapter library is about to initialize,
+ * on every path: first page walk, cloned template content (x-for, x-if, x-teleport),
+ * injected HTML, and explicit mounts. When it returns true the element gets `x-ignore`, the
+ * library skips it and its subtree, and the caller mounts it later through `mount`.
+ * Must be registered before the library walks the DOM.
+ * @param {(el: Element) => boolean} shouldHold
  */
-export function defer(el) {
-    if (!el || el.nodeType !== 1) return;
-    if (el._x_marker !== undefined) return;
+export function holdUntilReady(shouldHold) {
+    withAlpine((alpine) => {
+        alpine.interceptInit((el) => {
+            if (el.nodeType !== 1 || el._x_ignore) return;
+            if (!shouldHold(el)) return;
 
-    el.setAttribute('x-ignore', '');
-    el._x_ignore = true;
+            el.setAttribute('x-ignore', '');
+            el._x_ignore = true;
+        });
+    });
 }
 
 /**
@@ -99,6 +106,18 @@ export function mount(el) {
 
         if (typeof alpine.initTree === 'function') alpine.initTree(el);
     });
+}
+
+/**
+ * Drop a hold without initializing, so the library meets `el` again (and `shouldHold` is
+ * consulted again) if it is ever reinserted. For held elements that left the document.
+ * @param {Element} el
+ */
+export function releaseHold(el) {
+    if (!el || el.nodeType !== 1) return;
+
+    el.removeAttribute('x-ignore');
+    delete el._x_ignore;
 }
 
 /**
