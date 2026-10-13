@@ -36,3 +36,11 @@ icons/*
 __pycache__/
 *.pyc
 
+
+# Design screenshots and reference images stay local; a theme keeps them under docs/design/.
+docs/design/**/*.png
+docs/design/**/*.jpg
+docs/design/**/*.jpeg
+docs/design/**/*.webp
+docs/design/**/*.gif
+docs/design/**/*.mp4
