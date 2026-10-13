@@ -21,7 +21,6 @@
                         <summary
                             class="dropdown-trigger"
                             id="HeaderMenu-{{ link.handle }}"
-                            :aria-expanded="$el.parentElement.open"
                         >
                             <span>
                                 {{ link.title | escape }}
@@ -58,7 +57,6 @@
                                             <summary
                                                 class="dropdown-trigger"
                                                 id="HeaderMenu-{{ childlink.handle }}"
-                                                :aria-expanded="$el.parentElement.open"
                                             >
                                                 <span>
                                                     {{ childlink.title | escape }}

@@ -42,12 +42,12 @@
                 {%- endif -%}
             {%- when 'title' -%}
                 <div {{ block.shopify_attributes }}>
-                    <h1 class="heading-h1">{{ product.title }}</h1>
+                    <h1 class="title-l">{{ product.title }}</h1>
                 </div>
             {%- when 'price' -%}
                 {%- assign current_variant = product.selected_or_first_available_variant -%}
                 <div {{ block.shopify_attributes }}>
-                    <p class="body-3xl">{{ current_variant.price | money }}</p>
+                    <p class="copy-xl">{{ current_variant.price | money }}</p>
                     {%- render 'product-tax-note' -%}
                 </div>
             {%- when 'description' -%}

@@ -3,6 +3,21 @@ import { define } from 'alpine-adapter';
 define('dropdown', () => ({
     openEls: [],
 
+    init() {
+        this.$el.querySelectorAll('[data-dropdown]').forEach((el) => {
+            this.setExpanded(el, el.hasAttribute('open'));
+        });
+    },
+
+    // The `open` attribute is not reactive state, so the trigger's expanded state is written here.
+    setExpanded(target, expanded) {
+        const trigger = target.querySelector(':scope > summary.dropdown-trigger');
+
+        if (!trigger) return;
+
+        trigger.setAttribute('aria-expanded', String(expanded));
+    },
+
     onHeaderFocusIn() {},
 
     onHeaderFocusOut(event) {
@@ -64,6 +79,7 @@ define('dropdown', () => ({
         }
 
         current.setAttribute('open', '');
+        this.setExpanded(current, true);
 
         this.openEls[deep] = current;
     },
@@ -78,6 +94,7 @@ define('dropdown', () => ({
 
             if (el) {
                 el.removeAttribute('open');
+                this.setExpanded(el, false);
             }
         }
 

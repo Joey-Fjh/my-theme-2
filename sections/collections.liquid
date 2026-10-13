@@ -6,7 +6,7 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <h1 class="heading-2xl">{{ 'collections.list_heading' | t }}</h1>
+    <h1 class="title-2xl">{{ 'collections.list_heading' | t }}</h1>
 
     {%- paginate collections by 12 -%}
         <div class="grid-list" data-collection-grid>
@@ -30,7 +30,7 @@
                         widths: '400,700,1000,1200,1600',
                         loading: image_loading
                     -%}
-                    <span class="body-lg">{{ collection.title }}</span>
+                    <span class="copy-l">{{ collection.title }}</span>
                 </a>
             {%- endfor -%}
         </div>

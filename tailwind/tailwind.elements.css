@@ -9,7 +9,7 @@ icon
 skip link
 ========================================================= */
 @utility skip-link {
-    @apply fixed start-4 top-4 bg-theme-bg px-4 py-3 body-md text-theme-text;
+    @apply fixed start-4 top-4 bg-theme-bg px-step-s py-step-xs copy-m text-theme-text;
     z-index: var(--z-layer-skip-link);
     transform: translateY(calc(-100% - 2rem));
 
@@ -28,8 +28,9 @@ skip link
 button
 ========================================================= */
 @utility btn {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2;
+    @apply inline-flex cursor-pointer items-center justify-center gap-step-2xs;
 
+    /* Control size, not spacing between elements: fixed, so the tap target does not shrink on narrow screens. */
     padding: 0.75rem 1.5rem;
     border: 1px solid currentColor;
     background-color: rgb(var(--color-foreground));
@@ -55,12 +56,13 @@ field
     @apply w-full;
 
     font: inherit;
+    /* Control size: fixed, like the button. */
     padding: 0.5rem 0.75rem;
     border: 1px solid rgb(var(--color-border));
     background-color: transparent;
     color: currentColor;
 
-    @media (width < theme(--breakpoint-pc)) {
+    @media (width < theme(--breakpoint-tablet)) {
         /* lint-allow settings-chain-css-typography: iOS Safari zoom floor for native fields */
         font-size: max(16px, 1em);
     }

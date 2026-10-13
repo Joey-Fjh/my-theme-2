@@ -85,7 +85,9 @@ Get-Item CLAUDE.md, .claude\skills | Select-Object Name, LinkType, Target
 
 ### MCP servers
 
-Agents use Shopify Dev MCP and Context7. If an expected MCP is missing, check in this order: client configuration, project trust, client restart, Node/npm, and network. Codex loads project-level `.codex/config.toml` only for trusted projects; `trust_level` is machine-local and cannot be set by repository files.
+Agents use Shopify Dev MCP and Context7 for documentation, and Chrome DevTools MCP (`chrome-devtools`) to drive a browser against `shopify theme dev`: console messages, network requests, script evaluation, and performance traces. It needs a local Chrome (stable channel) and starts it with `--isolated`, so every session begins with a clean profile and an empty cache. Each client keeps its own config: `.mcp.json` (Claude Code), `.cursor/mcp.json` (Cursor), and `.codex/config.toml` (Codex); `npm.cmd run doctor:agent` fails when their server lists differ.
+
+If an expected MCP is missing, check in this order: client configuration, project trust, client restart, Node/npm, and network. Codex loads project-level `.codex/config.toml` only for trusted projects; `trust_level` is machine-local and cannot be set by repository files.
 
 ## Commands
 
@@ -99,9 +101,22 @@ npm.cmd run lint                # Repository lint and format checks
 npm.cmd run test:validators     # Project validator fixture tests
 npm.cmd test                    # Validators, Liquid syntax guard, Theme Check
 npm.cmd run test:theme-check    # Shopify Theme Check only
+npm.cmd run doctor:agent        # Verify CLAUDE.md / .claude/skills symlinks, matching MCP lists, ruleset checks against job names
+npm.cmd run test:layout-harness # Layout-check fixture suite (Chrome required; no dev server)
+npm.cmd run test:layout         # Storefront layout scan (Chrome + shopify:dev). Optional LAYOUT_INJECT_STYLE for local regression CSS probes.
 ```
 
 Use `npm.cmd` for project scripts in this Windows workspace. Default to the smallest relevant validation command while developing; run full `npm.cmd run lint` and `npm.cmd test` before PR, version/release, or Theme Store submission, or when explicitly requested.
+
+## New theme repository setup
+
+Do this once when a new GitHub repository is created from this code. It does not apply to the skeleton repository itself, which imports no ruleset and skips the `Lighthouse` job (`.github/workflows/lighthouse.yml`). The CI store (`ci-test`, loaded with Shopify's performance test CSV) and its Theme Access password are shared by every theme and are not set up again.
+
+1. **Protect `main`.** In the repository on GitHub: Settings, Rules, Rulesets, New ruleset, Import a ruleset, and choose `.github/rulesets/main.json`. It requires a pull request and the `Lint`, `Theme Check` and `Lighthouse` checks (up to date), and blocks force pushes and deletion; repository admins may bypass it for pull requests only.
+2. **Add the Actions secrets** (Settings, Secrets and variables, Actions) that `.github/workflows/lighthouse.yml` reads: `SHOP_STORE`, `SHOP_ACCESS_TOKEN` and `SHOP_PASSWORD`. Enter the values on GitHub only; never put them in a file.
+3. **Run the `Lighthouse` workflow once by hand** (Actions, Lighthouse, Run workflow) to prove the secrets work. The button appears once the workflow file is on `main`.
+
+`npm.cmd run doctor:agent` fails when a check the ruleset file requires is not the name of a workflow job, because such a merge would wait forever. It reads files only: it does not see the live ruleset or the secrets, so change the file and the live ruleset together.
 
 ## Start a derived theme
 
@@ -118,6 +133,7 @@ After starting, the derived theme makes these edits:
 - `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
 - Rewrite `docs/project.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
 - Empty `docs/agent/board.md` and `docs/agent/context.md`.
+- Follow [Design to delivery](docs/references/style-system/design-to-delivery.md) to get from a design to the theme's settings, default preset, and sections. The starting point is the baseline [design.md](docs/design/design.md), which the theme replaces or supplements from its design draft.
 - Resetting `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` needs its own authorization in the derived theme.
 
 Then deploy through Git:

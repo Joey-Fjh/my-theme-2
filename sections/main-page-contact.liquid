@@ -6,7 +6,7 @@
         --section-padding-bottom: {{ section.settings.padding_bottom }}px;
     "
 >
-    <h1 class="heading-xl">{{ page.title }}</h1>
+    <h1 class="title-xl">{{ page.title }}</h1>
     {%- if page.content != blank -%}
         <div class="rte">{{ page.content }}</div>
     {%- endif -%}
@@ -92,7 +92,7 @@
                 {% endif %}
             ></textarea>
         </div>
-        <button type="submit" class="btn body-xl">
+        <button type="submit" class="btn copy-l">
             {{ 'sections.main-page-contact.defaults.button_text' | t }}
         </button>
     {%- endform -%}

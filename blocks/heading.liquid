@@ -1,7 +1,7 @@
 {%- assign heading_tag = block.settings.semantic_level -%}
 
 {%- if block.settings.heading != blank -%}
-    <{{ heading_tag }} class="heading-h2" {{ block.shopify_attributes }}>
+    <{{ heading_tag }} class="title-m" {{ block.shopify_attributes }}>
         {{ block.settings.heading }}
     </{{ heading_tag }}>
 {%- elsif request.design_mode -%}

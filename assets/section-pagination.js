@@ -73,6 +73,8 @@ define('sectionPagination', () => ({
 
         Http.getJSON(fetchUrl, {
             signal: activeController.signal,
+            // Observed on the dev storefront: this request answers 404 when Accept names JSON, and 200 with section JSON for `*/*`.
+            headers: { Accept: '*/*' },
         })
             .then((data) => {
                 const sections = data?.sections ?? data;

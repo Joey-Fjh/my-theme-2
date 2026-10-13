@@ -36,8 +36,8 @@
         z-index: var(--z-layer-dropdown);
         top: 100%;
         inset-inline-start: 0;
-        max-width: calc(100vw - 2 * var(--page-margin));
-        max-height: min(24rem, calc(100dvh - 1rem));
+        max-width: calc(100vw - 2 * var(--page-inset));
+        max-height: min(24rem, calc(var(--screen-height) - var(--spacing-step-s)));
         overflow-y: auto;
         background-color: rgb(var(--color-background));
     }
@@ -50,7 +50,7 @@
     .localization-switcher .localization-option {
         display: flex;
         width: 100%;
-        gap: 0.5rem;
+        gap: var(--spacing-step-2xs);
     }
 
     .localization-switcher .localization-option:focus-visible {

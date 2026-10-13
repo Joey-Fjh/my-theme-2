@@ -5,6 +5,12 @@
     margin: 0;
 }
 
+:root {
+    --page-inset: max(var(--page-margin), calc((100% - var(--page-width)) / 2));
+    --page-grid-columns: [full-start] minmax(var(--page-margin), 1fr) [content-start]
+        minmax(0, var(--page-width)) [content-end] minmax(var(--page-margin), 1fr) [full-end];
+}
+
 html {
     scrollbar-gutter: stable;
 }
@@ -52,7 +58,7 @@ body {
     margin: 0;
     color: rgb(var(--color-foreground));
     background-color: rgb(var(--color-background));
-    font-size: var(--font-body-size-mobile);
+    font-size: calc(var(--font-body-size-mobile) * var(--font-body-scale));
     font-family: var(--font-body-family);
     font-style: var(--font-body-style);
     line-height: var(--font-body-line-height);
@@ -65,9 +71,9 @@ body > main {
     flex-grow: 1;
 }
 
-@media (width >= theme(--breakpoint-pc)) {
+@media (width >= theme(--breakpoint-tablet)) {
     body {
-        font-size: var(--font-body-size);
+        font-size: calc(var(--font-body-size) * var(--font-body-scale));
     }
 }
 
@@ -100,63 +106,43 @@ h6 {
 }
 
 h1 {
-    font-size: calc(var(--font-heading-scale) * 3rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-4));
 }
 
 h2 {
-    font-size: calc(var(--font-heading-scale) * 2.2rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-2));
 }
 
 h3 {
-    font-size: calc(var(--font-heading-scale) * 1.8rem);
+    font-size: calc(var(--font-heading-scale) * var(--type-step-1));
 }
 
-h4 {
-    font-size: calc(var(--font-heading-scale) * 1.6rem);
-}
-
-h5 {
-    font-size: calc(var(--font-heading-scale) * 1.5rem);
-}
-
+h4,
+h5,
 h6 {
-    font-size: calc(var(--font-heading-scale) * 1.4rem);
-}
-
-@media (width >= theme(--breakpoint-pc)) {
-    h1 {
-        font-size: calc(var(--font-heading-scale) * 4rem);
-    }
-
-    h2 {
-        font-size: calc(var(--font-heading-scale) * 2.6rem);
-    }
-
-    h3 {
-        font-size: calc(var(--font-heading-scale) * 2rem);
-    }
-
-    h4 {
-        font-size: calc(var(--font-heading-scale) * 1.8rem);
-    }
-
-    h5 {
-        font-size: calc(var(--font-heading-scale) * 1.6rem);
-    }
-
-    h6 {
-        font-size: calc(var(--font-heading-scale) * 1.4rem);
-    }
+    font-size: calc(var(--font-heading-scale) * var(--type-step-0));
 }
 
 .shopify-section {
     position: relative;
+    display: grid;
     width: 100%;
+    grid-template-columns: var(--page-grid-columns);
+}
+
+.shopify-section > * {
+    grid-column: content;
+}
+
+/* This repository's section frame stays full-bleed; the inset is --page-inset on .section. */
+.shopify-section > .section,
+.shopify-section > .full-width {
+    grid-column: full;
 }
 
 .section {
     padding-block: var(--section-padding-top, 0) var(--section-padding-bottom, 0);
-    padding-inline: max(var(--page-margin), (100% - var(--page-width)) / 2);
+    padding-inline: var(--page-inset);
     background-image: var(--gradient-background);
 }
 

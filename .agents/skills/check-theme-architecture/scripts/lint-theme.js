@@ -20,6 +20,17 @@ const {
     collectVendorNoticeFailures,
     collectLintAllowReasonFailures,
 } = require('./lib/theme-contracts');
+const checksConfig = require('./theme-checks.config.json');
+const { collectMarkupRawColourFailures, collectCssRawColourFailures, collectColourRoleSyncFailures } = require('./lib/raw-colour-lint');
+const { collectPageFrameLiquidFailures, collectPageFrameCssFailures } = require('./lib/page-frame-lint');
+const { collectColourSettingFailures } = require('./lib/colour-setting-lint');
+const { collectMarkupFontWeightFailures, collectCssFontWeightFailures } = require('./lib/font-weight-lint');
+const { collectDeadSettingFailures } = require('./lib/dead-setting-lint');
+
+function checkData(id) {
+    const entry = checksConfig.checks?.[id];
+    return entry?.enabled === true ? entry : null;
+}
 
 const LIQUID_GLOBS = [
     'layout/**/*.liquid',
@@ -471,8 +482,76 @@ function collectInvalidRgbAlphaFailures(cssText, file, failures, allowsByLine, o
     }
 }
 
+const STYLESHEET_MEDIA_CHECK = 'stylesheet-media-query';
+const STYLESHEET_LAYER_CHECK = 'stylesheet-layer';
+
+function isAllowedStylesheetMedia(prelude, widths) {
+    const text = prelude.replace(/\s+/g, ' ').trim();
+    const noHover = 'not ((hover: hover) and (pointer: fine))';
+    if (text === noHover) return true;
+    const widthAtom = new RegExp(`^\\(width (>=|<) (${widths.map((width) => width.replace('.', '\\.')).join('|')})\\)$`);
+    const motionAtom = /^\(prefers-reduced-motion: (reduce|no-preference)\)$/;
+    const parts = text.split(' and ');
+    for (let index = 0; index < parts.length; index++) {
+        if (widthAtom.test(parts[index]) || motionAtom.test(parts[index])) continue;
+        if (parts[index] === '(hover: hover)' && parts[index + 1] === '(pointer: fine)') {
+            index++;
+            continue;
+        }
+        return false;
+    }
+    return parts.length > 0 && parts[0] !== '';
+}
+
+function collectStylesheetMediaFailures(cssText, file, failures, allowsByLine, data, options = {}) {
+    const { baseOffset = 0, lineText = cssText } = options;
+    const widths = data.widths ?? [];
+    const message =
+        'Liquid stylesheet media queries use only (width >= | < ' +
+        `${widths.join(' / ')}), (hover: hover) and (pointer: fine), ` +
+        'not ((hover: hover) and (pointer: fine)), and prefers-reduced-motion, joined by "and".';
+    const stripped = cssText.replace(/\/\*[\s\S]*?\*\//g, (match) => match.replace(/[^\n\r]/g, ' '));
+    for (const match of stripped.matchAll(/@media([^{]*){/g)) {
+        if (isAllowedStylesheetMedia(match[1], widths)) continue;
+        pushFailure(
+            failures,
+            allowsByLine,
+            file,
+            lineAt(lineText, baseOffset + match.index),
+            STYLESHEET_MEDIA_CHECK,
+            `${message} Found: @media${match[1].trimEnd()}.`,
+        );
+    }
+}
+
+function collectStylesheetLayerFailures(cssText, file, failures, allowsByLine, options = {}) {
+    const { baseOffset = 0, lineText = cssText } = options;
+    const stripped = cssText.replace(/\/\*[\s\S]*?\*\//g, (match) => match.replace(/[^\n\r]/g, ' '));
+    for (const match of stripped.matchAll(/@layer\b/g)) {
+        pushFailure(
+            failures,
+            allowsByLine,
+            file,
+            lineAt(lineText, baseOffset + match.index),
+            STYLESHEET_LAYER_CHECK,
+            'A {% stylesheet %} block must not use @layer.',
+        );
+    }
+}
+
 async function runThemeLint(root) {
     const failures = [];
+    const notes = [];
+    const rawColour = checkData('raw-colour');
+    const fontWeight = checkData('unloaded-font-weight');
+    const pageToken = checkData('page-token-scope');
+    const screenHeight = checkData('screen-height-literal');
+    const pageFrameData = {
+        pageTokenRoots: pageToken?.pageTokenRoots ?? [],
+        liquidRoots: screenHeight?.liquidRoots ?? [],
+    };
+    const stylesheetMedia = checkData('stylesheet-media-query');
+    const stylesheetLayer = checkData('stylesheet-layer');
     const files = await fg(LIQUID_GLOBS, { cwd: root, dot: false, onlyFiles: true });
 
     for (const file of files.map(formatPath)) {
@@ -496,6 +575,11 @@ async function runThemeLint(root) {
         collectAlpineExpressionFailures(ast, text, file, failures, allowsByLine);
         collectSettingsChainLiquidFailures(ast, text, file, failures, allowsByLine);
         collectTypographyTierFailures(ast, text, file, failures, allowsByLine);
+        if (fontWeight) collectMarkupFontWeightFailures(text, file, failures, allowsByLine, fontWeight);
+        if (rawColour) collectMarkupRawColourFailures(text, file, failures, allowsByLine, rawColour);
+        if (pageToken || screenHeight) {
+            collectPageFrameLiquidFailures(text, file, failures, allowsByLine, pageFrameData);
+        }
         collectStylesheetPlacementFailures(ast, text, file, failures, allowsByLine, { file });
 
         for (const block of extractBlocks(text, 'stylesheet')) {
@@ -511,6 +595,30 @@ async function runThemeLint(root) {
                 baseOffset: block.offset,
                 lineText: text,
             });
+            if (rawColour) {
+                collectCssRawColourFailures(block.code, file, failures, allowsByLine, rawColour, {
+                    baseOffset: block.offset,
+                    lineText: text,
+                });
+            }
+            if (fontWeight) {
+                collectCssFontWeightFailures(block.code, file, failures, allowsByLine, fontWeight, {
+                    baseOffset: block.offset,
+                    lineText: text,
+                });
+            }
+            if (stylesheetMedia) {
+                collectStylesheetMediaFailures(block.code, file, failures, allowsByLine, stylesheetMedia, {
+                    baseOffset: block.offset,
+                    lineText: text,
+                });
+            }
+            if (stylesheetLayer) {
+                collectStylesheetLayerFailures(block.code, file, failures, allowsByLine, {
+                    baseOffset: block.offset,
+                    lineText: text,
+                });
+            }
         }
     }
 
@@ -522,6 +630,9 @@ async function runThemeLint(root) {
         collectLintAllowReasonFailures(text, file, failures);
         collectInvalidRgbAlphaFailures(text, file, failures, allowsByLine);
         collectSettingsChainCssFailures(text, file, failures, allowsByLine);
+        if (rawColour) collectCssRawColourFailures(text, file, failures, allowsByLine, rawColour);
+        if (fontWeight) collectCssFontWeightFailures(text, file, failures, allowsByLine, fontWeight);
+        if (pageToken) collectPageFrameCssFailures(text, file, failures, allowsByLine);
     }
 
     const hasThemeLayout = await fs
@@ -540,15 +651,19 @@ async function runThemeLint(root) {
     }
 
     if (hasThemeLayout) {
-        collectModuleRegistrationFailures(root, failures);
+        collectModuleRegistrationFailures(root, failures, checksConfig.checks?.['module-import-map-unused']);
     }
 
     collectSectionColorSchemeFailures(root, failures);
+    if (checkData('colour-role-sync')) collectColourRoleSyncFailures(root, failures);
+    if (checkData('colour-setting')) collectColourSettingFailures(root, failures, checkData('colour-setting'));
+    if (checkData('dead-setting')) collectDeadSettingFailures(root, failures, notes, checkData('dead-setting'));
 
     if (hasAssets && hasVendorNotices) {
         collectVendorNoticeFailures(root, failures);
     }
 
+    failures.notes = notes;
     return failures;
 }
 

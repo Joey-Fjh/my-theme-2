@@ -41,8 +41,17 @@ Liquid files under `layout/`, `sections/`, `snippets/`, `blocks/`, and `template
 | `settings-chain-liquid` | No default Tailwind typography/color utilities or arbitrary `text-[…]` / `bg-[…]` values in Liquid classes; use tier and scheme utilities. |
 | `settings-chain-css-typography` | `font-family`, `font-size`, `font-weight`, `line-height`, `letter-spacing` in first-party CSS derive from `var(--font-*)` (alone or in `calc`/`max`/`min`/`clamp`) or from the inherited value (`inherit`, `unset`, `bolder`, `lighter`, `em`, `%`). |
 | `settings-chain-css-color` | Color properties use scheme tokens, not hex/rgb/hsl literals. |
-| `typography-tier-heading` | `heading-h1`–`heading-h6` only on `h1`–`h6`. |
-| `typography-tier-body-on-heading` | No `body-*` tiers on headings. |
+| `typography-tier-heading` | `title-*` and `heading-h1`–`heading-h6` only on `h1`–`h6`. |
+| `typography-tier-body-on-heading` | No `copy-*` or `body-*` tiers on headings. |
+| `raw-colour` | No raw colour literal, opacity modifier, or unlisted shadow where a role belongs. |
+| `colour-role-sync` | Scheme-dependent colour roles match between `tailwind/tailwind.input.css` and the scheme loop in `snippets/css-variables.liquid`. |
+| `colour-setting` | No `color` or `color_background` setting outside the scheme group and the config allowlist. |
+| `page-token-scope` | Sections, snippets, blocks, and component CSS do not read `--page-width` or `--page-margin` outside the files the config allows. |
+| `screen-height-literal` | No literal `100vh`, `100svh`, `100lvh`, or `100dvh` in Liquid. |
+| `stylesheet-media-query` | `{% stylesheet %}` media queries use only the tokenized widths, the hover pair, and reduced motion. |
+| `stylesheet-layer` | No `@layer` inside `{% stylesheet %}`. |
+| `unloaded-font-weight` | No font-weight utility or numeric weight the theme does not load. |
+| `dead-setting` | Every section and global setting id has a reader, including a dynamic `settings[id]` the lint can trace to a quoted list. |
 | `stylesheet-directive` | No `@apply`, `@utility`, or `@variant` inside `{% stylesheet %}`. |
 | `liquid-style-tag` | No ad-hoc `<style>` in Liquid. |
 | `executable-inline-script` | No executable inline `<script>` (`importmap` and `application/ld+json` allowed). |

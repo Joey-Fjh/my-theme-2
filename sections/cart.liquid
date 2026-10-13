@@ -9,12 +9,12 @@
     data-module-id="cart-page"
     :class="{ 'opacity-50 pointer-events-none': $store.cart.loading }"
 >
-    <h1 class="heading-3xl">{{ 'cart.title' | t }}</h1>
+    <h1 class="title-3xl">{{ 'cart.title' | t }}</h1>
 
     {%- assign cart_form_id = 'CartForm-' | append: section.id -%}
     {%- if cart.item_count == 0 -%}
         <p>{{ 'cart.empty' | t }}</p>
-        <a class="body-xl underline underline-offset-4" href="{{ routes.root_url }}">
+        <a class="copy-l underline underline-offset-4" href="{{ routes.root_url }}">
             {{ 'cart.shop_more' | t }}
         </a>
     {%- else -%}
@@ -41,7 +41,7 @@
                     {%- endif -%}
 
                     <p>{{ item.vendor | default: ' ' }}</p>
-                    <a href="{{ item.url }}" class="body-xl underline underline-offset-4">
+                    <a href="{{ item.url }}" class="copy-l underline underline-offset-4">
                         {{ item.product.title }}
                     </a>
 
@@ -93,7 +93,7 @@
                         </ul>
                     {%- endif -%}
 
-                    <p class="body-sm text-theme-text">
+                    <p class="copy-s text-theme-text">
                         {%- if item.original_price > item.final_price -%}
                             <span class="line-through">
                                 {{- item.original_price | money -}}
@@ -103,7 +103,7 @@
                             {{ item.final_price | money }}
                         {%- endif -%}
                     </p>
-                    <p class="body-lg">
+                    <p class="copy-l">
                         {%- if item.original_line_price > item.final_line_price -%}
                             <span class="line-through">
                                 {{- item.original_line_price | money -}}
@@ -113,7 +113,7 @@
                             {{ item.final_line_price | money }}
                         {%- endif -%}
                     </p>
-                    {%- render 'unit-price', target: item, class: 'body-sm text-theme-text' -%}
+                    {%- render 'unit-price', target: item, class: 'copy-s text-theme-text' -%}
                     {%- if item.line_level_discount_allocations.size > 0 -%}
                         <ul aria-label="{{ 'cart.discounts' | t }}">
                             {%- for allocation in item.line_level_discount_allocations -%}
@@ -160,7 +160,7 @@
                             x-show="errors[$el.dataset.lineKey]"
                             x-cloak
                             role="alert"
-                            class="body-md text-error-text"
+                            class="copy-m text-error-text"
                             x-text="errors[$el.dataset.lineKey]"
                         ></p>
                     </div>
@@ -171,7 +171,7 @@
         <div>
             {%- if cart.cart_level_discount_applications.size > 0 -%}
                 <div>
-                    <p class="body-md">
+                    <p class="copy-m">
                         <strong>{{ 'cart.discounts' | t }}</strong>
                     </p>
                     <ul aria-label="{{ 'cart.discounts' | t }}">
@@ -187,7 +187,7 @@
                 </div>
             {%- endif -%}
 
-            <div class="body-lg">
+            <div class="copy-l">
                 <span>{{ 'cart.estimate_total' | t }}</span>
                 <span>{{ cart.total_price | money }}</span>
             </div>
@@ -195,11 +195,11 @@
 
             <form id="{{ cart_form_id }}" action="{{ routes.cart_url }}" method="post">
                 <noscript>
-                    <button type="submit" name="update" class="btn body-xl">
+                    <button type="submit" name="update" class="btn copy-l">
                         {{ 'cart.update' | t }}
                     </button>
                 </noscript>
-                <button type="submit" name="checkout" class="btn body-xl">
+                <button type="submit" name="checkout" class="btn copy-l">
                     {{ 'cart.checkout' | t }}
                 </button>
             </form>
