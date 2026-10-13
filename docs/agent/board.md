@@ -2,7 +2,7 @@
 
 This board holds only what is not yet decided: the one active decision, evidence that has not become a plan, and deferred ideas. `docs/agent/context.md` holds exactly one accepted plan during execution, or no plan. Recording a plan does not authorize implementation. Project identity, scope, and overall status belong in `docs/project.md`; accepted contracts belong in `AGENTS.md`, a routed reference, code, or configuration; completed execution history belongs in Git.
 
-Last updated: 2026-10-13.
+Last updated: 2026-10-14.
 
 ## Direction
 
@@ -15,9 +15,8 @@ Last updated: 2026-10-13.
 | BP-1 | Agent layer and harness | Done, `b676754` |
 | BP-2 | Entry scripts snippet, loader by init interception, three framework defects | Done, `05e79a6` |
 | SK-1 | Design-to-delivery procedure, the document part of BP-4 | Done, `c653009`; not run end to end |
-| BP-3 | CSS architecture: the rules, the chain and its vocabulary (colour roles, space and type steps, breakpoints, hover variants) with neutral default values, and the check capability that enforces them | Next; not planned yet |
-| BP-4 | The tools of the procedure: `layout-check` and `contrast-report` with this repository's own configuration and no baseline | After BP-3; not planned yet |
-| BP-5 | The third-party libraries and their adapters (user, 2026-10-14): the Alpine Intersect plugin, Swiper with `carousel-swiper.js`, GSAP and ScrollTrigger with `motion-gsap.js`, their `THIRD_PARTY_NOTICES.md` entries and import-map entries. The self-implemented dialog layer and toast store stay out | After BP-4; not planned yet |
+| BP-3 | CSS architecture: the chain and its vocabulary, the rules, and the check capability (`theme-checks.config.json`) | Done, `781acb8`; accepted on the round 2 evidence |
+| BP-4 | The test tools (`layout-check`, `contrast-report`) and the third-party libraries with their adapters (Intersect plugin, Swiper, GSAP with ScrollTrigger), in one batch. The self-implemented dialog layer and toast store stay out | Planned in `docs/agent/context.md`; not authorized yet |
 
 All of it is on branch `backport/agent-layer`, not merged into `main`; the remote branch stops at `0372d44`.
 

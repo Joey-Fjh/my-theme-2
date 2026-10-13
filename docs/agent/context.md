@@ -2,371 +2,66 @@
 
 Holds the plan currently under execution and its status. Nothing else. Unresolved discussion lives in `docs/agent/board.md`; durable contracts live in `AGENTS.md`, the matching reference, code, or configuration.
 
-Last updated: 2026-10-13.
+Last updated: 2026-10-14.
 
-## BP-3: CSS architecture
+## BP-4: test tools and third-party libraries
 
-**Status:** authorized by the user on 2026-10-13 by starting the execution prompt. Implementer executing. Not accepted.
+**Status:** direction accepted by the user on 2026-10-14 (the tools of the procedure; the third-party libraries with their adapters; loading on demand in principle; one batch). The board listed these as BP-4 and BP-5; they are one batch here because both are copies with a small configuration. Recorded by the coordinator. **The user authorizes this batch by starting its execution prompt**; until then nothing but this file and the board is changed.
 
-**Outcome:** this repository has the CSS framework the derived theme built: the chain and its vocabulary (breakpoints, hover variants, colour roles, shadows, the space scale, the type scale, the page-frame tokens), the rules that describe them, and a check capability that enforces them. Its own sections, snippets and blocks use that vocabulary. No content of the derived theme arrives.
+**Outcome:** this repository has the layout check and the contrast report as tools a theme can run, with this repository's own configuration and no baseline entries, and it vendors the Alpine Intersect plugin, Swiper and GSAP with ScrollTrigger behind their adapters. None of them adds weight to a page that does not use it, except the Intersect plugin (897 bytes).
 
-**Source:** `../my-theme-1` at commit `388f58e`. Read source files only with `git -C ../my-theme-1 show 388f58e:<path>`, never from its working tree, and never write to it. The source record is `git -C ../my-theme-1 show 9d366d5:docs/agent/board.md`.
+**Source:** `../my-theme-1` at commit `388f58e`. Read source files only with `git -C ../my-theme-1 show 388f58e:<path>`, never from its working tree, and never write to it.
 
-**Review tier:** Ask (Liquid markup, validators, references, `AGENTS.md`, `package.json`; run from an external prompt).
+**Review tier:** Ask (`assets/*.js`, `AGENTS.md`, `package.json`, references; run from an external prompt).
+
+**Review bar (user, 2026-10-14):** this repository is a skeleton. Prove that the mechanisms work. No screenshots, no size measuring, no judgement of appearance.
 
 **Branch:** `backport/agent-layer`. No commit unless the user asks.
 
-**Dependencies:** acceptance check 12 needs `npm.cmd run shopify:dev` running against a development store; the user starts it, or the check is left to the independent review.
-
-### The sorting rule
-
-Every block of a source file is one of:
-
-- **Framework:** a mechanism or rule a theme of a completely different design also needs. It comes over.
-- **Content:** tied to the derived theme's design or business: component CSS for its sections, its motion recipes, its colour schemes, its setting inventory, allowlists that name its sections, legacy aliases and migration lints that exist because of its history, baselines. It stays out.
-- **Unclear:** the implementer cannot tell. It stays out, and is listed in the execution record with the evidence on both sides. The implementer never resolves an unclear block by guessing.
-
-Decided by the coordinator and recorded here, so they are not unclear:
-
-- `snippets/section-frame.liquid`, the primitive snippets (`heading`, `text`, `button`, `link`, `content-group`) and everything that exists only to serve them (height kinds, the `width: 'full'` allowlist, the padding formula, placement utilities) stay out. This repository keeps its `.section` frame and its Theme Blocks.
-- Default values: the source's space scale, type scale, alpha steps, shadow steps and breakpoints come over as neutral defaults. They are defaults a theme replaces through `docs/references/style-system/design-to-delivery.md`, not brand values. The five colour schemes, fonts and every `config/settings_data.json` value stay out.
-- No legacy aliases. This repository renames its own uses outright: `pc:` / `fw:` to the new breakpoint names, `heading-*` / `body-*` tiers to the new type utilities. Measured on 2026-10-13: 55 tier uses in 16 files and 2 raw alpha colours. (The "3 breakpoint-variant uses" first written here was a miscount by the coordinator; review round 1 found 0 at HEAD.)
-- Roles that need a setting this repository does not have (the card surface, badge colours, a subtitle font role) stay out.
-- Both repositories set the root font size to 62.5%, so `rem` values carry over unchanged.
+**Dependencies:** `npm.cmd install` needs network access for `playwright-core`. Acceptance check 9 needs a local Chrome. Acceptance check 10 needs `npm.cmd run shopify:dev` and the storefront password in `.env`; it may be left to the independent review or recorded as not run.
 
 ### Implementation surface
 
-**A. Token chain and vocabulary**
+**A. Tools**
 
-1. `tailwind/tailwind.input.css`: the `can-hover` / `no-hover` custom variants; the breakpoints `tablet`, `desktop`, `wide` in place of `pc` and `fw`; the derived colour roles and the shadow roles; the space scale with its semantic aliases; `--screen-height`. This repository's stricter namespace resets and its `@source` lines stay.
-2. `snippets/css-variables.liquid`: the alpha steps, the per-scheme shadow steps, the per-scheme role re-declarations, and the type steps. Only settings that already exist here may be read, plus those item 4 adds.
-3. `tailwind/tailwind.typography.css`: the type utilities on the type steps, replacing the tier pairs. `tailwind/tailwind.utilities.css`, `tailwind/tailwind.elements.css`, `tailwind/tailwind.components.css`, `tailwind/tailwind.animates.css`, `assets/base.css`: only framework blocks, the page-frame tokens (`--page-grid-columns`, `--page-inset`) with their two consumers, and the edits that make this repository's existing rules consume the new tokens. No component CSS comes over.
-4. `config/settings_schema.json` and the schema locale files under `locales/`: only a setting a framework block of items 1 to 3 must read, with its label keys. Each added setting is listed in the record with the block that reads it. No existing setting id changes.
-5. `assets/tailwind.output.css`: regenerated by `npm.cmd run build:tw`, never edited by hand.
+1. `.agents/tools/layout-check/`: the tool files, its test file and its fixtures, byte-identical to the source: `layout-check.mjs`, `checks.mjs`, `run-rules.mjs`, `runtime-keys.mjs`, `layout-check.test.mjs`, and `fixtures/`. If a tool file names something of the derived theme (a section, a class, a handle), stop and report it instead of copying.
+2. `.agents/tools/layout-check/layout-check.config.json`: written for this repository. The generic keys keep the source values (`baseUrl`, the timings, the width sweep, the fixed pages that exist in every store). `alternateTemplates` is empty. `exceptions` keeps only entries for Shopify-injected or dev-proxy behaviour that is not tied to the derived theme's store, each with a reason that names no batch id.
+3. `.agents/tools/layout-check/layout-check.baseline.json`: the empty baseline in the format the tool reads. No entry from the source.
+4. `.agents/tools/contrast-report.mjs`: byte-identical if it reads only what BP-3 brought (the scheme colours in `config/settings_data.json`, the alpha steps in `snippets/css-variables.liquid`). A pair that needs a role this repository does not have is removed, and the record names it.
+5. `package.json` and `package-lock.json`: scripts `test:layout`, `test:layout-harness`, `scan:contrast` as in the source; `playwright-core` in `devDependencies` at the source version. `package-lock.json` comes from `npm.cmd install`; a `resolved` URL rewritten to a registry mirror is restored to `https://registry.npmjs.org/`. `test:layout-harness` does not join `test:validators` (it needs Chrome).
 
-**B. This repository's own theme files**
+**B. Third-party libraries**
 
-6. `layout/`, `sections/`, `snippets/`, `blocks/`, `templates/*.liquid`: the renames of item "No legacy aliases", raw alpha colours and raw spacing in `{% stylesheet %}` blocks moved to roles and steps, hover rules gated by the hover condition, and stylesheet media queries in the form the source reference prescribes. Markup structure, schema ids, block and section types, presets and behaviour do not change.
+6. `assets/vendor-alpine-intersect.min.js`, `assets/vendor-swiper.min.js`, `assets/vendor-swiper.min.css`, `assets/vendor-gsap.min.js`, `assets/vendor-gsap-scrolltrigger.min.js`: byte-identical to the source. Never edited.
+7. `assets/carousel-swiper.js`, `assets/motion-gsap.js`: byte-identical to the source. Both load their library from a URL the markup passes in `data-*`, so nothing loads until a section asks.
+8. `snippets/scripts.liquid`: the two import-map entries `carousel-swiper` and `motion-gsap`.
+9. `assets/base.js`: the one static import of the Intersect plugin, as in the source.
+10. `THIRD_PARTY_NOTICES.md`: the entries for the Intersect plugin, Swiper and GSAP, from the source.
+11. The Swiper stylesheet is **not** imported into `tailwind/tailwind.input.css`. A section that uses the carousel adapter renders `vendor-swiper.min.css` itself with `stylesheet_tag`; the reference says so. `assets/tailwind.output.css` must not change.
+12. `.agents/skills/check-theme-architecture/scripts/`: the import-map check that fails an entry nothing references gets one configuration key in `theme-checks.config.json` listing the adapter entries that may be unreferenced, with a test. No other validator change. If another check fails because of this batch (an outlet rule on a vendor file, the Theme Check asset rules), stop and report before changing it.
 
 **C. Rules**
 
-7. `docs/references/style-system/css-architecture.md`: rewritten to describe this repository after the batch, taking the source reference's framework sections in the source wording. No batch id of the derived theme (such as `6-C5`), no section name of that theme, no migration history.
-8. `docs/references/style-system/design-to-delivery.md`: the list of places in step 3 gains the space scale, the type scale and the colour roles, each marked settings-backed or code-owned.
-9. The other references, `AGENTS.md` and `.agents/skills/check-theme-architecture/SKILL.md`: only statements this batch makes untrue, and one line per new check.
+13. `AGENTS.md`: Tech Stack, the sentence "A selected library is vendored only when an accepted consumer exists" becomes: the selected libraries (Alpine with its Intersect plugin, Swiper, GSAP with ScrollTrigger) are vendored behind their adapters and load on demand; a further library needs an accepted decision. The Validation table gains the layout-check row from the source, without a baseline rule that assumes entries. The GSAP skills trigger keeps its wording.
+14. `docs/project.md`: "Settled: no Playwright …" is replaced by what is true now (the layout check uses `playwright-core`; the user still runs browser checks a plan names); Accepted Scope names the tools and the vendored libraries.
+15. `docs/references/architecture/javascript-runtime.md` and `docs/references/architecture/motion-architecture.md`: the statements this batch makes untrue (no vendored Swiper or GSAP, no GSAP runtime), and the adapter contracts in the source wording: how a section passes the URLs, and that a carousel section renders the Swiper stylesheet. `README.md`: the two command lines for the tools.
+16. This file and `docs/agent/board.md`.
 
-**D. Check capability**
-
-10. `.agents/skills/check-theme-architecture/scripts/`: one configuration file that says which checks run and holds the data a check needs (allowlists, prefixes), read by `lint-theme.js`; with it, the source's generic checks that guard items 1 to 6. A check comes over only when it is generic and this repository's code passes it after the batch. Not taken: `migration-lint.js` (legacy patterns), every baseline and ratchet, `section-placement-lint.js` and any check whose data names the derived theme's sections. `dead-setting` comes over only if it is first taught the dynamic read in `sections/header.liquid` (`settings[organization_social_setting_id]`); otherwise it stays out and the record says so.
-11. The matching tests in the same directory, `package.json` scripts if a test file is added, and `THIRD_PARTY_NOTICES.md` only if a dependency is added (none is expected).
-12. This file and `docs/agent/board.md`.
-
-**Not in this batch:** `.agents/tools/layout-check/` and `.agents/tools/contrast-report.mjs` (BP-4); `assets/*.js` except a change a renamed class forces; `config/settings_data.json`, `templates/*.json`, `sections/*-group.json`; `.github/`; the agent roles and skills other than the one named.
+**Not in this batch:** the dialog layer, the toast store and every other module of the derived theme (self-implemented, they stay there); any section or snippet that uses a carousel or GSAP; `test:layout` in CI; `.github/`; `config/`, `locales/`, `templates/*.json`, `sections/*-group.json`.
 
 **Forbidden:** everything not listed, commits, `prettier --write`, `git stash` / `checkout` / `reset` on the working tree, and any write to `../my-theme-1`.
 
 ### Acceptance checks
 
 1. `git status --short` lists only surface files; state the count from the command.
-2. The record holds one table per source file of item 1 to 3 and item 10: each block with its source line range, its class (framework, content, unclear) and, for framework, where it landed here. Every unclear block is listed once more under "Unclear, for the user".
-3. None of these occurs in a file this batch changed (name the `git grep` commands): a batch id of the derived theme (`[0-9]-[A-Z][0-9]`), `section-frame`, `content-group`, the names of sections that exist only there, `--color-card`, `badge_`, `--font-subtitle`.
-4. No legacy vocabulary is left here: `git grep` finds no `pc:` / `fw:` variant, no `--breakpoint-pc` / `--breakpoint-fw`, and no `heading-` / `body-` tier class in `layout/`, `sections/`, `snippets/`, `blocks/`, `templates/`, `tailwind/` (state each count).
-5. `git diff -- config/settings_schema.json` shows only added settings, each named in the record with its reader; no existing id, type or default changed. `git status` shows no change to `config/settings_data.json`, `templates/*.json` or `sections/*-group.json`.
-6. `git diff --stat -- assets/tailwind.output.css` after `npm.cmd run build:tw`: state the size before and after from `wc -c`, and confirm with `git diff --exit-code` after a second build that the file is the generated one.
-7. Every check switched on in the configuration file passes on this repository, and each has a test that fails on a violating fixture. The record lists each check with: what it enforces, generic or data-carrying, and the configuration key that holds its data. Checks that stayed out are listed with the reason.
-8. `npm.cmd run test:validators` passes; state the test counts before (taken before the first edit) and after, from the command output.
-9. `npm.cmd run lint`, `npm.cmd run test:theme-check` and `npm.cmd run doctor:agent` pass.
-10. `docs/references/style-system/css-architecture.md` describes only what exists here: every token, utility, variant and check id it names is found by `git grep` in the code (name the command per group), and `npm.cmd run lint:doc-paths` passes.
-11. `git diff --check` is clean; `npx.cmd prettier --check` passes on every changed file Prettier covers.
-12. **Browser, against `shopify theme dev`, at 390, 768, 1024 and 1440:** home, a product, a collection, cart, search and the 404 page render with no horizontal page scroll, no clipped or overlapping text, readable type at every width, and no console error from theme code. The header menu, variant picker, quantity, add to cart and pagination still work. Screenshots at 390 and 1440 of each page are named in the record. The implementer records this as not run when the session has no browser tool.
-13. `review-animations` is run if the batch changes any `transition`, `animation`, `@keyframes`, motion token or reduced-motion rule, and its output is recorded; if none changed, the record says so with the `git diff` command that shows it.
-14. Independent review (Ask) reports PASS.
-
-**Known and accepted before the start:** type and spacing become fluid, so the rendered sizes of this repository's sections change. That is the purpose of the batch; the user judges the look in the browser. It is not a regression to prove absent.
-
-## BP-3: executed
-
-Implementer execution. Not accepted. No commit.
-
-`docs/agent/board.md` was already modified when this batch started. This batch did not edit it.
-
-### Before the first edit
-
-`npm.cmd run test:validators` (package `my-skeleton-theme@1.0.0`): test:i18n 32 pass, test:theme-architecture 109 pass, test:section-stylesheet-carry 3 pass, test:doc-paths 7 pass, test:ci-contract 18 pass. Total 169 pass, 0 fail.
-
-`assets/tailwind.output.css` was 29070 bytes. `wc` is not on PATH in this PowerShell session; the count is `(Get-Item assets/tailwind.output.css).Length`.
-
-### Settings added
-
-None. `git diff --stat -- config/settings_schema.json locales` is empty. No existing setting id, type, or default changed. `--font-body-scale` is the constant `1` in `snippets/css-variables.liquid`. `heading_weight` already existed and is now applied with `font_modify` when the heading face is loaded.
-
-### Checks brought
-
-One file, `.agents/skills/check-theme-architecture/scripts/theme-checks.config.json`, read by `lint-theme.js`. A check runs only when its `enabled` is true. All nine below are enabled and pass on this repository. Each has a failing-fixture test in `theme-architecture.test.js`.
-
-| Check | Enforces | Kind | Config key |
-| --- | --- | --- | --- |
-| `raw-colour` | No raw colour literal, opacity modifier, or unlisted shadow where a role belongs | Data-carrying | `exemptFiles`, `colourPrefixes`, `allowedShadowUtilities`, `bridgeTokens`, `alphaSteps`, `shadowSteps` |
-| `colour-role-sync` | Scheme-dependent roles match between `tailwind.input.css` and the scheme loop | Generic | none |
-| `colour-setting` | No `color` or `color_background` setting outside the scheme group | Data-carrying | `allowlist` (empty) |
-| `page-token-scope` | Sections, snippets, blocks, and component CSS do not read `--page-width` or `--page-margin` outside the allowed files | Data-carrying | `pageTokenRoots` |
-| `screen-height-literal` | No literal `100vh`, `100svh`, `100lvh`, or `100dvh` in Liquid | Data-carrying | `liquidRoots` |
-| `stylesheet-media-query` | Stylesheet media queries use only the tokenized widths, the hover pair, and reduced motion | Data-carrying | `widths` |
-| `stylesheet-layer` | No `@layer` inside `{% stylesheet %}` | Generic | none |
-| `unloaded-font-weight` | No unloaded `font-*` stem and no numeric weight other than 400 or 700 | Data-carrying | `allowedNumericWeights`, `rejectedUtilities` |
-| `dead-setting` | Every section and global setting id has a reader | Data-carrying | `liquidGlobs` |
-
-`dead-setting` was taught the dynamic read. A `settings[loopVar]` read counts every id in an `assign list = 'a,b' | split` when `for loopVar in list`. `sections/header.liquid` uses that form for the organization social ids. `npm.cmd run lint:theme` passed with the check enabled, so the teaching holds on this tree. The fixture test `dead-setting counts a quoted list read through settings[id]` also passes.
-
-`colour-setting` and `page-token-scope` also scan `blocks/`. The source scanned sections only. This repository has Theme Blocks, so a block file is in the same roots.
-
-### Checks left out
-
-| Check | Reason |
-| --- | --- |
-| `migration-lint` and its baseline | Legacy patterns and a ratchet |
-| `section-placement` | Its data names the derived theme's section groups |
-| `frame-full-allowlist` | The allowlist names that theme's sections and `section-frame`, which this repository does not have |
-| `stylesheet-font-size` | Ratchet baseline |
-| `mixed-element` | This repository's markup mixes stylesheet classes with Tailwind utilities. Fixing that is a restructure this batch does not include |
-| Header menu cap exception | It names that theme's announcement-bar formula. This repository has no such rule |
-| Badge entries in the colour-setting allowlist | Those settings are not in this repository. The allowlist is empty |
-
-### Block tables
-
-Source is `../my-theme-1` at `388f58e`. Line ranges are that commit. Class is framework, content, or unclear. Framework rows say where the block landed.
-
-**`tailwind/tailwind.input.css`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| 1–4 layer order | framework | Already here; this file's wording kept |
-| 6–14 import and `@source` | framework | This file, including `blocks/` |
-| 16–26 `can-hover` / `no-hover` | framework | This file. Comment has no batch id |
-| 29–33 `tablet` / `desktop` / `wide` | framework | This file. `pc` / `fw` removed |
-| 34–36 legacy `pc` / `fw` aliases | content | Out |
-| 38–43 partial namespace reset | content | Out. This repository's stricter reset stays |
-| 45–47 font bridges | framework | Already here |
-| 50–52 theme background, text, border | framework | Already here |
-| 54–64 field, primary, secondary, badge | content | Out |
-| 66 success | framework | Already here, with `success-text` |
-| 67 warning, 70 info | content | Out |
-| 68–69 error pair | framework | Already here |
-| 72–89 and 91–96 derived roles and scrims | framework | This file |
-| 90 `--color-card` | content | Out |
-| 98–102 shadows and `--shadow-*: initial` | framework | This file |
-| 105, 107–108 dropdown, skip-link, popover | framework | Already here |
-| 109–119 sticky, drawer, modal, magnifier, lightbox, toast | content | Out |
-| 121–139 space scale and aliases | framework | This file |
-| 141 `--screen-height` | framework | This file |
-| 143–144 `--section-stage-min-height` | content | Out |
-| 147 swiper import | content | Out |
-| 148–156 layer imports | framework | Already here, without the swiper line |
-
-**`snippets/css-variables.liquid`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| Font faces through heading italic | framework | Already here. Heading face now also loads `settings.heading_weight` |
-| 12–17, 45–47 subtitle font | content | Out |
-| Scheme triplets this repository has | framework | Already here |
-| Focus ring, input, button, badge, accent, card, warning, info colours | content | Out |
-| 99–109 shadow steps | framework | Scheme loop |
-| 111–126 role re-declarations except `--color-card` | framework | Scheme loop, after the brightness `endif` |
-| 131–133 body colour `rgba` foreground at alpha 80 | framework | `body` and `.color-*` |
-| 137–144 alpha steps | framework | `:root` |
-| 147 announcement-bar height | content | Out. Header height was already here |
-| 150–180 fluid page margin | framework | This file. Page width formula unchanged |
-| Font variables | framework | `--font-body-scale` is `1`, not a setting read |
-| 205–233 type steps | framework | This file. Body size nil fallback stays 16 |
-| 235–322 subtitle, pagination, input, button, dialog, card, toast, reveal, focus ring | content | Out |
-| Motion durations and easings already here | framework | Kept, including `--motion-duration` |
-
-**`tailwind/tailwind.typography.css`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| `heading-base`, `body-base` | framework | Kept |
-| `title-*`, `copy-*` | framework | This file, source values |
-| 54–84 heading aliases, 115–135 body aliases | content | Out |
-| 137–157 subtitle utilities | content | Out |
-| 159–185 `heading-size-custom`, `body-size-custom` | framework | This file, at `breakpoint-tablet` |
-| RTL block | framework | Kept. Subtitle lines out |
-
-**`tailwind/tailwind.utilities.css`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| `container-page` | framework | This file. Reads `--page-grid-columns` |
-| sticky viewport panel | content | Out |
-| `grid-list` | framework | Already here. Gap is `var(--spacing-step-l)` |
-| sup badge | content | Out |
-| 29–83 placement utilities | content | Out |
-| `bg-scheme-surface` | content | Out |
-| `surface-section`, `surface-component`, `surface-inverted` | framework | `surface-component` already here; the other two landed |
-| Extra z-index utilities | content | Out. Dropdown and popover stay |
-
-**`tailwind/tailwind.elements.css`** (source 948 lines)
-
-| Lines | Block | Class | Landed |
-| --- | --- | --- | --- |
-| 1–11 | `icons` | framework | Already here |
-| 12–29 | `skip-link` | framework | Already here; consumes steps and `copy-m`. Positioning offsets stay raw |
-| 30–88 | `links`, `links-line-base`, `links-default`, `links-underline`, `interactive-link` | content | Out. That theme's link styles |
-| 89–434 | `btn` with its hover animation, `btn-primary`, `btn-secondary` | content | Out. This repository's `btn` stays; its gap uses a step, its padding stays fixed (review round 1) |
-| 435–508 | `field`, `field-underline`, `field-textarea`, `field-select` | content | Out. This repository's `field` and `field-textarea` stay; padding stays fixed (review round 1) |
-| 509–527 | `focus-ring` | content | Out. The global `:focus-visible` in `assets/base.css` is this repository's focus style |
-| 528–710 | `media-interaction`, `-subtle`, `-scope` | content | Out |
-| 711–756 | `badge`, `badge-cart`, `badge-label` | content | Out |
-| 757–846 | `close-button` and variants, `header-icon-button` | content | Out |
-| 847–948 | `control-icon`, `control-icon-compact`, `control-dot` | content | Out |
-
-**`tailwind/tailwind.components.css`** (source 2164 lines)
-
-| Lines | Block | Class | Landed |
-| --- | --- | --- | --- |
-| 1–58 | Inline submit field, link with icon motion | content | Out |
-| 59–181 | Localization switcher, dropdown | content | Out. This repository's own dropdown and localization rules stay; the menu cap reads `--page-inset` and `--screen-height` |
-| 182–343 | Panel motion | content | Out |
-| 344–535 | Tab control, tab nav item, accordion | content | Out |
-| 536–737 | Icon with text item, dialog, toast | content | Out |
-| 738–1011 | Rich text | content | Out. This repository's rich text stays; its headings use `title-xl` through `title-xs` |
-| 1012–1166 | Media placeholder frame, product price, quantity selector, buy buttons, pagination | content | Out |
-| 1167–2164 | Owner blocks for that theme's snippets and sections (filters, collection, featured products, watermark, lightbox, content icon, product card, gallery thumbnails, product info blocks, quick view, card rail, predictive search) | content | Out |
-
-**`tailwind/tailwind.animates.css`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| 1–1122 icon, panel, dialog, drawer, watermark, scrolling icon | content | Out. File not modified |
-| 1123–1143 spinner | framework | Already here, including reduced motion |
-
-**`assets/base.css`**
-
-| Lines | Class | Landed |
-| --- | --- | --- |
-| Box reset, image, paragraph, focus, `x-cloak`, 62.5% root | framework | Already here |
-| 8–12 page tokens | framework | `:root` here: `--page-inset`, `--page-grid-columns` |
-| Sticky viewport, scroll lock, hide-on-scroll header | content | Out |
-| `body` grid shell | content | Out. This repository's flex column stays |
-| Body colour | content | Out after the coordinator check: body copy keeps the full scheme foreground |
-| Scaled body font size | framework | The tablet font-size query |
-| Heading literal rems | content | Out. See deviations: native headings use type steps |
-| 162–175 `.shopify-section` grid | framework | Here, with `.section` and `.full-width` spanning `full` |
-| `main` flex grow | framework | Kept |
-
-**Item 10 scripts**
-
-| Source file | Class | Landed |
-| --- | --- | --- |
-| `colour-setting-lint.js` | framework | `scripts/lib/colour-setting-lint.js`. Also scans `blocks/` |
-| `dead-setting-lint.js` | framework | `scripts/lib/dead-setting-lint.js`, taught the quoted-list read. Does not import `migration-lint` |
-| `font-weight-lint.js` | framework | `scripts/lib/font-weight-lint.js` |
-| `lint-allow.js`, `liquid-ast.js` | framework | Already here |
-| `migration-lint.js` and its baseline | content | Out. Its class tokenizer was re-homed as `scripts/lib/class-tokens.js` because raw colour and font weight need it |
-| `page-frame-lint.js` page-token and screen-height | framework | `scripts/lib/page-frame-lint.js` |
-| `page-frame-lint.js` full-span allowlist | content | Out |
-| `raw-colour-lint.js` | framework | `scripts/lib/raw-colour-lint.js`. Bridge list is this repository's tokens. `tailwind.input.css` is exempt |
-| `schema-block.js` | framework | `scripts/lib/schema-block.js` |
-| `section-placement-lint.js` | content | Out |
-| `stylesheet-ownership-lint.js` baseline, font-size ratchet, mixed element | content | Out. `stylesheet-layer` was extracted into `lint-theme.js` |
-| `theme-contracts.js` | framework | Already here. Typography messages now name `title-*` and `copy-*` |
-| `lint-theme.js` wiring | framework | This repository's `lint-theme.js` calls the enabled checks |
-| `theme-architecture.test.js` | framework | Existing file gained the failing-fixture tests. The source test file was not copied |
-
-### Deviations
-
-- `.section` stays full-bleed: it spans the `full` grid line and pads with `--page-inset`. The body stays `display: flex`. The source body grid shell and `section-frame` did not come over.
-- Native `h1`–`h6` in `assets/base.css` use type steps. The source file at `388f58e` still had leftover literal rems on those headings.
-- `colour-setting` and the page-frame Liquid scan include `blocks/`.
-- `--heading-size-custom-pc` and `--body-size-custom-pc` are the property names in the source escape hatch at `388f58e`. They are not a `pc:` variant or `--breakpoint-pc`. The media query uses `--breakpoint-tablet`.
-
-### Commands
-
-| Command | Result |
-| --- | --- |
-| `npm.cmd run test:validators` before the first edit | 169 pass, 0 fail |
-| `(Get-Item assets/tailwind.output.css).Length` before | 29070 bytes. `wc` is not on PATH |
-| `npm.cmd run lint:theme` after the token and check edits | Theme architecture lint passed |
-| `npm.cmd run test:theme-architecture` | 123 pass, 0 fail |
-| `npm.cmd run build:tw` | Tailwind v4.1.18, done. Output 27931 bytes |
-| Repeat `npm.cmd run build:tw` | SHA256 unchanged (`F757594472582F2EEB39B2F4D53AAED4B40BC6092739AE2308A4F68CF7CFCAC3`). `git diff --exit-code` against HEAD is the generated delta, not a second-build change |
-| `npm.cmd run lint` | Passed, including liquid syntax, i18n, theme, compat, doc paths, and `prettier . --check` |
-| `npm.cmd run test:theme-check` | 64 files inspected, no offenses |
-| `npm.cmd run doctor:agent` | Exit 0 |
-| `npm.cmd run test:validators` after | test:i18n 32, test:theme-architecture 123, test:section-stylesheet-carry 3, test:doc-paths 7, test:ci-contract 18. Total 183 pass, 0 fail |
-| `git diff --check` | Exit 0 |
-| `git diff -G "transition\|@keyframes\|animation:\|prefers-reduced-motion\|--motion-" --stat` and `git diff --stat -- tailwind/tailwind.animates.css` | No output. No motion rule changed, so `review-animations` was not run |
-| `git grep` for `pc:`, `fw:`, `--breakpoint-pc`, `--breakpoint-fw`, and `heading-h*` / `body-xs` through `body-3xl` tier classes under `layout/`, `sections/`, `snippets/`, `blocks/`, `templates/`, `tailwind/` | No matches. Remaining `heading-` hits are `heading-base`, `heading-size-custom`, and `--font-heading-*`. Remaining `body-` hits are `body-base`, `body-size-custom`, and `--font-body-*` |
-| `git grep :hover` under those trees plus `assets/` | No matches. Nothing to gate |
-| `git status --short` | 47 lines, all inside the surface. Count from `(git status --short \| Measure-Object -Line).Lines` |
-
-Check 3 hits of a batch id, `section-frame`, and `content-group` are only the plan text in this file and the pre-existing decision in `docs/agent/board.md`. Implementation files have none of those, and none of `--color-card`, `badge_`, or `--font-subtitle`.
-
-Check 10: `npm.cmd run lint:doc-paths` passed inside `npm.cmd run lint`. Token, utility, variant, and check-id names in `docs/references/style-system/css-architecture.md` were checked with `git grep --untracked -F`, because `theme-checks.config.json` is still untracked. Names that were only a glob were rewritten to a member that exists in the code.
-
-Check 12 was not run. This session can see browser tools, and `shopify theme dev` was not running. The plan says the user starts it. No screenshots.
-
-Check 14 is the independent Ask review. Not marked.
-
-### Unclear, for the user
-
-- `.field-textarea` keeps `min-height: 12rem`. The space scale stops at `step-4xl` (80px at 1280px). 12rem is 120px on the 62.5% root (corrected in review round 1; first written as 192px), past that scale. It was left unchanged. The localization menu's `24rem` cap was also left; it is a viewport cap, not a spacing step.
-
-## BP-3: coordinator check
-
-Coordinator, 2026-10-13, before the independent review.
-
-**Consistent with the implementer's record:** `git status --short` 47 lines, all in the surface; no change to `config/`, `locales/`, `templates/*.json`, `sections/*-group.json`, `.github/`, `.agents/tools/` or `assets/*.js`; no batch id, `section-frame`, `content-group`, `--color-card`, `badge_` or `--font-subtitle` in an implementation file; no `pc:` / `fw:` variant, legacy breakpoint token or legacy tier class left; nine checks switched on in `theme-checks.config.json`.
-
-**Correction, one item of content that had come over:** the batch had changed the default body colour from the full scheme foreground to `--color-muted` (80% alpha), in `assets/base.css` and in the scheme rule of `snippets/css-variables.liquid`. That is the derived theme's look, not a mechanism, and it lowers text contrast on every scheme. Both are restored to `rgb(var(--color-foreground))`, as at HEAD; the `--color-muted` role stays available. The role table in `docs/references/style-system/css-architecture.md` says so. After it: `npm.cmd run build:tw` (output 27941 bytes), `npm.cmd run lint` exit 0, `npm.cmd run test:validators` 183 pass and 0 fail, `npm.cmd run test:theme-check` 64 files and no offenses, `git diff --check` clean.
-
-**Decided by the coordinator, from "Unclear, for the user":** `.field-textarea` keeps `min-height: 12rem` and the localization menu keeps its `24rem` cap. Both are control sizes, not spacing between elements, so the space scale does not apply to them.
-
-**Open:** acceptance check 12 (browser) and check 14 (independent review).
-
-## BP-3: independent review, round 1
-
-External Verifier session, 2026-10-14, read-only, with a browser against `shopify theme dev`. The report was given in chat as an interim report (the browser pass was not finished); its evidence is summarised here.
-
-**Verdict: FAIL**, five findings.
-
-1. **A check could not be switched off.** With `screen-height-literal` disabled, `lint-theme.js` still ran it over the roots of `page-token-scope`: the violating fixture gave 1 failure with the check on and 1 with it off. The other eight checks went from 1 to 0.
-2. **Type steps below the base had their bounds reversed.** `snippets/css-variables.liquid` emitted `clamp(1.3333rem, …, 1.28rem)` for step −1 at the default sizes, so `copy-s` measured 13.333px at both 390 and 1440 instead of 12.8px on desktop. Any step is affected when the mobile base is larger than the desktop base.
-3. **Tap target smaller.** `btn` padding on fluid steps made the add-to-cart button 36.69px high at 390, against 42.59px computed for HEAD.
-4. **References disagreed.** `design-to-delivery.md` still said every code-owned token value lives in `snippets/css-variables.liquid`, while its step 3 note places the space scale in `tailwind/tailwind.input.css`.
-5. **Record.** The `elements` and `components` entries were summaries, not block tables with line ranges; the plan's "3 breakpoint-variant uses" was 0 at HEAD; `12rem` is 120px on the 62.5% root, not 192px.
-
-**Proven by the Verifier:** scope (47 entries, 39 modified and 8 new, all allowed); `npm.cmd run test:validators` 169 on a scratch copy of HEAD and 183 on the working tree; each of the nine checks fails on its violating fixture; the `dead-setting` dynamic read (0 failures on the header, 9 when the read is removed); two builds give the same 27,941 bytes; `npm.cmd run lint`, `test:theme-check` (64 files), `doctor:agent`, `lint:doc-paths`, Prettier and `git diff --check` pass; `config/`, `locales/` and the merchant JSON are unchanged, as are the Liquid schemas; no legacy variant, breakpoint or tier left; no motion diff. Sampling the source found no brand value, colour scheme, setting inventory or name of the derived theme in the implementation. Browser, 7 page and width combinations (390: home, product, collection, empty cart; 1440: home, product, collection): no horizontal scroll and no theme script error. Text contrast on the two schemes: body, muted and subtle at 13.54 / 9.15 / 7.69 and 10.43 / 5.89 / 4.71.
-
-**Not proven:** 768 and 1024, search and the 404 page, the interaction regressions, focus rings, and whether the heading line-height floors (1.2 and 1.1) were a neutral default.
-
-**Correction (coordinator, 2026-10-14), inside the surface:**
-
-1. `lib/page-frame-lint.js` scans each check over its own roots, and `lint-theme.js` passes an empty list for a check that is off. New test `page-frame checks are switched off independently`.
-2. `snippets/css-variables.liquid` sorts the two bounds before writing `clamp()`; the preferred value is unchanged, so a step that shrinks toward the wide end now reaches its wide value.
-3. `btn` and `field` padding are back to their HEAD values (`0.75rem 1.5rem` and `0.5rem 0.75rem`) with a comment: a control's size is not spacing between elements.
-4. `design-to-delivery.md` names both files.
-5. This record: block tables with line ranges for `elements` and `components`; the miscount and the `12rem` value corrected in place.
-6. Also restored, from the "not proven" list: the large heading tiers follow `--font-heading-line-height` again, as at HEAD. The floors muted part of the merchant's line-height setting and were a design choice of the derived theme.
-
-After the corrections: `npm.cmd run build:tw` (27,241 bytes); `npm.cmd run lint` exit 0; `npm.cmd run test:validators` 184 pass, 0 fail (the architecture suite 124, one new test); `npm.cmd run test:theme-check` 64 files, no offenses; `git diff --check` clean; `git status --short` 47 lines.
-
-**Acceptance check 12 amended (user, 2026-10-14):** no screenshots and no judgement of the look. This repository is a skeleton; a theme made from it judges appearance. The browser check keeps what a script can measure: no horizontal page scroll, no theme script error, and the interactions still working.
-
-**Open:** round 2.
-
-## BP-3: independent review, round 2
-
-External Verifier session, 2026-10-14, read-only, narrowed by the user to mechanisms (no appearance, no sizes, no screenshots).
-
-**Verdict: FAIL**, one finding.
-
-- **Finding, documentation.** The Decision Flow in `docs/references/style-system/css-architecture.md` still sent every token to `snippets/css-variables.liquid` or inline properties, while the space tokens live in `tailwind/tailwind.input.css`, as `design-to-delivery.md` says.
-
-**Proven:** all nine switches (each fixture 1 failure enabled, 0 disabled, in a scratch copy); the clamp bounds are sorted before output; `npm.cmd run test:validators` 184 pass and 0 fail (32 + 124 + 3 + 7 + 18); `npm.cmd run lint`, `npm.cmd run test:theme-check` (64 files, no offenses), `npm.cmd run doctor:agent` and `git diff --check` pass; `git status --short` 47 entries (39 modified, 8 new); the corrected counts (0 breakpoint-variant uses at HEAD, `12rem` = 120px).
-
-**Not proven, and why:** that the round 1 summary matches the round 1 report and that nothing else changed since round 1 (this session did not have the round 1 report or diff); product and collection smoke loads (the storefront began answering HTTP 401, the store password, after home loaded once without a theme script error). Round 1 had loaded home, product and collection at 390 and 1440 without a theme script error, before the corrections.
-
-**Correction (coordinator, 2026-10-14):** step 1 of the Decision Flow now names where each kind of token goes: setting- or scheme-backed values in `snippets/css-variables.liquid`, code-owned scales and roles in `tailwind/tailwind.input.css`, per-render values inline. `npm.cmd run lint:doc-paths`, Prettier on the file and `git diff --check` pass.
-
-**Accepted by the user on 2026-10-14 with this evidence (step 8); no round 3.**
+2. Every file of items 1, 4 (if unchanged), 6 and 7 is identical to `git -C ../my-theme-1 show 388f58e:<path>`. Name the command and list any file that differs, with the reason.
+3. `git grep` finds, in the files this batch changed, no batch id of the derived theme (`[0-9]-[A-Z][0-9]`), no name of a section that exists only there, and no store handle. The baseline holds no entry.
+4. `git diff -- package.json` shows the three scripts and the one dev dependency only; every `resolved` URL added to `package-lock.json` starts with `https://registry.npmjs.org/`; `npm.cmd ci --dry-run` succeeds.
+5. `git diff --stat -- assets/tailwind.output.css tailwind/` is empty.
+6. Loading on demand, proven from the code: `git grep` shows that `vendor-swiper`, `vendor-gsap` and `vendor-gsap-scrolltrigger` are named by no file under `layout/`, `sections/`, `snippets/`, `blocks/`, `templates/` and by no static `import`; the only static import of a vendor file besides Alpine is the Intersect plugin in `assets/base.js`.
+7. `npm.cmd run test:validators` passes; state the counts before (taken before the first edit) and after. `npm.cmd run lint`, `npm.cmd run test:theme-check` and `npm.cmd run doctor:agent` pass. The unreferenced-entry key works both ways: with the two adapter entries listed the lint passes, and a fixture with an unlisted unreferenced entry still fails.
+8. `npm.cmd run scan:contrast` runs to the end and prints a report for this repository's schemes.
+9. `npm.cmd run test:layout-harness` passes; state the test count. If no local Chrome is found, record that and the tool's own message.
+10. `npm.cmd run test:layout -- --widths 390,1440` starts, discovers the pages and finishes with a report file, against `shopify theme dev`. Its findings on this repository's pages are listed in the record as information; they are not fixed in this batch and no baseline entry is written. If discovery stops because the store lacks a page type the tool requires, record the message; do not change the tool.
+11. `git diff --check` is clean; `npx.cmd prettier --check` passes on every changed file Prettier covers (vendor files are not formatted).
+12. Independent review (Ask) reports PASS.
