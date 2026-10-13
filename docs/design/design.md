@@ -8,10 +8,10 @@ omitted:
     - section: components
       reason: The baseline styles controls in code and defines no component tokens.
 colors:
-    primary: '#263d29'
-    neutral: '#f1f1f1'
-    inverse-background: '#1b2900'
-    inverse-foreground: '#d5ff83'
+    primary: '#111827'
+    neutral: '#ffffff'
+    inverse-background: '#111827'
+    inverse-foreground: '#ffffff'
     success-background: '#ecfdf5'
     success-foreground: '#065f46'
     error-background: '#fef2f2'
@@ -118,10 +118,10 @@ Colours are merchant settings, grouped in colour schemes in `config/settings_dat
 
 | Token | Value | Scheme and role |
 | --- | --- | --- |
-| `neutral` | `#f1f1f1` | `scheme-2` background, the default page canvas |
-| `primary` | `#263d29` | `scheme-2` text and border |
-| `inverse-background` | `#1b2900` | `scheme-1` background |
-| `inverse-foreground` | `#d5ff83` | `scheme-1` text and border |
+| `neutral` | `#ffffff` | `scheme-2` background, the default page canvas |
+| `primary` | `#111827` | `scheme-2` text and border |
+| `inverse-background` | `#111827` | `scheme-1` background |
+| `inverse-foreground` | `#ffffff` | `scheme-1` text and border |
 | `success-background` / `success-foreground` | `#ecfdf5` / `#065f46` | Both schemes |
 | `error-background` / `error-foreground` | `#fef2f2` / `#991b1b` | Both schemes |
 
@@ -168,7 +168,7 @@ Each step is the body size times a ratio raised to the step number. The ratio ru
 
 - **Semantic spacing:** `tight` is `step-2xs`, `related` is `step-s`, `group` is `step-m`, `section` is `step-xl`. Map a design's spacing to these first.
 - **Breakpoints** (`tailwind/tailwind.input.css`): `tablet` 768px, `desktop` 1024px, `wide` 1280px.
-- **Page frame** (merchant settings `page_width` and `page_margin`): the shipped preset is 1600px wide with a 10px margin; the setting defaults are 1200px and 20px.
+- **Page frame** (merchant settings `page_width` and `page_margin`): 1200px wide with a 20px margin, which are the setting defaults.
 - Controls keep fixed padding; the space scale is for space between elements.
 
 ## Elevation & Depth

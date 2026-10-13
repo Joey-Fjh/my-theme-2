@@ -6,10 +6,7 @@ Last updated: 2026-10-14.
 
 ## Open decisions
 
-- **Active: neutral colour schemes and page frame in the shipped preset** (proposed by the coordinator, 2026-10-14; the user said "either is fine"; an explicit confirmation of these exact values is still needed, because `config/settings_data.json` is merchant-owned configuration).
-  - **Today:** `scheme-1` is `#1b2900` with `#d5ff83` text and border; `scheme-2` is `#f1f1f1` with `#263d29` text and border; `page_width` 1600 and `page_margin` 10. That reads as a brand palette, not a neutral default.
-  - **Proposed:** `scheme-2` (the default page canvas) becomes `#ffffff` with `#111827` text and border, which are the setting defaults in `config/settings_schema.json`; `scheme-1` becomes the inverse, `#111827` with `#ffffff`; `page_width` 1200 and `page_margin` 20, the setting defaults. Success and error colours stay. `docs/design/design.md` follows.
-- **Queued, the user's to time:** pushing branch `backport/agent-layer`, merging it into `main` (a pull request lets CI run the new dependency and the `doctor:agent` step in a clean environment), and a new version.
+- **Queued, the user's to time:** pushing branch `backport/agent-layer` and merging it into `main` (a pull request lets CI run the new dependency and the `doctor:agent` step in a clean environment). **No new version tag for now** (user, 2026-10-14): it waits for the first real use of Stitch.
 
 ## Evidence
 
