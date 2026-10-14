@@ -74,6 +74,8 @@ Hard implementation rules:
 
 The coordinator (the agent the user is talking to) owns steps 1–6 unless execution is delegated. Delegation does not transfer execution authority; one-writer and independent-review rules still apply.
 
+**Design before build.** A theme's visual work (sections, blocks, the default preset, design tokens) starts only after its design input is approved: the design draft and `docs/design/design.md`, taken in and mapped as `docs/references/style-system/design-to-delivery.md` describes. Each step of that procedure is a batch under this SOP.
+
 The coordinator does not spawn subagents on its own, because each one rebuilds context and multiplies token use. When a step would benefit from one (step 7 independent review, a broad read-only search, a large batch), propose the role, client, and model and wait for the user's decision. Default model: inherit the main model; for a mechanical, high-volume task whose plan fixes the surface and acceptance checks, propose Sonnet (the latest Sonnet model) instead. Model choice stays out of the adapter files; roles stay model-agnostic.
 
 | Step | Owner | Action | Stop condition |
