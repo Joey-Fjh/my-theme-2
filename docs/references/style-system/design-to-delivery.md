@@ -27,8 +27,8 @@ Nothing in this procedure bypasses that chain.
 
 | Step | Input | Output | Who decides |
 | --- | --- | --- | --- |
-| 1. Reference | The user's brief, with references and inspiration from the sources below | The input, kept where the theme's plan names | User |
-| 2. Design draft | The brief and the references | The design draft from the design agent, and its DESIGN.md saved over the baseline design-language file | User judges the draft; coordinator files it |
+| 1. Reference | The user's brief, with the references and inspiration the user chooses | The input, kept where the theme's plan names | User |
+| 2. Design draft | The brief and the references | The design draft, and its DESIGN.md saved over the baseline design-language file | User judges the draft; coordinator files it |
 | 3. Mapping | The design-language file, compared with the baseline | A table: each value mapped to a place the chain already has (replace) or listed as a gap (supplement) | Coordinator proposes; user decides each gap |
 | 4. Values | The mapping table | The value for each mapped place, taken from the draft | User approves |
 | 5. Preset | The chosen values for settings-backed places | Setting defaults in `config/settings_schema.json` and the default preset in `config/settings_data.json` | User authorizes; see the note below |
@@ -37,11 +37,7 @@ Nothing in this procedure bypasses that chain.
 
 Notes on single steps:
 
-- **Steps 1 and 2, sources.** These are the current defaults (user, 2026-10-14). They are provisional and have not been run end to end.
-    - **References:** Refero, a library of real product screens and of design systems written as DESIGN.md files.
-    - **Design agent:** Stitch, which produces the design draft and exports it as a DESIGN.md file and as HTML and CSS.
-    - **Motion and ideas:** the user's inspiration sites. React component libraries among them are motion references only; their code is not used, because `AGENTS.md` excludes React.
-    - **Not verified:** whether Stitch accepts an existing DESIGN.md as a constraint, and the cost and limits of the Stitch and Refero MCP servers. This repository configures neither server.
+- **Steps 1 and 2, sources.** The design is made before the theme starts, outside this repository, with the tools the user chooses; this procedure names none. React component libraries among the references are motion references only; their code is not used, because `AGENTS.md` excludes React.
 - **Step 2.** The file lives at `docs/design/design.md`. Here it is the baseline; in a theme it is that theme's design language.
 - **Step 3.** The chain has two kinds of place today, and the mapping table marks which kind each value goes to:
     - **Settings-backed:** the typography settings (`body_font_size`, `body_font_size_mobile`, `heading_scale`, and the font pickers), the color schemes, and the page width and margin. Their values are written in step 5. The type scale uses those body sizes as its step-0 bases.
@@ -59,7 +55,7 @@ The design-language file follows the open DESIGN.md format published at `https:/
 - `##` sections in the specification's order: Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts. Any may be omitted.
 - Unknown sections are preserved, so a theme adds its own after them (for example component states, responsive behavior, motion).
 
-The format has a command-line tool, run without installing it (`npx @google/design.md <command>`):
+The format has a command-line tool, run without installing it (`npx -y -p @google/design.md designmd <command>`; the package's other command name, `design.md`, does not run on Windows):
 
 - `lint` checks the structure, the token references and text contrast.
 - `diff` compares two files token by token. Comparing a design draft's file with the baseline shows what the draft replaces and what it adds.
@@ -69,7 +65,7 @@ The front matter documents the design's values. It is not a token source: the th
 
 ## What this procedure does not fix
 
-- The sources of steps 1 and 2 for good: they are defaults, changed by the user's decision.
+- The sources and tools of steps 1 and 2: the user chooses them for each theme.
 - Any skill. `AGENTS.md` (Agent Skills) names the vendored skills and their triggers.
 - The values of any scale.
 - The names of roles, tiers, or steps a theme adds.
