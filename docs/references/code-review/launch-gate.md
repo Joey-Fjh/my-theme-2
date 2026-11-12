@@ -1,0 +1,63 @@
+# Launch Gate And Review Reference
+
+Read when: classifying Lighthouse findings, changing ignore files, planning Theme Store submission, or deciding cleanup safety.
+
+Launch-readiness decision boundaries that are too long for `AGENTS.md`. `AGENTS.md` remains the rule source.
+
+## Lighthouse Issue Classification
+
+Before changing code for a Lighthouse finding, classify it as one of:
+
+1. Theme code issue.
+2. Merchant configuration issue.
+3. Merchant content or copy issue.
+4. Uploaded asset or media issue.
+5. Shopify platform, app, or vendor issue.
+6. Measurement noise or run-to-run variance.
+
+Do not code-fix configuration, content, asset, platform, or measurement-noise issues unless the user explicitly authorizes that scope.
+
+For every Lighthouse code change, report: audit id, affected element or request, why it is code-owned, exact file changed, expected metric impact, and re-test instruction.
+
+Color scheme contrast, merchant copy, collection/product content, uploaded media compression, Shopify platform scripts, app scripts, and vendor payloads are not theme-code issues by default.
+
+## Accessibility Review Boundary
+
+Accessibility is a project quality requirement for every retained or explicitly added interaction; it does not depend on Theme Store submission scope. `AGENTS.md` already requires semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
+
+During launch review, verify user-facing controls, navigation, forms, dialogs, drawers, filters, search, cart, product media, and checkout-adjacent flows remain keyboard-operable, named, and understandable. Icon-only controls need translated accessible names. Dynamic status updates need appropriate live-region semantics when needed. Hidden UI must not retain reachable focus. Content access must not depend on animation, hover-only interaction, pointer dragging, or mouse-only controls.
+
+Inspect touched interactive surfaces; do not treat accessibility as optional polish.
+
+## Cleanup Safety
+
+When normalizing older code:
+
+1. Audit first; group findings by rule family.
+2. Clean one rule family per change set when possible.
+3. Preserve storefront behavior, schema IDs, block types, section types, and template references unless the task explicitly asks to change them.
+4. Run the smallest relevant checks after each batch.
+
+Do not redesign sections, rename schema identifiers, change business logic while fixing architecture, edit generated assets directly, or expand shared abstractions without passing the abstraction boundary gate. If a violation is widespread, stage cleanup instead of changing the entire theme in one pass.
+
+## Repo Safety And Ignore Boundaries
+
+- Never edit minified vendor files, `assets/tailwind.output.css`, or optimized `assets/icon-*.svg` directly.
+- Prefer minimal diffs; separate structural refactors from behavior changes.
+- `.shopifyignore` controls Shopify CLI upload scope.
+- `.gitignore` controls version-control scope.
+- `.prettierignore` controls formatting scope only.
+
+Tracked governance files remain in Git. Root `AGENTS.md` and `DESIGN.md` are supported Shopify theme context files and are exceptions to the internal-document upload exclusion: keep their exact root names available for transfer. Each accepts free-form Markdown up to 50 KB. Shopify CLI 4.8.4+ includes them in theme pull, push and package operations; the GitHub integration syncs both files in both directions. Source: [Agentic workflows for themes](https://shopify.dev/docs/storefronts/themes/agentic-workflows).
+
+Internal material such as `.agents/`, client configuration directories and `docs/references/` remains excluded from Shopify upload, together with local secrets and scratch artifacts. Formatting scope follows `.prettierignore`; do not add broad ignore patterns that hide source files, runtime files, schemas, locales, sections, snippets, templates, or config from review. The one formatting exception is merchant-owned JSON that the Shopify GitHub integration writes back (`templates/*.json`, `config/settings_data.json`, `sections/*-group.json`): Shopify controls its formatting, so `.prettierignore` excludes it, while it stays tracked in Git and in review.
+
+## Review Output
+
+Reviews use the output format in the Output section of `.agents/roles/verifier.md`.
+
+## Gate Validation
+
+- Commands per change surface and for release gates: `AGENTS.md` Validation. Icon import: `css-architecture.md` "SVG Icons".
+- Tooling enforces many architecture, i18n, and compatibility rules; review-only gaps remain launch blockers when user-facing.
+- The `Lighthouse` workflow (`.github/workflows/lighthouse.yml`, `shopify/lighthouse-ci-action`) runs on pull requests into `main`, on pushes to `main`, and on manual runs. Development branch pushes do not trigger it. It is skipped in this repository and runs in a theme made from it, where it audits home, product and collection on the dedicated CI store. Each page is audited three times on mobile emulation, and the job fails when a page's best run is below performance 0.6 or accessibility 0.9. That is a coarse regression gate, looser than the Theme Store bar; a green job does not prove the bar is met. Its scores are classified under "Lighthouse Issue Classification" before any code change.

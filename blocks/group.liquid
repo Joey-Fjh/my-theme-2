@@ -1,0 +1,270 @@
+{% liquid
+    assign container_direction = 'column'
+    assign container_stack = 'off'
+    assign container_width = block.settings.width
+    if block.settings.layout == 'grid'
+        assign container_width = block.settings.width_grid
+    else
+        if block.settings.direction == 'row' or block.settings.direction == 'row-stack'
+            assign container_direction = 'row'
+        endif
+        if block.settings.direction == 'row-stack'
+            assign container_stack = 'on'
+        endif
+    endif
+%}
+{% capture container_children %}
+    {% content_for 'blocks' %}
+{% endcapture %}
+{% render 'container',
+    block: block,
+    layout: block.settings.layout,
+    direction: container_direction,
+    distribution: block.settings.distribution,
+    alignment: block.settings.alignment,
+    columns: block.settings.columns,
+    gap: block.settings.gap,
+    width: container_width,
+    height: block.settings.height,
+    stack: container_stack,
+    children: container_children
+%}
+
+{% schema %}
+{
+    "name": "t:blocks.group.name",
+    "tag": null,
+    "blocks": [
+        {
+            "type": "@theme"
+        },
+        {
+            "type": "@app"
+        }
+    ],
+    "settings": [
+        {
+            "type": "select",
+            "id": "layout",
+            "label": "t:blocks.group.settings.layout",
+            "options": [
+                {
+                    "value": "flex",
+                    "label": "t:blocks.group.options.flex"
+                },
+                {
+                    "value": "grid",
+                    "label": "t:blocks.group.options.grid"
+                }
+            ],
+            "default": "flex"
+        },
+        {
+            "type": "select",
+            "id": "direction",
+            "label": "t:blocks.group.settings.direction",
+            "options": [
+                {
+                    "value": "column",
+                    "label": "t:blocks.group.options.column"
+                },
+                {
+                    "value": "row",
+                    "label": "t:blocks.group.options.row"
+                },
+                {
+                    "value": "row-stack",
+                    "label": "t:blocks.group.options.row_stack"
+                }
+            ],
+            "default": "column",
+            "visible_if": "{{ block.settings.layout == 'flex' }}"
+        },
+        {
+            "type": "select",
+            "id": "distribution",
+            "label": "t:blocks.group.settings.distribution",
+            "options": [
+                {
+                    "value": "flex-start",
+                    "label": "t:blocks.group.options.start"
+                },
+                {
+                    "value": "center",
+                    "label": "t:blocks.group.options.center"
+                },
+                {
+                    "value": "flex-end",
+                    "label": "t:blocks.group.options.end"
+                },
+                {
+                    "value": "space-between",
+                    "label": "t:blocks.group.options.space_between"
+                },
+                {
+                    "value": "space-around",
+                    "label": "t:blocks.group.options.space_around"
+                },
+                {
+                    "value": "space-evenly",
+                    "label": "t:blocks.group.options.space_evenly"
+                }
+            ],
+            "default": "flex-start",
+            "visible_if": "{{ block.settings.layout == 'flex' }}"
+        },
+        {
+            "type": "select",
+            "id": "alignment",
+            "label": "t:blocks.group.settings.alignment",
+            "options": [
+                {
+                    "value": "flex-start",
+                    "label": "t:blocks.group.options.start"
+                },
+                {
+                    "value": "center",
+                    "label": "t:blocks.group.options.center"
+                },
+                {
+                    "value": "flex-end",
+                    "label": "t:blocks.group.options.end"
+                },
+                {
+                    "value": "stretch",
+                    "label": "t:blocks.group.options.stretch"
+                },
+                {
+                    "value": "baseline",
+                    "label": "t:blocks.group.options.baseline"
+                }
+            ],
+            "default": "stretch"
+        },
+        {
+            "type": "select",
+            "id": "columns",
+            "label": "t:blocks.group.settings.columns",
+            "options": [
+                {
+                    "value": "auto",
+                    "label": "t:blocks.group.options.auto"
+                },
+                {
+                    "value": "1",
+                    "label": "t:blocks.group.options.columns_1"
+                },
+                {
+                    "value": "2",
+                    "label": "t:blocks.group.options.columns_2"
+                },
+                {
+                    "value": "3",
+                    "label": "t:blocks.group.options.columns_3"
+                },
+                {
+                    "value": "4",
+                    "label": "t:blocks.group.options.columns_4"
+                },
+                {
+                    "value": "5",
+                    "label": "t:blocks.group.options.columns_5"
+                },
+                {
+                    "value": "6",
+                    "label": "t:blocks.group.options.columns_6"
+                }
+            ],
+            "default": "auto",
+            "visible_if": "{{ block.settings.layout == 'grid' }}"
+        },
+        {
+            "type": "select",
+            "id": "gap",
+            "label": "t:blocks.group.settings.gap",
+            "options": [
+                {
+                    "value": "none",
+                    "label": "t:blocks.group.options.none"
+                },
+                {
+                    "value": "tight",
+                    "label": "t:blocks.group.options.tight"
+                },
+                {
+                    "value": "related",
+                    "label": "t:blocks.group.options.related"
+                },
+                {
+                    "value": "group",
+                    "label": "t:blocks.group.options.group"
+                },
+                {
+                    "value": "section",
+                    "label": "t:blocks.group.options.section"
+                }
+            ],
+            "default": "related"
+        },
+        {
+            "type": "select",
+            "id": "width",
+            "label": "t:blocks.group.settings.width",
+            "options": [
+                {
+                    "value": "fill",
+                    "label": "t:blocks.group.options.fill"
+                },
+                {
+                    "value": "content",
+                    "label": "t:blocks.group.options.content"
+                },
+                {
+                    "value": "measure",
+                    "label": "t:blocks.group.options.measure"
+                }
+            ],
+            "default": "fill",
+            "visible_if": "{{ block.settings.layout == 'flex' }}"
+        },
+        {
+            "type": "select",
+            "id": "width_grid",
+            "label": "t:blocks.group.settings.width_grid",
+            "options": [
+                {
+                    "value": "fill",
+                    "label": "t:blocks.group.options.fill"
+                },
+                {
+                    "value": "measure",
+                    "label": "t:blocks.group.options.measure"
+                }
+            ],
+            "default": "fill",
+            "visible_if": "{{ block.settings.layout == 'grid' }}"
+        },
+        {
+            "type": "select",
+            "id": "height",
+            "label": "t:blocks.group.settings.height",
+            "options": [
+                {
+                    "value": "content",
+                    "label": "t:blocks.group.options.content"
+                },
+                {
+                    "value": "fill",
+                    "label": "t:blocks.group.options.fill"
+                }
+            ],
+            "default": "content"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.group.presets.group"
+        }
+    ]
+}
+{% endschema %}

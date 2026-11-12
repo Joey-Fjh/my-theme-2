@@ -1,0 +1,49 @@
+<!doctype html>
+{%- liquid
+    assign rtl_locales = 'ar,he,fa,ur' | split: ','
+    assign lang_code = request.locale.iso_code | split: '-' | first
+    if rtl_locales contains lang_code
+        assign dir = 'rtl'
+    else
+        assign dir = 'ltr'
+    endif
+    assign page_canvas_color_scheme = settings.page_canvas_color_scheme | default: 'scheme-2'
+-%}
+<html lang="{{ request.locale.iso_code }}" dir="{{ dir }}">
+    <head>
+        {% # Social, title, etc. %}
+        {% render 'meta-tags' %}
+
+        {% # Inlined CSS Variables %}
+        {% render 'css-variables' %}
+
+        {% # Load and preload the CSS %}
+        {{ 'tailwind.output.css' | asset_url | stylesheet_tag: preload: true }}
+
+        {% render 'scripts' %}
+
+        {{ content_for_header }}
+    </head>
+
+    <body
+        class="color-{{ page_canvas_color_scheme }}"
+        data-initial-cart="{{ cart | json | escape }}"
+        data-cart-error-generic="{{ 'cart.errors.generic' | t | escape }}"
+        data-cart-error-rate-limited="{{ 'cart.errors.rate_limited' | t | escape }}"
+        data-cart-error-server-error="{{ 'cart.errors.server_error' | t | escape }}"
+        data-cart-error-timeout="{{ 'cart.errors.timeout' | t | escape }}"
+        data-cart-error-network-error="{{ 'cart.errors.network_error' | t | escape }}"
+    >
+        <a class="skip-link" href="#MainContent">
+            {{- 'accessibility.skip_to_content' | t -}}
+        </a>
+
+        {% sections 'header-group' %}
+
+        <main id="MainContent" role="main" tabindex="-1">
+            {{ content_for_layout }}
+        </main>
+
+        {% sections 'footer-group' %}
+    </body>
+</html>

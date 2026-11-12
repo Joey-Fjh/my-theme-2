@@ -1,0 +1,55 @@
+{%- liquid
+    assign currencies = localization.available_countries | map: 'currency' | map: 'iso_code' | uniq
+    assign show_currencies = false
+    if currencies.size > 1
+        assign show_currencies = true
+    endif
+-%}
+
+{%- capture localization_content -%}
+    <button
+        type="button"
+        x-ref="localizationTrigger"
+        @click="toggle()"
+        :aria-expanded="open"
+        aria-haspopup="true"
+        aria-controls="country-list-{{ localPosition }}"
+    >
+        <span>{{ localization.country.name }}</span>
+        {% if show_currencies %}
+            &nbsp;|&nbsp;{{ localization.country.currency.iso_code }}
+            {{ localization.country.currency.symbol }}
+        {% endif %}
+    </button>
+
+    <div
+        id="country-list-{{ localPosition }}"
+        x-ref="localizationMenu"
+        x-show="open"
+        x-cloak
+        class="localization-menu"
+        :class="{ 'localization-menu--align-end': alignEnd }"
+    >
+        <div>
+            {%- for country in localization.available_countries -%}
+                    {%- liquid
+                        assign is_current_country = false
+                        if country.iso_code == localization.country.iso_code
+                            assign is_current_country = true
+                        endif
+                    -%}
+                    {%- render 'localization-option',
+                        submit_name: 'country_code',
+                        submit_value: country.iso_code,
+                        is_current: is_current_country,
+                        label: country.name,
+                        show_currency: show_currencies,
+                        currency_iso: country.currency.iso_code,
+                        currency_symbol: country.currency.symbol
+                    -%}
+            {%- endfor -%}
+        </div>
+    </div>
+{%- endcapture -%}
+
+{%- render 'localization-switcher', localPosition: localPosition, content: localization_content -%}

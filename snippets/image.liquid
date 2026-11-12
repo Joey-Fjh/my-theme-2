@@ -1,0 +1,321 @@
+{% doc %}
+    Renders a responsive image that might be wrapped in a link.
+
+  When `width`, `height` and `crop` are provided, the image will be rendered
+  with a fixed aspect ratio.
+
+  Serves as an example of how to use the `image_url` filter and `image_tag` filter
+  as well as how you can use LiquidDoc to document your code.
+
+  This is a component that defaults to assuming "full-width" layout.
+  If the image is not actually displayed at full width in your layout, please be sure to override the sizes parameter when invoking it.
+
+  ## Display contract (Phase Image-B)
+
+  Two display modes control wrapper sizing and the default object-fit:
+  - `frame` (default): the image fills a fixed container. Wrapper gets `height: 100%`; img defaults to `object-cover`.
+  - `natural`: the image displays at its intrinsic ratio without forced fill. Wrapper gets `height: auto`; img defaults to `object-contain`.
+
+  `fit` overrides the mode-derived default: `cover` | `contain` | `fill` | `none` | `scale-down`.
+
+  Object-position precedence on the final img:
+  1. Caller-provided valid `position` (whitelist only) — overrides Shopify focal point
+  2. `image_tag` automatic focal-point `object-position` (X% Y%) when present
+  3. `center`
+
+  Do not default `position` before recording whether the caller passed it; a silent
+  `center` default would incorrectly override every image focal point.
+  Focal-point percentage strings must never enter the fixed `position` whitelist.
+
+    @param {image} [image] - The image to be rendered. Without it, the snippet renders a placeholder.
+    @param {string} [url] - An optional destination URL for the image
+    @param {string} [wrapper] - An optional wrapper element, either 'a' or 'div'. If not provided, it will be 'a' if url is provided, otherwise 'div'.
+    @param {string} [wrapper_class] - Optional class added to the image wrapper. Canonical name; `class` is a deprecated alias merged into this.
+    @param {string} [class] - Deprecated alias for `wrapper_class`. If both are provided, they are merged.
+    @param {string} [img_class] - Optional class to be added to the img tag. `image_img` is always applied.
+    @param {string} [mode] - Display mode: 'frame' (default) or 'natural'. Controls wrapper height and default object-fit.
+    @param {string} [fit] - Object-fit override: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'. Default derived from mode: 'cover' for frame, 'contain' for natural.
+    @param {string} [position] - Explicit object-position whitelist value (`center`, `top`, `bottom`, `left`, `right`, or compounds like `top left`). When provided and valid, overrides `image_tag` focal point. When omitted, Shopify focal point is preserved; otherwise falls back to `center`.
+    @param {number} [width] - The highest resolution width of the image to be rendered
+    @param {number} [height] - The highest resolution height of the image to be rendered
+    @param {string} [crop] - The crop position of the image
+    @param {string} [widths] - Optional widths for srcset generation (comma-separated list of numbers)
+    @param {string} [sizes] - Sizes for the layout width, never smaller than the rendered width at the browser's default font size (default: '100vw'). Lazy images get an 'auto, ' prefix. See docs/references/style-system/image-display-contract.md.
+    @param {string} [loading] - Optional loading attribute for the img tag ('lazy' or 'eager')
+    @param {string} [decoding] - Optional decoding attribute for the img tag ('async', 'sync' or 'auto')
+    @param {string} [alt] - Alt text for the image (defaults to empty string for decorative images)
+    @param {string} [aspect_ratio] - Ratio keyword: 'square', 'portrait', 'landscape', 'wide', or 'adapt'. Blank or unsupported values adapt to the image.
+    @param {string} [placeholder_key] - Optional placeholder key for nil image
+    @param {string} [placeholder_style] - Placeholder surface style: 'framed' (default) or 'plain'. Framing is applied only when image is blank.
+    @param {string} [placeholder_class] - Optional extra class for the placeholder svg
+    @param {string} [placeholder_aspect_ratio] - Fixed ratio keyword used when adapting without valid image dimensions. Defaults to 'landscape'; 'adapt' and unsupported values also use 'landscape'.
+    @param {string} [extra_attributes] - Additional raw HTML attributes applied to the <img> element
+    @param {string} [fetchpriority] - Optional fetchpriority attribute for the img tag ('high', 'low', or 'auto')
+
+    @example
+    {% render 'image', image: product.featured_image, url: product.url %}
+    {% render 'image',
+        image: product.featured_image,
+        url: product.url,
+        sizes: '(min-width: 1024px) 33vw,50vw',
+        loading: 'eager'
+    %}
+{% enddoc %}
+
+{%- liquid
+    if width == blank
+        assign width = 1440
+    endif
+
+    assign widths = widths | default: '165,360,535,750,1100,1500,2000'
+    assign sizes = sizes | default: '100vw'
+
+    assign loading = loading | default: 'lazy'
+
+    # A lazy image lets supporting browsers size it from layout; the given sizes stay as the fallback.
+    assign sizes_start = sizes | strip | slice: 0, 4 | downcase
+    if loading == 'lazy' and sizes_start != 'auto'
+        assign sizes = 'auto, ' | append: sizes
+    endif
+    assign decoding = decoding | default: 'async'
+    assign fetchpriority = fetchpriority
+    assign fixed_ratio_keywords = 'square,portrait,landscape,wide' | split: ','
+    assign ratio_keyword = aspect_ratio
+    unless fixed_ratio_keywords contains ratio_keyword
+        assign ratio_keyword = 'adapt'
+    endunless
+
+    if ratio_keyword == 'adapt'
+        if image != blank and image.width > 0 and image.height > 0
+            assign aspect_ratio = image.width | append: '/' | append: image.height
+        else
+            assign ratio_keyword = placeholder_aspect_ratio
+            unless fixed_ratio_keywords contains ratio_keyword
+                assign ratio_keyword = 'landscape'
+            endunless
+        endif
+    endif
+
+    case ratio_keyword
+        when 'square'
+            assign aspect_ratio = '1/1'
+        when 'portrait'
+            assign aspect_ratio = '4/5'
+        when 'landscape'
+            assign aspect_ratio = '4/3'
+        when 'wide'
+            assign aspect_ratio = '16/9'
+    endcase
+
+    assign mode = mode | default: 'frame'
+    assign explicit_wrapper_class = wrapper_class | default: ''
+    assign legacy_wrapper_class = class | default: ''
+    assign img_class = img_class | default: ''
+    assign extra_attributes = extra_attributes | default: ''
+    assign alt = alt | default: ''
+
+    if mode == 'natural'
+        assign fit = fit | default: 'contain'
+    else
+        assign fit = fit | default: 'cover'
+    endif
+
+    assign position_explicit = false
+    if position != blank
+        assign position_explicit = true
+    endif
+
+    assign valid_modes = 'frame,natural'
+    assign valid_fits = 'cover,contain,fill,none,scale-down'
+    assign valid_positions = 'center,top,bottom,left,right,top left,top right,bottom left,bottom right'
+
+    assign mode_allowed = false
+    assign mode_tokens = valid_modes | split: ','
+    for m in mode_tokens
+        if m == mode
+            assign mode_allowed = true
+            break
+        endif
+    endfor
+    unless mode_allowed
+        assign mode = 'frame'
+    endunless
+
+    if fit != blank
+        assign fit_allowed = false
+        assign fit_tokens = valid_fits | split: ','
+        for f in fit_tokens
+            if f == fit
+                assign fit_allowed = true
+                break
+            endif
+        endfor
+        unless fit_allowed
+            if mode == 'natural'
+                assign fit = 'contain'
+            else
+                assign fit = 'cover'
+            endif
+        endunless
+    endif
+
+    if position_explicit
+        assign position_allowed = false
+        assign position_tokens = valid_positions | split: ','
+        for p in position_tokens
+            if p == position
+                assign position_allowed = true
+                break
+            endif
+        endfor
+        unless position_allowed
+            assign position = 'center'
+        endunless
+    else
+        assign position = blank
+    endif
+
+    if fetchpriority != blank
+        assign extra_attributes = extra_attributes | append: ' fetchpriority="' | append: fetchpriority | append: '"'
+    endif
+-%}
+
+{% liquid
+    assign has_object_fit = false
+    assign img_class_tokens = img_class | split: ' '
+    for img_class_token in img_class_tokens
+        if img_class_token == 'object-cover' or img_class_token == 'object-contain' or img_class_token == 'object-fill' or img_class_token == 'object-none' or img_class_token == 'object-scale-down'
+            assign has_object_fit = true
+            break
+        endif
+    endfor
+
+    unless has_object_fit
+        assign img_class = img_class | append: ' object-' | append: fit
+    endunless
+    assign img_class = 'image_img ' | append: img_class
+    assign img_class = img_class | strip
+
+    unless height
+        assign width = width | default: image.width
+    endunless
+
+    if url != blank
+        assign wrapper = 'a'
+    else
+        assign wrapper = 'div'
+    endif
+
+    assign placeholder_key = placeholder_key | default: 'image'
+    assign placeholder_style = placeholder_style | default: 'framed'
+    unless placeholder_style == 'framed' or placeholder_style == 'plain'
+        assign placeholder_style = 'framed'
+    endunless
+    assign placeholder_class = 'svg-placeholder ' | append: placeholder_class
+    assign placeholder_class = placeholder_class | strip
+
+    assign wrapper_class = 'theme-image'
+    if explicit_wrapper_class != blank
+        assign wrapper_class = wrapper_class | append: ' ' | append: explicit_wrapper_class
+    endif
+    if legacy_wrapper_class != blank
+        assign wrapper_class = wrapper_class | append: ' ' | append: legacy_wrapper_class
+    endif
+    if image == blank and placeholder_style == 'framed'
+        assign wrapper_class = wrapper_class | append: ' media-placeholder-frame'
+    endif
+%}
+
+<{{ wrapper }}
+    class="{{ wrapper_class }}"
+    {% if url %}
+        href="{{ url }}"
+    {% endif %}
+    data-image-mode="{{ mode }}"
+    {%- if position_explicit -%}
+        data-image-position="explicit"
+    {%- endif -%}
+    {%- if aspect_ratio and position_explicit -%}
+        style="--aspect-ratio: {{ aspect_ratio }}; --image-object-position: {{ position }}"
+    {%- elsif aspect_ratio -%}
+        style="--aspect-ratio: {{ aspect_ratio }}"
+    {%- elsif position_explicit -%}
+        style="--image-object-position: {{ position }}"
+    {%- endif -%}
+>
+    {%- if image != blank -%}
+        {%- capture image_tag_html -%}
+            {%- # lint-allow mixed-element: Preserve the public img_class API and caller object-fit utilities on image_img. -%}
+            {{
+                image 
+                | image_url: width: width, height: height, crop: crop 
+                | image_tag:
+                    class: img_class,
+                    alt: alt,
+                    widths: widths, 
+                    sizes: sizes,
+                    loading: loading,
+                    decoding: decoding
+            }}  
+        {%- endcapture -%}
+
+        {%- if extra_attributes != blank -%}
+            {{ image_tag_html | replace_first: '>', ' ' | append: extra_attributes | append: '>' }}
+        {%- else -%}
+            {{ image_tag_html }}
+        {%- endif -%}
+    {%- else -%}
+        {{ placeholder_key | placeholder_svg_tag: placeholder_class }}
+    {%- endif -%}
+</{{ wrapper }}>
+
+{% stylesheet %}
+    .theme-image {
+        display: block;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        aspect-ratio: var(--aspect-ratio);
+    }
+
+    .theme-image[data-image-mode='frame'] {
+        height: 100%;
+    }
+
+    .theme-image[data-image-mode='natural'] {
+        height: auto;
+    }
+
+    .theme-image > .image_img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-position: center;
+    }
+
+    .theme-image[data-image-position='explicit'] > .image_img {
+        object-position: var(--image-object-position) !important;
+    }
+
+    .svg-placeholder {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .svg-placeholder svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .media-placeholder-frame {
+        overflow: hidden;
+        border: 1px solid var(--color-line);
+        background-color: rgb(var(--color-background));
+    }
+
+    .media-placeholder-frame .svg-placeholder {
+        color: var(--color-faint);
+    }
+{% endstylesheet %}

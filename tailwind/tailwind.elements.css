@@ -1,0 +1,92 @@
+/* =========================================================
+icon
+========================================================= */
+@utility icons {
+    @apply inline-flex items-center justify-center;
+}
+
+/* =========================================================
+skip link
+========================================================= */
+@utility skip-link {
+    @apply fixed start-4 top-4 bg-theme-bg px-step-s py-step-xs copy-m text-theme-text;
+    z-index: var(--z-layer-skip-link);
+    transform: translateY(calc(-100% - 2rem));
+
+    &:focus,
+    &:focus-visible {
+        transform: translateY(0);
+    }
+
+    /* Inset so the ring sits on the link's own background, not on whatever surface it overlays. */
+    &:focus-visible {
+        outline-offset: -4px;
+    }
+}
+
+/* =========================================================
+button
+========================================================= */
+@utility btn {
+    @apply inline-flex cursor-pointer items-center justify-center copy-m;
+
+    gap: 0.25em;
+    min-height: 2.4rem;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+
+    /* 7.5px / 15px at the default 16px text and 10px rem. */
+    padding: 0.46875em 0.9375em;
+    border: 1px solid currentColor;
+    background-color: rgb(var(--color-foreground));
+    color: rgb(var(--color-background));
+    text-align: center;
+    text-decoration: none;
+
+    &:disabled,
+    &[aria-disabled='true'] {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &[aria-busy='true'] {
+        cursor: wait;
+    }
+}
+
+/* =========================================================
+field
+========================================================= */
+@utility field {
+    @apply w-full copy-m;
+
+    min-height: 2.4rem;
+    min-width: 0;
+    padding: 0.3125em 0.46875em;
+    border: 1px solid rgb(var(--color-border));
+    background-color: transparent;
+    color: currentColor;
+
+    @media (width < theme(--breakpoint-tablet)) {
+        /* lint-allow settings-chain-css-typography: iOS Safari zoom floor for native fields */
+        font-size: max(16px, calc(var(--font-body-scale) * var(--type-step-0)));
+    }
+
+    &::placeholder {
+        opacity: 0.6;
+    }
+
+    &:disabled,
+    &[aria-disabled='true'] {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+}
+
+@utility field-textarea {
+    @apply field;
+
+    min-height: 12rem;
+    resize: vertical;
+}

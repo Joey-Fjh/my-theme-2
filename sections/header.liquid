@@ -1,0 +1,156 @@
+{%- assign header_menu = section.settings.menu -%}
+{%- assign has_header_menu = false -%}
+{%- if header_menu != blank and header_menu.links != blank -%}
+    {%- assign has_header_menu = true -%}
+{%- endif -%}
+
+<header
+    data-section-id="{{ section.id }}"
+    class="section header color-{{ section.settings.color_scheme }}"
+>
+    <div style="--header-logo-width: {{ settings.logo_width }}px">
+        {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
+        {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+        {%- capture sizes -%}
+            (max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px
+        {%- endcapture -%}
+        {%- capture widths -%}
+            {{ settings.logo_width }},{{ settings.logo_width | times: 1.5 | round }},{{ settings.logo_width | times:2 }}
+        {%- endcapture -%}
+
+        {%- if settings.logo -%}
+            {% render 'image',
+                image: settings.logo,
+                width: settings.logo_width,
+                height: logo_height,
+                alt: logo_alt,
+                url: routes.root_url,
+                sizes: sizes,
+                widths: widths,
+                loading: 'eager',
+                mode: 'natural',
+                fit: 'contain'
+            %}
+        {%- else -%}
+            <a class="underline underline-offset-4" href="{{ routes.root_url }}">{{ shop.name }}</a>
+        {%- endif -%}
+    </div>
+
+    {%- if has_header_menu -%}
+        {%- render 'header-dropdown-menu' -%}
+    {%- endif -%}
+
+    <a
+        href="{{ routes.search_url }}"
+        aria-label="{{ 'accessibility.search' | t }}"
+    >
+        {% render 'icons', icon: 'icon-search' %}
+    </a>
+
+    <a href="{{ routes.cart_url }}" aria-label="{{ 'accessibility.cart' | t }}">
+        {% render 'icons', icon: 'icon-cart' %}
+    </a>
+
+    {%- if shop.customer_accounts_enabled -%}
+        <shopify-account menu="customer-account-main-menu">
+            <span slot="signed-out-avatar">
+                {%- render 'icons', icon: 'icon-account' -%}
+            </span>
+        </shopify-account>
+    {%- endif -%}
+
+    {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
+    {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
+</header>
+
+{% stylesheet %}
+    /* One wrapping row: logo, menu, then the icons and selectors. */
+    .header,
+    .header .header-dropdown-menu > ul {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--spacing-step-s);
+    }
+
+    .header .theme-image {
+        width: var(--header-logo-width);
+    }
+{% endstylesheet %}
+
+{%- assign organization_social_setting_ids = 'social_twitter_link,social_facebook_link,social_pinterest_link,social_instagram_link,social_tiktok_link,social_tumblr_link,social_snapchat_link,social_youtube_link,social_vimeo_link'
+    | split: ','
+-%}
+{%- capture organization_same_as -%}
+    {%- assign organization_social_link_written = false -%}
+    {%- for organization_social_setting_id in organization_social_setting_ids -%}
+        {%- assign organization_social_url = settings[organization_social_setting_id] -%}
+        {%- if organization_social_url != blank -%}
+            {%- if organization_social_link_written -%},{%- endif -%}
+            {{- organization_social_url | json -}}
+            {%- assign organization_social_link_written = true -%}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endcapture -%}
+{%- assign organization_same_as = organization_same_as | strip -%}
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": {{ shop.name | json }},
+      {% if settings.logo %}
+        "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+      {% endif %}
+      {% if organization_same_as != blank %}
+        "sameAs": [{{ organization_same_as }}],
+      {% endif %}
+      "url": {{ request.origin | append: routes.root_url | json }}
+    }
+</script>
+
+{%- if request.page_type == 'index' -%}
+    {% assign potential_action_target = request.origin
+        | append: routes.search_url
+        | append: '?q={search_term_string}'
+    %}
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": {{ shop.name | json }},
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {{ potential_action_target | json }},
+            "query-input": "required name=search_term_string"
+          },
+          "url": {{ request.origin | append: page.url | json }}
+        }
+    </script>
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "t:general.header",
+    "tag": "section",
+    "class": "site-header",
+    "limit": 1,
+    "enabled_on": {
+        "groups": ["header"]
+    },
+    "settings": [
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.header.settings.color_scheme",
+            "default": "scheme-1"
+        },
+        {
+            "type": "link_list",
+            "id": "menu",
+            "label": "t:labels.menu",
+            "default": "main-menu"
+        }
+    ]
+}
+{% endschema %}

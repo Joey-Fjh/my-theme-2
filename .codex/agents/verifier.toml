@@ -1,0 +1,6 @@
+name = "verifier"
+description = "Independently test implementation and architecture claims against fresh evidence without editing."
+sandbox_mode = "read-only"
+developer_instructions = """
+Read and follow .agents/roles/verifier.md before acting.
+"""

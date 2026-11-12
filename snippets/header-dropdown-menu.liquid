@@ -1,0 +1,108 @@
+<nav
+    aria-label="{{ 'accessibility.main_menu' | t }}"
+    class="header-dropdown-menu"
+    x-data="dropdown"
+    data-module-id="dropdown"
+    @click.capture="onMenuTriggerClickEvent($event)"
+    @focusin="onHeaderFocusIn()"
+    @focusout="onHeaderFocusOut($event)"
+    @click.outside="closeAndDeactivate()"
+    @keydown="onMenuKeydown($event)"
+>
+    <ul role="list">
+        {%- for link in section.settings.menu.links -%}
+            <li class="relative">
+                {%- if link.links != blank -%}
+                    <details
+                        class="dropdown relative"
+                        data-dropdown
+                        data-deep="1"
+                    >
+                        <summary
+                            class="dropdown-trigger"
+                            id="HeaderMenu-{{ link.handle }}"
+                        >
+                            <span>
+                                {{ link.title | escape }}
+                            </span>
+                            {% render 'icons',
+                                icon: 'icon-chevron-down',
+                                class: 'dropdown-icon dropdown-icon--down'
+                            %}
+                        </summary>
+
+                        <ul
+                            class="dropdown-panel dropdown-open color-{{ section.settings.color_scheme }} surface-component"
+                            role="list"
+                            tabindex="-1"
+                        >
+                            {%- for childlink in link.links -%}
+                                <li class="{% if childlink.links != blank %} relative{% endif %}">
+                                    {%- if childlink.links == blank -%}
+                                        <a
+                                            class="underline underline-offset-4"
+                                            href="{{ childlink.url }}"
+                                            {% if childlink.current %}
+                                                aria-current="page"
+                                            {% endif %}
+                                        >
+                                            {{ childlink.title | escape }}
+                                        </a>
+                                    {%- else -%}
+                                        <details
+                                            class="dropdown relative"
+                                            data-dropdown
+                                            data-deep="2"
+                                        >
+                                            <summary
+                                                class="dropdown-trigger"
+                                                id="HeaderMenu-{{ childlink.handle }}"
+                                            >
+                                                <span>
+                                                    {{ childlink.title | escape }}
+                                                </span>
+                                                {% render 'icons',
+                                                    icon: 'icon-chevron-down',
+                                                    class: 'dropdown-icon dropdown-icon--tilt'
+                                                %}
+                                            </summary>
+
+                                            <ul
+                                                class="dropdown-panel dropdown-open color-{{ section.settings.color_scheme }} surface-component"
+                                                role="list"
+                                            >
+                                                {%- for grandChildLink in childlink.links -%}
+                                                    <li>
+                                                        <a
+                                                            class="underline underline-offset-4"
+                                                            href="{{ grandChildLink.url }}"
+                                                            {% if grandChildLink.current %}
+                                                                aria-current="page"
+                                                            {% endif %}
+                                                        >
+                                                            {{ grandChildLink.title | escape }}
+                                                        </a>
+                                                    </li>
+                                                {%- endfor -%}
+                                            </ul>
+                                        </details>
+                                    {%- endif -%}
+                                </li>
+                            {%- endfor -%}
+                        </ul>
+                    </details>
+                {%- else -%}
+                    <a
+                        class="underline underline-offset-4"
+                        href="{{ link.url }}"
+                        {% if link.current %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        {{ link.title | escape }}
+                    </a>
+                {%- endif -%}
+            </li>
+        {%- endfor -%}
+    </ul>
+</nav>

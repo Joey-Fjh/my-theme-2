@@ -1,0 +1,26 @@
+.gift-card-page {
+    color: rgb(var(--color-foreground));
+    background-color: rgb(var(--color-background));
+}
+
+.gift-card-page main {
+    max-width: 48rem;
+    margin-inline: auto;
+    padding: 2rem 1.25rem;
+}
+
+.gift-card-page img {
+    max-width: 100%;
+    height: auto;
+}
+
+.gift-card-page [data-gift-card-qr] svg {
+    width: 8rem;
+    height: 8rem;
+}
+
+@media print {
+    .gift-card-page main a.btn {
+        display: none;
+    }
+}

@@ -1,0 +1,35 @@
+﻿/*
+ * Motion capabilities home: keyframes, animation utilities, and their
+ * reduced-motion rules. Derived themes add recipes here under
+ * docs/references/architecture/motion-architecture.md.
+ */
+
+/* Loading indicator: constant rotation, so a fixed linear turn instead of the transition tokens. */
+@keyframes spinner-turn {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@utility spinner {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: spinner-turn 0.8s linear infinite;
+}
+
+@utility spinner-lg {
+    width: 3rem;
+    height: 3rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner,
+    .spinner-lg {
+        animation: none;
+        opacity: 0.65;
+    }
+}

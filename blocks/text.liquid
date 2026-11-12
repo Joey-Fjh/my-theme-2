@@ -1,0 +1,23 @@
+<div class="copy-m" {{ block.shopify_attributes }}>
+    {{ block.settings.text }}
+</div>
+
+{% schema %}
+{
+    "name": "t:blocks.text.name",
+    "tag": null,
+    "settings": [
+        {
+            "type": "richtext",
+            "id": "text",
+            "label": "t:blocks.text.settings.text",
+            "default": "t:blocks.text.defaults.text"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.text.presets.text"
+        }
+    ]
+}
+{% endschema %}

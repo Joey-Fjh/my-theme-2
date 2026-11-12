@@ -1,0 +1,73 @@
+{% doc %}
+    Shared Alpine shell and localization form wrapper for language/country pickers.
+
+    @param {string} localPosition - Form id and unique suffix for related controls.
+    @param {string} content - Toggle button and menu markup (pass via capture in parent).
+
+    @example
+    {%- capture localization_content -%}
+        ...
+    {%- endcapture -%}
+    {%- render 'localization-switcher',
+        localPosition: localPosition,
+        content: localization_content
+    -%}
+{% enddoc %}
+
+<div
+    x-data="localizationSwitcher"
+    data-module-id="localization-switcher"
+    @click.away="close()"
+    @keydown.escape.window="onEscape()"
+    class="localization-switcher"
+>
+    {% form 'localization', id: localPosition %}
+        {{ content }}
+    {% endform %}
+</div>
+
+{% stylesheet %}
+    .localization-switcher {
+        position: relative;
+    }
+
+    .localization-switcher :where(button) {
+        font-family: var(--font-body-family);
+        font-size: calc(var(--font-body-scale) * var(--type-step-0));
+        font-style: var(--font-body-style);
+        line-height: var(--font-body-line-height);
+        letter-spacing: var(--font-body-letter-spacing);
+        text-transform: var(--font-body-text-transform);
+        min-height: 2.4rem;
+        max-width: 100%;
+        padding: 0.15625em 0.25em;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .localization-switcher .localization-menu {
+        position: absolute;
+        z-index: var(--z-layer-dropdown);
+        top: 100%;
+        inset-inline-start: 0;
+        max-width: calc(100vw - 2 * var(--page-inset));
+        max-height: min(24rem, calc(var(--screen-height) - var(--spacing-step-s)));
+        overflow-y: auto;
+        background-color: rgb(var(--color-background));
+    }
+
+    .localization-switcher .localization-menu.localization-menu--align-end {
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+    }
+
+    .localization-switcher .localization-option {
+        display: flex;
+        width: 100%;
+        gap: 0.25em;
+    }
+
+    .localization-switcher .localization-option:focus-visible {
+        outline-offset: -2px;
+    }
+{% endstylesheet %}

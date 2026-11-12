@@ -1,0 +1,209 @@
+{% doc %}
+    Reusable quantity selector (Tailwind + Alpine.js).
+    Constraint math lives in the `quantity-constraints.js` module.
+
+    @param {number} [value] - Initial quantity (default: computed min when variant is passed, else 1)
+    @param {variant} [variant] - Derives min/max/step from quantity_rule + inventory + cart count
+    @param {string} [surface] - 'product' | 'cart' (default: 'product')
+    @param {string} [name] - Input name (default: 'quantity')
+    @param {string} [product_form_id] - Form id via form attribute
+    @param {string} [section_id] - Section ID for variant/cart sync
+    @param {string} [input_id] - Input id
+    @param {string} [label] - Accessible label
+{% enddoc %}
+
+{%- liquid
+    assign qty_surface = surface | default: 'product'
+    assign qty_min = 1
+    assign qty_step = 1
+    assign qty_value = value | default: 1
+    assign qty_has_max = false
+    assign qty_max = 0
+    assign qty_can_purchase = true
+    assign qty_variant_id = ''
+    assign qty_input_id = input_id
+    capture qty_constraints_json
+        echo '{"min":1,"max":null,"step":1,"value":'
+        echo qty_value
+        echo ',"can_purchase":true,"cart_quantity":0,"absolute_max":null}'
+    endcapture
+
+    if variant != blank
+        assign qty_variant_id = variant.id
+        capture qty_constraints_json
+            render 'quantity-constraints', variant: variant, surface: qty_surface, value: value
+        endcapture
+        assign qty_constraints_json = qty_constraints_json | strip
+        # Read the first occurrence of each key: the computed fields come before the nested quantity_rule, which has its own min and max.
+        assign qty_parts = qty_constraints_json | split: '"min":'
+        assign qty_min = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"step":'
+        assign qty_step = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"value":'
+        assign qty_value = qty_parts[1] | split: ',' | first | plus: 0
+        assign qty_parts = qty_constraints_json | split: '"max":'
+        assign qty_max_token = qty_parts[1] | split: ',' | first | strip
+        if qty_max_token != 'null'
+            assign qty_has_max = true
+            assign qty_max = qty_max_token | plus: 0
+        endif
+        assign qty_parts = qty_constraints_json | split: '"can_purchase":'
+        assign qty_can_purchase_token = qty_parts[1] | split: ',' | first | strip
+        if qty_can_purchase_token == 'false'
+            assign qty_can_purchase = false
+        endif
+    endif
+
+    if qty_input_id == blank and product_form_id != blank
+        assign qty_input_id = product_form_id | append: '-quantity'
+    endif
+
+    assign qty_feedback_id = ''
+    if qty_input_id != blank
+        assign qty_feedback_id = qty_input_id | append: '-feedback'
+    endif
+
+    assign qty_input_label = label
+    if qty_input_label == blank
+        assign qty_input_label = 'accessibility.quantity' | t
+    endif
+-%}
+
+<div
+    data-qty-constraints="{{ qty_constraints_json | strip | escape }}"
+    data-qty-surface="{{ qty_surface | escape }}"
+    data-qty-can-purchase="{% if qty_can_purchase %}true{% else %}false{% endif %}"
+    {% if qty_variant_id != blank %}
+        data-qty-variant-id="{{ qty_variant_id }}"
+    {% endif %}
+    {% if section_id %}
+        data-qty-section-id="{{ section_id }}"
+    {% endif %}
+    data-qty-msg-max="{{ 'quantity.max_quantity' | t: max: '%%MAX%%' | escape }}"
+    data-qty-msg-min="{{ 'quantity.min_quantity' | t: min: '%%MIN%%' | escape }}"
+    data-qty-msg-below-min="{{ 'quantity.quantity_below_min' | t: min: '%%MIN%%' | escape }}"
+    data-qty-msg-above-max="{{ 'quantity.quantity_above_max' | t: max: '%%MAX%%' | escape }}"
+    x-data="QuantitySelector()"
+    data-module-id="quantity-selector"
+    class="quantity-selector"
+>
+    <div class="quantity-selector__controls">
+        <button
+            type="button"
+            class="quantity-selector__button"
+            aria-label="{{ 'accessibility.decrease_quantity' | t }}"
+            @click="decrement()"
+            :disabled="!canDecrement"
+        >
+            {%- render 'icons', icon: 'icon-minus' -%}
+        </button>
+
+        {%- if qty_input_id != blank -%}
+            <label class="sr-only" for="{{ qty_input_id }}">{{ qty_input_label }}</label>
+        {%- endif -%}
+        <input
+            type="number"
+            {% if qty_input_id != blank %}
+                id="{{ qty_input_id }}"
+            {% endif %}
+            name="{{ name | default: 'quantity' }}"
+            class="quantity-selector__input"
+            value="{{ qty_value }}"
+            min="{{ qty_min }}"
+            {% if qty_has_max %}
+                max="{{ qty_max }}"
+            {% endif %}
+            step="{{ qty_step }}"
+            {% if product_form_id %}
+                form="{{ product_form_id }}"
+            {% endif %}
+            x-model.number="qty"
+            :min="min"
+            :max="max === null ? undefined : max"
+            :step="step"
+            {% unless qty_can_purchase %}
+                readonly
+            {% endunless %}
+            @change="onInput()"
+            :readonly="!canPurchase"
+            :aria-invalid="(!canPurchase).toString()"
+            data-feedback-id="{{ qty_feedback_id }}"
+            :aria-describedby="feedbackMessage ? $el.dataset.feedbackId : null"
+            aria-label="{{ qty_input_label | escape }}"
+        >
+
+        <button
+            type="button"
+            class="quantity-selector__button"
+            aria-label="{{ 'accessibility.increase_quantity' | t }}"
+            @click="increment()"
+            :disabled="!canIncrement"
+        >
+            {%- render 'icons', icon: 'icon-plus' -%}
+        </button>
+    </div>
+
+    {%- if qty_feedback_id != blank -%}
+        <p
+            id="{{ qty_feedback_id }}"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            class="copy-m empty:hidden"
+            x-text="feedbackMessage"
+        ></p>
+    {%- endif -%}
+</div>
+
+{% stylesheet %}
+    .quantity-selector__controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25em;
+        font-family: var(--font-body-family);
+        font-size: calc(var(--font-body-scale) * var(--type-step-0));
+        line-height: var(--font-body-line-height);
+        letter-spacing: var(--font-body-letter-spacing);
+        text-transform: var(--font-body-text-transform);
+    }
+
+    .quantity-selector__button {
+        display: inline-flex;
+        min-height: 2.5rem;
+        min-width: 2.5rem;
+        padding: 0.15625em;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-selector__button:disabled,
+    .quantity-selector__button[aria-disabled='true'] {
+        opacity: 0.4;
+    }
+
+    .quantity-selector__input {
+        width: 4ch;
+        min-height: 2.5rem;
+        padding: 0.15625em;
+        appearance: none;
+        border-bottom: 1px solid currentColor;
+        background-color: transparent;
+        text-align: center;
+    }
+
+    .quantity-selector__input:focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    .quantity-selector__input::-webkit-inner-spin-button,
+    .quantity-selector__input::-webkit-outer-spin-button {
+        appearance: none;
+    }
+
+    @media (width < 48rem) {
+        .quantity-selector__input {
+            /* lint-allow settings-chain-css-typography: iOS Safari zoom floor for quantity inputs */
+            font-size: max(16px, calc(var(--font-body-scale) * var(--type-step-0)));
+        }
+    }
+{% endstylesheet %}

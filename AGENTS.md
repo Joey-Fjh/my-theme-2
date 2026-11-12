@@ -1,0 +1,179 @@
+# Agent Entry Guide
+
+This file is the always-on entry point and the canonical rule source for agents working in this repository. It holds only rules shared by every theme built from this codebase; keep it lean. **Before any task, read `docs/project.md`** for this repository's identity, inventory boundary, and accepted scope. Supporting docs under `docs/references/` provide details; if one conflicts with this file, follow this file.
+
+## Tech Stack
+
+- Shopify Liquid sections, snippets, JSON templates, and locale files
+- Tailwind CSS v4 with CSS-based config and `@theme inline`
+- Alpine.js v3 for reactive UI state
+- GSAP + ScrollTrigger (optional, for complex narrative motion only)
+- Swiper as the selected carousel library
+- Custom runtime: import-map module graph, HTTP/section-refresh helpers, and the Alpine adapter (`define`, `holdUntilReady`, `mount`, `releaseHold`, `unmount`, `store`, `data`). See `docs/references/architecture/javascript-runtime.md`.
+
+Runtime constraints:
+
+- No bundler. `layout/theme.liquid` renders `snippets/scripts.liquid`, which loads theme code as ES modules through an import map (entry `base.js`). Only the vendored Alpine script is a classic `defer` script, and it runs after the entry. Load order: `docs/references/architecture/javascript-runtime.md`.
+- Do not introduce React, Vue, TypeScript, or nested runtime asset structures unless the user explicitly approves an architecture change. Theme assets stay flat under `assets/`.
+- Do not add Vite, Autoprefixer, or broad polyfills without an explicit architecture decision. Browserslist drives static compatibility checks only, not Tailwind v4's build target.
+
+Third-party libraries are vendored files behind project adapters, not npm runtime packages. The selected libraries (Alpine with its Intersect plugin, Swiper, GSAP with ScrollTrigger) are vendored behind their adapters and load on demand; a further library needs an accepted decision. Every vendored library has an entry in `THIRD_PARTY_NOTICES.md`, updated in the same change that adds, replaces, or upgrades it.
+
+## Agent Adapters
+
+- `.agents/skills/` is the single source of project skills and `.agents/roles/` holds the canonical Implementer and Verifier roles. `CLAUDE.md` and `.claude/skills` are symlinks to them.
+- The four files under `.claude/agents/` and `.codex/agents/` are per-client permission shims, not duplicates of the roles. Do not symlink them to the roles or merge them across clients.
+- Tool-specific configuration stays in `.claude/` or `.codex/`. Never copy rule or skill files into adapter paths. If an adapter appears as a plain file, that is a local setup problem: run `npm.cmd run doctor:agent` and follow `README.md`.
+- Hooks are project-level: each client keeps its hook config and a thin adapter in its own directory (`.claude/settings.json` + `.claude/claude-hook.mjs`, `.codex/config.toml` + `.codex/codex-hook.mjs`). Adapters only map events and outputs; decisions live in `.agents/tools/harness/core.mjs` and route data in `.agents/tools/harness/routes.json`.
+
+## Core Rules
+
+Launch stability, accessibility, SEO, maintainability, merchant configurability, and mobile reliability outrank visual novelty and Lighthouse micro-optimizations.
+
+Treat these as launch blockers unless the user explicitly scopes them out:
+
+- Theme Check errors
+- Repository lint or test failures
+- Accessibility regressions in user-facing controls, navigation, forms, dialogs, drawers, filters, search, cart, product media, or checkout-adjacent flows
+- SEO regressions caused by theme code
+- Broken mobile layouts or mobile-only interaction failures
+- Manual edits to generated or vendor files
+- Changes to merchant-owned configuration or content without explicit approval
+
+Do not modify merchant-owned configuration or content unless explicitly authorized:
+
+- `config/settings_data.json`
+- `templates/*.json`
+- `sections/*-group.json` (section groups the theme editor writes)
+- color scheme values
+- product, collection, page, article, blog, metafield, uploaded media, merchant copy, and navigation/content composition
+- A commit that changes `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` carries a `Merchant-Change:` trailer naming the authorization, and CI enforces it.
+
+Classify ambiguous issues before fixing them. If an issue could be code, configuration, content, uploaded asset, Shopify platform/vendor, or measurement noise, do not guess. Lighthouse findings are code-fixed only after code ownership is clear.
+
+### Authority
+
+- `docs/project.md` defines this repository's identity, inventory boundary, and accepted scope. Shopify best practices govern how retained code and approved additions are implemented.
+- Theme Store submission completeness is a gate only when the user scopes a batch or theme to submission; adopting its accessibility and browser baselines does not import its feature inventory. Shopify Horizon is a reference for organization only (section and block structure): do not copy its code or features. Storefront features and review standards come only from Shopify's official documentation via Shopify Dev MCP.
+- Project additions require an explicit accepted decision.
+- The agent rules (`AGENTS.md`, `docs/project.md`, `docs/references/`, `.agents/`, and the client adapters) and the validator wiring (`package.json` scripts and the workflows under `.github/workflows/`) are the harness that constrains agents, and the user owns them. Agents propose rule changes and wait for explicit approval; they never add, strengthen, weaken, or move a rule on their own. When a mistake recurs, propose a computational check (lint, test, or hook) before adding prose.
+- In this repository, **Platform Required** means a Shopify platform constraint necessary for a valid theme or for an already retained capability. It does not mean every feature required for Theme Store submission.
+- Keep one writer per shared worktree.
+- Do not retain code merely because it already exists.
+- The files under `docs/references/` cite paths and symbol names, never line numbers, and `lint:doc-paths` fails when a cited path is missing. They describe what exists; they are evidence, not authority over what should be built. Architecture is decided from Shopify's current official sources and the user's stated intent; references are rewritten to match accepted decisions.
+
+Hard implementation rules:
+
+- Do not write inline executable `<script>` tags or bare global DOM listeners in Liquid. Data-only blocks with `type="importmap"` or `type="application/ld+json"` are allowed.
+- Pass Liquid-driven runtime values to JavaScript through `data-*`.
+- Keep Alpine attributes to simple expressions (method calls, state reads, binding objects or ternaries); put logic in the registered component. `lint:theme` enforces this.
+- Critical first-viewport content must render usable and visible without JavaScript or animation completion.
+- User-visible strings, schema labels, ARIA copy, placeholders, and editor text must use locale keys.
+- Use semantic interactive elements, keyboard access, visible focus, accessible names, and minimal ARIA.
+- Do not manually edit vendor, generated, or optimized icon assets.
+
+## Batch SOP
+
+The coordinator (the agent the user is talking to) owns steps 1–6 unless execution is delegated. Delegation does not transfer execution authority; one-writer and independent-review rules still apply.
+
+**Design before build.** A theme's visual work (sections, blocks, the default preset, design tokens) starts only after its design input is approved: the design draft and `DESIGN.md`, taken in and mapped as `docs/references/style-system/design-to-delivery.md` describes. Each step of that procedure is a batch under this SOP.
+
+The coordinator does not spawn subagents on its own, because each one rebuilds context and multiplies token use. When a step would benefit from one (step 7 independent review, a broad read-only search, a large batch), propose the role, client, and model and wait for the user's decision. Default model: inherit the main model; for a mechanical, high-volume task whose plan fixes the surface and acceptance checks, propose Sonnet (the latest Sonnet model) instead. Model choice stays out of the adapter files; roles stay model-agnostic.
+
+| Step | Owner | Action | Stop condition |
+| --- | --- | --- | --- |
+| 1 | Coordinator | Read `docs/project.md`, `docs/agent/board.md`, and `docs/agent/backlog.md`, then `docs/agent/context.md` if continuing work. Read `docs/references/` only when task routing or the plan requires it. | Facts gathered; no implementation yet. |
+| 2 | Coordinator + user | Discuss on `board.md`, one topic per decision under `## Topics`, each with its status line (`Status: discussing` or `awaiting user` `· Opened: <date> · Updated: <date>`). One decision at a time. Write the topic's evidence, alternatives, disagreements, and current leaning as the discussion goes, and bump `Updated`; add accepted but unscheduled work as one line on `backlog.md`. Before a plan, give the scope options, each with an estimate and its expected payoff; the user picks. If the user asks for review, orientation, or a prompt only, do not implement unless they explicitly authorize implementation. | A single direction is ready for the user to accept or reject. |
+| 3 | Coordinator | When the user decides, the topic leaves the board in the same change (into the plan, one `backlog.md` line, a Pending migration line, or deletion). For an accepted direction, write the plan into `context.md` with outcome, dependencies, **implementation surface**, a **review tier** (below), acceptance checks written as verifiable checks, not claims, and three fields `lint:records` requires: `**Estimate:**`, `**Checkpoint:**` (where the implementer stops and reports) and `**Bar:**` (what is must-fix, what is accepted residue, and the input it is judged on, such as default settings). Detail scales with risk and uncertainty, not line count. Move the matching `backlog.md` line into the plan (the item leaves `backlog.md`). | Plan recorded. **Recording is not authorization.** |
+| 4 | User | Authorize the batch explicitly. Resolve every dependency listed in the plan first. | User grants execution authority for this batch only. |
+| 5 | Implementer (coordinator or delegated `.agents/roles/implementer.md`) | Execute inside the surface, following the working method in `.agents/roles/implementer.md`. Validate and correct until checks pass or a genuine blocker needs user authority; stop and report at the plan's checkpoint and whenever a fix needs a method the plan does not name. Deliver an external execution prompt (template in `.agents/roles/implementer.md`) only when the user requests it or work must run in another session or client. **Delivering a prompt is not completion.** | Implementation matches acceptance checks or a documented blocker remains. |
+| 6 | Implementer | Record progress, validation output, blockers, and material corrections in `context.md`, not only in chat. | `context.md` reflects current execution state. |
+| 7 | Per the plan's review tier: Verifier for Ask (someone other than the implementer; `.agents/roles/verifier.md`, including its reviewer checklist), user for Show, coordinator for Ship (the validator output recorded at step 6 is the review) | Review the diff and evidence against the plan's acceptance checks and bar. Budget: one full review plus one correction review; defects still open after that go to the user, who decides (the budget never turns FAIL into PASS). | Review findings recorded; defects returned to step 5 or accepted with evidence. |
+| 8 | User | For every **visual** batch (sections, blocks, default-preset visual settings, or design-token work that changes rendered UI), a browser pass at the widths the plan names (design procedure default: 375, 768, 1024, and 1440 CSS pixels) and explicit user acceptance. Other batches keep browser or runtime verification only when the plan requires it. | User accepts or requests another correction cycle. |
+| 9 | Coordinator | Commit when the user asks. Before a commit that changes `tailwind/` or a Tailwind content source (`layout/`, `sections/`, `snippets/`, `blocks/`, `templates/`, `config/`, `assets/*.js`), run `npm.cmd run build:tw` and confirm `git diff -- assets/tailwind.output.css` leaves nothing unstaged; a running `watch:tw` does not count, and there is no Git hook. A durable contract that binds agents goes under the board's **Pending migration**, naming its target (`AGENTS.md`, a reference, or `docs/project.md`); the user approves those lines in one bundle at the end of a stage (not per batch), and they then move to their targets and leave the board. Contracts that live in code or configuration land with the batch. **Clear `context.md`.** | Plan removed from `context.md`; git holds history. |
+
+**Review tiers (set at step 3, applied at step 7):**
+
+- **Ask** when any of these holds: the batch changes the agent rules or validator wiring listed under Authority; it deletes or renames a file, symbol, setting, class, event, or locale key; it changes Liquid markup or schema (any `.liquid` file under `layout/`, `sections/`, `snippets/`, `blocks/`, or `templates/`, outside its `{% stylesheet %}` block; or `config/settings_schema.json`) or any `assets/*.js`; or it ran from an external execution prompt. The coordinator hands the user a review prompt (template in `.agents/roles/verifier.md`) to run in a separate session, preferably another client or model. The batch is complete only when that review reports PASS.
+- **Show** when no Ask trigger holds, for example changes limited to CSS (`tailwind/`, `assets/*.css`, `{% stylesheet %}` blocks), locale string values, or documents outside the agent rules: the coordinator runs the plan's validators and reports the diff and their output; the user's look is the review.
+- **Ship** for record files and formatting-only changes: the validators are the review.
+- The coordinator may raise a tier, never lower it below its triggers. The user may set any tier when authorizing.
+- The hooks' tier hint follows these triggers (a Liquid file changed only inside its `{% stylesheet %}` block hints Show); it is advisory, and the plan's tier decides.
+
+**Record-layer checks (apply at steps 3, 6, and 9):**
+
+- `docs/project.md` holds identity, scope, and overall status; `docs/agent/board.md` holds open topics with their status line, evidence and options (`lint:records` checks the status line), and only choices the user can make now (design choices wait in `backlog.md`); rules listed under **Pending migration** (awaiting bundled end-of-stage approval into their target files), and deferred ideas; `docs/agent/backlog.md` holds accepted work no batch has scheduled yet, **one list line per item** in the form `- <item>. Source: <batch or date>. Surface: <files, sections or pages>.` plus the governing decision when there is one; `docs/agent/context.md` holds **only the plan under execution and its status**. Unexecuted plans, queued plans, and plans waiting on work the agent could finish stay out of `context.md`. **One exception:** extra plans may coexist only when each is executed and waiting on verification the agent cannot perform (browser pass or human review), naming who verifies.
+- While `context.md` holds a plan that is not fully executed and reviewed, do not start other work; finish it, or ask the user to drop it.
+- A batch's acceptance boundary names its **implementation surface**. Changing the record files is never a scope violation.
+- Chat history and commit messages are evidence, never a substitute for the current execution record.
+
+**Sources:**
+
+- Use Shopify Dev MCP for Shopify platform claims. Use Context7 for third-party library docs when current-version sources matter, resolving the library ID at call time. Do not guess framework behavior when the appropriate MCP should be available.
+- Use Chrome DevTools MCP against `shopify theme dev` when a claim depends on rendered or runtime behavior. Examples: console errors, network requests, and focus and keyboard behavior after a JS or interaction change; screenshots at 390 and 1440 for visual batches; performance traces for Lighthouse ownership classification.
+- If an expected MCP is missing, troubleshoot per `README.md` ("MCP servers") before falling back to the official website, and state that degraded source explicitly.
+
+## Task Routing
+
+Read only the matching reference for the current task:
+
+- JS runtime, lifecycle, events, HTTP, SectionRefresher, `{% block %}` / `{% partial %}` adoption, Alpine stores/components, Swiper/GSAP adoption: `docs/references/architecture/javascript-runtime.md`
+- Motion policy, choreography, reduced motion, animation ownership, duplication: `docs/references/architecture/motion-architecture.md`
+- Shared abstraction boundaries, snippet parameter API, and whether to extend an existing utility/component: `docs/references/architecture/abstraction-boundaries.md`
+- Theme Block inventory, Container host, blank-content and editor placeholder behavior, generic-block responsibility: `docs/references/architecture/theme-blocks.md`
+- Layout, the container primitive, spacing ownership, height kinds, units, media ratios, text categories (framework-neutral method): `docs/references/style-system/css-method.md`; its bindings and the container block: `docs/references/style-system/css-architecture.md` (CSS Method bindings) and `docs/references/architecture/theme-blocks.md`
+- CSS layer ownership, typography tiers, color/surface rules, token/bridge contract, placement audits: `docs/references/style-system/css-architecture.md`
+- Starting a theme's design, its `DESIGN.md`, mapping design values to settings and the default preset: `docs/references/style-system/design-to-delivery.md`
+- Image snippet display behavior and `image.liquid` mode/fit contract: `docs/references/style-system/image-display-contract.md`
+- i18n keys, locale structure, schema translation, hardcoded copy review: `docs/references/code-review/i18n-checklist.md`
+- Shopify browser matrix, Tailwind build boundary, static compatibility checks, progressive enhancement, and WebKit guardrails: `docs/references/code-review/browser-compatibility.md`
+- Launch readiness, Lighthouse ownership classification, cleanup safety, ignore-file boundaries, review output, and gate validation: `docs/references/code-review/launch-gate.md`
+- Theme Store submission, or judging whether a theme's features are complete: no local copy; query the current official pages through Shopify Dev MCP — [requirements](https://shopify.dev/docs/storefronts/themes/store/requirements), [review stages](https://shopify.dev/docs/storefronts/themes/store/review-process/submit-theme), and [testing checklist](https://shopify.dev/docs/storefronts/themes/store/test-theme/checklist)
+
+## Agent Skills
+
+Project skills in `.agents/skills/`:
+
+- The executable validators `check-i18n` and `check-theme-architecture`.
+- The vendored GreenSock documentation skills `gsap-core`, `gsap-timeline`, `gsap-scrolltrigger`, and `gsap-performance` (MIT). These are agent documentation only, with no storefront payload.
+- The vendored Anthropic skill `frontend-design` (Apache 2.0), a design reference only (`.agents/skills/frontend-design/UPSTREAM.md`).
+- The vendored Emil Kowalski skill `review-animations` (MIT), a motion review aid only (`.agents/skills/review-animations/UPSTREAM.md`).
+
+All vendored skills rank below Shopify's official sources and the project rules.
+
+Triggers. A batch whose surface matches one of these uses the skill and records its output in `docs/agent/context.md`:
+
+- **`review-animations`:** the batch adds or changes motion: CSS `transition`, `animation` or `@keyframes`, motion tokens, reduced-motion handling, Alpine-driven visibility transitions, or GSAP. Read its `SKILL.md` and `STANDARDS.md` by path and review the motion diff before step 7. The motion reference wins on conflict.
+- **GSAP skills:** the work touches a GSAP consumer, or the motion reference classifies new work as complex choreography. Read `gsap-core`, plus `gsap-scrolltrigger`, `gsap-timeline`, or `gsap-performance` as the change needs.
+- **`frontend-design`:** a design or polish batch whose plan changes visual direction (typography, layout composition, colour composition). Read it at the start of the batch, and discuss its suggestions with the user before adopting them.
+
+Do not create, install, or approve skills during ordinary theme work. Discuss skill changes only when the user explicitly asks.
+
+## Validation
+
+Run scripts through `npm.cmd` in this Windows PowerShell workspace. Default to the smallest command that proves the change. Reserve `npm.cmd run lint` and `npm.cmd test` for explicit user request, PR, version/release, or Theme Store submission gates.
+
+| Change surface | Commands |
+| --- | --- |
+| Liquid, schema, architecture guardrails | `npm.cmd run lint:theme` and/or `npm.cmd run test:theme-check` |
+| Locales, translated strings, schema copy | `npm.cmd run lint:i18n` |
+| `tailwind/**`, `assets/base.css`, `assets/gift-card.css` | `npm.cmd run scan:compat` + `npm.cmd run lint:theme`; before commit, the step 9 `build:tw` check |
+| `assets/*.js`, embedded Liquid blocks | `npm.cmd run lint:compat` + `npm.cmd run lint:theme` |
+| Strict Liquid output parsing (filter-arg guard) | `npm.cmd run lint:liquid-syntax` |
+| Agent rules, skills, roles, adapters, references | Link/syntax check on changed files + `npm.cmd run lint:doc-paths` + `npm.cmd run doctor:agent` |
+| `.agents/tools/harness/**` and the hook adapters (`.claude/claude-hook.mjs`, `.codex/codex-hook.mjs`) | `npm.cmd run test:harness` + `npm.cmd run lint:records` |
+| `.agents/tools/merchant-guard.mjs` | `npm.cmd run test:merchant` |
+| Liquid, CSS, or JS that can move layout (end of batch) | `npm.cmd run test:layout` with `npm.cmd run shopify:dev` running. |
+| Release / PR / Theme Store gate | `npm.cmd run lint` and `npm.cmd run test` |
+
+Build helpers: `npm.cmd run build:tw` (Tailwind iteration), `npm.cmd run build:svg` (staged icons in `icons/`). Do not run rewriting formatters unless the user asks.
+
+## Gotchas
+
+- `icons/` is intentionally Git-ignored and may not exist in a clean checkout. Create it only as temporary input for `npm.cmd run build:svg`; committed optimized icons live in `assets/`.
+- Do not mix visual redesign, architecture cleanup, Lighthouse fixes, and configuration changes in one batch.
+- Preserve schema IDs, block types, section types, preset names, template references, and storefront behavior during cleanup.
+- `.shopifyignore`, `.gitignore`, and `.prettierignore` have different scopes. Read `docs/references/code-review/launch-gate.md` before changing ignore rules.
+- `inline_richtext` does not support line breaks (`<br />`, Shopify input settings). One template rejected for invalid content blocks the whole `shopify theme dev` upload.
+- Theme Editor saves reach local files only when `shopify theme dev` runs with `--theme-editor-sync` ("Synchronize Theme Editor updates in the local theme files", CLI help).
+- Plan numeric targets (sizes, widths, columns) against the container a section actually sits in, not against the viewport.

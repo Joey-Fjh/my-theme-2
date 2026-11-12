@@ -1,0 +1,81 @@
+{% doc %}
+    Shared layout container. Grid supports fill and measure widths; flex also supports content.
+
+    @param {string} [layout] - flex grid; defaults to flex.
+    @param {string} [direction] - column row; defaults to column.
+    @param {string} [distribution] - flex-start center flex-end space-between space-around space-evenly; defaults to flex-start.
+    @param {string} [alignment] - flex-start center flex-end stretch baseline; defaults to stretch.
+    @param {string} [columns] - auto 1 2 3 4 5 6; defaults to auto.
+    @param {string} [gap] - none tight related group section; defaults to related.
+    @param {string} [width] - fill content measure; defaults to fill.
+    @param {string} [height] - content fill; defaults to content.
+    @param {string} [stack] - off on; defaults to off.
+    @param {string} [children] - Captured child markup.
+    @param {block} [block] - Editor block attributes for the query shell.
+{% enddoc %}
+{% liquid
+    assign container_layout = layout
+    unless container_layout == 'flex' or container_layout == 'grid'
+        assign container_layout = 'flex'
+    endunless
+    assign container_direction = direction
+    unless container_direction == 'column' or container_direction == 'row'
+        assign container_direction = 'column'
+    endunless
+    assign container_distribution = distribution
+    unless container_distribution == 'flex-start' or container_distribution == 'center' or container_distribution == 'flex-end' or container_distribution == 'space-between' or container_distribution == 'space-around' or container_distribution == 'space-evenly'
+        assign container_distribution = 'flex-start'
+    endunless
+    assign container_alignment = alignment
+    unless container_alignment == 'flex-start' or container_alignment == 'center' or container_alignment == 'flex-end' or container_alignment == 'stretch' or container_alignment == 'baseline'
+        assign container_alignment = 'stretch'
+    endunless
+    assign container_columns = columns
+    unless container_columns == 'auto' or container_columns == '1' or container_columns == '2' or container_columns == '3' or container_columns == '4' or container_columns == '5' or container_columns == '6'
+        assign container_columns = 'auto'
+    endunless
+    assign container_gap = gap
+    unless container_gap == 'none' or container_gap == 'tight' or container_gap == 'related' or container_gap == 'group' or container_gap == 'section'
+        assign container_gap = 'related'
+    endunless
+    assign container_width = width
+    unless container_width == 'fill' or container_width == 'content' or container_width == 'measure'
+        assign container_width = 'fill'
+    endunless
+    assign container_height = height
+    unless container_height == 'content' or container_height == 'fill'
+        assign container_height = 'content'
+    endunless
+    assign container_stack = stack
+    unless container_stack == 'off' or container_stack == 'on'
+        assign container_stack = 'off'
+    endunless
+    if container_layout == 'grid'
+        assign container_direction = 'column'
+        assign container_stack = 'off'
+        if container_width == 'content'
+            assign container_width = 'fill'
+        endif
+    endif
+%}
+<div
+    class="theme-block-query"
+    data-width="{{ container_width }}"
+    data-height="{{ container_height }}"
+    {% if block != blank %}
+        {{ block.shopify_attributes }}
+    {% endif %}
+>
+    <div
+        class="theme-block-group"
+        data-layout="{{ container_layout }}"
+        data-direction="{{ container_direction }}"
+        data-distribution="{{ container_distribution }}"
+        data-alignment="{{ container_alignment }}"
+        data-columns="{{ container_columns }}"
+        data-gap="{{ container_gap }}"
+        data-stack="{{ container_stack }}"
+    >
+        {{ children }}
+    </div>
+</div>

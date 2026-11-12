@@ -1,0 +1,38 @@
+{%- capture localization_content -%}
+    <button
+        type="button"
+        x-ref="localizationTrigger"
+        @click="toggle()"
+        :aria-expanded="open"
+        aria-haspopup="true"
+        aria-controls="language-list-{{ localPosition }}"
+    >
+        {{ localization.language.endonym_name | capitalize }}
+    </button>
+
+    <div
+        id="language-list-{{ localPosition }}"
+        x-ref="localizationMenu"
+        x-show="open"
+        x-cloak
+        class="localization-menu"
+        :class="{ 'localization-menu--align-end': alignEnd }"
+    >
+        {%- for locale in localization.available_languages -%}
+            {%- liquid
+                assign is_current_language = false
+                if locale.iso_code == localization.language.iso_code
+                    assign is_current_language = true
+                endif
+            -%}
+            {%- render 'localization-option',
+                submit_name: 'locale_code',
+                submit_value: locale.iso_code,
+                is_current: is_current_language,
+                label: locale.endonym_name
+            -%}
+        {%- endfor -%}
+    </div>
+{%- endcapture -%}
+
+{%- render 'localization-switcher', localPosition: localPosition, content: localization_content -%}

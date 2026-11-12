@@ -1,0 +1,227 @@
+/* =========================================================
+font head
+========================================================= */
+@utility heading-base {
+    @apply font-heading;
+    font-style: var(--font-heading-style);
+    font-weight: var(--font-heading-weight);
+    line-height: var(--font-heading-line-height);
+    letter-spacing: var(--font-heading-letter-spacing);
+    text-transform: var(--font-heading-text-transform);
+    word-break: break-word;
+    text-wrap: balance;
+
+    color: rgb(var(--color-foreground));
+}
+
+/* Semantic title scale */
+@utility title-xs {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-0)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-0)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-0) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-0))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-0)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-0)
+    );
+}
+@utility title-s {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-0)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-1)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-1) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-1))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-1)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-1)
+    );
+}
+@utility title-m {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-0)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-2)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-2) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-2))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-2)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-2)
+    );
+}
+@utility title-l {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-0)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-4)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-4) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-4))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-4)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-4)
+    );
+}
+@utility title-xl {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-1)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-5)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-5) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-5))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-5)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-5)
+    );
+}
+@utility title-2xl {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-2)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-6)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-6) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-6))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-6)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-6)
+    );
+}
+@utility title-3xl {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-3)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-7)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-7) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-7))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-7)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-7)
+    );
+}
+@utility title-4xl {
+    @apply heading-base;
+    --font-heading-tier-size: clamp(
+        calc(var(--font-heading-scale) * var(--font-heading-floor-4)),
+        min(
+            calc(var(--font-heading-scale) * var(--type-step-8)),
+            calc(var(--font-heading-scale) * var(--font-heading-cap-8) * 1cqi)
+        ),
+        calc(var(--font-heading-scale) * var(--type-step-8))
+    );
+    font-size: var(--font-heading-tier-size);
+    letter-spacing: var(--font-heading-tier-tracking);
+    line-height: max(1, calc(var(--font-heading-line-height) * var(--font-heading-line-factor-8)));
+    --font-heading-tier-tracking: calc(
+        var(--font-heading-letter-spacing) * var(--font-heading-tracking-factor-8)
+    );
+}
+
+/* =========================================================
+font body
+========================================================= */
+@utility body-base {
+    font-family: var(--font-body-family);
+    font-style: var(--font-body-style);
+    line-height: var(--font-body-line-height);
+    letter-spacing: var(--font-body-letter-spacing);
+    text-transform: var(--font-body-text-transform);
+    word-break: break-word;
+}
+
+@utility copy-s {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step--1));
+}
+@utility copy-m {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-0));
+}
+@utility copy-l {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-1));
+}
+@utility copy-xl {
+    @apply body-base;
+    font-size: calc(var(--font-body-scale) * var(--type-step-2));
+}
+
+/* =========================================================
+Custom size utilities. Apply heading-base / body-base; override
+font-size only via local CSS variables.
+========================================================= */
+@utility heading-size-custom {
+    @apply heading-base;
+    font-size: calc(var(--font-heading-scale) * var(--heading-size-custom, 1rem));
+
+    @media (width >= theme(--breakpoint-tablet)) {
+        --heading-size-custom-pc-resolved: var(
+            --heading-size-custom-pc,
+            var(--heading-size-custom, 1rem)
+        );
+        font-size: calc(var(--font-heading-scale) * var(--heading-size-custom-pc-resolved));
+    }
+}
+
+@utility body-size-custom {
+    @apply body-base;
+    font-size: calc(var(--body-size-custom) * var(--font-body-scale));
+
+    @media (width >= theme(--breakpoint-tablet)) {
+        --body-size-custom-pc-resolved: var(--body-size-custom-pc, var(--body-size-custom));
+        font-size: calc(var(--font-body-scale) * var(--body-size-custom-pc-resolved));
+    }
+}
+
+/* =========================================================
+RTL / Arabic-script typography overrides
+These override the CSS custom properties consumed by heading-base
+and body-base, so all typography utilities respond automatically.
+Font families are NOT overridden here — merchant-selected Shopify
+fonts from font_picker apply as-is. Arabic-script glyphs render
+from that font; if it lacks Arabic glyphs the browser fallback
+handles it.
+========================================================= */
+:lang(ar),
+:lang(fa),
+:lang(ur) {
+    --font-body-letter-spacing: 0em;
+    --font-heading-letter-spacing: 0em;
+    --font-body-text-transform: none;
+    --font-heading-text-transform: none;
+}

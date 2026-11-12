@@ -1,0 +1,37 @@
+{%- if block.settings.label != blank and block.settings.link != blank -%}
+    <div {{ block.shopify_attributes }}>
+        <a class="btn" href="{{ block.settings.link }}">
+            {{- block.settings.label | escape -}}
+        </a>
+    </div>
+{%- elsif request.design_mode -%}
+    <div {{ block.shopify_attributes }}>
+        {{ 'blocks.button.placeholders.empty' | t }}
+    </div>
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "t:blocks.button.name",
+    "tag": null,
+    "settings": [
+        {
+            "type": "text",
+            "id": "label",
+            "label": "t:blocks.button.settings.label",
+            "default": "t:blocks.button.defaults.label"
+        },
+        {
+            "type": "url",
+            "id": "link",
+            "label": "t:blocks.button.settings.link",
+            "default": "/collections/all"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.button.presets.button"
+        }
+    ]
+}
+{% endschema %}

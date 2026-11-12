@@ -1,0 +1,29 @@
+{%- assign gallery_items = media -%}
+{%- assign aspect_ratio = aspect_ratio | default: 'portrait' -%}
+
+<div
+    class="grid-list"
+    x-data="productGallery"
+    data-module-id="product-gallery"
+    {% if id %}
+        id="{{ id }}"
+    {% endif %}
+>
+    {%- for media_item in gallery_items -%}
+        {%- liquid
+            assign media_loading = 'lazy'
+            assign media_fetchpriority = 'auto'
+            if forloop.first
+                assign media_loading = 'eager'
+                assign media_fetchpriority = 'high'
+            endif
+        -%}
+        {%- render 'product-media',
+            media: media_item,
+            aspect_ratio: aspect_ratio,
+            sizes: '(min-width: 1200px) 33vw, (min-width: 800px) 50vw, 100vw',
+            loading: media_loading,
+            fetchpriority: media_fetchpriority
+        -%}
+    {%- endfor -%}
+</div>

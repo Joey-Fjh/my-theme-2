@@ -1,0 +1,198 @@
+{% doc %}
+    Renders product variant picker (buttons with swatches).
+
+    @param {product} product - Product object.
+    @param {object} [block] - Block object for shopify_attributes.
+    @param {string} [product_form_id] - Form ID. Defaults to product-form- plus section_id.
+    @param {string} [section_id] - Section ID for Alpine sync and element IDs.
+    @param {string} [gallery_id] - Product gallery element id.
+{% enddoc %}
+
+{%- assign section_id = section_id | default: '' -%}
+{%- assign gallery_id = gallery_id | default: '' -%}
+{%- assign product_form_id = product_form_id | default: 'product-form-' | append: section_id -%}
+
+{%- unless product.has_only_default_variant -%}
+    {%- capture variants_quantity_meta_json -%}
+        {
+        {%- for variant in product.variants -%}
+            {%- assign variant_id_key = variant.id | append: '' -%}
+            {{ variant_id_key | json }}:{"inventory_management":{{ variant.inventory_management | json }},"inventory_policy":{{ variant.inventory_policy | json }},"inventory_quantity":{{ variant.inventory_quantity | json }},"quantity_rule":{{ variant.quantity_rule | json }}}
+            {%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+        }
+    {%- endcapture -%}
+    <div
+        id="VariantPicker-{{ section_id }}"
+        data-section-id="{{ section_id }}"
+        data-product-id="{{ product.id }}"
+        data-product-form-id="{{ product_form_id }}"
+        data-gallery-id="{{ gallery_id | escape }}"
+        data-update-url="true"
+        data-variants="{{ product.variants | json | escape }}"
+        data-variants-quantity-meta="{{ variants_quantity_meta_json | strip | escape }}"
+        x-data="VariantPicker()"
+        data-module-id="variant-picker"
+        {% if block %}
+            {{- block.shopify_attributes -}}
+        {% endif %}
+    >
+        {%- for option in product.options_with_values -%}
+            {%- assign option_name_escaped = option.name | escape -%}
+            <fieldset role="radiogroup" aria-label="{{ option.name | escape }}">
+                <legend>
+                    {{ option.name }}:
+                    <span
+                        data-option-name="{{ option_name_escaped }}"
+                        x-text="selectedOptions[$el.dataset.optionName]"
+                    >
+                        {{- option.selected_value -}}
+                    </span>
+                </legend>
+
+                <div>
+                    {%- for value in option.values -%}
+                        {%- liquid
+                            assign swatch_bg = null
+                            if value.swatch.image
+                                assign image_url = value.swatch.image | image_url: width: 50
+                                assign swatch_bg = 'url(' | append: image_url | append: ')'
+                            elsif value.swatch.color
+                                assign swatch_bg = 'rgb(' | append: value.swatch.color.rgb | append: ')'
+                            endif
+                            assign escaped_value = value | escape
+                            assign input_id = 'VariantOption-' | append: section_id | append: '-' | append: option.position | append: '-' | append: forloop.index0
+                        -%}
+
+                        <label for="{{ input_id }}">
+                            <input
+                                type="radio"
+                                id="{{ input_id }}"
+                                class="peer sr-only"
+                                name="{{ option_name_escaped }}"
+                                value="{{ escaped_value }}"
+                                form="{{ product_form_id }}"
+                                data-option-name="{{ option_name_escaped }}"
+                                x-model="selectedOptions[$el.dataset.optionName]"
+                                @change="onVariantChange()"
+                                data-option-value-id="{{ value.id }}"
+                                {% if value == option.selected_value %}
+                                    checked
+                                {% endif %}
+                            >
+                            {%- if swatch_bg -%}
+                                <span
+                                    class="variant-picker__swatch{% unless value.available %} is-unavailable{% endunless %}"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    data-option-value="{{ escaped_value }}"
+                                    :class="
+                                        {
+                                            'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
+                                            'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
+                                        }
+                                    "
+                                    style="background: {{ swatch_bg }}; background-size: cover;"
+                                ></span>
+                            {%- else -%}
+                                <span
+                                    class="variant-picker__pill{% unless value.available %} is-unavailable{% endunless %}"
+                                    data-option-name="{{ option_name_escaped }}"
+                                    data-option-value="{{ escaped_value }}"
+                                    :class="
+                                        {
+                                            'is-selected': selectedOptions[$el.dataset.optionName] === $el.dataset.optionValue,
+                                            'is-unavailable': !isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)
+                                        }
+                                    "
+                                >
+                                    {{ value }}
+                                </span>
+                            {%- endif -%}
+                            <span class="sr-only">
+                                {{ escaped_value }}
+                                <span
+                                    data-option-name="{{ option_name_escaped }}"
+                                    data-option-value="{{ escaped_value }}"
+                                    {% if value.available %}
+                                        hidden
+                                    {% endif %}
+                                    :hidden="isValueAvailable($el.dataset.optionName, $el.dataset.optionValue)"
+                                >
+                                    - {{ 'products.product.sold_out' | t }}
+                                </span>
+                            </span>
+                        </label>
+                    {%- endfor -%}
+                </div>
+            </fieldset>
+        {%- endfor -%}
+    </div>
+{%- endunless -%}
+
+{% stylesheet %}
+    .variant-picker__swatch {
+        position: relative;
+        display: block;
+        height: 2rem;
+        width: 2rem;
+        overflow: hidden;
+        border: 1px solid rgb(var(--color-border));
+    }
+
+    .variant-picker__swatch.is-selected {
+        box-shadow:
+            0 0 0 2px rgb(var(--color-background)),
+            0 0 0 4px rgb(var(--color-foreground));
+    }
+
+    .variant-picker__swatch.is-unavailable::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.125rem;
+        height: 150%;
+        background-color: rgb(var(--color-foreground));
+        transform: translate(-50%, -50%) rotate(45deg);
+        pointer-events: none;
+    }
+
+    .peer:focus-visible + .variant-picker__swatch {
+        outline: 2px solid rgb(var(--color-foreground));
+        outline-offset: 2px;
+    }
+
+    .peer:focus-visible + .variant-picker__swatch.is-selected {
+        outline-offset: 6px;
+    }
+
+    .variant-picker__pill {
+        font-family: var(--font-body-family);
+        font-size: calc(var(--font-body-scale) * var(--type-step-0));
+        font-style: var(--font-body-style);
+        line-height: var(--font-body-line-height);
+        letter-spacing: var(--font-body-letter-spacing);
+        text-transform: var(--font-body-text-transform);
+        min-height: 2.4rem;
+        overflow-wrap: anywhere;
+        display: block;
+        border: 1px solid currentColor;
+        padding-inline: 0.625em;
+        padding-block: 0.15625em;
+    }
+
+    .variant-picker__pill.is-selected {
+        border-color: rgb(var(--color-foreground));
+        background-color: rgb(var(--color-foreground));
+        color: rgb(var(--color-background));
+    }
+
+    .variant-picker__pill.is-unavailable {
+        text-decoration: line-through;
+    }
+
+    .peer:focus-visible + .variant-picker__pill {
+        outline: 2px solid rgb(var(--color-foreground));
+        outline-offset: 2px;
+    }
+{% endstylesheet %}

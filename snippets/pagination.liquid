@@ -1,0 +1,81 @@
+{% doc %}
+    Pagination links for a surrounding `{% paginate %}` tag.
+
+    Usage:
+
+    {% paginate collection.products by 24 %}
+      <!-- your list -->
+      {% render 'pagination', paginate_obj: paginate %}
+    {% endpaginate %}
+
+    @param {paginate} paginate_obj - Paginate object from a surrounding `{% paginate %}` tag.
+{% enddoc %}
+
+{%- if paginate_obj and paginate_obj.pages > 1 -%}
+    <nav class="pagination" aria-label="{{ 'pagination.label' | t }}" data-pagination-nav>
+        {%- if paginate_obj.previous -%}
+            <a href="{{ paginate_obj.previous.url }}" class="pagination__link">
+                {%- render 'icons', icon: 'icon-chevron-left' -%}
+                <span>{{ 'pagination.previous' | t }}</span>
+            </a>
+        {%- endif -%}
+
+        <div class="pagination__pages">
+            {%- for part in paginate_obj.parts -%}
+                {%- if part.is_link -%}
+                    <a href="{{ part.url }}" class="pagination__link">{{ part.title }}</a>
+                {%- elsif part.title == paginate_obj.current_page -%}
+                    <span class="pagination__link pagination__link--current" aria-current="page">
+                        {{- part.title -}}
+                    </span>
+                {%- else -%}
+                    <span class="pagination__link">{{ part.title }}</span>
+                {%- endif -%}
+            {%- endfor -%}
+        </div>
+
+        {%- if paginate_obj.next -%}
+            <a href="{{ paginate_obj.next.url }}" class="pagination__link">
+                <span>{{ 'pagination.next' | t }}</span>
+                {%- render 'icons', icon: 'icon-chevron-right' -%}
+            </a>
+        {%- endif -%}
+    </nav>
+{%- endif -%}
+
+{% stylesheet %}
+    /* One row; page numbers scroll sideways on narrow screens. */
+    .pagination,
+    .pagination__pages {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-step-3xs);
+    }
+
+    .pagination__pages {
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    .pagination__link {
+        display: inline-flex;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-step-3xs);
+        padding-inline: var(--spacing-step-2xs);
+        white-space: nowrap;
+    }
+
+    /* The scroll container clips outside rings; draw them inside the link. */
+    .pagination__pages .pagination__link:focus-visible {
+        outline-offset: -2px;
+    }
+
+    .pagination__link--current {
+        background-color: rgb(var(--color-foreground));
+        color: rgb(var(--color-background));
+    }
+{% endstylesheet %}

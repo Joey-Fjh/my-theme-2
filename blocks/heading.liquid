@@ -1,0 +1,45 @@
+{%- assign heading_tag = block.settings.semantic_level -%}
+
+{%- if block.settings.heading != blank -%}
+    <{{ heading_tag }} class="title-m" {{ block.shopify_attributes }}>
+        {{ block.settings.heading }}
+    </{{ heading_tag }}>
+{%- elsif request.design_mode -%}
+    <div {{ block.shopify_attributes }}>
+        {{ 'blocks.heading.placeholders.empty' | t }}
+    </div>
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "t:blocks.heading.name",
+    "tag": null,
+    "settings": [
+        {
+            "type": "inline_richtext",
+            "id": "heading",
+            "label": "t:blocks.heading.settings.heading",
+            "default": "t:blocks.heading.defaults.heading"
+        },
+        {
+            "type": "select",
+            "id": "semantic_level",
+            "label": "t:blocks.heading.settings.semantic_level",
+            "options": [
+                { "value": "h1", "label": "t:blocks.heading.options.h1" },
+                { "value": "h2", "label": "t:blocks.heading.options.h2" },
+                { "value": "h3", "label": "t:blocks.heading.options.h3" },
+                { "value": "h4", "label": "t:blocks.heading.options.h4" },
+                { "value": "h5", "label": "t:blocks.heading.options.h5" },
+                { "value": "h6", "label": "t:blocks.heading.options.h6" }
+            ],
+            "default": "h2"
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:blocks.heading.presets.heading"
+        }
+    ]
+}
+{% endschema %}

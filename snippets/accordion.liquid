@@ -1,0 +1,91 @@
+{% doc %}
+    Single-item accordion panel.
+
+    @param {string} item_title - Title text.
+    @param {string} item_content - HTML content.
+    @param {boolean} [collapsed] - Start closed. Default: false.
+    @param {string} [id_prefix] - Unique prefix for panel/button IDs.
+{% enddoc %}
+
+<div
+    x-data="accordion"
+    data-module-id="accordion"
+    data-initial-active="{% if collapsed %}null{% else %}0{% endif %}"
+    data-title-active-class="accordion__title--active"
+    data-title-inactive-class="accordion__title--inactive"
+>
+    <div>
+        <h2>
+            <button
+                type="button"
+                data-index="0"
+                @click="toggle($el.dataset.index)"
+                :aria-expanded="isActive($el.dataset.index)"
+                aria-controls="accordion-panel-{{ id_prefix | default: 'default' }}-0"
+                class="accordion__trigger"
+            >
+                <span
+                    data-index="0"
+                    :class="titleClass($el.dataset.index)"
+                >
+                    {{ item_title }}
+                </span>
+
+                <span
+                    data-index="0"
+                    class="accordion__icon"
+                    :class="isActive($el.dataset.index) && 'is-active'"
+                >
+                    {% render 'icons', icon: 'icon-plus', size: 'sm' %}
+                </span>
+            </button>
+        </h2>
+
+        <div
+            id="accordion-panel-{{ id_prefix | default: 'default' }}-0"
+            data-index="0"
+            class="accordion__panel"
+            :class="!isActive($el.dataset.index) && 'is-collapsed'"
+            :inert="!isActive($el.dataset.index)"
+            :aria-hidden="(!isActive($el.dataset.index)).toString()"
+        >
+            <div class="accordion__panel-inner">
+                <div>{{ item_content }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% stylesheet %}
+    .accordion__trigger {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        text-align: start;
+    }
+
+    .accordion__icon {
+        display: inline-flex;
+    }
+
+    .accordion__icon.is-active {
+        transform: rotate(45deg);
+    }
+
+    .accordion__panel {
+        display: grid;
+        grid-template-rows: 1fr;
+    }
+
+    .accordion__panel.is-collapsed {
+        grid-template-rows: 0fr;
+    }
+
+    .accordion__panel-inner {
+        --accordion-focus-safe-inset: 4px;
+        overflow: hidden;
+        margin: calc(-1 * var(--accordion-focus-safe-inset));
+        padding: var(--accordion-focus-safe-inset);
+    }
+{% endstylesheet %}

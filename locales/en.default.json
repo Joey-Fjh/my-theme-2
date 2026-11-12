@@ -1,0 +1,182 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "general": {
+        "meta": {
+            "tagged": "tagged \"{{ tags }}\"",
+            "page": "Page {{ page }}"
+        }
+    },
+    "quantity": {
+        "max_quantity": "Maximum quantity is {{ max }}.",
+        "min_quantity": "Minimum quantity is {{ min }}.",
+        "quantity_below_min": "Quantity must be at least {{ min }}.",
+        "quantity_above_max": "You can only add up to {{ max }} of this item."
+    },
+    "404": {
+        "title": "404",
+        "back_to_shopping": "Back to shopping",
+        "heading_line_2": "Not Found",
+        "description_html": "<p>The page you're looking for has moved or no longer exists. Return home to continue shopping.</p>"
+    },
+    "blog": {
+        "comments_count_heading": "Comments ({{ count }})",
+        "comment_metadata_html": "By {{ author }} · {{ date }}",
+        "article_metadata_html": "{{ date }} by {{ author }}",
+        "comment_form_body": "Comment",
+        "comment_form_email": "Email",
+        "comment_form_error_title": "Please correct the following:",
+        "comment_form_name": "Name",
+        "comment_form_submit": "Post",
+        "comment_form_title": "Add a comment",
+        "comment_pending_moderation": "Thank you. Your comment has been submitted and is awaiting moderation.",
+        "comment_posted_success": "Your comment was posted successfully.",
+        "read_more": "Read more"
+    },
+    "cart": {
+        "checkout": "Checkout",
+        "title": "Cart",
+        "update": "Update",
+        "shop_more": "Shop More",
+        "estimate_total": "Estimate Total",
+        "taxes_note": "Taxes, discounts and shipping calculated at checkout.",
+        "taxes_included_note": "Tax included. Discounts and shipping calculated at checkout.",
+        "empty": "Your cart is empty.",
+        "discounts": "Discounts",
+        "selling_plan_label": "Plan",
+        "errors": {
+            "generic": "Something went wrong. Please try again.",
+            "rate_limited": "Too many requests. Please slow down.",
+            "server_error": "Server error. Please try again later.",
+            "timeout": "Request timed out. Please try again.",
+            "network_error": "Network error. Please check your connection."
+        }
+    },
+    "blocks": {
+        "heading": {
+            "placeholders": {
+                "empty": "Add a heading"
+            }
+        },
+        "button": {
+            "placeholders": {
+                "empty": "Add button label and link"
+            }
+        }
+    },
+    "contact": {
+        "first_name": "First name",
+        "first_name_placeholder": "Enter your first name",
+        "last_name": "Last name",
+        "last_name_placeholder": "Enter your last name",
+        "email": "Email",
+        "email_placeholder": "Enter your email address",
+        "phone": "Phone",
+        "phone_placeholder": "Enter your phone number",
+        "message": "Message",
+        "message_placeholder": "Enter your message"
+    },
+    "collections": {
+        "no_products": "No products found.",
+        "list_heading": "Collections"
+    },
+    "footer": {
+        "follow_on_shop": "Follow on Shop",
+        "all_rights_reserved": "All rights reserved."
+    },
+    "gift_card": {
+        "add_to_apple_wallet": "Add to Apple Wallet",
+        "card": "Gift card",
+        "code_copied": "Gift card code copied",
+        "code_label": "Gift card code",
+        "continue_shopping": "Continue shopping",
+        "copy_code": "Copy code",
+        "expired": "This gift card has expired",
+        "expires_on": "Expires on {{ expires_on }}",
+        "title": "Your gift card",
+        "use_at_checkout": "Use this gift card at checkout"
+    },
+    "recipient": {
+        "form": {
+            "checkbox": "I want to send this as a gift",
+            "expanded": "Gift card recipient form expanded",
+            "collapsed": "Gift card recipient form collapsed",
+            "email_label": "Recipient email",
+            "email_label_optional_for_no_js_behavior": "Recipient email (optional)",
+            "email": "Email",
+            "email_blank": "Enter a recipient email",
+            "email_invalid": "Enter a valid recipient email",
+            "name_label": "Recipient name (optional)",
+            "name": "Name",
+            "name_too_long": "Recipient name must be {{ max_chars }} characters or fewer",
+            "message_label": "Message (optional)",
+            "message": "Message",
+            "message_too_long": "Message must be {{ max_chars }} characters or fewer",
+            "max_characters": "{{ max_chars }} characters max",
+            "send_on": "YYYY-MM-DD",
+            "send_on_label": "Send on (optional)",
+            "send_on_invalid": "Choose a send date between today and 90 days from now",
+            "error_heading": "Please adjust the following:"
+        }
+    },
+    "newsletter": {
+        "subscribe": "Subscribe",
+        "email_address": "Email address",
+        "success_message": "Thanks for subscribing."
+    },
+    "pagination": {
+        "label": "Pagination",
+        "previous": "Previous",
+        "next": "Next"
+    },
+    "password": {
+        "title": "Opening soon",
+        "message_html": "<p>Be the first to know about new collections and exclusive offers.</p>",
+        "email_placeholder": "Email"
+    },
+    "products": {
+        "product": {
+            "add_to_cart": "Add to Cart",
+            "added_to_cart": "Added to cart!",
+            "sold_out": "Sold out",
+            "maximum_in_cart": "Maximum in cart",
+            "only_in_stock_html": "Only {{ quantity }} in stock",
+            "unavailable": "Unavailable",
+            "selling_plan": {
+                "purchase_options": "Purchase options"
+            }
+        }
+    },
+    "search": {
+        "title": "Search",
+        "search": "Search",
+        "no_results_html": "No results found for {{ terms }}"
+    },
+    "sections": {
+        "main-page-contact": {
+            "defaults": {
+                "success_message": "Thank you for your message. We will get back to you soon.",
+                "button_text": "Send"
+            }
+        }
+    },
+    "accessibility": {
+        "skip_to_content": "Skip to content",
+        "required": "Required",
+        "main_menu": "Main menu",
+        "search": "Search",
+        "cart": "Cart",
+        "decrease_quantity": "Decrease quantity",
+        "increase_quantity": "Increase quantity",
+        "remove_item": "Remove {{ item }}",
+        "loading": "Loading",
+        "quantity": "Quantity"
+    }
+}

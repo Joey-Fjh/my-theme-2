@@ -1,0 +1,47 @@
+{% doc %}
+    Renders an inline SVG icon from the assets folder.
+    Icon color follows the active scheme's foreground via currentColor inheritance.
+
+    @param {string} icon - The name of the SVG icon file (e.g., 'icon-chevron-down')
+    @param {string} [size] - Size variant: 'xs' | 'sm' | 'md'. Default is 'md' (32px).
+    @param {string} [class] - Optional extra Tailwind classes applied to the wrapping span
+
+    @example {%- render 'icons', icon: 'icon-chevron-down', class: 'rotate-180' -%}
+{% enddoc %}
+
+{%- liquid
+    assign icon_name = icon | default: ''
+    assign icon_size = size | default: 'md'
+    assign size_class = ''
+
+    case icon_size
+        when 'xs'
+            assign size_class = 'h-4 w-4'
+        when 'sm'
+            assign size_class = 'h-6 w-6'
+        else
+            assign size_class = 'h-8 w-8'
+    endcase
+
+    assign icon_file = icon_name
+    unless icon_file contains '.svg'
+        assign icon_file = icon_file | append: '.svg'
+    endunless
+
+    assign icon_class = 'icons inline-block shrink-0 align-middle'
+    if size_class != blank
+        assign icon_class = icon_class | append: ' ' | append: size_class
+    endif
+    if class != blank
+        assign icon_class = icon_class | append: ' ' | append: class
+    endif
+-%}
+
+{%- if icon_name != blank -%}
+    <span
+        class="{{ icon_class }}"
+        aria-hidden="true"
+    >
+        {{- icon_file | inline_asset_content -}}
+    </span>
+{%- endif -%}

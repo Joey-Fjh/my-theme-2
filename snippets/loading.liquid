@@ -1,0 +1,15 @@
+{% comment %}
+    Loading overlay. Parent must provide Alpine scope with `isLoading`.
+    x-cloak keeps it hidden until Alpine runs, so content stays visible without JavaScript.
+{% endcomment %}
+<div
+    x-show="isLoading"
+    x-cloak
+    class="absolute inset-0 z-20 flex items-center justify-center bg-theme-bg"
+>
+    <div
+        class="spinner spinner-lg text-theme-text"
+        role="status"
+        aria-label="{{ 'accessibility.loading' | t }}"
+    ></div>
+</div>

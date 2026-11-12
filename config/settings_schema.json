@@ -1,0 +1,502 @@
+[
+    {
+        "name": "theme_info",
+        "theme_name": "Skeleton",
+        "theme_version": "1.0.0",
+        "theme_author": "JoeyFan",
+        "theme_documentation_url": "https://github.com/Joey-Fjh/my-skeleton-theme#readme",
+        "theme_support_url": "https://github.com/Joey-Fjh/my-skeleton-theme/issues"
+    },
+    {
+        "name": "t:config.logo.name",
+        "settings": [
+            {
+                "type": "image_picker",
+                "id": "logo",
+                "label": "t:config.logo.logo_label"
+            },
+            {
+                "type": "range",
+                "id": "logo_width",
+                "min": 50,
+                "max": 300,
+                "step": 10,
+                "default": 100,
+                "unit": "px",
+                "label": "t:config.logo.logo_width"
+            },
+            {
+                "type": "image_picker",
+                "id": "favicon",
+                "label": "t:config.logo.favicon",
+                "info": "t:config.logo.favicon_info"
+            }
+        ]
+    },
+    {
+        "name": "t:general.typography",
+        "settings": [
+            {
+                "type": "header",
+                "content": "t:config.typography.font_family"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.header"
+            },
+            {
+                "type": "font_picker",
+                "id": "type_header_font",
+                "default": "inter_n4",
+                "label": "t:config.typography.heading_font"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.body"
+            },
+            {
+                "type": "font_picker",
+                "id": "type_body_font",
+                "default": "inter_n4",
+                "label": "t:config.typography.body_font"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.font_style"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.header"
+            },
+            {
+                "type": "select",
+                "id": "heading_weight",
+                "options": [
+                    {
+                        "value": "300",
+                        "label": "t:config.typography.options.weight.light"
+                    },
+                    {
+                        "value": "400",
+                        "label": "t:config.typography.options.weight.regular"
+                    },
+                    {
+                        "value": "500",
+                        "label": "t:config.typography.options.weight.medium"
+                    },
+                    {
+                        "value": "600",
+                        "label": "t:config.typography.options.weight.semibold"
+                    },
+                    {
+                        "value": "700",
+                        "label": "t:config.typography.options.weight.bold"
+                    }
+                ],
+                "default": "700",
+                "label": "t:config.typography.weight"
+            },
+            {
+                "type": "range",
+                "id": "heading_line_height",
+                "min": 1,
+                "max": 2,
+                "step": 0.1,
+                "default": 1.2,
+                "label": "t:config.typography.line_height"
+            },
+            {
+                "type": "select",
+                "id": "heading_letter_spacing",
+                "options": [
+                    {
+                        "value": "-0.05em",
+                        "label": "t:config.typography.options.letter_spacing.tighter"
+                    },
+                    {
+                        "value": "-0.02em",
+                        "label": "t:config.typography.options.letter_spacing.tight"
+                    },
+                    {
+                        "value": "-0.01em",
+                        "label": "t:config.typography.options.letter_spacing.slightly_tight"
+                    },
+                    {
+                        "value": "0em",
+                        "label": "t:config.typography.options.letter_spacing.normal"
+                    },
+                    {
+                        "value": "0.02em",
+                        "label": "t:config.typography.options.letter_spacing.wide"
+                    },
+                    {
+                        "value": "0.05em",
+                        "label": "t:config.typography.options.letter_spacing.wider"
+                    },
+                    {
+                        "value": "0.1em",
+                        "label": "t:config.typography.options.letter_spacing.widest"
+                    }
+                ],
+                "default": "-0.01em",
+                "label": "t:config.typography.letter_spacing"
+            },
+            {
+                "type": "select",
+                "id": "heading_text_transform",
+                "options": [
+                    {
+                        "value": "none",
+                        "label": "t:config.typography.options.text_transform.none"
+                    },
+                    {
+                        "value": "uppercase",
+                        "label": "t:config.typography.options.text_transform.uppercase"
+                    },
+                    {
+                        "value": "lowercase",
+                        "label": "t:config.typography.options.text_transform.lowercase"
+                    },
+                    {
+                        "value": "capitalize",
+                        "label": "t:config.typography.options.text_transform.capitalize"
+                    }
+                ],
+                "default": "none",
+                "label": "t:config.typography.text_transform"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.body"
+            },
+            {
+                "type": "range",
+                "id": "body_font_size",
+                "min": 16,
+                "max": 32,
+                "step": 1,
+                "unit": "px",
+                "default": 16,
+                "label": "t:config.typography.body_font_size"
+            },
+            {
+                "type": "range",
+                "id": "body_font_size_mobile",
+                "min": 14,
+                "max": 32,
+                "step": 1,
+                "unit": "px",
+                "default": 16,
+                "label": "t:config.typography.body_font_size_mobile"
+            },
+            {
+                "type": "range",
+                "id": "body_line_height",
+                "min": 1,
+                "max": 2,
+                "step": 0.1,
+                "default": 1.6,
+                "label": "t:config.typography.line_height"
+            },
+            {
+                "type": "select",
+                "id": "body_letter_spacing",
+                "options": [
+                    {
+                        "value": "-0.05em",
+                        "label": "t:config.typography.options.letter_spacing.tighter"
+                    },
+                    {
+                        "value": "-0.02em",
+                        "label": "t:config.typography.options.letter_spacing.tight"
+                    },
+                    {
+                        "value": "-0.01em",
+                        "label": "t:config.typography.options.letter_spacing.slightly_tight"
+                    },
+                    {
+                        "value": "0em",
+                        "label": "t:config.typography.options.letter_spacing.normal"
+                    },
+                    {
+                        "value": "0.02em",
+                        "label": "t:config.typography.options.letter_spacing.wide"
+                    },
+                    {
+                        "value": "0.05em",
+                        "label": "t:config.typography.options.letter_spacing.wider"
+                    },
+                    {
+                        "value": "0.1em",
+                        "label": "t:config.typography.options.letter_spacing.widest"
+                    }
+                ],
+                "default": "0em",
+                "label": "t:config.typography.letter_spacing"
+            },
+            {
+                "type": "select",
+                "id": "body_text_transform",
+                "options": [
+                    {
+                        "value": "none",
+                        "label": "t:config.typography.options.text_transform.none"
+                    },
+                    {
+                        "value": "uppercase",
+                        "label": "t:config.typography.options.text_transform.uppercase"
+                    },
+                    {
+                        "value": "lowercase",
+                        "label": "t:config.typography.options.text_transform.lowercase"
+                    },
+                    {
+                        "value": "capitalize",
+                        "label": "t:config.typography.options.text_transform.capitalize"
+                    }
+                ],
+                "default": "none",
+                "label": "t:config.typography.text_transform"
+            },
+            {
+                "type": "header",
+                "content": "t:config.typography.scale"
+            },
+            {
+                "type": "range",
+                "id": "heading_scale",
+                "min": 100,
+                "max": 150,
+                "unit": "%",
+                "label": "t:config.typography.heading_scale",
+                "default": 100
+            }
+        ]
+    },
+    {
+        "name": "t:general.layout",
+        "settings": [
+            {
+                "type": "header",
+                "content": "t:config.layout.page_settings"
+            },
+            {
+                "type": "range",
+                "id": "page_width",
+                "min": 1000,
+                "max": 2000,
+                "step": 100,
+                "default": 1200,
+                "unit": "px",
+                "label": "t:labels.page_width"
+            },
+            {
+                "type": "range",
+                "id": "page_margin",
+                "min": 10,
+                "max": 100,
+                "step": 1,
+                "unit": "px",
+                "label": "t:labels.page_margin",
+                "default": 20
+            }
+        ]
+    },
+    {
+        "name": "t:general.colors",
+        "settings": [
+            {
+                "type": "color_scheme_group",
+                "id": "color_schemes",
+                "definition": [
+                    {
+                        "type": "header",
+                        "content": "t:config.colors.general"
+                    },
+                    {
+                        "type": "color",
+                        "id": "background_color",
+                        "label": "t:labels.background",
+                        "default": "#FFFFFF"
+                    },
+                    {
+                        "type": "color_background",
+                        "id": "background_gradient_color",
+                        "label": "t:config.colors.background_gradient",
+                        "info": "t:config.colors.background_gradient_info"
+                    },
+                    {
+                        "type": "color",
+                        "id": "text_color",
+                        "label": "t:config.colors.text_color",
+                        "default": "#111827"
+                    },
+                    {
+                        "type": "color",
+                        "id": "border_color",
+                        "label": "t:config.colors.border_color",
+                        "default": "#111827"
+                    },
+                    {
+                        "type": "color",
+                        "id": "accent_background_color",
+                        "label": "t:config.colors.accent_background_color",
+                        "info": "t:config.colors.accent_background_info"
+                    },
+                    {
+                        "type": "color",
+                        "id": "accent_foreground_color",
+                        "label": "t:config.colors.accent_foreground_color",
+                        "info": "t:config.colors.accent_foreground_info"
+                    },
+                    {
+                        "type": "header",
+                        "content": "t:config.colors.feedback_messages"
+                    },
+                    {
+                        "type": "color",
+                        "id": "success_background_color",
+                        "label": "t:config.colors.success_background_color",
+                        "default": "#ECFDF5"
+                    },
+                    {
+                        "type": "color",
+                        "id": "success_foreground_color",
+                        "label": "t:config.colors.success_foreground_color",
+                        "default": "#065F46"
+                    },
+                    {
+                        "type": "color",
+                        "id": "error_background_color",
+                        "label": "t:config.colors.error_background_color",
+                        "default": "#FEF2F2"
+                    },
+                    {
+                        "type": "color",
+                        "id": "error_foreground_color",
+                        "label": "t:config.colors.error_foreground_color",
+                        "default": "#991B1B"
+                    }
+                ],
+                "role": {
+                    "background": {
+                        "solid": "background_color",
+                        "gradient": "background_gradient_color"
+                    },
+                    "icons": "text_color",
+                    "links": "text_color",
+                    "text": "text_color",
+                    "primary_button": "text_color",
+                    "primary_button_border": "text_color",
+                    "on_secondary_button": "text_color",
+                    "secondary_button_border": "text_color",
+                    "on_primary_button": "background_color",
+                    "secondary_button": "background_color"
+                }
+            },
+            {
+                "type": "color_scheme",
+                "id": "page_canvas_color_scheme",
+                "label": "t:config.colors.page_canvas_color_scheme",
+                "info": "t:config.colors.page_canvas_color_scheme_info",
+                "default": "scheme-2"
+            }
+        ]
+    },
+    {
+        "name": "t:config.product_cards.name",
+        "settings": [
+            {
+                "type": "header",
+                "content": "t:config.product_cards.image"
+            },
+            {
+                "type": "select",
+                "id": "product_card_image_ratio",
+                "label": "t:config.product_cards.image_ratio",
+                "options": [
+                    {
+                        "value": "adapt",
+                        "label": "t:options.image_ratio.adapt"
+                    },
+                    {
+                        "value": "square",
+                        "label": "t:options.image_ratio.square"
+                    },
+                    {
+                        "value": "portrait",
+                        "label": "t:options.image_ratio.portrait"
+                    },
+                    {
+                        "value": "landscape",
+                        "label": "t:options.image_ratio.landscape"
+                    },
+                    {
+                        "value": "wide",
+                        "label": "t:options.image_ratio.wide"
+                    }
+                ],
+                "default": "adapt"
+            }
+        ]
+    },
+    {
+        "name": "t:config.social_icon.name",
+        "settings": [
+            {
+                "type": "text",
+                "id": "social_facebook_link",
+                "label": "t:config.social_icon.facebook",
+                "placeholder": "t:config.social_icon.facebook_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_instagram_link",
+                "label": "t:config.social_icon.instagram",
+                "placeholder": "t:config.social_icon.instagram_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_youtube_link",
+                "label": "t:config.social_icon.youtube",
+                "placeholder": "t:config.social_icon.youtube_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_tiktok_link",
+                "label": "t:config.social_icon.tiktok",
+                "placeholder": "t:config.social_icon.tiktok_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_twitter_link",
+                "label": "t:config.social_icon.x_twitter",
+                "placeholder": "t:config.social_icon.x_twitter_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_snapchat_link",
+                "label": "t:config.social_icon.snapchat",
+                "placeholder": "t:config.social_icon.snapchat_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_pinterest_link",
+                "label": "t:config.social_icon.pinterest",
+                "placeholder": "t:config.social_icon.pinterest_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_tumblr_link",
+                "label": "t:config.social_icon.tumblr",
+                "placeholder": "t:config.social_icon.tumblr_placeholder"
+            },
+            {
+                "type": "text",
+                "id": "social_vimeo_link",
+                "label": "t:config.social_icon.vimeo",
+                "placeholder": "t:config.social_icon.vimeo_placeholder"
+            }
+        ]
+    }
+]

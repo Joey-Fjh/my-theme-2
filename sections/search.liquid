@@ -1,0 +1,93 @@
+{%- liquid
+    assign terms = search.terms | strip
+-%}
+
+<div
+    data-section-id="{{ section.id }}"
+    class="section color-{{ section.settings.color_scheme }}"
+    style="
+        --section-padding-top: {{ section.settings.padding_top | default: 0 }}px;
+        --section-padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
+    "
+>
+    <h1 class="sr-only">{{ 'search.title' | t }}</h1>
+
+    <form action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="options[prefix]" value="last">
+        <label class="sr-only" for="SearchInput-{{ section.id }}">
+            {{ 'search.search' | t }}
+        </label>
+        {%- render 'icons', icon: 'icon-search' -%}
+        <input
+            id="SearchInput-{{ section.id }}"
+            type="search"
+            name="q"
+            value="{{ terms | escape }}"
+            class="search-section__input field"
+            placeholder="{{ 'search.search' | t }}"
+        >
+        <button type="submit" class="btn">{{ 'search.search' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+        {%- paginate search.results by 12 -%}
+            {%- if search.results_count == 0 -%}
+                <p class="copy-l">{{ 'search.no_results_html' | t: terms: terms }}</p>
+            {%- else -%}
+                <ul>
+                    {%- for item in search.results -%}
+                        <li>
+                            <a class="copy-l underline underline-offset-4" href="{{ item.url }}">
+                                {{- item.title | escape -}}
+                            </a>
+                        </li>
+                    {%- endfor -%}
+                </ul>
+            {%- endif -%}
+
+            {%- render 'pagination', paginate_obj: paginate -%}
+        {%- endpaginate -%}
+    {%- endif -%}
+</div>
+
+{% schema %}
+{
+    "name": "t:general.search",
+    "tag": "section",
+    "enabled_on": {
+        "templates": ["search"]
+    },
+    "settings": [
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.search.settings.color_scheme",
+            "default": "scheme-2"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.search.content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.search.settings.padding_top",
+            "default": 32
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.search.settings.padding_bottom",
+            "default": 32
+        }
+    ]
+}
+{% endschema %}

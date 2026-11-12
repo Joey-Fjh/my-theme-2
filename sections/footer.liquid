@@ -1,0 +1,98 @@
+<footer
+    data-section-id="{{ section.id }}"
+    class="section color-{{ section.settings.color_scheme }}"
+>
+    {% for block in section.blocks %}
+        {% if block.type == 'link_column' %}
+            {% assign links_menu = block.settings.menu %}
+            {% if links_menu != blank and links_menu.links != blank %}
+                <div {{ block.shopify_attributes }}>
+                    <h2 class="title-m">{{ block.settings.heading }}</h2>
+                    <ul>
+                        {% for link in links_menu.links %}
+                            <li>
+                                <a class="underline underline-offset-4" href="{{ link.url }}">
+                                    {{ link.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    {% if shop.features.follow_on_shop? %}
+        <div>
+            <p>{{ 'footer.follow_on_shop' | t }}</p>
+            {{ shop | login_button: action: 'follow' }}
+        </div>
+    {% endif %}
+
+    <p>
+        {{ 'now' | date: '%Y' }}
+        {{ shop.name | escape }}
+        {{ 'footer.all_rights_reserved' | t }}
+    </p>
+</footer>
+
+{% schema %}
+{
+    "name": "t:general.footer",
+    "tag": "section",
+    "limit": 1,
+    "enabled_on": {
+        "groups": ["footer"]
+    },
+    "settings": [
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.footer.settings.color_scheme",
+            "default": "scheme-1"
+        }
+    ],
+    "blocks": [
+        {
+            "type": "link_column",
+            "name": "t:sections.footer.blocks.link_column",
+            "settings": [
+                {
+                    "type": "inline_richtext",
+                    "id": "heading",
+                    "label": "t:sections.footer.block_settings.column_heading",
+                    "default": "t:sections.footer.defaults.link_column_heading"
+                },
+                {
+                    "type": "link_list",
+                    "id": "menu",
+                    "label": "t:sections.footer.block_settings.menu",
+                    "default": "footer"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:sections.footer.presets.footer",
+            "blocks": [
+                {
+                    "type": "link_column"
+                },
+                {
+                    "type": "link_column",
+                    "settings": {
+                        "heading": "Pages"
+                    }
+                },
+                {
+                    "type": "link_column",
+                    "settings": {
+                        "heading": "Social"
+                    }
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}

@@ -1,0 +1,429 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "config": {
+        "logo": {
+            "name": "Logo",
+            "logo_label": "Logo",
+            "logo_width": "Logo width",
+            "favicon": "Favicon",
+            "favicon_info": "Recommended size: 32 × 32 px."
+        },
+        "typography": {
+            "font_family": "Font family",
+            "font_style": "Typography",
+            "scale": "Scale",
+            "header": "Heading",
+            "heading_font": "Font",
+            "heading_scale": "Heading scale",
+            "body": "Body",
+            "body_font": "Font",
+            "body_font_size": "Font size (desktop)",
+            "body_font_size_mobile": "Font size (mobile)",
+            "weight": "Weight",
+            "line_height": "Line height",
+            "letter_spacing": "Letter spacing",
+            "text_transform": "Text transform",
+            "options": {
+                "weight": {
+                    "light": "Light",
+                    "regular": "Regular",
+                    "medium": "Medium",
+                    "semibold": "Semibold",
+                    "bold": "Bold"
+                },
+                "letter_spacing": {
+                    "tighter": "Tighter",
+                    "tight": "Tight",
+                    "slightly_tight": "Slightly tight",
+                    "normal": "Normal",
+                    "wide": "Wide",
+                    "wider": "Wider",
+                    "widest": "Widest"
+                },
+                "text_transform": {
+                    "none": "None",
+                    "uppercase": "Uppercase",
+                    "lowercase": "Lowercase",
+                    "capitalize": "Capitalize"
+                }
+            }
+        },
+        "layout": {
+            "page_settings": "Page settings"
+        },
+        "colors": {
+            "general": "General colors",
+            "feedback_messages": "Feedback messages",
+            "page_canvas_color_scheme": "Page background color scheme",
+            "page_canvas_color_scheme_info": "Used behind sections and for areas without their own color scheme.",
+            "background_gradient": "Background gradient",
+            "background_gradient_info": "The background gradient will replace the background color at all applicable positions.",
+            "border_color": "Border color",
+            "text_color": "Text color",
+            "accent_background_color": "Accent background color",
+            "accent_background_info": "When unset, uses this scheme's text color.",
+            "accent_foreground_color": "Accent foreground color",
+            "accent_foreground_info": "Text and icons on the accent background. When unset, uses this scheme's background color.",
+            "success_background_color": "Success background color",
+            "success_foreground_color": "Success foreground color",
+            "error_background_color": "Error background color",
+            "error_foreground_color": "Error foreground color"
+        },
+        "product_cards": {
+            "name": "Product cards",
+            "image": "Image",
+            "image_ratio": "Image ratio"
+        },
+        "social_icon": {
+            "name": "Social icon",
+            "facebook": "Facebook",
+            "facebook_placeholder": "",
+            "instagram": "Instagram",
+            "instagram_placeholder": "",
+            "youtube": "YouTube",
+            "youtube_placeholder": "",
+            "tiktok": "TikTok",
+            "tiktok_placeholder": "",
+            "x_twitter": "X / Twitter",
+            "x_twitter_placeholder": "",
+            "snapchat": "Snapchat",
+            "snapchat_placeholder": "",
+            "pinterest": "Pinterest",
+            "pinterest_placeholder": "",
+            "tumblr": "Tumblr",
+            "tumblr_placeholder": "",
+            "vimeo": "Vimeo",
+            "vimeo_placeholder": ""
+        }
+    },
+    "general": {
+        "404": "Not found",
+        "article": "Article",
+        "blog": "Blog",
+        "cart": "Cart",
+        "collection": "Collection",
+        "collections_grid": "Collections grid",
+        "colors": "Colors",
+        "footer": "Footer",
+        "header": "Header",
+        "layout": "Layout",
+        "page": "Page",
+        "password": "Password",
+        "product": "Product",
+        "search": "Search",
+        "typography": "Typography"
+    },
+    "labels": {
+        "background": "Background",
+        "menu": "Menu",
+        "page_margin": "Page margin",
+        "page_width": "Page width",
+        "section_width": "Section width"
+    },
+    "options": {
+        "section_width": {
+            "page": "Page width",
+            "full": "Full width"
+        },
+        "image_ratio": {
+            "adapt": "Adapt to image",
+            "square": "Square",
+            "portrait": "Portrait",
+            "landscape": "Landscape",
+            "wide": "Wide"
+        }
+    },
+    "blocks": {
+        "group": {
+            "name": "Group",
+            "settings": {
+                "layout": "Layout",
+                "direction": "Direction",
+                "distribution": "Distribution",
+                "alignment": "Alignment",
+                "columns": "Maximum columns",
+                "gap": "Gap",
+                "width": "Width",
+                "width_grid": "Grid width",
+                "height": "Height"
+            },
+            "options": {
+                "flex": "Flex",
+                "grid": "Grid",
+                "column": "Column",
+                "row": "Row",
+                "row_stack": "Row, stack when narrow",
+                "start": "Start",
+                "center": "Center",
+                "end": "End",
+                "space_between": "Space between",
+                "space_around": "Space around",
+                "space_evenly": "Space evenly",
+                "stretch": "Stretch",
+                "baseline": "Baseline",
+                "auto": "Auto",
+                "columns_1": "1",
+                "columns_2": "2",
+                "columns_3": "3",
+                "columns_4": "4",
+                "columns_5": "5",
+                "columns_6": "6",
+                "none": "None",
+                "tight": "Tight",
+                "related": "Related",
+                "group": "Group",
+                "section": "Section",
+                "fill": "Fill",
+                "content": "Content",
+                "measure": "Measure"
+            },
+            "presets": {
+                "group": "Group"
+            }
+        },
+        "heading": {
+            "name": "Heading",
+            "settings": {
+                "heading": "Heading",
+                "semantic_level": "Heading level"
+            },
+            "options": {
+                "h1": "H1",
+                "h2": "H2",
+                "h3": "H3",
+                "h4": "H4",
+                "h5": "H5",
+                "h6": "H6"
+            },
+            "defaults": {
+                "heading": "Add a heading"
+            },
+            "presets": {
+                "heading": "Heading"
+            }
+        },
+        "text": {
+            "name": "Text",
+            "settings": {
+                "text": "Text"
+            },
+            "defaults": {
+                "text": "<p>Add supporting text for this section.</p>"
+            },
+            "presets": {
+                "text": "Text"
+            }
+        },
+        "button": {
+            "name": "Button",
+            "settings": {
+                "label": "Button label",
+                "link": "Button link"
+            },
+            "defaults": {
+                "label": "Shop now"
+            },
+            "presets": {
+                "button": "Button"
+            }
+        }
+    },
+    "sections": {
+        "404": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "article": {
+            "settings": {
+                "content_color_scheme": "Content color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "blog": {
+            "settings": {
+                "content_color_scheme": "Content color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "cart": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "collection": {
+            "settings": {
+                "content_color_scheme": "Content color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "collections": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "custom-section": {
+            "name": "Container",
+            "content": {
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "name": "Container"
+            }
+        },
+        "custom-liquid": {
+            "name": "Custom Liquid",
+            "content": {
+                "learn_how_to_use_this_section_https_shop": "Add Liquid code to customize this section.",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "custom_liquid": "Custom liquid",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "custom_liquid": "Custom Liquid"
+            },
+            "defaults": {
+                "custom_liquid": "<div class=\"rte\"><p>Use this section to add app snippets, custom markup, or theme-aware Liquid content.</p></div>"
+            }
+        },
+        "footer": {
+            "settings": {
+                "color_scheme": "Color scheme"
+            },
+            "blocks": {
+                "link_column": "Link column"
+            },
+            "block_settings": {
+                "column_heading": "Column heading",
+                "menu": "Menu"
+            },
+            "presets": {
+                "footer": "Footer"
+            },
+            "defaults": {
+                "link_column_heading": "Catalog"
+            }
+        },
+        "header": {
+            "settings": {
+                "color_scheme": "Color scheme"
+            }
+        },
+        "main-page-contact": {
+            "name": "Contact us",
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "page": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "password": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        },
+        "product": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            },
+            "blocks": {
+                "title": "Title",
+                "vendor": "Vendor",
+                "price": "Price",
+                "description": "Description",
+                "variant_picker": "Variant picker",
+                "quantity_selector": "Quantity selector",
+                "inventory_notice": "Inventory notice",
+                "buy_buttons": "Buy buttons",
+                "custom_liquid": "Custom liquid",
+                "collapsible_tab": "Collapsible tab"
+            },
+            "block_settings": {
+                "custom_liquid": "Custom liquid",
+                "heading": "Heading",
+                "text": "Text"
+            },
+            "blocks_defaults": {
+                "collapsible_tab_heading": "Collapsible tab",
+                "collapsible_tab_text": "<p>Share information about your product, shipping, returns, or materials.</p>"
+            }
+        },
+        "search": {
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "content": {
+                "padding": "Padding"
+            }
+        }
+    }
+}
