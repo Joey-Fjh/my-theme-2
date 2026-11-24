@@ -6,7 +6,7 @@ Inspect current source for exact method lists, tuning constants, and implementat
 
 ## Architecture
 
-The Skeleton runtime is a no-bundler ES module graph. Liquid markup declares behaviour; the core discovers roots from the DOM and loads component modules on demand. Third-party UI libraries are touched only through the adapter.
+The theme runtime is a no-bundler ES module graph. Liquid markup declares behaviour. The core discovers roots from the DOM and loads component modules on demand. Adapters own access to third-party UI libraries.
 
 | Layer | Files | Loading | Responsibility |
 | --- | --- | --- | --- |
@@ -223,7 +223,7 @@ Components may read the DOM (`document.querySelector`, `this.$el`). Only global 
 - Every import-map entry is referenced by a `data-module-id` or a static `import` in `assets/*.js`, except entries listed in `theme-checks.config.json` under `module-import-map-unused.allowedEntries`. The on-demand adapters `carousel-swiper` and `motion-gsap` are listed there until a section asks for them.
 - Below-the-fold or non-critical modules should carry `data-module-lazy`; the core loads them through `IntersectionObserver`.
 - Preload a first-viewport module chain only when the page truly needs it before interaction (for example `modulepreload` on the product form chain, or preload on hover for a predictable next step). Do not preload every module on every page.
-- The cart contract and `base.js` stay in the static graph because derived themes keep cart drawer or redirect logic on every page.
+- The cart contract is in the static graph because `base.js` hydrates and registers the shared Alpine cart store during startup.
 
 Alpine remains the deliberate UI runtime for this theme; do not add parallel Web Components for the same responsibilities.
 

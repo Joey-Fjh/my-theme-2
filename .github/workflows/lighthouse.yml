@@ -19,12 +19,8 @@ concurrency:
 jobs:
     lighthouse:
         name: Lighthouse
-        # The skeleton is a template with no storefront to audit, so the job is skipped in its own
-        # repository; a theme repository made from it has another name and runs it.
-        # Fork pull requests get no secrets, so the job is skipped for them.
-        if: >-
-            github.repository != 'Joey-Fjh/my-skeleton-theme' &&
-            (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        # Fork pull requests do not receive the store credentials.
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -35,7 +31,7 @@ jobs:
                   store: ${{ secrets.SHOP_STORE }}
                   access_token: ${{ secrets.SHOP_ACCESS_TOKEN }}
                   password: ${{ secrets.SHOP_PASSWORD }}
-                  product_handle: amazing-cotton-bag-collection15
-                  collection_handle: collection1
+                  product_handle: ${{ vars.LIGHTHOUSE_PRODUCT_HANDLE }}
+                  collection_handle: ${{ vars.LIGHTHOUSE_COLLECTION_HANDLE }}
                   lhci_min_score_performance: 0.6
                   lhci_min_score_accessibility: 0.9

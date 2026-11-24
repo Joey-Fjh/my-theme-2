@@ -1,26 +1,24 @@
 # Design To Delivery
 
-This reference is the procedure a derived theme follows from a design input to its settings, default preset, and built sections. `AGENTS.md` remains the rule source. Read it when a theme starts its design, drafts its design language, or maps design values to settings.
-
-**Status:** the procedure is written against the CSS framework contract (batch DL1-B1) and the slot template in `DESIGN.md`. B2a's shared container is built and accepted. B2b's typography is implemented, code-reviewed PASS and accepted within the user's confirmed mother-template architecture and completed technical-verification boundary. B2c's accent pair and shared image ratios are implemented, coordinator review PASS, user visual acceptance passed on 2026-11-10; B3's four CSS method checks are implemented, with independent code review PASS (2026-11-10). The design procedure itself has not been run end to end on a derived theme; the first theme to run it corrects this file through its own rule-change batch if reality diverges.
+This reference describes how AXIS / LAYR takes a design input through theme settings, the default preset, and built sections. `AGENTS.md` defines the approval process. See `docs/project.md` and `docs/agent/board.md` for the current design and review status.
 
 ## Principle
 
 The approved design draft is the basis of a theme. Its values are read and mapped into the chain: a value that has a place replaces the default there; a value that has no place is a gap, decided as mapping describes. Defective or incomplete drafts are corrected in the draft (or rejected at the generation gate); mapping does not bypass missing systems by pasting literals into sections.
 
-This repository ships an **unfilled slot template** at `DESIGN.md`. A derived theme replaces placeholders with its approved design language. The user approves the filled draft before mapping and build.
+The root `DESIGN.md` holds the AXIS / LAYR design draft. Its slot structure comes from the mother template. The user approves the filled draft before mapping.
 
 Agents map the draft; they do not invent brand values the draft does not give, and they do not paste a value past the chain.
 
 ## CSS vocabulary the procedure targets
 
-The design input and the slot template use the method's vocabulary. The bindings distinguish current implementation, retained guidance, and unbuilt capabilities. Read these references; do not restate unbuilt frame work as current code.
+The design draft uses the method's vocabulary. The bindings document what the current code supports and where mapping needs a decision.
 
 | Topic | Reference | Notes |
 | --- | --- | --- |
 | Layout method (five levels, container primitive, spacing ownership, height kinds, units, signature layouts) | `docs/references/style-system/css-method.md` | Framework-neutral rules |
-| Shopify bindings (settings chain, type categories, colour checks, CSS homes) | `docs/references/style-system/css-architecture.md` | Current built bindings include B2a/B2b and B2c's accent/ratio implementation; B3's four stricter lints are implemented, with independent code review PASS (2026-11-10) |
-| Theme blocks and the shared container | `docs/references/architecture/theme-blocks.md` | B2a's Group editor and code entry share the built, accepted container implementation |
+| Shopify bindings (settings chain, type categories, colour checks, CSS homes) | `docs/references/style-system/css-architecture.md` | Current bindings, implementation status and static checks |
+| Theme blocks and the shared container | `docs/references/architecture/theme-blocks.md` | The Group block and code entry share the container implementation |
 | Image display and ratio vocabulary | `docs/references/style-system/image-display-contract.md` | `snippets/image.liquid` resolves `square`, `portrait` (4:5), `landscape`, `wide` (16:9) and `adapt`; all five are available in the global product-card ratio setting |
 | Motion policy | `docs/references/architecture/motion-architecture.md` | Motion tokens are code-owned unless a plan adds policy settings |
 
@@ -30,14 +28,14 @@ Assemble this pack **before** generating a design draft. The user chooses how to
 
 | Item | Content |
 | --- | --- |
-| **Brief** | The derived theme's `docs/project.md`: identity, merchant, catalog, and whether Theme Store submission is in scope. Supporting notes may add references; they do not replace that file. |
+| **Brief** | `docs/project.md` records the identity, merchant, catalog, and scope. Supporting notes may add references. |
 | **CSS vocabulary** | The references in the table above, especially bindings the draft must respect. |
-| **Slot template** | `DESIGN.md` in this repository (copied into the derived theme unchanged in structure). |
+| **Design slots** | The inherited slot structure and mappings reflected in `DESIGN.md` and the mapping guidance below. |
 | **Reference DESIGN.md files** | Two or three open-format design-language files from comparable brands or themes (structure and density, not code to paste). |
 | **Comparable storefronts** | Live or screenshot references for navigation, cards, media, and page rhythm. |
 | **Generation gate** | The checklist in [Generation gate](#generation-gate); the user judges pass or fail before mapping. |
 
-Create `docs/design/` in a derived theme only when brief notes, links or previews need a local home; the mother template does not ship this directory or a placeholder. <!-- doc-paths: ignore -->
+Use `docs/design/` when brief notes, links or previews need a local home. <!-- doc-paths: ignore -->
 
 The repository ignore file ignores design screenshots and reference images in that optional directory: png, jpg, jpeg, webp, gif, and mp4. HTML exports and other extensions there are not in that ignore list.
 
@@ -57,18 +55,18 @@ Do not start mapping or preset work until the user accepts the draft against thi
 
 | Area | Gate |
 | --- | --- |
-| **Colour system** | Coherent schemes using only the fillable token names in `DESIGN.md`. On every scheme, contrast meets the thresholds in [Source evidence](#source-evidence): 4.5:1 where that source requires it, 3:1 where that source requires it, for the objects named there. |
+| **Colour system** | Coherent schemes using only the inherited scheme and role token names. On every scheme, the uses named in [Source evidence](#source-evidence) meet the applicable 4.5:1 or 3:1 contrast threshold. |
 | **Type system** | Coherent families, loaded weights, settings-backed styles, and code-owned steps, including wrapped control sizes and display headings. |
 | **Spacing system** | Coherent space-scale steps and semantic names. Section padding stays on the section px settings; it is not `--spacing-section`. |
 | **States** | Hover, focus, active, selected, disabled, unavailable, loading, error, success, and empty are each described or omitted with a reason. |
 | **Widths** | Behavior at **375**, **768**, **1024**, and **1440** CSS pixels is shown in the previews and stated in the draft. |
 | **Mobile design** | The narrow width is designed as its own layout, not only a scaled desktop. |
 | **Layout vocabulary** | Page frame, ratio vocabulary (portrait **4:5** where used), and height-kind intent for stages when the theme uses them. |
-| **Identity** | Names the target merchant from the derived theme's `docs/project.md` and the four systems: header and navigation, product cards, media treatment, and page structure. When that file scopes Theme Store submission, the draft cites the comparable Theme Store themes from the input pack and states a structural difference for each of the four systems. A colour or type swap is not that evidence. The user judges distinctiveness before build. When submission is not in scope, the four systems are still named, and Theme Store comparison is not required. Submission is not assumed for every derived theme. |
+| **Identity** | Names the target merchant in `docs/project.md` and describes header and navigation, product cards, media treatment, and page structure. For a Theme Store submission, cite comparable themes from the input pack and describe a structural difference for each system. The user judges distinctiveness before build. |
 | **Motion** | Enters, exits, and reduced-motion intent per `docs/references/architecture/motion-architecture.md`. |
 | **Accessibility** | Focus visibility, the touch-target intent in [Source evidence](#source-evidence), motion sensitivity, and non-hover dependencies. |
 | **Do's and don'ts** | Brand-specific guardrails for agents and implementers. |
-| **designmd lint** | `designmd lint` reports **zero errors** on the **filled** draft only (see [Unfilled template vs filled draft](#unfilled-template-vs-filled-draft)). The unfilled slot template is not this gate. |
+| **designmd lint** | `designmd lint` reports **zero errors** on the filled draft. |
 
 ## Where results land
 
@@ -93,7 +91,7 @@ Each step is a batch under the Batch SOP in `AGENTS.md`, with its own acceptance
 | 1. Draft | Input pack | Filled `DESIGN.md` and key-page previews | User judges draft; coordinator or user files the result |
 | 2. Generation gate | Draft and previews | Pass or revise | User |
 | 3. Design approval | Gated draft | Recorded approval to treat the file as the theme's design language | User |
-| 4. Mapping | Approved design language compared with the slot template | Table: each value → settings-backed place, code-owned place, or gap | Coordinator proposes; user decides each gap |
+| 4. Mapping | Approved design language and the inherited design slots | Each value mapped to a setting, code-owned input, or gap | Coordinator proposes; user decides each gap |
 | 5. Values | Mapping table | Agreed value per mapped place | User approves |
 | 6. Preset | Settings-backed mapped values | Defaults in `config/settings_schema.json` and the default preset in `config/settings_data.json` | User authorizes in that batch's plan only |
 | 7. Build | Preset and design language | Sections and blocks that consume tokens and tier or scheme classes, **one section or coherent slice at a time** when the plan says so | Implementer under `lint:theme` |
@@ -106,9 +104,9 @@ Notes on selected steps:
     - **Adjustable code inputs:** spacing-base endpoints, type-ratio endpoints, the three shadows, and the motion durations and easings named in `DESIGN.md`. The structure stays fixed. The draft may propose the values. An authorized code batch writes them into `tailwind/tailwind.input.css` or `snippets/css-variables.liquid`. They are not new merchant settings (`motion-architecture.md` still limits motion settings to policy).
     - **Computed outputs:** each `--spacing-step-*` from the spacing base, each `--type-step-*` from the body-size endpoints and the type ratio, derived colour roles, and the per-scheme shadow alphas. The draft does not set these one by one. `--font-body-scale` stays `1`.
     - **Section padding** is settings-backed and section-owned (`padding_top`, `padding_bottom` on the sections that define them). It is not the code token `--spacing-section`.
-    - **Built frame inputs:** B2a's container settings, containment, narrow stacking and semantic gap aliases; B2b's standard/large control recipes, display-heading container cap and per-tier line-height/tracking factors. B2a is accepted; B2b's code review passed and the user accepted its mother-template architecture and completed technical-verification boundary. These are existing implementation places, not missing frame features.
-    - **B2c implementation:** optional `accent_background_color` and `accent_foreground_color` settings emit per-scheme RGB triplets; unset values fall back independently to scheme text/background. Existing buttons do not consume the new slots. `snippets/image.liquid` owns the five-keyword ratio vocabulary. Coordinator review is PASS; user visual acceptance passed on 2026-11-10; no merchant accent values or new design direction are implied.
-    - **Checks and unbuilt capabilities:** B3's stricter lints listed in `css-architecture.md` are implemented, with independent code review PASS (2026-11-10). Stage-height settings and additional context-dependent unit enforcement remain unbuilt; the user closed them as current mother-template delivery obligations on 2026-11-11. Their methods and existing infrastructure remain available. A concrete design that needs these capabilities calls for a new scoped decision in that theme. Mapping treats unbuilt slots as gaps, not as current settings or automatic mother-template backlog items; other capability states remain as identified in `css-architecture.md`.
+    - **Built frame inputs:** the shared container provides settings, containment, narrow stacking and semantic gap aliases. Typography provides standard and large control recipes, a display-heading container cap and per-tier line-height and tracking factors.
+    - **Accent and media:** optional `accent_background_color` and `accent_foreground_color` settings emit per-scheme RGB triplets with independent fallbacks to scheme text and background. The existing buttons use their current scheme roles. `snippets/image.liquid` owns the five-keyword ratio vocabulary.
+    - **Checks and unbuilt capabilities:** see the current implementation states in `css-architecture.md`. Treat stage-height settings and additional context-dependent unit enforcement as gaps when a concrete design needs them.
     - A value with no place of either kind is a **gap**. Each gap is decided once: new setting or token (architecture batch), signature component CSS for one section, or defer until its named future batch lands.
 - **Step 6, merchant protection.** `config/settings_data.json`, live merchant edits in the theme editor, and merchant-chosen scheme values are merchant-owned. Mapping and preset batches **replace defaults only** with explicit authorization; they do not overwrite merchant-chosen values without a `Merchant-Change:` authorized commit (`AGENTS.md`, Core Rules).
 - **Step 7.** Anything a section needs outside the chain is a named exception in the plan, not a silent literal.
@@ -143,18 +141,9 @@ The YAML front matter holds machine-readable tokens for lint and export. It is *
 
 Specification sections this procedure relies on: optional front matter (`version`, `name`, `description`, `omitted`, `colors`, `typography`, `rounded`, `spacing`, `components`); markdown body sections such as Overview, Colors, Typography, Layout, Elevation & Depth, Shapes, Components, and Do's and Don'ts; preservation of unknown sections so themes can add identity, responsive behavior, motion, accessibility, and states.
 
-### Unfilled template vs filled draft
-
-| Artifact | Front matter | `designmd lint` |
-| --- | --- | --- |
-| **Slot template** (`DESIGN.md` in the mother template) | Declares `omitted` for token groups; documents slots in the body with setting IDs and code paths | **Not a gate target.** Lint may report only informational findings or none; the generation gate applies to the derived theme's **filled** file. |
-| **Filled design draft** | Complete token groups (or deliberate `omitted` entries with reasons) matching the approved design | Must pass with **zero errors** at the generation gate |
-
-Do not claim the unfilled mother-template file passes the filled-draft gate.
-
 ## Fixed slots and roles
 
-`DESIGN.md` has two layers. **Fillable draft tokens** fix the names a draft may write, the setting or code input each name maps to, the design role, the allowed use, and the prohibited use. Adjustable code inputs are the spacing-base endpoints, the type-ratio endpoints, the three shadows, and the motion durations and easings. Computed steps and derived colour roles are not separate fillable values. **Runtime variables** list current CSS custom properties. A runtime inventory does not satisfy the fillable-token rule. B3 checks are implemented with the static boundaries documented in `css-architecture.md`; independent code review PASS (2026-11-10). Derived themes keep the names; they do not add free names or brand values in the unfilled template.
+`DESIGN.md` uses inherited token names and describes each design role and its intended use. Map those names to the settings and code inputs above. Adjustable code inputs are the spacing-base endpoints, the type-ratio endpoints, the three shadows, and the motion durations and easings. Type and spacing steps and derived colour roles remain computed by the existing CSS and Liquid.
 
 ## Source evidence
 
@@ -163,7 +152,7 @@ Checked **2026-11-04** through Shopify Dev MCP (`search_docs_chunks` on the auth
 | Claim this procedure relies on | Source |
 | --- | --- |
 | `font_picker` returns a font from the Shopify font library (system fonts and a selection of Google Fonts). `font_modify` returns a variant of the same family when it exists, and `nil` when it does not. `font_face` emits the `@font-face` rule. | [Input settings](https://shopify.dev/docs/storefronts/themes/architecture/settings/input-settings), [Fonts](https://shopify.dev/docs/storefronts/themes/architecture/settings/fonts), [font_modify](https://shopify.dev/docs/api/liquid/filters/font_modify) |
-| Theme Store font requirement, only when a theme is submission-scoped: the CSS loads bold, italic, and bold-italic variants for each font using `font_modify`. This mother template does not make submission mandatory. | [Theme store requirements](https://shopify.dev/docs/storefronts/themes/store/requirements) |
+| For a Theme Store submission, the CSS loads bold, italic, and bold-italic variants for each font using `font_modify`. | [Theme store requirements](https://shopify.dev/docs/storefronts/themes/store/requirements) |
 | Touch targets: WCAG 2.2 SC 2.5.8 is 24×24 CSS px at Level AA. The same Shopify page recommends 48×48 CSS px for interactive elements and states that figure also covers WCAG 2.1 SC 2.5.5 (44×44, AAA) and Material's 48×48. The slot records the design's intent; it does not add a new repository rule. | [Increase tap target size](https://shopify.dev/docs/storefronts/themes/best-practices/performance/increase-tap-target-size) |
 | Contrast, checked 2026-11-04. Text smaller than 24px regular, or smaller than 18.5px bold, is 4.5:1 against its background. Text at those sizes or larger is 3:1. Icons are 3:1. Input borders are 3:1. | [Accessibility best practices](https://shopify.dev/docs/storefronts/themes/best-practices/accessibility) |
 | Contrast when `docs/project.md` scopes Theme Store submission. Main body content is 4.5:1. Text larger than 18pt, and non-text elements such as borders and icons, are 3:1. This does not make submission mandatory. | [Theme store requirements](https://shopify.dev/docs/storefronts/themes/store/requirements) |
@@ -176,4 +165,3 @@ DESIGN.md format and `designmd` behavior are from the CLI run recorded in the ex
 - Any skill. `AGENTS.md` (Agent Skills) names vendored skills and their triggers.
 - Frame code or lints in DL1-B2 and DL1-B3; the procedure cites them but does not implement them.
 - Theme Store submission completeness unless the user scopes a theme or batch to submission.
-- Values inside the slot template until a derived theme's approved draft fills them.

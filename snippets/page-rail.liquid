@@ -1,0 +1,126 @@
+{% doc %}
+    Renders the decorative static architectural ruler rail along the inline-end
+    content edge on the homepage. Width and outer positioning are owned by L0
+    frame rules in `assets/base.css`; internal numeral and tick degradation
+    responds to the rail's own container inline size (`@container page-rail`).
+{% enddoc %}
+
+{%- assign rail_marks = '00,10,20,30,40,50,60,70,80' | split: ',' -%}
+
+<aside class="page-rail" aria-hidden="true">
+    <div class="page-rail__track">
+        {%- for mark in rail_marks -%}
+            <span class="page-rail__mark">
+                <span class="page-rail__num">{{ mark }}</span>
+            </span>
+        {%- endfor -%}
+    </div>
+</aside>
+
+{% stylesheet %}
+    .page-rail__track {
+        --rail-major-w: 1.7rem;
+        --rail-minor-w: 0.7rem;
+        --rail-num-pad: 2.3rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        padding-block: var(--spacing-step-l);
+        font-family: var(--font-mono-family);
+        color: var(--color-subtle);
+    }
+
+    .page-rail__track::before {
+        content: '';
+        position: absolute;
+        inset-block: var(--spacing-step-l);
+        inset-inline-start: 0;
+        width: var(--rail-minor-w);
+        background: repeating-linear-gradient(
+            to bottom,
+            var(--color-line) 0 1px,
+            transparent 1px 1.2rem
+        );
+    }
+
+    .page-rail__mark {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 1px;
+        padding-inline-start: var(--rail-num-pad);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: calc(var(--font-heading-line-height) * 0.85);
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    .page-rail__mark::before {
+        content: '';
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        width: var(--rail-major-w);
+        height: 1px;
+        background-color: var(--color-line-strong);
+    }
+
+    @container page-rail (max-width: 4.99rem) {
+        .page-rail__track {
+            --rail-major-w: 1.3rem;
+            --rail-minor-w: 0.5rem;
+            --rail-num-pad: 1.8rem;
+        }
+
+        .page-rail__mark:nth-child(even) .page-rail__num {
+            display: none;
+        }
+
+        .page-rail__mark:nth-child(even)::before {
+            width: 0.9rem;
+            background-color: var(--color-line);
+        }
+    }
+
+    @container page-rail (max-width: 3.79rem) {
+        .page-rail__track {
+            --rail-major-w: 1rem;
+            --rail-minor-w: 0.4rem;
+            --rail-num-pad: 1.3rem;
+        }
+
+        .page-rail__mark {
+            letter-spacing: var(--font-body-letter-spacing);
+        }
+
+        .page-rail__mark:not(:nth-child(1)):not(:nth-child(5)):not(:nth-child(9)) .page-rail__num {
+            display: none;
+        }
+
+        .page-rail__mark:not(:nth-child(1)):not(:nth-child(5)):not(:nth-child(9))::before {
+            width: 0.7rem;
+            background-color: var(--color-line);
+        }
+    }
+
+    @container page-rail (max-width: 2.79rem) {
+        .page-rail__track {
+            --rail-major-w: 0.9rem;
+            --rail-minor-w: 0.4rem;
+        }
+
+        .page-rail__num {
+            display: none;
+        }
+    }
+
+    @container page-rail (max-width: 0.99rem) {
+        .page-rail__track {
+            visibility: hidden;
+        }
+    }
+{% endstylesheet %}

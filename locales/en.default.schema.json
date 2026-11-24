@@ -353,6 +353,45 @@
                 "color_scheme": "Color scheme"
             }
         },
+        "hero": {
+            "name": "Hero",
+            "content": {
+                "copy": "Copy",
+                "media": "Media",
+                "annotations": "Technical annotations",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "kicker": "Kicker",
+                "brand_heading": "Brand heading line",
+                "descriptor_heading": "Descriptor heading lines",
+                "lede": "Lede",
+                "description": "Description",
+                "cta_label": "Button label",
+                "cta_link": "Button link",
+                "image": "Portrait image",
+                "model_specs": "Model specification",
+                "focus_specs": "Focus specification",
+                "diameter_label": "Diameter label",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "defaults": {
+                "kicker": "Experimental eyewear\nArchitectural acetate",
+                "brand_heading": "AXIS / LAYR",
+                "descriptor_heading": "Architectural\nEyewear",
+                "lede": "Sculptural frames for a higher\noptical perspective.",
+                "description": "A fusion of architectural form, advanced acetate, and optical precision — eyewear that redefines the structure of vision.",
+                "cta_label": "Shop the collection",
+                "model_specs": "MODEL AL-03\nFRAME CLEAR\nLENS GREY",
+                "focus_specs": "[ FOCUS ]\nf 50.0 mm\nf/2.8 · ISO 100",
+                "diameter_label": "⌀ 142.0 mm"
+            },
+            "presets": {
+                "hero": "Hero"
+            }
+        },
         "main-page-contact": {
             "name": "Contact us",
             "settings": {

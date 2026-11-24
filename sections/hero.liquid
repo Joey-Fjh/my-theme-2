@@ -1,0 +1,548 @@
+{%- liquid
+    assign has_brand_heading = false
+    if section.settings.brand_heading != blank
+        assign has_brand_heading = true
+    endif
+    assign has_descriptor_heading = false
+    if section.settings.descriptor_heading != blank
+        assign has_descriptor_heading = true
+    endif
+    assign has_heading = false
+    if has_brand_heading or has_descriptor_heading
+        assign has_heading = true
+    endif
+    assign has_cta = false
+    if section.settings.cta_label != blank and section.settings.cta_link != blank
+        assign has_cta = true
+    endif
+    assign portrait_alt = section.settings.image.alt | default: section.settings.brand_heading | default: shop.name | escape
+-%}
+
+<section
+    data-section-id="{{ section.id }}"
+    class="section hero color-{{ section.settings.color_scheme }}"
+    style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+    {% if has_heading %}
+        aria-labelledby="HeroHeading-{{ section.id }}"
+    {% endif %}
+>
+    <div class="hero__frame">
+        <div class="hero__grid">
+            <div class="hero__copy">
+                {%- if section.settings.kicker != blank -%}
+                    <p class="hero__kicker">{{ section.settings.kicker | escape | newline_to_br }}</p>
+                    <span class="hero__dash" aria-hidden="true"></span>
+                {%- endif -%}
+
+                {%- if has_heading -%}
+                    <h1 id="HeroHeading-{{ section.id }}" class="hero__title">
+                        {%- if has_brand_heading -%}
+                            <span class="hero__brand">{{ section.settings.brand_heading | escape }}</span>
+                        {%- endif -%}
+                        {%- if has_descriptor_heading -%}
+                            <span class="hero__descriptor">
+                                {{- section.settings.descriptor_heading | escape | newline_to_br -}}
+                            </span>
+                        {%- endif -%}
+                    </h1>
+                {%- endif -%}
+
+                {%- if section.settings.lede != blank -%}
+                    <p class="hero__lede">{{ section.settings.lede | escape | newline_to_br }}</p>
+                {%- endif -%}
+
+                {%- if section.settings.description != blank -%}
+                    <p class="hero__description copy-m">{{ section.settings.description | escape }}</p>
+                {%- endif -%}
+
+                {%- if has_cta -%}
+                    <a class="hero__cta" href="{{ section.settings.cta_link }}">
+                        <span>{{ section.settings.cta_label | escape }}</span>
+                        {% render 'icons', icon: 'icon-chevron-right', size: 'xs' %}
+                    </a>
+                {%- endif -%}
+            </div>
+
+            <div class="hero__visual">
+                <div class="hero__portrait-ring">
+                    {% render 'image',
+                        image: section.settings.image,
+                        aspect_ratio: 'square',
+                        mode: 'frame',
+                        fit: 'cover',
+                        loading: 'eager',
+                        decoding: 'sync',
+                        fetchpriority: 'high',
+                        alt: portrait_alt,
+                        widths: '360,540,720,960,1200,1440',
+                        sizes: '(min-width: 1024px) 52vw, (min-width: 640px) 54vw, 90vw',
+                        placeholder_key: 'lifestyle-1',
+                        placeholder_style: 'plain',
+                        wrapper_class: 'hero__portrait-media'
+                    %}
+                </div>
+
+                <span class="hero__crosshair hero__crosshair--center" aria-hidden="true"></span>
+                <span class="hero__crosshair hero__crosshair--right" aria-hidden="true"></span>
+                <span class="hero__crosshair hero__crosshair--top" aria-hidden="true"></span>
+                <span class="hero__crosshair hero__crosshair--bottom" aria-hidden="true"></span>
+
+                {%- if section.settings.model_specs != blank -%}
+                    <p class="hero__note hero__model">
+                        {{- section.settings.model_specs | escape | newline_to_br -}}
+                        <span class="hero__dash hero__note-dash" aria-hidden="true"></span>
+                    </p>
+                {%- endif -%}
+
+                {%- if section.settings.focus_specs != blank -%}
+                    <p class="hero__note hero__focus">
+                        {{- section.settings.focus_specs | escape | newline_to_br -}}
+                    </p>
+                {%- endif -%}
+
+                {%- if section.settings.diameter_label != blank -%}
+                    <p class="hero__note hero__diameter">
+                        {{- section.settings.diameter_label | escape -}}
+                    </p>
+                {%- endif -%}
+            </div>
+
+            <span class="hero__crosshair hero__junction" aria-hidden="true"></span>
+        </div>
+    </div>
+</section>
+
+{% stylesheet %}
+    .hero__frame {
+        container-type: inline-size;
+        container-name: hero-frame;
+        position: relative;
+        border-inline: 1px solid var(--color-line);
+        border-block-end: 1px solid var(--color-line);
+    }
+
+    .hero__grid {
+        --hero-portrait-w: clamp(28.6rem, calc(65.5cqi - 9.6rem), 69.2rem);
+        --hero-pad-l: clamp(var(--spacing-step-m), 2.2cqi, var(--spacing-step-xl));
+        --hero-pad-r: clamp(var(--spacing-step-m), 2.4cqi, var(--spacing-step-xl));
+        --hero-pad-y: clamp(var(--spacing-step-l), 2.4cqi, var(--spacing-step-xl));
+        --hero-gap: clamp(var(--spacing-step-s), 1.8cqi, var(--spacing-step-l));
+
+        position: relative;
+        isolation: isolate;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) var(--hero-portrait-w);
+        align-items: center;
+        column-gap: var(--hero-gap);
+        padding-block: var(--hero-pad-y);
+        padding-inline: var(--hero-pad-l) var(--hero-pad-r);
+    }
+
+    .hero__grid::before {
+        content: '';
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: calc(100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5);
+        width: 1px;
+        background-color: var(--color-line);
+        pointer-events: none;
+    }
+
+    .hero__junction {
+        inset-inline-start: calc(100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5);
+        inset-block-end: 0;
+        transform: translate(-50%, 50%);
+    }
+
+    .hero__copy {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+        padding-block: clamp(var(--spacing-step-xs), 2.2cqi, var(--spacing-step-xl));
+    }
+
+    .hero__kicker,
+    .hero__lede,
+    .hero__note {
+        font-family: var(--font-mono-family);
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
+        color: rgb(var(--color-foreground));
+    }
+
+    .hero__kicker {
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+    }
+
+    .hero__dash {
+        display: block;
+        width: clamp(1.8rem, 2.5cqi, 3rem);
+        height: 1px;
+        margin-block-start: clamp(var(--spacing-step-s), 1.8cqi, var(--spacing-step-l));
+        background-color: var(--color-line-strong);
+    }
+
+    .hero__title {
+        --font-hero-title-size: clamp(
+            calc(var(--font-heading-scale) * var(--font-heading-floor-2)),
+            calc(var(--font-heading-scale) * 4.95cqi),
+            calc(var(--font-heading-scale) * var(--type-step-7))
+        );
+        width: max-content;
+        max-width: 112%;
+        margin-block: clamp(var(--spacing-step-l), 4cqi, var(--spacing-step-3xl))
+            clamp(var(--spacing-step-m), 2.4cqi, var(--spacing-step-xl));
+        font-family: var(--font-heading-family);
+        font-style: italic;
+        font-weight: var(--font-heading-light-weight);
+        font-size: var(--font-hero-title-size);
+        line-height: max(0.92, calc(var(--font-heading-line-height) * 0.84));
+        letter-spacing: var(--font-heading-letter-spacing);
+        text-transform: uppercase;
+        color: rgb(var(--color-foreground));
+    }
+
+    .hero__brand,
+    .hero__descriptor {
+        display: block;
+    }
+
+    .hero__brand {
+        font-size: 1.15em;
+        font-weight: var(--font-heading-weight);
+        margin-block-end: 0.04em;
+    }
+
+    .hero__lede {
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        text-transform: uppercase;
+        letter-spacing: 0.095em;
+    }
+
+    .hero__description {
+        margin-block: clamp(var(--spacing-step-s), 1.8cqi, var(--spacing-step-l))
+            clamp(var(--spacing-step-m), 2.8cqi, var(--spacing-step-2xl));
+        max-width: min(100%, 34ch);
+        color: rgb(var(--color-foreground));
+    }
+
+    .hero__cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: clamp(var(--spacing-step-s), 1.8cqi, var(--spacing-step-l));
+        min-height: 4.8rem;
+        padding: 0.55em 1.1em;
+        border: 1px solid rgb(var(--color-border));
+        background-color: rgb(var(--color-background));
+        color: rgb(var(--color-foreground));
+        font-family: var(--font-body-family);
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition:
+            background-color var(--motion-duration-fast) var(--motion-ease-default),
+            color var(--motion-duration-fast) var(--motion-ease-default),
+            border-color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .hero__cta:hover {
+            background-color: rgb(var(--color-foreground));
+            color: rgb(var(--color-background));
+            border-color: rgb(var(--color-foreground));
+        }
+    }
+
+    .hero__visual {
+        position: relative;
+        width: var(--hero-portrait-w);
+        aspect-ratio: 1 / 1;
+        justify-self: end;
+    }
+
+    .hero__portrait-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        padding: clamp(0.5rem, 0.68cqi, 0.8rem);
+        border: 1px solid var(--color-line-strong);
+    }
+
+    .hero__portrait-ring::after {
+        content: '';
+        position: absolute;
+        inset: 1px;
+        border-radius: 9999px;
+        pointer-events: none;
+        background: conic-gradient(
+            from -2deg,
+            transparent 0 136deg,
+            rgb(var(--color-accent-background)) 136deg 157deg,
+            transparent 157deg 310deg,
+            rgb(var(--color-accent-background)) 310deg 330deg,
+            transparent 330deg
+        );
+        -webkit-mask-image: radial-gradient(transparent calc(70.71% - 3.5px), currentColor calc(70.71% - 2.5px));
+        mask-image: radial-gradient(transparent calc(70.71% - 3.5px), currentColor calc(70.71% - 2.5px));
+    }
+
+    .hero__portrait-media {
+        width: 100%;
+        height: 100%;
+        border-radius: 9999px;
+    }
+
+    .hero__note {
+        position: absolute;
+        z-index: 2;
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        letter-spacing: 0.03em;
+    }
+
+    .hero__model {
+        inset-block-start: 1%;
+        inset-inline-end: -1%;
+        text-transform: uppercase;
+    }
+
+    .hero__note-dash {
+        margin-block-start: 0.7em;
+    }
+
+    .hero__focus {
+        inset-inline-start: 3%;
+        inset-block-start: 58%;
+    }
+
+    .hero__diameter {
+        inset-inline-end: 1%;
+        inset-block-start: 71%;
+    }
+
+    .hero__crosshair {
+        position: absolute;
+        pointer-events: none;
+        width: clamp(1.2rem, 1.9cqi, 2.4rem);
+        height: clamp(1.2rem, 1.9cqi, 2.4rem);
+        color: var(--color-line-strong);
+        transform: translate(-50%, -50%);
+        background:
+            linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+            linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+    }
+
+    .hero__crosshair--center {
+        inset-inline-start: 47%;
+        inset-block-start: 49.5%;
+    }
+
+    .hero__crosshair--right {
+        inset-inline-start: 100%;
+        inset-block-start: 50%;
+    }
+
+    .hero__crosshair--top {
+        inset-inline-start: 47%;
+        inset-block-start: 0;
+    }
+
+    .hero__crosshair--bottom {
+        inset-inline-start: 47%;
+        inset-block-start: 100%;
+    }
+
+    @container hero-frame (max-width: 75.99rem) {
+        .hero__grid::before,
+        .hero__junction {
+            display: none;
+        }
+
+        .hero__model {
+            inset-block-start: -4%;
+            inset-inline-end: -2%;
+        }
+    }
+
+    @container hero-frame (max-width: 59.99rem) {
+        .hero__grid {
+            --hero-portrait-w: min(90%, 34rem);
+            grid-template-columns: 1fr;
+            row-gap: var(--spacing-step-xl);
+            padding-block: var(--spacing-step-l);
+            padding-inline: var(--spacing-step-m);
+        }
+
+        .hero__copy {
+            padding-block: 0;
+        }
+
+        .hero__title {
+            --font-hero-title-size: clamp(
+                calc(var(--font-heading-scale) * var(--font-heading-floor-2)),
+                calc(var(--font-heading-scale) * 8.5cqi),
+                calc(var(--font-heading-scale) * var(--type-step-5))
+            );
+            width: auto;
+            max-width: 100%;
+            font-size: var(--font-hero-title-size);
+        }
+
+        .hero__visual {
+            justify-self: center;
+        }
+
+        .hero__model {
+            inset-block-start: -2%;
+            inset-inline-end: -3%;
+        }
+
+        .hero__focus {
+            inset-inline-start: 0;
+            inset-block-start: 62%;
+        }
+
+        .hero__diameter {
+            inset-inline-end: 0;
+            inset-block-start: 73%;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero__cta {
+            transition-duration: 0.01ms;
+        }
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+    "name": "t:sections.hero.name",
+    "tag": "section",
+    "class": "section-hero",
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.hero.settings.color_scheme",
+            "default": "scheme-2"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.hero.content.copy"
+        },
+        {
+            "type": "textarea",
+            "id": "kicker",
+            "label": "t:sections.hero.settings.kicker",
+            "default": "t:sections.hero.defaults.kicker"
+        },
+        {
+            "type": "text",
+            "id": "brand_heading",
+            "label": "t:sections.hero.settings.brand_heading",
+            "default": "t:sections.hero.defaults.brand_heading"
+        },
+        {
+            "type": "textarea",
+            "id": "descriptor_heading",
+            "label": "t:sections.hero.settings.descriptor_heading",
+            "default": "t:sections.hero.defaults.descriptor_heading"
+        },
+        {
+            "type": "textarea",
+            "id": "lede",
+            "label": "t:sections.hero.settings.lede",
+            "default": "t:sections.hero.defaults.lede"
+        },
+        {
+            "type": "textarea",
+            "id": "description",
+            "label": "t:sections.hero.settings.description",
+            "default": "t:sections.hero.defaults.description"
+        },
+        {
+            "type": "text",
+            "id": "cta_label",
+            "label": "t:sections.hero.settings.cta_label",
+            "default": "t:sections.hero.defaults.cta_label"
+        },
+        {
+            "type": "url",
+            "id": "cta_link",
+            "label": "t:sections.hero.settings.cta_link"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.hero.content.media"
+        },
+        {
+            "type": "image_picker",
+            "id": "image",
+            "label": "t:sections.hero.settings.image"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.hero.content.annotations"
+        },
+        {
+            "type": "textarea",
+            "id": "model_specs",
+            "label": "t:sections.hero.settings.model_specs",
+            "default": "t:sections.hero.defaults.model_specs"
+        },
+        {
+            "type": "textarea",
+            "id": "focus_specs",
+            "label": "t:sections.hero.settings.focus_specs",
+            "default": "t:sections.hero.defaults.focus_specs"
+        },
+        {
+            "type": "text",
+            "id": "diameter_label",
+            "label": "t:sections.hero.settings.diameter_label",
+            "default": "t:sections.hero.defaults.diameter_label"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.hero.content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.hero.settings.padding_top",
+            "default": 0
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.hero.settings.padding_bottom",
+            "default": 0
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:sections.hero.presets.hero"
+        }
+    ]
+}
+{% endschema %}

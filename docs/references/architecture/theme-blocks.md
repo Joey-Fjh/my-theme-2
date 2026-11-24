@@ -4,6 +4,12 @@ This reference owns the Theme Block contracts: the initial block inventory, the 
 
 Inspect current source for exact settings, schema shape, and markup.
 
+## Shopify block types
+
+Theme Blocks are standalone files under `blocks/`. A section or parent block can render editor-managed children with `{% content_for 'blocks' %}`. The parent can accept public Theme Blocks through `@theme` or name specific block types. A static Theme Block uses `{% content_for 'block' %}` at a fixed position and can still have editable settings. [Theme block targeting](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/targeting) · [Static blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/static-blocks)
+
+Section blocks live in the schema and Liquid of their own section and have a single level. This theme uses that model in `sections/product.liquid` and `sections/footer.liquid`, and uses Theme Blocks in the Container section. [Shopify block types](https://shopify.dev/docs/storefronts/themes/architecture/blocks)
+
 ## Scope and non-scope
 
 **In scope:**
@@ -18,7 +24,7 @@ Inspect current source for exact settings, schema shape, and markup.
 - Liquid `{% block %}` / `{% partial %}` — not baseline dependencies; adoption requires explicit approval (`javascript-runtime.md`, Liquid Rendering Features)
 - `SectionRefresher` — transitional label only; still the required section-refresh mechanism today (`javascript-runtime.md`, Transitional status)
 - New block types, schemas, and allowed parents beyond the four blocks below
-- Composing other sections from theme blocks and adding block types: the organization follows Horizon (sections composed from theme blocks, static blocks for fixed parts), but the template ships only the Container host and the four blocks; derived themes extend both
+- Adoption of Theme Blocks by an additional section and expansion of the block inventory belong to that section's scope
 - Media behavior, including a Container `background_image` setting — deferred; see `../style-system/image-display-contract.md`
 - Global page, Section, and Block layout protocol — see `../style-system/css-method.md` and its bindings in `../style-system/css-architecture.md` (CSS Method bindings)
 - Whether to extend a shared abstraction — see `abstraction-boundaries.md`

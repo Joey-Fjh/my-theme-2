@@ -1,8 +1,8 @@
-# my-skeleton-theme
+# AXIS / LAYR Shopify theme
 
-Internal Shopify Skeleton Theme mother template for building maintainable and extensible themes.
+Official Shopify theme for the AXIS / LAYR eyewear storefront, derived from the internal Skeleton-based theme.
 
-Identity, inventory boundary, and accepted scope: [docs/project.md](docs/project.md). Rules, task routing, and validation commands: [AGENTS.md](AGENTS.md).
+Project identity and scope are recorded in [docs/project.md](docs/project.md). The [Shopify design draft](DESIGN.md) and the [homepage frame and global settings](docs/agent/board.md#homepage-frame-and-global-settings) are ready for review. Repository rules and validation commands are in [AGENTS.md](AGENTS.md).
 
 ## Requirements
 
@@ -125,39 +125,21 @@ npm.cmd run test:layout         # Storefront layout scan (Chrome + shopify:dev).
 
 Use `npm.cmd` for project scripts in this Windows workspace. Default to the smallest relevant validation command while developing; run full `npm.cmd run lint` and `npm.cmd test` before PR, version/release, or Theme Store submission, or when explicitly requested.
 
-## New theme repository setup
+## GitHub CI setup
 
-Do this once when a new GitHub repository is created from this code. It does not apply to the skeleton repository itself, which imports no ruleset and skips the `Lighthouse` job (`.github/workflows/lighthouse.yml`). The CI store (`ci-test`, loaded with Shopify's performance test CSV) and its Theme Access password are shared by every theme and are not set up again.
+Lighthouse audits a Shopify development store with a published product and collection. Select the test store and catalog fixtures for this repository.
 
 1. **Protect `main`.** In the repository on GitHub: Settings, Rules, Rulesets, New ruleset, Import a ruleset, and choose `.github/rulesets/main.json`. It requires a pull request and the `Lint`, `Theme Check` and `Lighthouse` checks (up to date), and blocks force pushes and deletion; repository admins may bypass it for pull requests only.
-2. **Add the Actions secrets** (Settings, Secrets and variables, Actions) that `.github/workflows/lighthouse.yml` reads: `SHOP_STORE`, `SHOP_ACCESS_TOKEN` and `SHOP_PASSWORD`. Enter the values on GitHub only; never put them in a file.
-3. **Run the `Lighthouse` workflow once by hand** (Actions, Lighthouse, Run workflow) to prove the secrets work. The button appears once the workflow file is on `main`.
+2. **Configure the Actions settings.** Set `SHOP_STORE`, `SHOP_ACCESS_TOKEN` and, for a password-protected storefront, `SHOP_PASSWORD` as repository secrets. Pin published sample handles with repository variables `LIGHTHOUSE_PRODUCT_HANDLE` and `LIGHTHOUSE_COLLECTION_HANDLE`. When these variables are empty, the action looks for the first published product and the first published manual collection. [Shopify Lighthouse CI action](https://github.com/Shopify/lighthouse-ci-action/blob/v1/entrypoint.sh#L197-L213)
+3. **Run the `Lighthouse` workflow manually** from GitHub Actions once the workflow is on `main`. Confirm the home, product and collection URLs are audited.
 
 `npm.cmd run doctor:agent` fails when a check the ruleset file requires is not the name of a workflow job, because such a merge would wait forever. It reads files only: it does not see the live ruleset or the secrets, so change the file and the live ruleset together.
 
-## Start a derived theme
+## Theme delivery
 
-A derived theme starts from this repository the same way a theme starts from Shopify's official Skeleton, and is then edited directly. It does not pull later changes from this repository. The repository is private, so both commands need GitHub access to it.
+Review the [design draft](DESIGN.md) before mapping values, preparing a preset or implementing theme sections. See [Design to delivery](docs/references/style-system/design-to-delivery.md).
 
-```powershell
-shopify theme init <theme-name> --clone-url https://github.com/Joey-Fjh/my-skeleton-theme
-# or
-git clone https://github.com/Joey-Fjh/my-skeleton-theme <theme-name>
-```
-
-After starting, the derived theme makes these edits:
-
-- `theme_info` in `config/settings_schema.json` identifies this private mother template, and its links resolve only for repository collaborators. Replace the name, author, version, documentation URL, and support destination with the derived theme's own real values that merchants can reach.
-- Rewrite `docs/project.md` for the derived theme's own identity and scope; the mother-template inventory rules do not bind it. `AGENTS.md` holds shared rules and stays as is.
-- Empty `docs/agent/board.md`, `docs/agent/backlog.md` and `docs/agent/context.md`.
-- Follow [Design to delivery](docs/references/style-system/design-to-delivery.md) to get from a design to the theme's settings, default preset, and sections. The starting point is the baseline [DESIGN.md](DESIGN.md), which the theme replaces or supplements from its design draft.
-- Resetting `config/settings_data.json`, `templates/*.json`, or `sections/*-group.json` needs its own authorization in the derived theme. Each commit that changes them carries a `Merchant-Change:` trailer (`AGENTS.md`, Core Rules); set `merchantGuardFrom` in `.agents/tools/harness/routes.json` to the derived theme's starting commit only if its history before that commit should be exempt.
-
-Then deploy through Git:
-
-1. Push the derived theme to its own GitHub repository.
-2. In the Shopify admin, connect a branch of that repository through the [Shopify GitHub integration](https://shopify.dev/docs/storefronts/themes/tools/github). Shopify updates the theme whenever the branch changes and commits theme editor and code editor saves back to the branch as "Update from Shopify" commits; this cannot be disabled, so pull before pushing.
-3. The integration reads only the default theme folder structure and ignores folders outside it, such as `docs/`, `tailwind/`, and `.agents/`. It runs no build, so rebuild and commit `assets/tailwind.output.css` (`npm.cmd run build:tw`) before pushing Tailwind source changes.
+The Shopify GitHub integration can connect a branch of `Joey-Fjh/my-theme-2` to a theme. When connected, Shopify syncs branch changes and sends theme editor and code editor saves back as "Update from Shopify" commits. Pull before pushing. Include a current `assets/tailwind.output.css` in commits that change the Tailwind sources or content inputs. [Shopify GitHub integration](https://shopify.dev/docs/storefronts/themes/tools/github)
 
 ## Repository Boundaries
 

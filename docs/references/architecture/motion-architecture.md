@@ -4,7 +4,7 @@ This reference stores motion decision boundaries that are too long for `AGENTS.m
 
 Inspect current source for exact selectors, timing values, and runtime internals.
 
-The mother template ships one loading recipe: `.spinner` / `.spinner-lg` in `tailwind/tailwind.animates.css`, used by `snippets/buy-buttons.liquid` and `snippets/loading.liquid`. Derived themes add further recipes under this policy.
+The shared loader in `snippets/loading.liquid` uses the `.spinner` and `.spinner-lg` recipe from `tailwind/tailwind.animates.css`.
 
 ## Motion Goals
 
@@ -27,7 +27,7 @@ The mother template ships one loading recipe: `.spinner` / `.spinner-lg` in `tai
 | --- | --- | --- |
 | Hover/focus, loader, decorative loop, pause/running | CSS capability utility | GSAP |
 | Open/close, show/hide, active/inactive, loading visibility | Alpine state + direct CSS/state classes when needed | GSAP, `x-transition` (`lint:theme`) |
-| Section or media reveal | Derived theme defines it under this policy | GSAP unless classified as complex choreography |
+| Section or media reveal | The section defines it under this policy | GSAP unless classified as complex choreography |
 | Complex narrative choreography | GSAP only after explicit classification and approval | — |
 
 ## Conflict Rule
@@ -36,7 +36,7 @@ Alpine/CSS and GSAP must not control `opacity` or `transform` on the same elemen
 
 ## Drawer And Overlay Motion
 
-The mother template ships no drawer or dialog overlay. Derived themes that add one own its motion under the existing `prefers-reduced-motion` policy and must not rely on removed drawer infrastructure from this repository.
+A drawer or dialog added to this theme owns its motion under the existing `prefers-reduced-motion` policy.
 
 ## GSAP Boundary
 
@@ -59,7 +59,7 @@ Implementation rules:
 
 ## Page-Type Policy
 
-Conversion pages such as product, collection, search, cart, and checkout-adjacent flows should use restrained motion: state transitions, interaction feedback, media controls, and below-the-fold motion only when a derived theme adds it.
+For conversion pages such as product, collection, search, cart, and checkout-adjacent flows, keep motion restrained. Use it for state transitions, interaction feedback, media controls, and scoped below-the-fold content.
 
 Home, brand, editorial, campaign, and storytelling pages may use richer choreography when no critical first-viewport content is hidden before JavaScript, no LCP candidate waits for animation, reduced motion is respected, and keyboard and screen-reader access remain intact.
 

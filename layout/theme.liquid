@@ -8,8 +8,18 @@
         assign dir = 'ltr'
     endif
     assign page_canvas_color_scheme = settings.page_canvas_color_scheme | default: 'scheme-2'
+    assign has_page_rail = false
+    if request.page_type == 'index'
+        assign has_page_rail = true
+    endif
 -%}
-<html lang="{{ request.locale.iso_code }}" dir="{{ dir }}">
+<html
+    lang="{{ request.locale.iso_code }}"
+    dir="{{ dir }}"
+    {% if has_page_rail %}
+        data-page-rail="true"
+    {% endif %}
+>
     <head>
         {% # Social, title, etc. %}
         {% render 'meta-tags' %}
@@ -38,11 +48,17 @@
             {{- 'accessibility.skip_to_content' | t -}}
         </a>
 
-        {% sections 'header-group' %}
+        <div class="page-shell">
+            {% sections 'header-group' %}
 
-        <main id="MainContent" role="main" tabindex="-1">
-            {{ content_for_layout }}
-        </main>
+            <main id="MainContent" role="main" tabindex="-1">
+                {{ content_for_layout }}
+            </main>
+
+            {%- if has_page_rail -%}
+                {% render 'page-rail' %}
+            {%- endif -%}
+        </div>
 
         {% sections 'footer-group' %}
     </body>
