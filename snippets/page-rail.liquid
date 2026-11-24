@@ -1,33 +1,39 @@
 {% doc %}
-    Renders the decorative static architectural ruler rail along the inline-end
-    content edge on the homepage. Width and outer positioning are owned by L0
-    frame rules in `assets/base.css`; internal numeral and tick degradation
-    responds to the rail's own container inline size (`@container page-rail`).
+    Renders the decorative static architectural ruler rail along the inline-start
+    canvas edge on the homepage, running from Header top edge to Footer bottom
+    edge at a fixed vertical tick and numeral pitch. Width and outer positioning
+    are owned by L0 frame rules in `assets/base.css`. CSS repeats the ticks;
+    `assets/page-rail.js` measures the first numeral and shows the labels that fit.
 {% enddoc %}
 
-{%- assign rail_marks = '00,10,20,30,40,50,60,70,80' | split: ',' -%}
-
-<aside class="page-rail" aria-hidden="true">
+<aside
+    class="page-rail"
+    aria-hidden="true"
+    x-data="pageRail"
+    data-module-id="page-rail"
+>
     <div class="page-rail__track">
-        {%- for mark in rail_marks -%}
-            <span class="page-rail__mark">
-                <span class="page-rail__num">{{ mark }}</span>
-            </span>
-        {%- endfor -%}
+        <span class="page-rail__mark">
+            <span class="page-rail__num">00</span>
+        </span>
     </div>
 </aside>
 
 {% stylesheet %}
     .page-rail__track {
-        --rail-major-w: 1.7rem;
-        --rail-minor-w: 0.7rem;
-        --rail-num-pad: 2.3rem;
+        --rail-origin: 2rem;
+        --rail-step: 6rem;
+        --rail-major-step: var(--rail-step);
+        --rail-major-w: 1.4rem;
+        --rail-mid-w: 0.9rem;
+        --rail-minor-w: 0.5rem;
+        --rail-num-pad: 1.8rem;
         position: relative;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-        padding-block: var(--spacing-step-l);
+        align-items: flex-start;
+        min-height: 100%;
+        padding-block-start: var(--rail-origin);
         font-family: var(--font-mono-family);
         color: var(--color-subtle);
     }
@@ -35,82 +41,92 @@
     .page-rail__track::before {
         content: '';
         position: absolute;
-        inset-block: var(--spacing-step-l);
+        inset-block: var(--rail-origin) 0;
         inset-inline-start: 0;
-        width: var(--rail-minor-w);
-        background: repeating-linear-gradient(
-            to bottom,
-            var(--color-line) 0 1px,
-            transparent 1px 1.2rem
-        );
+        width: var(--rail-major-w);
+        background-image:
+            repeating-linear-gradient(
+                to bottom,
+                var(--color-line-strong) 0 1px,
+                transparent 1px var(--rail-major-step)
+            ),
+            repeating-linear-gradient(
+                to bottom,
+                var(--color-line) 0 1px,
+                transparent 1px calc(var(--rail-step) * 0.5)
+            ),
+            repeating-linear-gradient(
+                to bottom,
+                var(--color-line) 0 1px,
+                transparent 1px calc(var(--rail-step) * 0.1)
+            );
+        background-size:
+            var(--rail-major-w) 100%,
+            var(--rail-mid-w) 100%,
+            var(--rail-minor-w) 100%;
+        background-repeat: no-repeat;
     }
 
     .page-rail__mark {
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        height: 1px;
+        flex: 0 0 auto;
+        width: 100%;
+        height: var(--rail-step);
         padding-inline-start: var(--rail-num-pad);
         font-size: calc(var(--type-step--2) * var(--font-body-scale));
-        font-weight: var(--font-heading-weight);
-        line-height: calc(var(--font-heading-line-height) * 0.85);
+        font-weight: var(--font-body-weight);
+        line-height: var(--font-heading-line-height);
         letter-spacing: 0.04em;
         white-space: nowrap;
     }
 
-    .page-rail__mark::before {
-        content: '';
-        position: absolute;
-        inset-block-start: 0;
-        inset-inline-start: 0;
-        width: var(--rail-major-w);
-        height: 1px;
-        background-color: var(--color-line-strong);
+    .page-rail__num {
+        display: inline-block;
+        transform: translateY(-50%);
+    }
+
+    .page-rail__track:not([data-rail-labels-ready]) .page-rail__num {
+        visibility: hidden;
     }
 
     @container page-rail (max-width: 4.99rem) {
         .page-rail__track {
-            --rail-major-w: 1.3rem;
-            --rail-minor-w: 0.5rem;
-            --rail-num-pad: 1.8rem;
-        }
-
-        .page-rail__mark:nth-child(even) .page-rail__num {
-            display: none;
-        }
-
-        .page-rail__mark:nth-child(even)::before {
-            width: 0.9rem;
-            background-color: var(--color-line);
-        }
-    }
-
-    @container page-rail (max-width: 3.79rem) {
-        .page-rail__track {
-            --rail-major-w: 1rem;
-            --rail-minor-w: 0.4rem;
-            --rail-num-pad: 1.3rem;
+            --rail-major-step: calc(var(--rail-step) * 2);
+            --rail-major-w: 1.1rem;
+            --rail-mid-w: 0.7rem;
+            --rail-minor-w: 0.45rem;
+            --rail-num-pad: 1.4rem;
         }
 
         .page-rail__mark {
             letter-spacing: var(--font-body-letter-spacing);
         }
 
-        .page-rail__mark:not(:nth-child(1)):not(:nth-child(5)):not(:nth-child(9)) .page-rail__num {
+        .page-rail__mark:nth-child(even) .page-rail__num {
             display: none;
         }
+    }
 
-        .page-rail__mark:not(:nth-child(1)):not(:nth-child(5)):not(:nth-child(9))::before {
-            width: 0.7rem;
-            background-color: var(--color-line);
+    @container page-rail (max-width: 3.79rem) {
+        .page-rail__track {
+            --rail-major-step: calc(var(--rail-step) * 4);
+            --rail-major-w: 0.9rem;
+            --rail-mid-w: 0.6rem;
+            --rail-minor-w: 0.4rem;
+            --rail-num-pad: 1.1rem;
+        }
+
+        .page-rail__mark:not(:nth-child(4n + 1)) .page-rail__num {
+            display: none;
         }
     }
 
     @container page-rail (max-width: 2.79rem) {
         .page-rail__track {
-            --rail-major-w: 0.9rem;
-            --rail-minor-w: 0.4rem;
+            --rail-major-step: var(--rail-step);
+            --rail-major-w: 0.8rem;
+            --rail-mid-w: 0.5rem;
+            --rail-minor-w: 0.35rem;
         }
 
         .page-rail__num {

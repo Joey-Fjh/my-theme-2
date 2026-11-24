@@ -155,6 +155,8 @@
         {% comment %} font Variables {% endcomment %}
         --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
         --font-body-style: {{ settings.type_body_font.style }};
+        --font-body-weight: {{ settings.type_body_font.weight }};
+        --font-body-weight-bold: {% if body_font_bold %}{{ body_font_bold.weight }}{% else %}{{ settings.type_body_font.weight }}{% endif %};
         {%- liquid
             assign theme_body_font_size = settings.body_font_size | default: 16
             assign theme_body_font_size_mobile = settings.body_font_size_mobile | default: 16

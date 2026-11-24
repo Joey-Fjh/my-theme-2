@@ -1,6 +1,21 @@
+{%- liquid
+    assign has_country_selector = false
+    if localization.available_countries.size > 1
+        assign has_country_selector = true
+    endif
+    assign has_language_selector = false
+    if localization.available_languages.size > 1
+        assign has_language_selector = true
+    endif
+    assign has_localization = false
+    if has_country_selector or has_language_selector
+        assign has_localization = true
+    endif
+-%}
+
 <footer
     data-section-id="{{ section.id }}"
-    class="section color-{{ section.settings.color_scheme }}"
+    class="section footer color-{{ section.settings.color_scheme }}"
 >
     {% for block in section.blocks %}
         {% if block.type == 'link_column' %}
@@ -29,12 +44,102 @@
         </div>
     {% endif %}
 
-    <p>
-        {{ 'now' | date: '%Y' }}
-        {{ shop.name | escape }}
-        {{ 'footer.all_rights_reserved' | t }}
-    </p>
+    <div class="footer__bottom">
+        <p class="footer__copyright">
+            {{ 'now' | date: '%Y' }}
+            {{ shop.name | escape }}
+            {{ 'footer.all_rights_reserved' | t }}
+        </p>
+
+        {%- if has_localization -%}
+            <div class="footer__localization">
+                {%- if has_country_selector -%}
+                    {%- render 'country-localization', localPosition: 'FooterCountry' -%}
+                {%- endif -%}
+                {%- if has_language_selector -%}
+                    {%- render 'language-localization', localPosition: 'FooterLanguage' -%}
+                {%- endif -%}
+            </div>
+        {%- endif -%}
+    </div>
 </footer>
+
+{% stylesheet %}
+    .footer {
+        container-type: inline-size;
+        container-name: footer-frame;
+        position: relative;
+        z-index: var(--z-layer-dropdown);
+    }
+
+    .footer__bottom {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        column-gap: var(--spacing-step-l);
+        row-gap: var(--spacing-step-xs);
+        padding-block: var(--spacing-step-s);
+    }
+
+    .footer__localization {
+        margin-inline-start: auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        column-gap: var(--spacing-step-m);
+        row-gap: var(--spacing-step-2xs);
+    }
+
+    .footer__localization .localization-switcher :where(button) {
+        min-height: 3.2rem;
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgb(var(--color-foreground));
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    .footer__localization .localization-switcher .localization-menu {
+        inset-block-start: auto;
+        inset-block-end: calc(100% + var(--spacing-step-3xs));
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+        width: max-content;
+        min-width: min(22rem, calc(100cqi - var(--spacing-step-l)));
+        max-width: min(32rem, calc(100cqi - var(--spacing-step-l)));
+        max-height: min(24rem, calc(var(--screen-height) - 12rem));
+        border: 1px solid var(--color-line);
+        padding: var(--spacing-step-2xs);
+    }
+
+    .footer__localization .localization-switcher .localization-option {
+        align-items: baseline;
+        justify-content: flex-start;
+        padding: 0.45em 0.65em;
+        text-align: start;
+        overflow-wrap: break-word;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .footer__localization .localization-switcher :where(button):hover {
+            color: rgb(var(--color-accent-background));
+        }
+    }
+
+    @container footer-frame (max-width: 80.99rem) {
+        .footer__localization {
+            display: none;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .footer__localization .localization-switcher :where(button) {
+            transition-duration: 0.01ms;
+        }
+    }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -49,7 +154,7 @@
             "type": "color_scheme",
             "id": "color_scheme",
             "label": "t:sections.footer.settings.color_scheme",
-            "default": "scheme-1"
+            "default": "scheme-2"
         }
     ],
     "blocks": [

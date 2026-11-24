@@ -4,5 +4,4 @@ Accepted work that no batch has taken yet. One line per item: `- <item>. Source:
 
 Last updated: 2026-11-24.
 
-- Batch AL-2: Apply AXIS / LAYR default preset values (`page_width: 1400`, `page_margin: 32`, paper/ink/cobalt scheme colors, typography) and wire Header scheme and homepage Hero section (requires explicit `Merchant-Change:` authorization). Source: 2026-11-24 user decision. Surface: `config/settings_data.json`, `sections/header-group.json`, `templates/index.json`.
 - Defer carousel and homepage sections below Hero (frame geometry and fit, material and detail, product cards, service strip, optician endorsement, footer styling) until Header and Hero are accepted. Source: 2026-11-24 user decision. Surface: homepage sections and `templates/index.json`.

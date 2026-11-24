@@ -12,8 +12,12 @@
     if localization.available_languages.size > 1
         assign has_language_selector = true
     endif
+    assign has_localization = false
+    if has_country_selector or has_language_selector
+        assign has_localization = true
+    endif
     assign has_mobile_drawer = false
-    if has_header_menu or shop.customer_accounts_enabled or has_country_selector or has_language_selector
+    if has_header_menu or shop.customer_accounts_enabled or has_localization
         assign has_mobile_drawer = true
     endif
 -%}
@@ -27,7 +31,9 @@
             <div class="header__brand" style="--header-logo-width: {{ settings.logo_width }}px">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
                 {%- if settings.logo -%}
-                    {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
+                    {%- assign logo_height = settings.logo_width
+                        | divided_by: settings.logo.aspect_ratio
+                    -%}
                     {%- capture sizes -%}
                         (max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px
                     {%- endcapture -%}
@@ -84,7 +90,9 @@
 
                 {%- assign cart_aria_label = 'accessibility.cart' | t -%}
                 {%- if cart.item_count > 0 -%}
-                    {%- assign cart_aria_label = 'accessibility.cart_with_count' | t: count: cart.item_count -%}
+                    {%- assign cart_aria_label = 'accessibility.cart_with_count'
+                        | t: count: cart.item_count
+                    -%}
                 {%- endif -%}
                 <a
                     class="header__tool header__cart"
@@ -145,7 +153,7 @@
                                                 {%- if link.links != blank -%}
                                                     <ul class="header__drawer-sublist" role="list">
                                                         {%- for childlink in link.links -%}
-                                                            <li>
+                                                            <li class="header__drawer-subitem">
                                                                 <a
                                                                     class="header__drawer-sublink copy-s"
                                                                     href="{{ childlink.url }}"
@@ -155,6 +163,29 @@
                                                                 >
                                                                     {{- childlink.title | escape -}}
                                                                 </a>
+                                                                {%- if childlink.links != blank -%}
+                                                                    <ul
+                                                                        class="header__drawer-grandlist"
+                                                                        role="list"
+                                                                    >
+                                                                        {%- for grandchildlink in childlink.links -%}
+                                                                            <li>
+                                                                                <a
+                                                                                    class="header__drawer-grandlink copy-s"
+                                                                                    href="{{ grandchildlink.url }}"
+                                                                                    {% if grandchildlink.current %}
+                                                                                        aria-current="page"
+                                                                                    {% endif %}
+                                                                                >
+                                                                                    {{-
+                                                                                        grandchildlink.title
+                                                                                        | escape
+                                                                                    -}}
+                                                                                </a>
+                                                                            </li>
+                                                                        {%- endfor -%}
+                                                                    </ul>
+                                                                {%- endif -%}
                                                             </li>
                                                         {%- endfor -%}
                                                     </ul>
@@ -164,19 +195,30 @@
                                     </ul>
                                 {%- endif -%}
 
-                                {%- if shop.customer_accounts_enabled or has_country_selector or has_language_selector -%}
+                                {%- if shop.customer_accounts_enabled or has_localization -%}
                                     <div class="header__drawer-utilities">
                                         {%- if shop.customer_accounts_enabled -%}
                                             <div class="header__drawer-account">
                                                 <shopify-account menu="customer-account-main-menu">
                                                     <span slot="signed-out-avatar">
-                                                        {%- render 'icons', icon: 'icon-account', size: 'sm' -%}
+                                                        {%- render 'icons',
+                                                            icon: 'icon-account',
+                                                            size: 'sm'
+                                                        -%}
                                                     </span>
                                                 </shopify-account>
                                             </div>
                                         {%- endif -%}
-                                        {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
-                                        {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
+                                        {%- if has_country_selector -%}
+                                            {%- render 'country-localization',
+                                                localPosition: 'HeaderMobileCountry'
+                                            -%}
+                                        {%- endif -%}
+                                        {%- if has_language_selector -%}
+                                            {%- render 'language-localization',
+                                                localPosition: 'HeaderMobileLanguage'
+                                            -%}
+                                        {%- endif -%}
                                     </div>
                                 {%- endif -%}
                             </nav>
@@ -189,20 +231,39 @@
 </header>
 
 {% stylesheet %}
-    .header__frame {
+    .header {
         container-type: inline-size;
         container-name: header-frame;
+        position: relative;
+        z-index: var(--z-layer-dropdown);
+    }
+
+    .header__frame {
         position: relative;
         border-inline: 1px solid var(--color-line);
         border-block-end: 1px solid var(--color-line);
     }
 
+    .header__frame .localization-switcher .localization-menu {
+        border: 1px solid var(--color-line);
+        padding: var(--spacing-step-2xs);
+    }
+
+    .header__frame .localization-switcher .localization-option {
+        align-items: baseline;
+        justify-content: flex-start;
+        padding: 0.45em 0.65em;
+        text-align: start;
+        overflow-wrap: break-word;
+    }
+
     .header__bar {
         position: relative;
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
         align-items: center;
         min-height: clamp(5.8rem, 5.8cqi, 7rem);
+        padding-block: var(--spacing-step-2xs);
         padding-inline: clamp(var(--spacing-step-m), 2cqi, var(--spacing-step-xl));
         column-gap: var(--spacing-step-m);
     }
@@ -210,10 +271,12 @@
     .header__brand {
         justify-self: start;
         min-width: 0;
+        max-width: 100%;
     }
 
     .header__brand .theme-image {
-        width: var(--header-logo-width);
+        width: min(var(--header-logo-width), 100%);
+        max-width: 100%;
     }
 
     .header__wordmark {
@@ -223,7 +286,8 @@
             calc(var(--type-step-2) * var(--font-heading-scale))
         );
         display: inline-block;
-        white-space: nowrap;
+        max-width: 100%;
+        overflow-wrap: break-word;
         font-family: var(--font-heading-family);
         font-style: var(--font-heading-style);
         font-weight: var(--font-heading-weight);
@@ -237,13 +301,20 @@
     .header__nav {
         justify-self: center;
         min-width: 0;
+        max-width: 100%;
     }
 
     .header__nav .header-dropdown-menu > ul {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: clamp(var(--spacing-step-l), calc(3.2cqi - var(--spacing-step-2xs)), var(--spacing-step-2xl));
+        column-gap: clamp(
+            var(--spacing-step-m),
+            calc(2.8cqi - var(--spacing-step-xs)),
+            var(--spacing-step-2xl)
+        );
+        row-gap: var(--spacing-step-2xs);
         list-style: none;
         padding: 0;
     }
@@ -254,12 +325,13 @@
         align-items: center;
         gap: var(--spacing-step-3xs);
         min-height: 3.6rem;
+        max-width: 100%;
         font-size: calc(var(--type-step--1) * var(--font-body-scale));
         font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
         text-transform: uppercase;
         letter-spacing: 0.1em;
         text-decoration: none;
-        white-space: nowrap;
         color: rgb(var(--color-foreground));
         transition: color var(--motion-duration-fast) var(--motion-ease-default);
     }
@@ -293,7 +365,8 @@
         .header__nav .header-dropdown-menu .dropdown-trigger:hover,
         .header__tool:hover,
         .header__drawer-link:hover,
-        .header__drawer-sublink:hover {
+        .header__drawer-sublink:hover,
+        .header__drawer-grandlink:hover {
             color: rgb(var(--color-accent-background));
         }
     }
@@ -347,16 +420,31 @@
     .header__drawer-panel {
         inset-block-start: 100%;
         inset-inline-end: 0;
+        display: flex;
+        flex-direction: column;
         min-width: min(32rem, calc(100cqi - var(--spacing-step-l)));
         max-width: 100cqi;
+        max-height: calc(var(--screen-height) - 8rem);
+        overflow: hidden;
         border: 1px solid var(--color-line);
         padding: var(--spacing-step-s) var(--spacing-step-m);
     }
 
+    .header__drawer-panel :focus-visible {
+        outline-offset: -2px;
+    }
+
     .header__drawer-list,
-    .header__drawer-sublist {
+    .header__drawer-sublist,
+    .header__drawer-grandlist {
         list-style: none;
         padding: 0;
+    }
+
+    .header__drawer-list {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
     }
 
     .header__drawer-item + .header__drawer-item {
@@ -380,7 +468,8 @@
         padding-block-end: var(--spacing-step-xs);
     }
 
-    .header__drawer-sublink {
+    .header__drawer-sublink,
+    .header__drawer-grandlink {
         display: flex;
         align-items: center;
         min-height: 3.6rem;
@@ -389,18 +478,50 @@
         transition: color var(--motion-duration-fast) var(--motion-ease-default);
     }
 
+    .header__drawer-grandlist {
+        padding-inline-start: var(--spacing-step-m);
+        margin-block-end: var(--spacing-step-2xs);
+        border-inline-start: 1px solid var(--color-line);
+    }
+
     .header__drawer-utilities {
+        flex: 0 0 auto;
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: var(--spacing-step-s);
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-step-xs);
+        min-height: 0;
+        max-height: 100%;
+        overflow-y: auto;
+    }
+
+    .header__drawer-list + .header__drawer-utilities {
         padding-block-start: var(--spacing-step-s);
         border-block-start: 1px solid var(--color-line);
     }
 
+    .header__drawer-utilities .localization-switcher {
+        width: 100%;
+    }
+
+    .header__drawer-utilities .localization-switcher :where(button) {
+        min-height: 3.6rem;
+        text-align: start;
+    }
+
+    .header__drawer-utilities .localization-switcher .localization-menu {
+        position: static;
+        inset: auto;
+        width: 100%;
+        max-width: 100%;
+        max-height: min(18rem, calc(var(--screen-height) * 0.32));
+        margin-block-start: var(--spacing-step-2xs);
+        overflow-y: auto;
+    }
+
     @container header-frame (max-width: 80.99rem) {
         .header__bar {
-            grid-template-columns: 1fr auto;
+            grid-template-columns: minmax(0, 1fr) auto;
         }
 
         .header__nav,
@@ -427,7 +548,8 @@
         .header__nav .header-dropdown-menu .dropdown-trigger,
         .header__tool,
         .header__drawer-link,
-        .header__drawer-sublink {
+        .header__drawer-sublink,
+        .header__drawer-grandlink {
             transition-duration: 0.01ms;
         }
     }

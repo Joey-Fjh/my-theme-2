@@ -14,18 +14,6 @@
     "page_width": 1200,
     "page_margin": 20,
     "color_schemes": {
-      "scheme-1": {
-        "settings": {
-          "background_color": "#111827",
-          "background_gradient_color": "",
-          "text_color": "#ffffff",
-          "border_color": "#ffffff",
-          "success_background_color": "#ecfdf5",
-          "success_foreground_color": "#065f46",
-          "error_background_color": "#fef2f2",
-          "error_foreground_color": "#991b1b"
-        }
-      },
       "scheme-2": {
         "settings": {
           "background_color": "#ffffff",

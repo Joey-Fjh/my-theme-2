@@ -7,7 +7,6 @@
     else
         assign dir = 'ltr'
     endif
-    assign page_canvas_color_scheme = settings.page_canvas_color_scheme | default: 'scheme-2'
     assign has_page_rail = false
     if request.page_type == 'index'
         assign has_page_rail = true
@@ -36,7 +35,6 @@
     </head>
 
     <body
-        class="color-{{ page_canvas_color_scheme }}"
         data-initial-cart="{{ cart | json | escape }}"
         data-cart-error-generic="{{ 'cart.errors.generic' | t | escape }}"
         data-cart-error-rate-limited="{{ 'cart.errors.rate_limited' | t | escape }}"
@@ -55,11 +53,11 @@
                 {{ content_for_layout }}
             </main>
 
+            {% sections 'footer-group' %}
+
             {%- if has_page_rail -%}
                 {% render 'page-rail' %}
             {%- endif -%}
         </div>
-
-        {% sections 'footer-group' %}
     </body>
 </html>

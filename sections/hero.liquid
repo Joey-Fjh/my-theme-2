@@ -30,14 +30,18 @@
         <div class="hero__grid">
             <div class="hero__copy">
                 {%- if section.settings.kicker != blank -%}
-                    <p class="hero__kicker">{{ section.settings.kicker | escape | newline_to_br }}</p>
+                    <p class="hero__kicker">
+                        {{ section.settings.kicker | escape | newline_to_br }}
+                    </p>
                     <span class="hero__dash" aria-hidden="true"></span>
                 {%- endif -%}
 
                 {%- if has_heading -%}
                     <h1 id="HeroHeading-{{ section.id }}" class="hero__title">
                         {%- if has_brand_heading -%}
-                            <span class="hero__brand">{{ section.settings.brand_heading | escape }}</span>
+                            <span class="hero__brand">
+                                {{- section.settings.brand_heading | escape -}}
+                            </span>
                         {%- endif -%}
                         {%- if has_descriptor_heading -%}
                             <span class="hero__descriptor">
@@ -52,7 +56,9 @@
                 {%- endif -%}
 
                 {%- if section.settings.description != blank -%}
-                    <p class="hero__description copy-m">{{ section.settings.description | escape }}</p>
+                    <p class="hero__description copy-m">
+                        {{ section.settings.description | escape }}
+                    </p>
                 {%- endif -%}
 
                 {%- if has_cta -%}
@@ -75,7 +81,7 @@
                         fetchpriority: 'high',
                         alt: portrait_alt,
                         widths: '360,540,720,960,1200,1440',
-                        sizes: '(min-width: 1024px) 52vw, (min-width: 640px) 54vw, 90vw',
+                        sizes: '(min-width: 1200px) 692px, (min-width: 900px) 56vw, (min-width: 680px) 53vw, (min-width: 420px) 340px, 85vw',
                         placeholder_key: 'lifestyle-1',
                         placeholder_style: 'plain',
                         wrapper_class: 'hero__portrait-media'
@@ -142,14 +148,18 @@
         content: '';
         position: absolute;
         inset-block: 0;
-        inset-inline-start: calc(100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5);
+        inset-inline-start: calc(
+            100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5
+        );
         width: 1px;
         background-color: var(--color-line);
         pointer-events: none;
     }
 
     .hero__junction {
-        inset-inline-start: calc(100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5);
+        inset-inline-start: calc(
+            100% - var(--hero-portrait-w) - var(--hero-pad-r) - var(--hero-gap) * 0.5
+        );
         inset-block-end: 0;
         transform: translate(-50%, 50%);
     }
@@ -243,7 +253,7 @@
         color: rgb(var(--color-foreground));
         font-family: var(--font-body-family);
         font-size: calc(var(--type-step--1) * var(--font-body-scale));
-        font-weight: var(--font-heading-weight);
+        font-weight: var(--font-body-weight-bold);
         line-height: var(--font-heading-line-height);
         letter-spacing: 0.06em;
         text-transform: uppercase;
@@ -291,8 +301,14 @@
             rgb(var(--color-accent-background)) 310deg 330deg,
             transparent 330deg
         );
-        -webkit-mask-image: radial-gradient(transparent calc(70.71% - 3.5px), currentColor calc(70.71% - 2.5px));
-        mask-image: radial-gradient(transparent calc(70.71% - 3.5px), currentColor calc(70.71% - 2.5px));
+        -webkit-mask-image: radial-gradient(
+            transparent calc(70.71% - 3.5px),
+            currentColor calc(70.71% - 2.5px)
+        );
+        mask-image: radial-gradient(
+            transparent calc(70.71% - 3.5px),
+            currentColor calc(70.71% - 2.5px)
+        );
     }
 
     .hero__portrait-media {

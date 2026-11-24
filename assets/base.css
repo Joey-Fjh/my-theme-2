@@ -9,24 +9,25 @@
     --page-rail-width: 0px;
     --page-rail-max: 6rem;
     --page-rail-content-floor: 84.8rem;
-    --page-outer-inset: max(
-        var(--page-margin),
-        calc((100% - var(--page-width) - var(--page-rail-width)) / 2)
-    );
-    --page-inset-start: var(--page-outer-inset);
-    --page-inset-end: calc(var(--page-outer-inset) + var(--page-rail-width));
+    --page-outer-inset: max(var(--page-margin), calc((100% - var(--page-width)) / 2));
+    --page-inset-start: calc(var(--page-outer-inset) + var(--page-rail-width));
+    --page-inset-end: var(--page-outer-inset);
     --page-inset: var(--page-outer-inset);
     --page-grid-columns: [full-start] minmax(var(--page-margin), 1fr) [content-start]
-        minmax(0, var(--page-width)) [content-end rail-start] var(--page-rail-width)
-        [rail-end] minmax(var(--page-margin), 1fr) [full-end];
+        minmax(0, var(--page-width)) [content-end] minmax(var(--page-margin), 1fr) [full-end];
 }
 
 :root[data-page-rail='true'] {
+    --page-canvas-width: min(calc(100% - 2 * var(--page-margin)), var(--page-width));
     --page-rail-width: clamp(
         0px,
-        calc((100vw - 2 * var(--page-margin) - var(--page-rail-content-floor)) * 0.5),
+        calc((var(--page-canvas-width) - var(--page-rail-content-floor)) * 0.5),
         var(--page-rail-max)
     );
+    --page-grid-columns: [full-start] minmax(var(--page-margin), 1fr) [rail-start]
+        var(--page-rail-width) [rail-end content-start]
+        minmax(0, calc(var(--page-width) - var(--page-rail-width))) [content-end]
+        minmax(var(--page-margin), 1fr) [full-end];
 }
 
 html {
@@ -89,9 +90,10 @@ body > .page-shell {
     position: relative;
     display: flex;
     flex-direction: column;
-    margin-block-end: auto;
+    flex: 1 0 auto;
 }
 
+body > .page-shell > main,
 body > main {
     flex-grow: 1;
 }
@@ -165,7 +167,7 @@ h6 {
     container-name: page-rail;
     position: absolute;
     inset-block: 0;
-    inset-inline-end: var(--page-outer-inset);
+    inset-inline-start: var(--page-outer-inset);
     width: var(--page-rail-width);
     min-width: 0;
     overflow: hidden;

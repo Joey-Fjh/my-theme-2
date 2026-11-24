@@ -62,8 +62,6 @@
         "colors": {
             "general": "General colors",
             "feedback_messages": "Feedback messages",
-            "page_canvas_color_scheme": "Page background color scheme",
-            "page_canvas_color_scheme_info": "Used behind sections and for areas without their own color scheme.",
             "background_gradient": "Background gradient",
             "background_gradient_info": "The background gradient will replace the background color at all applicable positions.",
             "border_color": "Border color",

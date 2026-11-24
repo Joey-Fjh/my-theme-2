@@ -55,7 +55,7 @@ This Shopify draft is for review. It draws on the accepted AXIS / LAYR homepage,
 
 ## Colors
 
-Use the flat paper scheme as the proposed `page-canvas-scheme` and for the Hero. `scheme-2` is the existing light scheme ID used as a candidate mapping. A gradient scheme and a second brand palette are deferred.
+The page canvas inherits the first configured scheme. `scheme-2` is the current light scheme and is also the Hero default. A gradient scheme and a second brand palette are deferred.
 
 | Draft tokens | Settings and visual role | Application |
 | --- | --- | --- |
@@ -64,7 +64,7 @@ Use the flat paper scheme as the proposed `page-canvas-scheme` and for the Hero.
 | `scheme-2-accent-background`, `scheme-2-accent-foreground` | `accent_background_color`, `accent_foreground_color`. Cobalt with paper on filled accent states. | Cobalt focus, links and selected details on paper. Paper labels on cobalt fills. Keep the Hero CTA in ink and paper. The ring uses cobalt as decoration. |
 | `scheme-2-success-background`, `scheme-2-success-foreground` | `success_background_color`, `success_foreground_color`. Existing feedback pair proposed for reuse. | Success messages on transactional controls and forms. |
 | `scheme-2-error-background`, `scheme-2-error-foreground` | `error_background_color`, `error_foreground_color`. Existing feedback pair proposed for reuse. | Error messages on transactional controls and forms. |
-| `page-canvas-scheme` | `page_canvas_color_scheme`. Proposed `scheme-2`. | Page canvas behind sections. |
+| `page-canvas-scheme` | First configured scheme in `color_schemes`, currently `scheme-2`. | Page canvas behind sections. |
 
 The portrait ring may pick up a softer line tint from the adjacent photography. The quote panel's soft violet lighting belongs to its editorial treatment. Derived text, surface and border roles continue to come from the theme scheme.
 
