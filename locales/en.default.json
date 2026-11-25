@@ -12,6 +12,9 @@
         "meta": {
             "tagged": "tagged \"{{ tags }}\"",
             "page": "Page {{ page }}"
+        },
+        "ruler": {
+            "unit_mm": "mm"
         }
     },
     "quantity": {

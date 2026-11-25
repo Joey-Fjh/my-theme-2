@@ -974,7 +974,7 @@
     overflow: hidden;
     pointer-events: none;
     user-select: none;
-    z-index: 1;
+    z-index: var(--z-layer-popover);
   }
   [x-cloak] {
     display: none;

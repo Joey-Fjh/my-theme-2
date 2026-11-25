@@ -16,6 +16,7 @@ The accepted homepage prototype supplies the visual sequence for the storefront.
 
 ## Status
 
-- 2026-11-24. The prototype is accepted as the visual reference. Review the Shopify design draft, page frame and global settings on the [work board](agent/board.md).
-- After design review, mapping and batch authorization, start the storefront implementation with the shared Header and homepage Hero. Carousel and sections below the Hero are deferred.
+- 2026-11-25. The accepted prototype guides the shared Header and homepage Hero now in the development theme. AL-5 set the 1400px page width, 16px margin and single light scheme with cobalt accents. AL-6 refined the Hero composition and homepage ruler.
+- AL-5 independent static checks and the AL-6 targeted correction review passed. User visual acceptance at 375, 768, 1024 and 1440 CSS px is pending. The latest portrait preview confirmed the circular crop and spacing and identified readability issues where the title and focus annotation overlap the photo. A preview with the CTA visible is also pending. See the [execution record](agent/context.md).
+- Carousel and homepage sections below the Hero remain deferred until the Header and Hero are accepted. The [work board](agent/board.md) tracks discussion of shared lines and crosshairs.
 - Git starts from the imported theme at `e920623`. Release, merge, review and CI history from the mother template belongs to that project.

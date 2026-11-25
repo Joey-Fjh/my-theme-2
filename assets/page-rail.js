@@ -21,6 +21,16 @@ define('pageRail', () => ({
         if (!firstNumber) return;
 
         const rail = this.$el.getBoundingClientRect();
+        const unit = firstNumber.querySelector('.page-rail__unit');
+        if (unit && rail.width > 0) {
+            track.removeAttribute('data-rail-hide-unit');
+            const numWithUnit = firstNumber.getBoundingClientRect();
+            const overflowsInline =
+                numWithUnit.width > 0 &&
+                (numWithUnit.left < rail.left || numWithUnit.right > rail.right);
+            track.toggleAttribute('data-rail-hide-unit', overflowsInline);
+        }
+
         const number = firstNumber.getBoundingClientRect();
         const step = firstMark.getBoundingClientRect().height;
         const visibleCount =
@@ -50,6 +60,18 @@ define('pageRail', () => ({
             while (track.children.length > needed) {
                 track.lastElementChild.remove();
             }
+        }
+
+        for (const mark of track.children) {
+            const num = mark.querySelector('.page-rail__num');
+            if (!num) continue;
+
+            const rect = num.getBoundingClientRect();
+            const overflows =
+                rail.width > 0 &&
+                rect.width > 0 &&
+                (rect.left < rail.left || rect.right > rail.right);
+            num.toggleAttribute('data-rail-overflow', overflows);
         }
 
         track.toggleAttribute('data-rail-labels-ready', visibleCount > 0);

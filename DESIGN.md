@@ -8,15 +8,15 @@ omitted:
     - section: components
       reason: Component treatments are described in the text until Shopify mapping is approved.
 colors:
-    scheme-2-background: '#FCFCFC'
-    scheme-2-text: '#111214'
-    scheme-2-border: '#111214'
-    scheme-2-accent-background: '#2320ED'
-    scheme-2-accent-foreground: '#FCFCFC'
-    scheme-2-success-background: '#ECFDF5'
-    scheme-2-success-foreground: '#065F46'
-    scheme-2-error-background: '#FEF2F2'
-    scheme-2-error-foreground: '#991B1B'
+    scheme-1-background: '#FCFCFC'
+    scheme-1-text: '#111214'
+    scheme-1-border: '#111214'
+    scheme-1-accent-background: '#2320ED'
+    scheme-1-accent-foreground: '#FCFCFC'
+    scheme-1-success-background: '#ECFDF5'
+    scheme-1-success-foreground: '#065F46'
+    scheme-1-error-background: '#FEF2F2'
+    scheme-1-error-foreground: '#991B1B'
 typography:
     heading-font:
         fontFamily: Inter
@@ -55,16 +55,16 @@ This Shopify draft is for review. It draws on the accepted AXIS / LAYR homepage,
 
 ## Colors
 
-The page canvas inherits the first configured scheme. `scheme-2` is the current light scheme and is also the Hero default. A gradient scheme and a second brand palette are deferred.
+The page canvas inherits the first configured scheme. `scheme-1` is the current light scheme and is also the Hero default. A gradient scheme and a second brand palette are deferred.
 
 | Draft tokens | Settings and visual role | Application |
 | --- | --- | --- |
-| `scheme-2-background`, `scheme-2-text` | `background_color`, `text_color`. Paper and ink from the prototype. | Paper on the page and section surfaces. Ink for text and matching icons. |
-| `scheme-2-border` | `border_color`. Ink for the CTA outline and meaningful control boundaries. | Reserve the full-strength line for functional edges. Derive quiet panel rules from the scheme. The prototype's light grey rules are visual references for decorative lines. |
-| `scheme-2-accent-background`, `scheme-2-accent-foreground` | `accent_background_color`, `accent_foreground_color`. Cobalt with paper on filled accent states. | Cobalt focus, links and selected details on paper. Paper labels on cobalt fills. Keep the Hero CTA in ink and paper. The ring uses cobalt as decoration. |
-| `scheme-2-success-background`, `scheme-2-success-foreground` | `success_background_color`, `success_foreground_color`. Existing feedback pair proposed for reuse. | Success messages on transactional controls and forms. |
-| `scheme-2-error-background`, `scheme-2-error-foreground` | `error_background_color`, `error_foreground_color`. Existing feedback pair proposed for reuse. | Error messages on transactional controls and forms. |
-| `page-canvas-scheme` | First configured scheme in `color_schemes`, currently `scheme-2`. | Page canvas behind sections. |
+| `scheme-1-background`, `scheme-1-text` | `background_color`, `text_color`. Paper and ink from the prototype. | Paper on the page and section surfaces. Ink for text and matching icons. |
+| `scheme-1-border` | `border_color`. Ink for the CTA outline and meaningful control boundaries. | Reserve the full-strength line for functional edges. Derive quiet panel rules from the scheme. The prototype's light grey rules are visual references for decorative lines. |
+| `scheme-1-accent-background`, `scheme-1-accent-foreground` | `accent_background_color`, `accent_foreground_color`. Cobalt with paper on filled accent states. | Cobalt focus, links and selected details on paper. Paper labels on cobalt fills. Keep the Hero CTA in ink and paper. The ring uses cobalt as decoration. |
+| `scheme-1-success-background`, `scheme-1-success-foreground` | `success_background_color`, `success_foreground_color`. Existing feedback pair proposed for reuse. | Success messages on transactional controls and forms. |
+| `scheme-1-error-background`, `scheme-1-error-foreground` | `error_background_color`, `error_foreground_color`. Existing feedback pair proposed for reuse. | Error messages on transactional controls and forms. |
+| `page-canvas-scheme` | First configured scheme in `color_schemes`, currently `scheme-1`. | Page canvas behind sections. |
 
 The portrait ring may pick up a softer line tint from the adjacent photography. The quote panel's soft violet lighting belongs to its editorial treatment. Derived text, surface and border roles continue to come from the theme scheme.
 

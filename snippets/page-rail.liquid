@@ -14,15 +14,19 @@
 >
     <div class="page-rail__track">
         <span class="page-rail__mark">
-            <span class="page-rail__num">00</span>
+            <span class="page-rail__num"
+                >0<span class="page-rail__unit">
+                    {{ 'general.ruler.unit_mm' | t -}}
+                </span></span
+            >
         </span>
     </div>
 </aside>
 
 {% stylesheet %}
     .page-rail__track {
-        --rail-origin: 2rem;
-        --rail-step: 6rem;
+        --rail-origin: 1.8rem;
+        --rail-step: 3rem;
         --rail-major-step: var(--rail-step);
         --rail-major-w: 1.4rem;
         --rail-mid-w: 0.9rem;
@@ -89,6 +93,14 @@
         visibility: hidden;
     }
 
+    .page-rail__track[data-rail-hide-unit] .page-rail__unit {
+        display: none;
+    }
+
+    .page-rail__num[data-rail-overflow] {
+        visibility: hidden;
+    }
+
     @container page-rail (max-width: 4.99rem) {
         .page-rail__track {
             --rail-major-step: calc(var(--rail-step) * 2);
@@ -117,6 +129,10 @@
         }
 
         .page-rail__mark:not(:nth-child(4n + 1)) .page-rail__num {
+            display: none;
+        }
+
+        .page-rail__unit {
             display: none;
         }
     }
