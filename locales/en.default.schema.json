@@ -346,6 +346,151 @@
                 "link_column_heading": "Catalog"
             }
         },
+        "optician-endorsement": {
+            "name": "Optician endorsement",
+            "content": {
+                "header": "Label",
+                "quote": "Quotation and attribution",
+                "media": "Portrait",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "section_number": "Section number",
+                "kicker": "Kicker",
+                "quote": "Quote",
+                "body": "Supporting copy",
+                "author_name": "Attribution name",
+                "author_role": "Attribution role or credentials",
+                "portrait": "Portrait image",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "optician_endorsement": "Optician endorsement"
+            }
+        },
+        "featured-frames": {
+            "name": "Featured frames",
+            "content": {
+                "heading": "Heading",
+                "products": "Products",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "section_number": "Section number",
+                "heading": "Heading",
+                "note": "Side note",
+                "products": "Products",
+                "details_label": "Details link label",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "featured_frames": "Featured frames"
+            }
+        },
+        "service-strip": {
+            "name": "Service strip",
+            "content": {
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "blocks": {
+                "service_item": {
+                    "name": "Service item",
+                    "settings": {
+                        "icon": "Icon",
+                        "title": "Title",
+                        "description": "Description",
+                        "link": "Link"
+                    },
+                    "options": {
+                        "icon": {
+                            "none": "None",
+                            "check": "Check circle",
+                            "info": "Info circle",
+                            "model": "3D model"
+                        }
+                    }
+                }
+            },
+            "presets": {
+                "service_strip": "Service strip"
+            }
+        },
+        "frame-geometry": {
+            "name": "Frame geometry & fit",
+            "content": {
+                "heading": "Heading",
+                "media": "Technical views",
+                "dimensions": "Frame dimensions",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "section_number": "Section number",
+                "heading": "Heading",
+                "note": "Side note",
+                "front_image": "Front view image",
+                "side_image": "Side view image",
+                "fit_label": "Fit label",
+                "size_code": "Size summary code",
+                "fit_note": "Specification note",
+                "frame_width": "Frame width",
+                "lens_width": "Lens width",
+                "bridge_width": "Bridge width",
+                "lens_height": "Lens height",
+                "temple_length": "Temple length",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "presets": {
+                "frame_geometry": "Frame geometry & fit"
+            }
+        },
+        "material-detail": {
+            "name": "Material & detail",
+            "content": {
+                "copy": "Introduction",
+                "padding": "Padding"
+            },
+            "settings": {
+                "color_scheme": "Color scheme",
+                "section_number": "Section number",
+                "heading": "Heading",
+                "intro": "Introduction text",
+                "padding_top": "Padding top",
+                "padding_bottom": "Padding bottom"
+            },
+            "blocks": {
+                "material_item": {
+                    "name": "Material detail item",
+                    "settings": {
+                        "index_label": "Index label",
+                        "title": "Title",
+                        "subtitle": "Subtitle",
+                        "image": "Image",
+                        "caption_position": "Caption position"
+                    },
+                    "options": {
+                        "caption_position": {
+                            "top_start": "Top start",
+                            "bottom_start": "Bottom start",
+                            "bottom_end": "Bottom end"
+                        }
+                    }
+                }
+            },
+            "presets": {
+                "material_detail": "Material & detail"
+            }
+        },
         "header": {
             "settings": {
                 "color_scheme": "Color scheme"

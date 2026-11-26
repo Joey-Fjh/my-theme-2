@@ -15,7 +15,44 @@
       "settings": {
         "color_scheme": "scheme-1"
       }
+    },
+    "frame_geometry": {
+      "type": "frame-geometry",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    },
+    "material_detail": {
+      "type": "material-detail",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    },
+    "featured_frames": {
+      "type": "featured-frames",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    },
+    "service_strip": {
+      "type": "service-strip",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
+    },
+    "optician_endorsement": {
+      "type": "optician-endorsement",
+      "settings": {
+        "color_scheme": "scheme-1"
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main",
+    "frame_geometry",
+    "material_detail",
+    "featured_frames",
+    "service_strip",
+    "optician_endorsement"
+  ]
 }

@@ -163,6 +163,70 @@
         "no_results_html": "No results found for {{ terms }}"
     },
     "sections": {
+        "optician-endorsement": {
+            "accessibility": {
+                "region": "Optician endorsement"
+            },
+            "quote_format": "“{{ quote }}”",
+            "attribution_prefix": "— {{ author }}",
+            "placeholders": {
+                "empty": "Add a quote and attribution name to display this endorsement."
+            }
+        },
+        "featured-frames": {
+            "accessibility": {
+                "region": "Featured frames",
+                "view_product": "{{ label }} — {{ title }}"
+            },
+            "labels": {
+                "view_details": "View details"
+            },
+            "placeholders": {
+                "empty": "Select up to three products to display in this section."
+            }
+        },
+        "service-strip": {
+            "accessibility": {
+                "region": "Storefront services"
+            },
+            "placeholders": {
+                "empty": "Add up to four service items to display this section.",
+                "empty_item": "Add a title or description for this service item."
+            }
+        },
+        "frame-geometry": {
+            "accessibility": {
+                "region": "Frame geometry and fit"
+            },
+            "labels": {
+                "front_view": "Front view",
+                "side_view": "Side view",
+                "frame_width": "Frame width",
+                "lens_width": "Lens width",
+                "bridge_width": "Bridge width",
+                "lens_height": "Lens height",
+                "temple_length": "Temple length",
+                "frame_size": "Frame size (mm)"
+            },
+            "metrics": {
+                "frame_short": "F",
+                "lens_short": "L",
+                "bridge_short": "B",
+                "temple_short": "T"
+            },
+            "placeholders": {
+                "empty": "Configure frame views or dimensions to display this section."
+            }
+        },
+        "material-detail": {
+            "accessibility": {
+                "region": "Material and detail"
+            },
+            "placeholders": {
+                "empty": "Add an introduction or material detail items to display this section.",
+                "empty_item": "Add a title or image for this material detail item."
+            }
+        },
         "main-page-contact": {
             "defaults": {
                 "success_message": "Thank you for your message. We will get back to you soon.",

@@ -2,11 +2,253 @@
 
 Holds the plan currently under execution and its status. Nothing else. Unresolved discussion lives in [the board](board.md), and accepted, unscheduled work lives in [the backlog](backlog.md).
 
-Last updated: 2026-11-25.
+Last updated: 2026-11-26.
+
+## Batch AL-9 — Homepage optician endorsement
+
+**Status:** Executed; independent correction review PASS. The user provisionally accepted Optician Endorsement on 2026-11-26. Waiting for final visual verification at 375, 768, 1024 and 1440 CSS px with approved quote, attribution and optional portrait.
+
+**Outcome:** Place the configurable Optician Endorsement quote panel after Service Strip and before the shared Footer. Use `DESIGN.md` and the accepted four-width homepage prototype for the editorial portrait, softly rounded panel and violet treatment. The static homepage preview is supplemental composition evidence.
+
+**Dependencies:** The user provisionally accepted AL-8 on 2026-11-26 and explicitly authorized AL-9 and insertion of the 05 section into the homepage template. This is the basis for the future `Merchant-Change:` trailer. Final acceptance uses a merchant-approved quote and attribution, with an approved portrait if selected. The editor placeholder, text-only state and isolated development fixtures allow implementation and layout checks before approved content arrives.
+
+**Implementation surface:** New `sections/optician-endorsement.liquid`; additions for its keys in `locales/en.default.json` and `locales/en.default.schema.json`; `templates/index.json` solely to insert `optician_endorsement` after `service_strip`; `assets/tailwind.output.css` only through `npm.cmd run build:tw`; and execution records. Use `.tmp-al9-preview/` for the template baseline, fixtures and captures. Reuse the image snippet, page frame and scheme tokens. Keep the editorial surface and layout in the section. Preserve existing working-tree changes, shared Footer, runtime, global styles and scheme values.
+
+**Review tier:** Ask. A separate read-only review follows implementation. The user then performs visual acceptance.
+
+**Estimate:** 2–3 hours for implementation, self-check and handoff with development preview access.
+
+**Checkpoint:** Stop after implementing the new section, checking template scope and static validators, and capturing all available live and fixture evidence for the four widths. If configured Shopify or editor verification is blocked, complete the available checks and name the missing evidence. Hand back for independent review. Do not commit or publish.
+
+**Bar:** Present the quote with semantic quotation markup and clearly associated attribution. Quote and attribution are required for public output, and credit details and portrait are optional. For an incomplete section, render an editor-only placeholder with no blank panel on the storefront. A complete text-only quote reads naturally. With a portrait, the layout follows the prototype's wide split and stacks at narrow section widths without cropping text, changing reading order or reducing contrast. Keep the quote text on a stable readable surface using the active scheme. No sample quote, real or fictional endorsement, person name or portrait is saved in defaults. Footer styling and newsletter functionality remain deferred.
+
+### Acceptance checks
+
+- Save a copy of the current working-tree `templates/index.json` before editing. Compare parsed JSON before and after, handling its existing comment. Confirm all five earlier instances and their settings are identical and the only additions are the `optician_endorsement` instance and its order entry after `service_strip`. Confirm it contains no default quote, attribution or image.
+- Exercise empty, quote-only, attribution-only, complete without a portrait and complete with a portrait. Verify the editor placeholder and public suppression for incomplete content, the association of quote and attribution, and the presentation of long text with an optional credit line. For configured Shopify verification, use approved data or fixtures isolated from the working-tree template. Record how each case was rendered and any editor access blocker.
+- At 375, 768, 1024 and 1440 CSS px, capture the panel and its transition from Service Strip to Footer. Verify no horizontal overflow, clipped text or portrait-text overlap. Check text legibility at enlarged size and over the darkest violet treatment in the default scheme. Apply useful alt text when the portrait communicates information beyond the adjacent attribution.
+- Run `npm.cmd run build:tw`, `npm.cmd run lint:theme`, `npm.cmd run lint:liquid-syntax`, `npm.cmd run lint:i18n`, `npm.cmd run lint:compat`, `npm.cmd run test:theme-check`, `npm.cmd run lint:records`, Prettier in check mode on changed source files, and `git diff --check`. Run `npm.cmd run test:layout` against the Shopify development preview. Record commands, results, screenshots and any unmet checks here.
+
+### Execution log
+
+- **Baseline capture & `templates/index.json` diff:** Copied pre-edit `templates/index.json` to `.tmp-al9-preview/index.before.json` before editing. Parsed JSON diff (`jsonc-parser`): `BEFORE_ORDER: ['main', 'frame_geometry', 'material_detail', 'featured_frames', 'service_strip']`, `AFTER_ORDER: ['main', 'frame_geometry', 'material_detail', 'featured_frames', 'service_strip', 'optician_endorsement']`, `PRIOR_IDENTICAL: true`, `ADDED_SECTIONS: ['optician_endorsement']`, and `optician_endorsement` contains only `type` and `color_scheme: "scheme-1"` (zero default quote, attribution, or portrait).
+- **Task 1 — `sections/optician-endorsement.liquid` (`locales/en.default.json`, `locales/en.default.schema.json`):** Created section requiring both `quote` and `author_name` (`has_quote and has_author_name`) for public output, with optional `section_number`, `kicker`, `body`, `author_role`, and `portrait` (`snippets/image.liquid`, `aspect_ratio: 'portrait'`, `mode: 'frame'`, `fit: 'cover'`, using merchant `portrait.alt` when supplied and empty `alt` otherwise to avoid repeating adjacent attribution). Uses semantic `<figure class="endorsement__figure">` pairing `<blockquote class="endorsement__quote">` with `<figcaption class="endorsement__attribution"><cite class="endorsement__author">`. Softly rounded panel (`border-radius: 1.6rem`) with scheme-derived soft violet wash via `.endorsement__panel::before` (`rgb(var(--color-accent-background))` radial gradient at `opacity: 0.2` over `var(--color-surface-muted)` — zero raw colours or Layer-1 alpha steps). Incomplete sections (empty, quote-only, attribution-only) render nothing on public storefront and show selectable editor placeholder under `request.design_mode`. Complete text-only uses `.endorsement__panel--text-only` symmetric single-column padding; portrait layout splits on wide (`> 50rem`) and stacks portrait-above-quote on narrow (`<= 50rem`). Shared Footer untouched.
+- **Static validators:** `npm.cmd run build:tw` (82ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 17 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (72 files inspected, 0 offenses), `npm.cmd exec -- prettier --check sections/optician-endorsement.liquid locales/en.default.json locales/en.default.schema.json templates/index.json` (all matched files use Prettier code style), `git diff --check` (clean).
+- **Actual Shopify development preview (`http://127.0.0.1:9292/`):**
+  - `npm.cmd run test:layout`: **PASS** across all 9 pages (`home`, `cart`, `search`, `collections`, `collection-all`, `not-found`, `product`, `blog`, `article`), `0` issues in every category, `New issues (not in baseline): 0`, wall time `164682ms`.
+  - Live 4-width DOM & screenshot check (`.tmp-al9-preview/al9-live-{375,768,1024,1440}.png`): `HTTP 200`, `liquidErr: false`, `ov: false` at all 4 widths; exact `<main>` section order `['shopify-section section-hero', 'shopify-section section-frame-geometry', 'shopify-section section-material-detail', 'shopify-section section-featured-frames', 'shopify-section section-service-strip', 'shopify-section section-optician-endorsement']`; unconfigured public section cleanly suppressed (`endorsementRendered: false`).
+  - **Live verification boundary:** Live Shopify output verifies the authorized empty `templates/index.json` composition and full 9-page layout check. Configured, incomplete-editor, text-only, and long-enlarged states are verified via isolated fixtures because sample quotes/attributions/portraits must stay out of `templates/index.json` and Shopify Admin Theme Editor requires an authenticated admin session.
+- **Isolated multi-state browser fixtures & contrast check (`.tmp-al9-preview/verify-al9.mjs` using extracted `{% stylesheet %}` CSS + `assets/tailwind.output.css`, report `.tmp-al9-preview/al9-fixture-report.json`):**
+  - **Contrast over darkest violet corner (`rgb(201, 201, 243)` in `scheme-1`):** primary `#111827` text **11.09:1** (AAA), subtle `rgba(17,24,39,0.72)` kicker/role **5.47:1** (AA+).
+  - **Incomplete states (`emptyPublic/Editor`, `quoteOnlyPublic/Editor`, `authorOnlyPublic/Editor` @ 375 & 1440px):** public `sectionRendered: false`, editor `emptyPlaceholderRendered: true`, `overflowX: false`.
+  - **Complete states (`completeTextOnly` @ 375/768/1440, `completeWithPortrait` @ 375/768/1024/1440, `longEnlarged` `--font-body-scale: 1.35` @ 375/768/1440):** `semanticValid: true`, `overflowX: false`, `mediaContentOverlap: false`, `anyClipped: false`, `stacked: true` @ 375px and `false` @ 768/1024/1440px. Captures: `.tmp-al9-preview/al9-completeWithPortrait-{375,768,1024,1440}.png`, `al9-completeTextOnly-{375,768,1440}.png`, `al9-longEnlarged-{375,768,1440}.png`.
+- **Unverified / pending items:**
+  - Merchant-approved quote, attribution, optional role, and optional portrait photography for final visual acceptance.
+  - Interactive Shopify Admin Theme Editor session verification (requires authenticated admin session).
+
+#### Correction pass — Quotation and attribution markup semantics (2026-11-26)
+
+- **Root cause (`sections/optician-endorsement.liquid`):** `<cite>` was used around a person's name (`author_name`), and optional supporting commentary (`body`) was nested inside `<blockquote class="endorsement__quote">`.
+- **Fix (`sections/optician-endorsement.liquid`):**
+  - Replaced `<cite class="endorsement__author">` with plain text `<span class="endorsement__author">` inside `<figcaption class="endorsement__attribution">`, preserving the `<figure>` / `<blockquote>` / `<figcaption>` association.
+  - Moved `<p class="endorsement__quote-body">` outside `<blockquote>` (directly between `<blockquote>` and `<figcaption>` inside `<figure>`), keeping the exact visual order and rhythm (`gap: var(--spacing-step-m)` on `.endorsement__figure` + `margin-block-start: var(--spacing-step-xs)` on `.endorsement__attribution`).
+- **Verification:**
+  - **Source & browser DOM checks (`.tmp-al9-preview/verify-al9-correction.mjs`, report `.tmp-al9-preview/al9-correction-report.json`):**
+    - Source checks: `hasNoCiteTag: true`, `blockquoteOnlyQuote: true`, `bodyOutsideBlockquote: true`, `authorSpanInFigcaption: true`.
+    - `withBody` & `withoutBody` (`375px` & `1440px`): `blockquoteChildCount: 1`, `blockquoteHasOnlyLead: true`, `hasCiteInDoc: false`, `authorInFigcaption: true`, `visualOrderOk: true`, `stacked: true` @ 375px, `desktopSplit: true` @ 1440px, `overflowX: false`, `anyClipped: false`.
+  - **Static validators:** `npm.cmd run build:tw` (91ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 17 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (72 files, 0 offenses), `npm.cmd exec -- prettier --check sections/optician-endorsement.liquid` (passed), `git diff --check` (clean).
+
+#### Independent review and correction recheck (2026-11-26)
+
+- Initial review identified two semantic issues: the person's name used `cite`, and Supporting copy was inside `blockquote`. The template scope check, 22 Chromium fixture checks, four-width live empty state and nine-page `npm.cmd run test:layout` passed. The live layout test reported zero issues and zero new issues in 152009ms.
+- Correction review confirmed that only the quote is inside `blockquote`, Supporting copy is a sibling, and attribution is ordinary text inside `figcaption`. Eight independent Chromium fixture checks passed with and without Supporting copy at 375, 768, 1024 and 1440 CSS px. Targeted static checks passed, and Theme Check inspected 72 files with no offenses. The Shopify homepage returned HTTP 200 with an empty endorsement wrapper and no Liquid errors. Configured Shopify output and visual acceptance with approved content remain pending.
+- On 2026-11-26 the user provisionally accepted AL-9 and requested scratch cleanup. Removed five ignored `.tmp-*` directories containing 99 temporary files, including preview fixtures, screenshots and the generated layout report. Recorded test results remain in this execution log. Scratch paths cited by earlier entries are historical.
+
+### Independent review prompt
+
+```text
+Review Batch AL-9 (correction pass) in Joey-Fjh/my-theme-2 (D:\fjh\shopify\my-theme-2) as a read-only Verifier. Read AGENTS.md, docs/project.md, .agents/roles/verifier.md, and the Batch AL-9 plan and correction pass entry in docs/agent/context.md.
+
+Scope: working-tree changes belonging to AL-9 (`sections/optician-endorsement.liquid`, additions in `locales/en.default.json` and `locales/en.default.schema.json`, `templates/index.json` compared against `.tmp-al9-preview/index.before.json`, `assets/tailwind.output.css`, and `docs/agent/context.md`). Isolated fixtures and correction report live under `.tmp-al9-preview/`.
+
+Review: correction.
+
+Verify:
+1. `sections/optician-endorsement.liquid`: `<blockquote class="endorsement__quote">` contains only the quote (`endorsement__quote-lead`); optional supporting copy (`endorsement__quote-body`) sits outside `<blockquote>` inside `<figure class="endorsement__figure">`; attribution name is plain text (`<span class="endorsement__author">`, no `<cite>`) inside `<figcaption class="endorsement__attribution">`, preserving the figure/blockquote/figcaption association and visual order/spacing in both with-body and without-body states.
+2. 375px long-text stacking and 1440px desktop split render cleanly without overflow or clipping.
+3. Static validators pass: `build:tw`, `lint:theme`, `lint:liquid-syntax`, `lint:i18n`, `lint:compat`, `test:theme-check`, `lint:records`, Prettier check on `sections/optician-endorsement.liquid`, and `git diff --check`.
+
+Output per verifier.md: findings first by impact (file:line, defect, evidence), then proven / unproven, commands run with their output, and verdict PASS or FAIL. Do not edit files or record visual acceptance on the user's behalf.
+```
+
+## Batch AL-8 — Featured frames and service strip
+
+**Status:** Executed; independent correction review PASS. The user provisionally accepted Featured Frames and the service strip on 2026-11-26. Waiting for final visual verification at 375, 768, 1024 and 1440 CSS px with configured products and approved service copy.
+
+**Outcome:** Add the homepage Featured Frames grid and service strip directly after Material & Detail. Use the approved homepage prototype and `DESIGN.md` for layout, and the local full-page preview for the transition into these sections.
+
+**Dependencies:** AL-7 is implemented and provisionally accepted. On 2026-11-26 the user explicitly authorized AL-8, a hand-picked product list, and the limited homepage template change. This authorization is the basis for a future `Merchant-Change:` trailer. Final visual acceptance uses the merchant's selected products and approved service copy. Empty states and isolated development fixtures allow the work and checks to proceed before those inputs are available.
+
+**Implementation surface:** New `sections/featured-frames.liquid` and `sections/service-strip.liquid`; additions for their keys in `locales/en.default.json` and `locales/en.default.schema.json`; `templates/index.json` solely to insert `featured_frames` and `service_strip` after `material_detail`; `assets/tailwind.output.css` only through `npm.cmd run build:tw`; and execution records. Use `.tmp-al8-preview/` for temporary baseline, fixtures and captures. Reuse the existing image snippet, page frame, typography and color tokens, and existing icons where appropriate. Preserve all pre-existing worktree changes, including AL-7. The collection grid, product pages, shared styles and runtime, Footer, merchant data and other templates and section groups are outside this batch.
+
+**Review tier:** Ask. A separate read-only review follows implementation. The user then performs visual acceptance.
+
+**Estimate:** 3–4 hours for implementation, self-check and handoff with development preview access.
+
+**Checkpoint:** Stop and report after implementing both sections, checking scope and static validators, and capturing the four-width evidence and available Shopify checks. For a blocked configured preview, complete the other checks and document the exact missing evidence. Hand back the diff for independent review. Do not commit or publish.
+
+**Bar:** The grid follows the merchant-selected order and displays at most three valid Shopify products with complete uncropped featured imagery when available, title, Shopify-formatted price and a keyboard-accessible product link. At the approved widths use one column at 375px, two at 768px, and three at 1024px and 1440px under the default frame settings. Derive layout thresholds from the actual section width. Leave a trailing grid cell open for an odd count at two columns. The service strip shows up to four configured service items, with approved copy and optional links, and wraps without clipping. Follow project storefront empty-state and editor placeholder rules. Carousel, ratings, favorites, try-on and swatches remain deferred. No sample products, prices, service promises or destinations enter saved theme defaults.
+
+### Acceptance checks
+
+- Capture the current working-tree template before the first edit. Parse the before and after JSON with its existing leading comment handled. Confirm that `main`, `frame_geometry`, `material_detail` and their settings are identical, that earlier order entries stay intact, and that the only new instances and order entries are `featured_frames` and `service_strip`. Verify no sample content or product links are saved in the new default instances.
+- Exercise zero, one, two and three selected products. For a configured Shopify preview, compare card order, names, displayed prices and link destinations with the selected products. Verify the missing-image layout, long product names, and keyboard focus. Exercise empty, partially configured and four-item service strips, including long labels and a mix of linked and text-only items. Verify empty editor placeholders when a development Theme Editor session is available.
+- At 375, 768, 1024 and 1440 CSS px, capture the homepage transition through both new sections and verify column counts, content order, wrapping, card alignment, zero horizontal overflow and no clipped text or obstructed links. Report which checks used the actual Shopify output and which used fixtures. Keep fixture settings out of merchant-owned defaults.
+- Run `npm.cmd run build:tw`, `npm.cmd run lint:theme`, `npm.cmd run lint:liquid-syntax`, `npm.cmd run lint:i18n`, `npm.cmd run lint:compat`, `npm.cmd run test:theme-check`, `npm.cmd run lint:records`, Prettier in check mode on changed source files, and `git diff --check`. Run `npm.cmd run test:layout` against the Shopify development preview. Record commands, results, screenshots and any unmet checks here.
+
+### Execution log
+
+- **Baseline capture & `templates/index.json` diff:** Copied pre-edit `templates/index.json` to `.tmp-al8-preview/index.before.json` before any edit. Parsed JSON comparison (`jsonc-parser`): `BEFORE_ORDER: ['main', 'frame_geometry', 'material_detail']`, `AFTER_ORDER: ['main', 'frame_geometry', 'material_detail', 'featured_frames', 'service_strip']`, `PRIOR_IDENTICAL: true`, `ADDED_SECTIONS: ['featured_frames', 'service_strip']`, and both new instances contain only `type` and `color_scheme: "scheme-1"` (zero sample content or product links).
+- **Task 1 — `sections/featured-frames.liquid` (`locales/en.default.json`, `locales/en.default.schema.json`):** Created section with merchant-selected `product_list` (`limit: 3`), preserving exact selection order, rendering complete uncropped `product.featured_image` via `snippets/image.liquid` (`aspect_ratio: 'landscape'`, `mode: 'frame'`, `fit: 'contain'`; editor-only framed placeholder when blank under `request.design_mode`, clean text-led card on public storefront), product title, `product.price | money`, and keyboard-accessible product details link (`min-height: 4.4rem`, `aria-label` with product title, `snippets/icons.liquid` `icon-chevron-right`). Container query thresholds on `featured-frames-frame`: 3 cols (`> 78rem`, 1024/1440px), 2 cols (`<= 78rem`, 768px, leaving trailing cell open for odd counts), 1 col (`<= 48rem`, 375px). Blank section suppressed on public storefront; `request.design_mode` renders selectable placeholder.
+- **Task 2 — `sections/service-strip.liquid` (`locales/en.default.json`, `locales/en.default.schema.json`):** Created section with up to 4 `service_item` blocks (`max_blocks: 4`), optional existing icons via `snippets/icons.liquid` (`icon-check-circle`, `icon-info-circle`, `icon-3d-model`), title, description, and optional `url` link (renders semantic `<a>` with `min-height: 4.8rem` and trailing chevron when linked, non-interactive `<div>` when text-only). Uses 1px border grid rules (`border-block-start`/`border-inline-start` on grid, `border-block-end`/`border-inline-end` on items) with `data-count` column adaptation and container breakpoints (`<= 78rem` → 2 cols, `<= 34rem` → 1 col). Empty items/section follow public suppression and `request.design_mode` placeholder rules.
+- **`review-animations` audit:** Read `.agents/skills/review-animations/SKILL.md`. Motion in `sections/featured-frames.liquid` and `sections/service-strip.liquid` is limited to color/background hover transitions gated by `@media (hover: hover) and (pointer: fine)` using `var(--motion-duration-fast)` (`250ms < 300ms`) and `var(--motion-ease-default)` (`cubic-bezier(0.22, 1, 0.36, 1)`), with zero `transition: all`, zero layout properties, and `@media (prefers-reduced-motion: reduce)` (`0.01ms`) honored. Verdict: **Approve** (0 findings).
+- **Static validators:** `npm.cmd run build:tw` (81ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 16 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (71 files inspected, 0 offenses), `npm.cmd exec -- prettier --check sections/featured-frames.liquid sections/service-strip.liquid locales/en.default.json locales/en.default.schema.json templates/index.json` (all matched files use Prettier code style), `git diff --check` (clean).
+- **Actual Shopify development preview (`http://127.0.0.1:9292/`):**
+  - `npm.cmd run test:layout`: **PASS** across all 9 pages (`home`, `cart`, `search`, `collections`, `collection-all`, `not-found`, `product`, `blog`, `article`), `0` issues in every category, `New issues (not in baseline): 0`, wall time `152541ms`.
+  - Live 4-width DOM & screenshot check (`.tmp-al8-preview/al8-live-{375,768,1024,1440}.png`): `HTTP 200`, `liquidErr: false`, `ov: false` at all 4 widths; exact `<main>` section order `['shopify-section section-hero', 'shopify-section section-frame-geometry', 'shopify-section section-material-detail', 'shopify-section section-featured-frames', 'shopify-section section-service-strip']`; unconfigured public sections cleanly suppressed (`ffSection: false`, `ssSection: false`).
+  - **Live verification boundary:** Live Shopify output verifies the authorized empty `templates/index.json` composition and full 9-page layout check. Configured 1/2/3-product and 1–4-item service strip states are verified via isolated fixtures because sample products/copy must stay out of `templates/index.json` and Shopify Admin Theme Editor requires an authenticated admin session.
+- **Isolated multi-state browser fixtures (`.tmp-al8-preview/verify-al8.mjs` using extracted `{% stylesheet %}` CSS + `assets/tailwind.output.css`, report `.tmp-al8-preview/al8-fixture-report.json`):**
+  - `configured3` (`al8-configured3-{375,768,1024,1440}.png`): exact column counts `1` (375px), `2` (768px, open trailing cell for 3rd product), `3` (1024px), `3` (1440px); order `AL-01 Vector → AL-02 Arc → AL-03 Layr`, formatted prices `$420.00 / $450.00 / $450.00`, `keyboardFocusOk: true`, `overflowX: false`, `anyClipped: false`.
+  - `count1`, `count2`, `longAndMissingImg` (`al8-longAndMissingImg-{375,768,1440}.png`), `emptyPublic`, `emptyEditor`: all `overflowX: false`, `anyClipped: false`, `keyboardFocusOk: true` where links exist, mixed linked/text-only service items wrap cleanly, `emptyBlocks: 0` (public) vs `2` (editor).
+- **Unverified / pending items:**
+  - Live Shopify configured product selection (comparing real store product order, titles, formatted prices, and URLs) and approved service copy require merchant configuration in Shopify Admin.
+  - Interactive Theme Editor placeholder check in Shopify Admin and user 4-width visual acceptance.
+
+#### Correction pass — Featured Frames link Label-in-Name accessible name (2026-11-26)
+
+- **Root cause (`sections/featured-frames.liquid`, `locales/en.default.json`):** `sections.featured-frames.accessibility.view_product` previously hardcoded `"View details for {{ title }}"`, so customizing `section.settings.details_label` produced a link whose accessible name no longer contained its visible label (WCAG 2.5.3 Label in Name).
+- **Fix (`sections/featured-frames.liquid`, `locales/en.default.json`):**
+  - Updated `sections.featured-frames.accessibility.view_product` in `locales/en.default.json` to `"{{ label }} — {{ title }}"`.
+  - Stripped `section.settings.details_label` with fallback to `sections.featured-frames.labels.view_details` and passed both `label: details_text` and `title: product_item.title` into the `| t` filter for `card_link_aria`.
+- **Verification:**
+  - **Chrome Accessibility Tree & keyboard focus (`.tmp-al8-preview/verify-al8-a11y.mjs`, CDP `Accessibility.getFullAXTree`, report `.tmp-al8-preview/al8-a11y-report.json`):**
+    - `defaultLabel` (`"View details"`): 3/3 cards `allPass: true` (`axName`: `"View details — AL-01 Vector"`, `"View details — AL-02 Arc"`, `"View details — AL-03 Layr"`), each `axContainsVisibleText: true`, `axContainsProductTitle: true`, `keyboardFocused: true` (via `Tab`), and `hrefMatches: true`.
+    - `customLabel` (`"Explore frame"`): 3/3 cards `allPass: true` (`axName`: `"Explore frame — AL-01 Vector"`, `"Explore frame — AL-02 Arc"`, `"Explore frame — AL-03 Layr"`), each `axContainsVisibleText: true`, `axContainsProductTitle: true`, `keyboardFocused: true` (via `Tab`), and `hrefMatches: true`.
+  - **Static validators:** `npm.cmd run build:tw` (91ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 16 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (71 files, 0 offenses), `npm.cmd exec -- prettier --check sections/featured-frames.liquid locales/en.default.json` (passed), `git diff --check` (clean).
+
+#### Independent review and correction recheck (2026-11-26)
+
+- Initial review reproduced the Label in Name mismatch for a customized details link. The template comparison against the saved AL-7 baseline and 17 Chromium fixture checks passed. Chrome DevTools confirmed the four-width Shopify homepage empty state and section order. The independent live layout test passed with zero issues across nine pages in 154473ms.
+- The correction review confirmed that the Liquid source uses the same normalized label for visible text and the localized accessible name. Chromium fixtures verified accessible names, visible Tab focus and product URLs for all three cards with default and custom labels. The whitespace fallback was checked in source and against the default-label fixture. Theme Check now also runs independently and reported 71 files inspected with no offenses. Other targeted static checks passed.
+- The Shopify preview at port 9292 returned HTTP 200 with the empty Featured Frames wrapper and no Liquid errors. Configured product and service output and user visual acceptance remain pending.
+
+### Independent review prompt
+
+```text
+Review Batch AL-8 (correction pass) in Joey-Fjh/my-theme-2 (D:\fjh\shopify\my-theme-2) as a read-only Verifier. Read AGENTS.md, docs/project.md, .agents/roles/verifier.md, and the Batch AL-8 plan and correction pass entry in docs/agent/context.md.
+
+Scope: working-tree changes belonging to AL-8 (`sections/featured-frames.liquid`, `sections/service-strip.liquid`, `locales/en.default.json`, `locales/en.default.schema.json`, `templates/index.json` compared against `.tmp-al8-preview/index.before.json`, `assets/tailwind.output.css`, and `docs/agent/context.md`). Isolated fixtures and AX tree report live under `.tmp-al8-preview/`.
+
+Review: correction.
+
+Verify:
+1. `sections/featured-frames.liquid` and `locales/en.default.json`: `details_text` strips `section.settings.details_label` with fallback to `sections.featured-frames.labels.view_details`; `card_link_aria` formats `sections.featured-frames.accessibility.view_product` (`"{{ label }} — {{ title }}"`) with both `label: details_text` and `title: product_item.title`.
+2. Browser Accessibility Tree (`Accessibility.getFullAXTree`), keyboard `Tab` focus, and `href` targets confirm that both default (`"View details"`) and custom (`"Explore frame"`) link labels produce accessible names containing the visible label and product title, while keeping every card distinct.
+3. Static validators pass: `build:tw`, `lint:theme`, `lint:liquid-syntax`, `lint:i18n`, `lint:compat`, `test:theme-check`, `lint:records`, Prettier check on `sections/featured-frames.liquid` and `locales/en.default.json`, and `git diff --check`.
+
+Output per verifier.md: findings first by impact (file:line, defect, evidence), then proven / unproven, commands run with their output, and verdict PASS or FAIL. Do not edit files or record visual acceptance on the user's behalf.
+```
+
+## Batch AL-7 — Homepage frame geometry and material detail
+
+**Status:** Executed; independent correction review PASS. The user provisionally accepted Frame Geometry & Fit and Material & Detail on 2026-11-26. Waiting for final visual verification with confirmed dimensions, approved photography and configured Theme Editor content.
+
+**Outcome:** Add two configurable Shopify sections directly after Hero, in this order: Frame Geometry & Fit, then Material & Detail. Use `DESIGN.md` and the accepted four-width homepage prototype as the design input. The local full-page preview is supplemental layout evidence.
+
+**Dependencies:** The user provisionally accepted Header and Hero and explicitly authorized this batch on 2026-11-26, including the limited homepage template composition change. This is the authorization for a future `Merchant-Change:` trailer. The user authorized development preview checks with clearly identified sample media and dimensions. Approved production media, verified measurements and final copy are needed for final visual acceptance. Empty states and isolated sample fixtures allow implementation and layout verification to proceed while those inputs are pending.
+
+**Implementation surface:** New `sections/frame-geometry.liquid` and `sections/material-detail.liquid`, `locales/en.default.json` and `locales/en.default.schema.json` for their keys, `templates/index.json` solely to add and order the two new section instances after `main`, `assets/tailwind.output.css` only through `npm.cmd run build:tw`, and execution records. Use `.tmp-al7-preview/` for temporary fixtures and captures. Reuse the existing image snippet, page frame and design tokens. Keep line and crosshair styles local to the section. The existing Hero instance and its settings, shared styles, runtime, global settings, other templates and section groups are outside this batch.
+
+**Review tier:** Ask. A separate read-only session reviews the implementation after handoff. The user then performs the four-width visual acceptance.
+
+**Estimate:** 3–5 hours for implementation, browser checks and handoff with development preview access. Final content verification follows when approved inputs are available.
+
+**Checkpoint:** Stop after both sections render in the authorized composition, the static and available live checks have run, and the report and evidence are recorded. If the Shopify preview is blocked, finish and report static and fixture evidence, name the blocker, and leave the live check pending. Hand back the diff for independent review. Do not commit or publish.
+
+**Bar:** The homepage preserves the existing Hero settings and shows the two new sections in order when configured. Geometry shows front and side views and one set of dimensions in readable HTML, including on mobile and with enlarged text. Materials shows an introduction and up to four image-and-caption items with the same label in the index and its corresponding caption. The layout handles empty settings, missing images and long captions. Empty content uses the project's public and editor behavior. Sample dimensions and copy are confined to preview fixtures. Fit switching, product cards, carousel, service strip, endorsement and Footer changes are outside the batch. Real-photo caption contrast remains pending visual verification when approved images are unavailable.
+
+### Acceptance checks
+
+- Compare the before and after `templates/index.json` as JSON with its existing leading comment handled. Confirm that `sections.main` is identical and the only additions are the two new section instances and their new order entries. Check that the instances contain no sample product claims, dimensions, copy or media.
+- In a Shopify development preview, exercise configured, blank, partially configured, and long-caption cases. Keep sample inputs in an isolated development fixture. Verify the section settings and available visual states in the Theme Editor without syncing fixture settings back into the worktree.
+- At 375, 768, 1024 and 1440 CSS px, capture the Hero-to-material transition. Check no horizontal overflow, clipping or image-caption overlap, front-to-side reading order, readable dimensions under text enlargement, and consistent index/caption labels. Check contrast with the darkest approved material photograph if available. With sample media, report the contrast check as fixture evidence and keep approved-photo verification pending.
+- Run `npm.cmd run build:tw`, `npm.cmd run lint:theme`, `npm.cmd run lint:liquid-syntax`, `npm.cmd run lint:i18n`, `npm.cmd run lint:compat`, `npm.cmd run test:theme-check`, `npm.cmd run lint:records`, Prettier in check mode on changed source files, and `git diff --check`. Run `npm.cmd run test:layout` against the Shopify development preview and report any blocker separately. Record the commands, results and evidence in this section.
+
+### Execution log
+
+- **Task 1 — 02 Frame Geometry & Fit (`sections/frame-geometry.liquid`, `locales/en.default.json`, `locales/en.default.schema.json`):** Created section with merchant-configurable heading/number/note, front and side `image_picker` views (`snippets/image.liquid` in `natural` + `contain` mode; editor-only framed placeholders when blank under `request.design_mode`), single static dimension set (`frame_width`, `lens_width`, `bridge_width`, `lens_height`, `temple_length`, `fit_label`, `size_code`, `fit_note`) rendered as scalable HTML text with CSS cobalt dimension lines (`rgb(var(--color-accent-background))`), horizontal flex metrics row (`F / L / B / T`), local `--geometry-line-color` border and RTL-safe top-edge crosshair (`.geometry__crosshair`, hidden when stacked), and blank-content suppression on public storefront with selectable editor placeholder under `request.design_mode`. Zero sample dimensions or copy in schema defaults.
+- **Task 2 — 03 Material & Detail (`sections/material-detail.liquid`, `locales/en.default.json`, `locales/en.default.schema.json`):** Created section with configurable introduction (`section_number`, `heading`, `intro`) and up to 4 `material_item` blocks (`max_blocks: 4`), sharing one single source of truth (`index_label` + `title`) between the sidebar numbered index and each tile's `<figcaption>`. Uses `snippets/image.liquid` (`aspect_ratio: 'landscape'`, `mode: 'frame'`, `fit: 'cover'`) with CSS grid stage expansion (`grid-template-areas: 'stage'`) so long captions expand the tile instead of clipping, high-contrast `var(--color-veil)` caption surface over photos, text-led public fallback when an item has no image, and `request.design_mode` editor placeholders for empty section or empty items. Responsive layout: left sidebar + asymmetric 12-col mosaic on wide (`> 78rem`), intro + 2-col index above mosaic on tablet (`<= 78rem`), single-column reading-order stack on mobile (`<= 36rem`).
+- **Task 3 — Homepage wiring & verification (`templates/index.json`, `assets/tailwind.output.css`, `.tmp-al7-preview/`):**
+  - Parsed JSON diff of `templates/index.json` against `HEAD` (`jsonc-parser`): `MAIN_IDENTICAL: true`, `ADDED_SECTIONS: ['frame_geometry', 'material_detail']`, `ORDER: ['main', 'frame_geometry', 'material_detail']`, and both new instances carry only `type` and `color_scheme: "scheme-1"` (zero sample claims, dimensions, copy, or media).
+  - **Static validators:** `npm.cmd run build:tw` (80ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 14 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (69 files inspected, 0 offenses), `npm.cmd exec -- prettier --check sections/frame-geometry.liquid sections/material-detail.liquid locales/en.default.json locales/en.default.schema.json templates/index.json` (all matched files use Prettier code style), `git diff --check` (clean).
+  - **Live Shopify dev preview (`http://127.0.0.1:9292`, dev theme `#190866522186`, running without `--theme-editor-sync`):**
+    - `npm.cmd run test:layout`: **PASS** across all 9 pages (`home`, `cart`, `search`, `collections`, `collection-all`, `not-found`, `product`, `blog`, `article`), `0` issues in every category, `New issues (not in baseline): 0`, wall time `154694ms`.
+    - Live blank-state captures (`.tmp-al7-preview/al7-live-blank-{375,768,1024,1440}.png`): Hero intact, unconfigured `frame_geometry` and `material_detail` wrappers present in DOM with public empty content cleanly suppressed (`0` blank boxes, `overflowX: false` at all 4 widths).
+  - **Isolated multi-state browser fixtures (`.tmp-al7-preview/verify-al7.mjs` using extracted Liquid `{% stylesheet %}` CSS + `assets/tailwind.output.css`, report `.tmp-al7-preview/al7-fixture-report.json`):**
+    - **Configured (`al7-configured-{375,768,1024,1440}.png`):** `overflowX: false`, `readingOrderOk: true`, `labelsMatch: true`, `captionClipped: false`, `anyCalloutClipped: false`, HTML callout font `11.11px` @ 375px / `10.24px` @ 1440px, top crosshair `crossDy: 0.5px` (hidden at 375px). Dark-surface fixture tiles (`#111318` charcoal and `#05073d..#1418b8` cobalt) rendered with `var(--color-veil)` (`rgba(255,255,255,0.80)`) yielding ~11.1:1 calculated contrast for `#111827` caption ink over pure black.
+    - **RTL (`1440px`, `375px`):** `overflowX: false`, `crossDy: 0.5px` @ 1440px, hidden @ 375px.
+    - **Long captions + enlarged text (`--font-body-scale: 1.35`, `al7-longEnlarged-{375,768,1440}.png`):** `overflowX: false`, `captionClipped: false`, `anyCalloutClipped: false`, HTML callout font scales to `15.00px` @ 375px.
+    - **Partial (`al7-partial-{375,1440}.png`) & Editor empty (`375px`, `1440px`):** `overflowX: false`, `labelsMatch: true`, text-led no-image tile and editor placeholders render cleanly.
+- **Unverified / pending items:**
+  - Approved production photography (front/side eyewear views and darkest approved material photograph) caption contrast verification remains pending until merchant media is uploaded.
+  - Interactive Theme Editor live-editing check in Shopify admin (`https://joey-new-store.myshopify.com/admin/themes/190866522186/editor?hr=9292`) requires authenticated admin session; static `request.design_mode` placeholder markup was verified in isolated fixtures.
+  - User visual acceptance at 375, 768, 1024, and 1440 CSS px.
+
+#### Correction pass — Subtitle-only material item content check (2026-11-26)
+
+- **Root cause (`sections/material-detail.liquid`):** Both `visible_item_count` and `item_has_content` previously checked only `item_has_title or item_has_image`, omitting `item_has_subtitle`. A `material_item` block with only `subtitle` set was neither counted nor rendered, and disappeared on the storefront.
+- **Fix (`sections/material-detail.liquid`):**
+  - Added `item_has_subtitle` check in the top loop and unified both `visible_item_count` and `item_has_content` to `if item_has_title or item_has_subtitle or item_has_image`.
+  - Kept `index_item_count` and the sidebar `<ol class="material__index">` strictly title-only (`if item_has_title` / `if block.settings.title != blank`).
+  - Added `block.settings.subtitle` as the final fallback in `item_alt`.
+  - Blank blocks and blank sections retain existing public suppression and `request.design_mode` placeholder rules.
+- **Verification:**
+  - **Static validators:** `npm.cmd run build:tw` (80ms), `npm.cmd run lint:theme` (passed), `npm.cmd run lint:liquid-syntax` (passed), `npm.cmd run lint:i18n` (i18n + unused locale key lint passed), `npm.cmd run lint:compat` (`stylelint`, `eslint`, `lint-embedded-compat`: 14 stylesheet blocks, 0 javascript blocks), `npm.cmd run test:theme-check` (69 files, 0 offenses), `npm.cmd exec -- prettier --check sections/material-detail.liquid` (passed), `git diff --check` (clean).
+  - **Live Shopify Liquid output (`http://127.0.0.1:9292/`, dev theme `#190866522186`, running without `--theme-editor-sync`):** Confirmed `HTTP 200`, `hasLiquidError: false`, `hasHero: true`, `hasGeoWrapper: true`, `hasMatWrapper: true`, and unconfigured all-empty public state cleanly suppressed (`hasGeoSection: false`, `hasMatSection: false`).
+  - **Live verification boundary:** Live Shopify Liquid verification covers the authorized all-empty `templates/index.json` state. Rendering non-empty block settings (`subtitle-only`, `title-only`, `configured`, `long-caption`) through Shopify's live server would require writing sample blocks into `templates/index.json` (prohibited by AL-7's acceptance boundary) or using Shopify Admin Theme Editor (requires an authenticated admin browser session).
+  - **Isolated branch & browser fixtures (`.tmp-al7-preview/verify-al7-correction.mjs`, report `.tmp-al7-preview/al7-correction-report.json`):** Verified Liquid branch invariants directly against `sections/material-detail.liquid` (`hasCountBranch: true`, `hasRenderBranch: true`, `hasTitleOnlyIndex: true`) and tested headless Chrome rendering across 6 cases:
+    - `subtitleOnlyPublic` (`375`, `1440px`): `sectionRendered: true`, `dataCount: 1`, `tileCount: 1`, `captionCount: 1`, `indexCount: 0`, `overflowX: false`, `captionClipped: false`.
+    - `subtitleOnlyWithHeading` (`375`, `1440px`): `dataCount: 2`, `tileCount: 2`, `captionCount: 2`, `indexCount: 1` (sidebar index contains only the titled block).
+    - `titleOnlyPublic` (`375`, `1440px`): `dataCount: 2`, `tileCount: 2`, `indexCount: 2`.
+    - `allEmptyPublic` (`375`, `1440px`): `sectionRendered: false`, `tileCount: 0`; `allEmptyEditor` (`375`, `1440px`): `sectionRendered: true`, `emptySectionRendered: true`.
+    - `configuredLongCaption` (`375`, `768`, `1024`, `1440px`): `dataCount: 2`, `tileCount: 2`, `indexCount: 1`, `overflowX: false`, `captionClipped: false`.
+
+#### Independent correction review and live recheck (2026-11-26)
+
+- Independent review confirmed the subtitle-only count and render branches, title-only index and blank-state rules. Fresh Chromium checks passed across 14 fixture and width combinations. Theme architecture, Liquid syntax, i18n, compatibility, records, Prettier and diff checks passed. Independent Theme Check remained blocked by the Shopify CLI `uv_os_get_passwd` error. The implementer reported 69 files inspected with no offenses.
+- After the user started the dev server, Chrome DevTools verified actual Shopify output at 375, 768, 1024 and 1440 CSS px. The empty section wrappers followed Hero in order, with no horizontal overflow or Liquid errors. The independent live `npm.cmd run test:layout` passed across nine pages, with zero issues and zero new issues in 154871ms. The output is in `.tmp-layout-check/summary.txt`.
+- The user provisionally accepted both sections. Configured Shopify output, real measurements, photographic caption contrast and editor interaction still require final review.
+
+### Independent review prompt
+
+```text
+Review Batch AL-7 (correction pass) in Joey-Fjh/my-theme-2 (D:\fjh\shopify\my-theme-2) as a read-only Verifier. Read AGENTS.md, docs/project.md, .agents/roles/verifier.md, and the Batch AL-7 plan and correction pass entry in docs/agent/context.md.
+
+Scope: working-tree changes belonging to AL-7 (`sections/frame-geometry.liquid`, `sections/material-detail.liquid`, `locales/en.default.json`, `locales/en.default.schema.json`, `templates/index.json`, `assets/tailwind.output.css`, and `docs/agent/context.md`). Isolated fixtures and captures live under `.tmp-al7-preview/`.
+
+Review: correction.
+
+Verify:
+1. `sections/material-detail.liquid`: `visible_item_count` and `item_has_content` both use `item_has_title or item_has_subtitle or item_has_image`; a subtitle-only `material_item` increments `visible_item_count` and renders its caption tile while staying excluded from `index_item_count` and `.material__index`; title-only items enter both index and mosaic; all-empty blocks and sections retain public suppression and `request.design_mode` placeholder behavior.
+2. Live Shopify dev preview (`http://127.0.0.1:9292/`) renders cleanly with zero Liquid errors in the authorized all-empty `templates/index.json` state, and isolated fixtures confirm subtitle-only, title-only, all-empty (public & editor), configured, and long-caption states.
+3. Static validators pass: `build:tw`, `lint:theme`, `lint:liquid-syntax`, `lint:i18n`, `lint:compat`, `test:theme-check`, `lint:records`, Prettier check on `sections/material-detail.liquid`, and `git diff --check`.
+
+Output per verifier.md: findings first by impact (file:line, defect, evidence), then proven / unproven, commands run with their output, and verdict PASS or FAIL. Do not edit files or record visual acceptance on the user's behalf.
+```
 
 ## Batch AL-6 — Homepage Hero and left ruler visual refinement
 
-**Status:** Executed; independent correction review PASS. Awaiting user visual acceptance at 375, 768, 1024 and 1440 CSS px.
+**Status:** Executed; independent correction review PASS. On 2026-11-26, the user provisionally accepted the Header and Hero. Waiting for final user visual verification at 375, 768, 1024 and 1440 CSS px, including title and focus annotation contrast over the real portrait and the configured CTA.
 
 **Outcome:** Bring the homepage Hero circle scale and position, right-side dual whitespace, two-column divider and title crossing, unified thin lines and crosshairs, and left architectural ruler (`0 mm` visible inside Header height, ~30px major tick pitch) closer to the accepted 1440px prototype (`docs/design/axis-home-prototype-1440.png`) while keeping AL-5's 1400px page width, 16px margin, `scheme-1`, cobalt accent, and non-home layout intact.
 

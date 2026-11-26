@@ -1,0 +1,387 @@
+{%- liquid
+    assign visible_item_count = 0
+    for block in section.blocks
+        assign item_has_title = false
+        if block.settings.title != blank
+            assign item_has_title = true
+        endif
+        assign item_has_description = false
+        if block.settings.description != blank
+            assign item_has_description = true
+        endif
+        if item_has_title or item_has_description
+            assign visible_item_count = visible_item_count | plus: 1
+        endif
+    endfor
+
+    assign has_any_content = false
+    if visible_item_count > 0
+        assign has_any_content = true
+    endif
+-%}
+
+{%- if has_any_content or request.design_mode -%}
+    <section
+        data-section-id="{{ section.id }}"
+        class="section service-strip color-{{ section.settings.color_scheme }}"
+        style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+        aria-label="{{ 'sections.service-strip.accessibility.region' | t }}"
+    >
+        <div class="service-strip__frame">
+            {%- if has_any_content -%}
+                <ul class="service-strip__grid" data-count="{{ visible_item_count }}" role="list">
+                    {%- for block in section.blocks -%}
+                        {%- liquid
+                            assign item_has_title = false
+                            if block.settings.title != blank
+                                assign item_has_title = true
+                            endif
+                            assign item_has_description = false
+                            if block.settings.description != blank
+                                assign item_has_description = true
+                            endif
+                            assign item_has_content = false
+                            if item_has_title or item_has_description
+                                assign item_has_content = true
+                            endif
+                            assign item_has_link = false
+                            if block.settings.link != blank
+                                assign item_has_link = true
+                            endif
+                            assign icon_file = ''
+                            case block.settings.icon
+                                when 'check'
+                                    assign icon_file = 'icon-check-circle'
+                                when 'info'
+                                    assign icon_file = 'icon-info-circle'
+                                when 'model'
+                                    assign icon_file = 'icon-3d-model'
+                            endcase
+                        -%}
+
+                        {%- if item_has_content -%}
+                            <li class="service-strip__item" {{ block.shopify_attributes }}>
+                                {%- if item_has_link -%}
+                                    <a
+                                        class="service-strip__card service-strip__card--link"
+                                        href="{{ block.settings.link }}"
+                                    >
+                                        {%- if icon_file != blank -%}
+                                            <span class="service-strip__icon" aria-hidden="true">
+                                                {% render 'icons', icon: icon_file, size: 'sm' %}
+                                            </span>
+                                        {%- endif -%}
+                                        <span class="service-strip__copy">
+                                            {%- if item_has_title -%}
+                                                <span class="service-strip__title">
+                                                    {{- block.settings.title | escape -}}
+                                                </span>
+                                            {%- endif -%}
+                                            {%- if item_has_description -%}
+                                                <span class="service-strip__desc">
+                                                    {{- block.settings.description | escape -}}
+                                                </span>
+                                            {%- endif -%}
+                                        </span>
+                                        <span class="service-strip__arrow" aria-hidden="true">
+                                            {% render 'icons',
+                                                icon: 'icon-chevron-right',
+                                                size: 'xs'
+                                            %}
+                                        </span>
+                                    </a>
+                                {%- else -%}
+                                    <div class="service-strip__card">
+                                        {%- if icon_file != blank -%}
+                                            <span class="service-strip__icon" aria-hidden="true">
+                                                {% render 'icons', icon: icon_file, size: 'sm' %}
+                                            </span>
+                                        {%- endif -%}
+                                        <div class="service-strip__copy">
+                                            {%- if item_has_title -%}
+                                                <p class="service-strip__title">
+                                                    {{- block.settings.title | escape -}}
+                                                </p>
+                                            {%- endif -%}
+                                            {%- if item_has_description -%}
+                                                <p class="service-strip__desc">
+                                                    {{- block.settings.description | escape -}}
+                                                </p>
+                                            {%- endif -%}
+                                        </div>
+                                    </div>
+                                {%- endif -%}
+                            </li>
+                        {%- elsif request.design_mode -%}
+                            <li
+                                class="service-strip__item service-strip__item--empty"
+                                {{ block.shopify_attributes }}
+                            >
+                                <p class="service-strip__empty-text copy-s">
+                                    {{- 'sections.service-strip.placeholders.empty_item' | t -}}
+                                </p>
+                            </li>
+                        {%- endif -%}
+                    {%- endfor -%}
+                </ul>
+            {%- else -%}
+                <div class="service-strip__empty">
+                    <p class="service-strip__empty-text copy-s">
+                        {{- 'sections.service-strip.placeholders.empty' | t -}}
+                    </p>
+                </div>
+            {%- endif -%}
+        </div>
+    </section>
+{%- endif -%}
+
+{% stylesheet %}
+    .service-strip__frame {
+        --service-strip-line-color: var(--color-line);
+        container-type: inline-size;
+        container-name: service-strip-frame;
+        position: relative;
+    }
+
+    .service-strip__grid {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        border-block-start: 1px solid var(--service-strip-line-color);
+        border-inline-start: 1px solid var(--service-strip-line-color);
+    }
+
+    .service-strip__grid[data-count='1'] {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .service-strip__grid[data-count='2'] {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .service-strip__grid[data-count='3'] {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .service-strip__item {
+        display: flex;
+        min-width: 0;
+        border-block-end: 1px solid var(--service-strip-line-color);
+        border-inline-end: 1px solid var(--service-strip-line-color);
+        background-color: rgb(var(--color-background));
+    }
+
+    .service-strip__card {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-step-s);
+        width: 100%;
+        min-width: 0;
+        padding: clamp(var(--spacing-step-m), 1.6cqi, var(--spacing-step-l));
+        color: rgb(var(--color-foreground));
+        text-decoration: none;
+    }
+
+    .service-strip__card--link {
+        min-height: 4.8rem;
+        transition:
+            background-color var(--motion-duration-fast) var(--motion-ease-default),
+            color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .service-strip__card--link:hover {
+            background-color: var(--color-surface-muted);
+        }
+
+        .service-strip__card--link:hover .service-strip__title,
+        .service-strip__card--link:hover .service-strip__arrow {
+            color: rgb(var(--color-accent-background));
+        }
+    }
+
+    .service-strip__icon {
+        display: inline-flex;
+        flex-shrink: 0;
+        color: rgb(var(--color-foreground));
+    }
+
+    .service-strip__copy {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-3xs);
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .service-strip__title {
+        display: block;
+        font-family: var(--font-heading-family);
+        font-weight: var(--font-heading-weight);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgb(var(--color-foreground));
+        overflow-wrap: break-word;
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    .service-strip__desc {
+        display: block;
+        font-family: var(--font-body-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-body-line-height);
+        color: var(--color-subtle);
+        overflow-wrap: break-word;
+    }
+
+    .service-strip__arrow {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        color: var(--color-subtle);
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    .service-strip__item--empty,
+    .service-strip__empty {
+        display: grid;
+        place-items: center;
+        padding: var(--spacing-step-l);
+        text-align: center;
+        background-color: var(--color-surface-muted);
+    }
+
+    .service-strip__empty {
+        border: 1px dashed var(--color-line-strong);
+    }
+
+    .service-strip__empty-text {
+        color: var(--color-subtle);
+    }
+
+    @container service-strip-frame (max-width: 78rem) {
+        .service-strip__grid,
+        .service-strip__grid[data-count='3'] {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .service-strip__grid[data-count='1'] {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @container service-strip-frame (max-width: 34rem) {
+        .service-strip__grid,
+        .service-strip__grid[data-count='2'],
+        .service-strip__grid[data-count='3'] {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .service-strip__card--link,
+        .service-strip__title,
+        .service-strip__arrow {
+            transition-duration: 0.01ms;
+        }
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+    "name": "t:sections.service-strip.name",
+    "tag": "section",
+    "class": "section-service-strip",
+    "max_blocks": 4,
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    },
+    "settings": [
+        {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:sections.service-strip.settings.color_scheme",
+            "default": "scheme-1"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.service-strip.content.padding"
+        },
+        {
+            "type": "range",
+            "id": "padding_top",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.service-strip.settings.padding_top",
+            "default": 24
+        },
+        {
+            "type": "range",
+            "id": "padding_bottom",
+            "min": 0,
+            "max": 100,
+            "step": 4,
+            "unit": "px",
+            "label": "t:sections.service-strip.settings.padding_bottom",
+            "default": 0
+        }
+    ],
+    "blocks": [
+        {
+            "type": "service_item",
+            "name": "t:sections.service-strip.blocks.service_item.name",
+            "settings": [
+                {
+                    "type": "select",
+                    "id": "icon",
+                    "label": "t:sections.service-strip.blocks.service_item.settings.icon",
+                    "options": [
+                        {
+                            "value": "none",
+                            "label": "t:sections.service-strip.blocks.service_item.options.icon.none"
+                        },
+                        {
+                            "value": "check",
+                            "label": "t:sections.service-strip.blocks.service_item.options.icon.check"
+                        },
+                        {
+                            "value": "info",
+                            "label": "t:sections.service-strip.blocks.service_item.options.icon.info"
+                        },
+                        {
+                            "value": "model",
+                            "label": "t:sections.service-strip.blocks.service_item.options.icon.model"
+                        }
+                    ],
+                    "default": "none"
+                },
+                {
+                    "type": "text",
+                    "id": "title",
+                    "label": "t:sections.service-strip.blocks.service_item.settings.title"
+                },
+                {
+                    "type": "textarea",
+                    "id": "description",
+                    "label": "t:sections.service-strip.blocks.service_item.settings.description"
+                },
+                {
+                    "type": "url",
+                    "id": "link",
+                    "label": "t:sections.service-strip.blocks.service_item.settings.link"
+                }
+            ]
+        }
+    ],
+    "presets": [
+        {
+            "name": "t:sections.service-strip.presets.service_strip"
+        }
+    ]
+}
+{% endschema %}
