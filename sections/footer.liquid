@@ -11,65 +11,647 @@
     if has_country_selector or has_language_selector
         assign has_localization = true
     endif
+
+    assign brand_heading_val = section.settings.brand_heading | strip
+    if brand_heading_val == blank
+        assign brand_heading_val = shop.name
+    endif
+    assign brand_tagline_raw = section.settings.brand_tagline | strip
+    assign brand_tagline_val = brand_tagline_raw | escape | newline_to_br
+    if brand_tagline_raw == blank and request.design_mode
+        assign brand_tagline_val = 'sections.footer.preview.brand_tagline' | t | newline_to_br
+    endif
+
+    assign link_block_count = 0
+    assign populated_link_columns = 0
+    for block in section.blocks
+        if block.type == 'link_column'
+            assign link_block_count = link_block_count | plus: 1
+            assign check_menu = block.settings.menu
+            if check_menu != blank and check_menu.links != blank
+                assign populated_link_columns = populated_link_columns | plus: 1
+            endif
+        endif
+    endfor
+
+    assign has_link_columns = false
+    if populated_link_columns > 0 or request.design_mode
+        assign has_link_columns = true
+    endif
+
+    assign newsletter_heading_val = section.settings.newsletter_heading | strip
+    assign newsletter_desc_val = section.settings.newsletter_description | strip
+    if request.design_mode
+        if newsletter_heading_val == blank
+            assign newsletter_heading_val = 'sections.footer.preview.newsletter_heading' | t
+        endif
+        if newsletter_desc_val == blank
+            assign newsletter_desc_val = 'sections.footer.preview.newsletter_description' | t
+        endif
+    endif
+    assign has_newsletter_block = false
+    if newsletter_heading_val != blank or newsletter_desc_val != blank or request.design_mode
+        assign has_newsletter_block = true
+    endif
+
+    assign has_follow_on_shop = false
+    if shop.features.follow_on_shop?
+        assign has_follow_on_shop = true
+    endif
+
+    assign has_aside = false
+    if has_newsletter_block or has_follow_on_shop
+        assign has_aside = true
+    endif
+
+    assign legal_menu = section.settings.legal_menu
+    assign has_legal_menu = false
+    if legal_menu != blank and legal_menu.links != blank
+        assign has_legal_menu = true
+    endif
+    assign has_shop_policies = false
+    if shop.policies.size > 0
+        assign has_shop_policies = true
+    endif
+
+    assign has_social_links = false
+    if settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_tiktok_link != blank or settings.social_pinterest_link != blank
+        assign has_social_links = true
+    endif
 -%}
 
 <footer
     data-section-id="{{ section.id }}"
     class="section footer color-{{ section.settings.color_scheme }}"
 >
-    {% for block in section.blocks %}
-        {% if block.type == 'link_column' %}
-            {% assign links_menu = block.settings.menu %}
-            {% if links_menu != blank and links_menu.links != blank %}
-                <div {{ block.shopify_attributes }}>
-                    <h2 class="title-m">{{ block.settings.heading }}</h2>
-                    <ul>
-                        {% for link in links_menu.links %}
-                            <li>
-                                <a class="underline underline-offset-4" href="{{ link.url }}">
-                                    {{ link.title }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    {% if shop.features.follow_on_shop? %}
-        <div>
-            <p>{{ 'footer.follow_on_shop' | t }}</p>
-            {{ shop | login_button: action: 'follow' }}
+    <div class="footer__main{% unless has_aside %} footer__main--no-aside{% endunless %}">
+        <div class="footer__brand">
+            <p class="footer__wordmark">{{ brand_heading_val | escape }}</p>
+            {%- if brand_tagline_val != blank -%}
+                <p class="footer__tagline">
+                    {{- brand_tagline_val -}}
+                </p>
+                <span class="footer__dash" aria-hidden="true"></span>
+            {%- endif -%}
         </div>
-    {% endif %}
 
-    <div class="footer__bottom">
-        <p class="footer__copyright">
-            {{ 'now' | date: '%Y' }}
-            {{ shop.name | escape }}
-            {{ 'footer.all_rights_reserved' | t }}
-        </p>
-
-        {%- if has_localization -%}
-            <div class="footer__localization">
-                {%- if has_country_selector -%}
-                    {%- render 'country-localization', localPosition: 'FooterCountry' -%}
-                {%- endif -%}
-                {%- if has_language_selector -%}
-                    {%- render 'language-localization', localPosition: 'FooterLanguage' -%}
+        {%- if has_link_columns -%}
+            <div class="footer__columns">
+                {%- if link_block_count > 0 -%}
+                    {%- assign col_slot = 0 -%}
+                    {%- for block in section.blocks -%}
+                        {%- if block.type == 'link_column' -%}
+                            {%- assign col_slot = col_slot | plus: 1 -%}
+                            {%- assign links_menu = block.settings.menu -%}
+                            {%- if links_menu != blank and links_menu.links != blank -%}
+                                <div class="footer__column" {{ block.shopify_attributes }}>
+                                    {%- if block.settings.heading != blank -%}
+                                        <h2 class="footer__heading">
+                                            {{- block.settings.heading -}}
+                                        </h2>
+                                    {%- endif -%}
+                                    <ul class="footer__list" role="list">
+                                        {%- for link in links_menu.links -%}
+                                            <li class="footer__item">
+                                                <a class="footer__link" href="{{ link.url }}">
+                                                    {{- link.title -}}
+                                                </a>
+                                            </li>
+                                        {%- endfor -%}
+                                    </ul>
+                                </div>
+                            {%- elsif request.design_mode -%}
+                                {%- liquid
+                                    assign preview_slot = col_slot
+                                    if preview_slot > 3
+                                        assign preview_slot = 3
+                                    endif
+                                    case preview_slot
+                                        when 1
+                                            assign p_col_heading = 'sections.footer.preview.col_1_heading' | t
+                                            assign p_l1 = 'sections.footer.preview.col_1_link_1' | t
+                                            assign p_l2 = 'sections.footer.preview.col_1_link_2' | t
+                                            assign p_l3 = 'sections.footer.preview.col_1_link_3' | t
+                                            assign p_l4 = 'sections.footer.preview.col_1_link_4' | t
+                                            assign p_l5 = 'sections.footer.preview.col_1_link_5' | t
+                                        when 2
+                                            assign p_col_heading = 'sections.footer.preview.col_2_heading' | t
+                                            assign p_l1 = 'sections.footer.preview.col_2_link_1' | t
+                                            assign p_l2 = 'sections.footer.preview.col_2_link_2' | t
+                                            assign p_l3 = 'sections.footer.preview.col_2_link_3' | t
+                                            assign p_l4 = 'sections.footer.preview.col_2_link_4' | t
+                                            assign p_l5 = 'sections.footer.preview.col_2_link_5' | t
+                                        else
+                                            assign p_col_heading = 'sections.footer.preview.col_3_heading' | t
+                                            assign p_l1 = 'sections.footer.preview.col_3_link_1' | t
+                                            assign p_l2 = 'sections.footer.preview.col_3_link_2' | t
+                                            assign p_l3 = 'sections.footer.preview.col_3_link_3' | t
+                                            assign p_l4 = 'sections.footer.preview.col_3_link_4' | t
+                                            assign p_l5 = 'sections.footer.preview.col_3_link_5' | t
+                                    endcase
+                                -%}
+                                <div class="footer__column" {{ block.shopify_attributes }}>
+                                    <h2 class="footer__heading">
+                                        {{- block.settings.heading | default: p_col_heading -}}
+                                    </h2>
+                                    <ul class="footer__list" role="list">
+                                        <li class="footer__item">
+                                            <span class="footer__link footer__link--preview">
+                                                {{- p_l1 -}}
+                                            </span>
+                                        </li>
+                                        <li class="footer__item">
+                                            <span class="footer__link footer__link--preview">
+                                                {{- p_l2 -}}
+                                            </span>
+                                        </li>
+                                        <li class="footer__item">
+                                            <span class="footer__link footer__link--preview">
+                                                {{- p_l3 -}}
+                                            </span>
+                                        </li>
+                                        <li class="footer__item">
+                                            <span class="footer__link footer__link--preview">
+                                                {{- p_l4 -}}
+                                            </span>
+                                        </li>
+                                        <li class="footer__item">
+                                            <span class="footer__link footer__link--preview">
+                                                {{- p_l5 -}}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {%- endif -%}
+                        {%- endif -%}
+                    {%- endfor -%}
+                {%- elsif request.design_mode -%}
+                    {%- for preview_slot in (1..3) -%}
+                        {%- liquid
+                            case preview_slot
+                                when 1
+                                    assign p_col_heading = 'sections.footer.preview.col_1_heading' | t
+                                    assign p_l1 = 'sections.footer.preview.col_1_link_1' | t
+                                    assign p_l2 = 'sections.footer.preview.col_1_link_2' | t
+                                    assign p_l3 = 'sections.footer.preview.col_1_link_3' | t
+                                    assign p_l4 = 'sections.footer.preview.col_1_link_4' | t
+                                    assign p_l5 = 'sections.footer.preview.col_1_link_5' | t
+                                when 2
+                                    assign p_col_heading = 'sections.footer.preview.col_2_heading' | t
+                                    assign p_l1 = 'sections.footer.preview.col_2_link_1' | t
+                                    assign p_l2 = 'sections.footer.preview.col_2_link_2' | t
+                                    assign p_l3 = 'sections.footer.preview.col_2_link_3' | t
+                                    assign p_l4 = 'sections.footer.preview.col_2_link_4' | t
+                                    assign p_l5 = 'sections.footer.preview.col_2_link_5' | t
+                                else
+                                    assign p_col_heading = 'sections.footer.preview.col_3_heading' | t
+                                    assign p_l1 = 'sections.footer.preview.col_3_link_1' | t
+                                    assign p_l2 = 'sections.footer.preview.col_3_link_2' | t
+                                    assign p_l3 = 'sections.footer.preview.col_3_link_3' | t
+                                    assign p_l4 = 'sections.footer.preview.col_3_link_4' | t
+                                    assign p_l5 = 'sections.footer.preview.col_3_link_5' | t
+                            endcase
+                        -%}
+                        <div class="footer__column">
+                            <h2 class="footer__heading">{{ p_col_heading | escape }}</h2>
+                            <ul class="footer__list" role="list">
+                                <li class="footer__item">
+                                    <span class="footer__link footer__link--preview">
+                                        {{- p_l1 | escape -}}
+                                    </span>
+                                </li>
+                                <li class="footer__item">
+                                    <span class="footer__link footer__link--preview">
+                                        {{- p_l2 | escape -}}
+                                    </span>
+                                </li>
+                                <li class="footer__item">
+                                    <span class="footer__link footer__link--preview">
+                                        {{- p_l3 | escape -}}
+                                    </span>
+                                </li>
+                                <li class="footer__item">
+                                    <span class="footer__link footer__link--preview">
+                                        {{- p_l4 | escape -}}
+                                    </span>
+                                </li>
+                                <li class="footer__item">
+                                    <span class="footer__link footer__link--preview">
+                                        {{- p_l5 | escape -}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    {%- endfor -%}
                 {%- endif -%}
             </div>
         {%- endif -%}
+
+        {%- if has_aside -%}
+            <div class="footer__aside">
+                {%- if has_newsletter_block -%}
+                    <div class="footer__newsletter">
+                        {%- if newsletter_heading_val != blank -%}
+                            <h2 class="footer__heading">{{ newsletter_heading_val | escape }}</h2>
+                        {%- endif -%}
+                        {%- if newsletter_desc_val != blank -%}
+                            <p class="footer__newsletter-desc">
+                                {{- newsletter_desc_val | escape -}}
+                            </p>
+                        {%- endif -%}
+                        {%- if request.design_mode -%}
+                            <div class="footer__newsletter-preview" aria-hidden="true">
+                                <span class="footer__newsletter-input">
+                                    {{- 'sections.footer.preview.newsletter_placeholder' | t -}}
+                                </span>
+                                <span class="footer__newsletter-submit">
+                                    {% render 'icons', icon: 'icon-chevron-right', size: 'xs' %}
+                                </span>
+                            </div>
+                        {%- endif -%}
+                    </div>
+                {%- endif -%}
+
+                {%- if has_follow_on_shop -%}
+                    <div class="footer__follow">
+                        <p class="footer__follow-label">{{ 'footer.follow_on_shop' | t }}</p>
+                        {{ shop | login_button: action: 'follow' }}
+                    </div>
+                {%- endif -%}
+            </div>
+        {%- endif -%}
+    </div>
+
+    <div class="footer__bottom">
+        <p class="footer__copyright">
+            {{ 'sections.footer.copyright_symbol' | t }}
+            {{ 'now' | date: '%Y' }}
+            {{ shop.name | escape }}.
+            {{ 'footer.all_rights_reserved' | t }}
+        </p>
+
+        <div class="footer__utility">
+            {%- if has_legal_menu -%}
+                <nav
+                    class="footer__legal"
+                    aria-label="{{ 'sections.footer.accessibility.legal_nav' | t }}"
+                >
+                    <ul class="footer__legal-list" role="list">
+                        {%- for link in legal_menu.links -%}
+                            <li class="footer__legal-item">
+                                <a class="footer__legal-link" href="{{ link.url }}">
+                                    {{- link.title | escape -}}
+                                </a>
+                            </li>
+                        {%- endfor -%}
+                    </ul>
+                </nav>
+            {%- elsif has_shop_policies -%}
+                <nav
+                    class="footer__legal"
+                    aria-label="{{ 'sections.footer.accessibility.legal_nav' | t }}"
+                >
+                    <ul class="footer__legal-list" role="list">
+                        {%- for policy in shop.policies -%}
+                            {%- if policy != blank -%}
+                                <li class="footer__legal-item">
+                                    <a class="footer__legal-link" href="{{ policy.url }}">
+                                        {{- policy.title | escape -}}
+                                    </a>
+                                </li>
+                            {%- endif -%}
+                        {%- endfor -%}
+                    </ul>
+                </nav>
+            {%- elsif request.design_mode -%}
+                <ul class="footer__legal-list" role="list">
+                    <li class="footer__legal-item">
+                        <span class="footer__legal-link footer__legal-link--preview">
+                            {{- 'sections.footer.preview.legal_terms' | t -}}
+                        </span>
+                    </li>
+                    <li class="footer__legal-item">
+                        <span class="footer__legal-link footer__legal-link--preview">
+                            {{- 'sections.footer.preview.legal_privacy' | t -}}
+                        </span>
+                    </li>
+                    <li class="footer__legal-item">
+                        <span class="footer__legal-link footer__legal-link--preview">
+                            {{- 'sections.footer.preview.legal_cookies' | t -}}
+                        </span>
+                    </li>
+                    <li class="footer__legal-item">
+                        <span class="footer__legal-link footer__legal-link--preview">
+                            {{- 'sections.footer.preview.legal_accessibility' | t -}}
+                        </span>
+                    </li>
+                </ul>
+            {%- endif -%}
+
+            {%- if has_social_links -%}
+                <ul
+                    class="footer__social"
+                    role="list"
+                    aria-label="{{ 'sections.footer.accessibility.social_links' | t }}"
+                >
+                    {%- if settings.social_instagram_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_instagram_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.instagram' | t }}"
+                            >
+                                {{- 'sections.footer.social.instagram_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                    {%- if settings.social_youtube_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_youtube_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.youtube' | t }}"
+                            >
+                                {{- 'sections.footer.social.youtube_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                    {%- if settings.social_twitter_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_twitter_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.x_twitter' | t }}"
+                            >
+                                {{- 'sections.footer.social.x_twitter_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                    {%- if settings.social_facebook_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_facebook_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.facebook' | t }}"
+                            >
+                                {{- 'sections.footer.social.facebook_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                    {%- if settings.social_tiktok_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_tiktok_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.tiktok' | t }}"
+                            >
+                                {{- 'sections.footer.social.tiktok_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                    {%- if settings.social_pinterest_link != blank -%}
+                        <li>
+                            <a
+                                class="footer__social-link"
+                                href="{{ settings.social_pinterest_link }}"
+                                rel="noopener noreferrer"
+                                aria-label="{{ 'sections.footer.social.pinterest' | t }}"
+                            >
+                                {{- 'sections.footer.social.pinterest_short' | t -}}
+                            </a>
+                        </li>
+                    {%- endif -%}
+                </ul>
+            {%- elsif request.design_mode -%}
+                <ul class="footer__social" role="list" aria-hidden="true">
+                    <li>
+                        <span class="footer__social-badge">
+                            {{- 'sections.footer.social.instagram_short' | t -}}
+                        </span>
+                    </li>
+                    <li>
+                        <span class="footer__social-badge">
+                            {{- 'sections.footer.social.youtube_short' | t -}}
+                        </span>
+                    </li>
+                    <li>
+                        <span class="footer__social-badge">
+                            {{- 'sections.footer.social.linkedin_short' | t -}}
+                        </span>
+                    </li>
+                </ul>
+            {%- endif -%}
+
+            {%- if has_localization -%}
+                <div class="footer__localization">
+                    {%- if has_country_selector -%}
+                        {%- render 'country-localization', localPosition: 'FooterCountry' -%}
+                    {%- endif -%}
+                    {%- if has_language_selector -%}
+                        {%- render 'language-localization', localPosition: 'FooterLanguage' -%}
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+        </div>
     </div>
 </footer>
 
 {% stylesheet %}
     .footer {
+        --footer-line-color: var(--color-line);
         container-type: inline-size;
         container-name: footer-frame;
         position: relative;
         z-index: var(--z-layer-dropdown);
+        border-block-start: 1px solid var(--footer-line-color);
+    }
+
+    .footer__main {
+        display: grid;
+        grid-template-columns: minmax(18rem, 1.25fr) minmax(0, 2.4fr) minmax(22rem, 1.45fr);
+        align-items: start;
+        column-gap: clamp(var(--spacing-step-l), 3cqi, var(--spacing-step-3xl));
+        row-gap: var(--spacing-step-xl);
+        padding-block: var(--spacing-step-2xl) var(--spacing-step-xl);
+    }
+
+    .footer__main--no-aside {
+        grid-template-columns: minmax(18rem, 1.25fr) minmax(0, 3fr);
+    }
+
+    .footer__brand {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-step-s);
+        min-width: 0;
+    }
+
+    .footer__wordmark {
+        font-family: var(--font-heading-family);
+        font-weight: var(--font-heading-weight);
+        font-size: calc(var(--type-step-2) * var(--font-heading-scale));
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: rgb(var(--color-foreground));
+        overflow-wrap: break-word;
+    }
+
+    .footer__tagline {
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-body-line-height);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-subtle);
+    }
+
+    .footer__dash {
+        display: block;
+        width: 2.2rem;
+        height: 1px;
+        margin-block-start: var(--spacing-step-xs);
+        background-color: var(--color-line-strong);
+    }
+
+    .footer__columns {
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        column-gap: clamp(var(--spacing-step-m), 2.4cqi, var(--spacing-step-xl));
+        row-gap: var(--spacing-step-l);
+    }
+
+    .footer__column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-s);
+        min-width: 0;
+    }
+
+    .footer__heading {
+        font-family: var(--font-mono-family);
+        font-weight: var(--font-heading-weight);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgb(var(--color-foreground));
+    }
+
+    .footer__list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-3xs);
+        min-width: 0;
+    }
+
+    .footer__item {
+        min-width: 0;
+    }
+
+    .footer__link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.8rem;
+        max-width: 100%;
+        padding-block: 0.15em;
+        font-family: var(--font-body-family);
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        line-height: var(--font-body-line-height);
+        color: var(--color-muted);
+        text-decoration: none;
+        overflow-wrap: break-word;
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    .footer__link--preview {
+        cursor: default;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        a.footer__link:hover,
+        .footer__legal-link:hover,
+        .footer__social-link:hover {
+            color: rgb(var(--color-accent-background));
+        }
+    }
+
+    .footer__aside {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-l);
+        min-width: 0;
+    }
+
+    .footer__newsletter {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-s);
+        min-width: 0;
+    }
+
+    .footer__newsletter-desc {
+        font-family: var(--font-body-family);
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        line-height: var(--font-body-line-height);
+        color: var(--color-muted);
+    }
+
+    .footer__newsletter-preview {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        border: 1px solid var(--footer-line-color);
+        background-color: rgb(var(--color-background));
+    }
+
+    .footer__newsletter-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-step-xs) var(--spacing-step-s);
+        font-family: var(--font-body-family);
+        font-size: calc(var(--type-step--1) * var(--font-body-scale));
+        color: var(--color-subtle);
+    }
+
+    .footer__newsletter-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 4.4rem;
+        min-height: 4.2rem;
+        background-color: rgb(var(--color-accent-background));
+        color: rgb(var(--color-accent-foreground));
+        flex-shrink: 0;
+    }
+
+    .footer__follow {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-step-xs);
+        min-width: 0;
+    }
+
+    .footer__follow-label {
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-subtle);
     }
 
     .footer__bottom {
@@ -78,12 +660,88 @@
         align-items: center;
         justify-content: space-between;
         column-gap: var(--spacing-step-l);
+        row-gap: var(--spacing-step-s);
+        padding-block: var(--spacing-step-m);
+        border-block-start: 1px solid var(--footer-line-color);
+    }
+
+    .footer__copyright {
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-subtle);
+    }
+
+    .footer__utility {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        column-gap: var(--spacing-step-l);
         row-gap: var(--spacing-step-xs);
-        padding-block: var(--spacing-step-s);
+        margin-inline-start: auto;
+    }
+
+    .footer__legal-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        column-gap: var(--spacing-step-m);
+        row-gap: var(--spacing-step-2xs);
+    }
+
+    .footer__legal-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.8rem;
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--color-subtle);
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
+    }
+
+    .footer__legal-link--preview {
+        cursor: default;
+    }
+
+    .footer__social {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--spacing-step-s);
+        padding-inline-start: var(--spacing-step-m);
+        border-inline-start: 1px solid var(--footer-line-color);
+    }
+
+    .footer__social-link,
+    .footer__social-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.8rem;
+        min-height: 2.8rem;
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: rgb(var(--color-foreground));
+        transition: color var(--motion-duration-fast) var(--motion-ease-default);
     }
 
     .footer__localization {
-        margin-inline-start: auto;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -129,12 +787,42 @@
     }
 
     @container footer-frame (max-width: 80.99rem) {
+        .footer__main,
+        .footer__main--no-aside {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
         .footer__localization {
             display: none;
         }
     }
 
+    @container footer-frame (max-width: 48rem) {
+        .footer__columns {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .footer__utility {
+            margin-inline-start: 0;
+            justify-content: flex-start;
+        }
+
+        .footer__social {
+            padding-inline-start: 0;
+            border-inline-start: 0;
+        }
+    }
+
+    @container footer-frame (max-width: 30rem) {
+        .footer__columns {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
+        .footer__link,
+        .footer__legal-link,
+        .footer__social-link,
         .footer__localization .localization-switcher :where(button) {
             transition-duration: 0.01ms;
         }
@@ -155,6 +843,43 @@
             "id": "color_scheme",
             "label": "t:sections.footer.settings.color_scheme",
             "default": "scheme-1"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.footer.content.brand"
+        },
+        {
+            "type": "text",
+            "id": "brand_heading",
+            "label": "t:sections.footer.settings.brand_heading"
+        },
+        {
+            "type": "textarea",
+            "id": "brand_tagline",
+            "label": "t:sections.footer.settings.brand_tagline"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.footer.content.newsletter"
+        },
+        {
+            "type": "text",
+            "id": "newsletter_heading",
+            "label": "t:sections.footer.settings.newsletter_heading"
+        },
+        {
+            "type": "textarea",
+            "id": "newsletter_description",
+            "label": "t:sections.footer.settings.newsletter_description"
+        },
+        {
+            "type": "header",
+            "content": "t:sections.footer.content.legal"
+        },
+        {
+            "type": "link_list",
+            "id": "legal_menu",
+            "label": "t:sections.footer.settings.legal_menu"
         }
     ],
     "blocks": [
@@ -180,20 +905,29 @@
     "presets": [
         {
             "name": "t:sections.footer.presets.footer",
+            "settings": {
+                "brand_heading": "AXIS / LAYR",
+                "brand_tagline": "ARCHITECTURAL EYEWEAR\nFOR A MODERN WORLD.",
+                "newsletter_heading": "STAY IN FOCUS",
+                "newsletter_description": "Subscribe for new releases, exclusive drops, and optical insights."
+            },
             "blocks": [
-                {
-                    "type": "link_column"
-                },
                 {
                     "type": "link_column",
                     "settings": {
-                        "heading": "Pages"
+                        "heading": "Shop"
                     }
                 },
                 {
                     "type": "link_column",
                     "settings": {
-                        "heading": "Social"
+                        "heading": "About"
+                    }
+                },
+                {
+                    "type": "link_column",
+                    "settings": {
+                        "heading": "Support"
                     }
                 }
             ]

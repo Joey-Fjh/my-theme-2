@@ -1,14 +1,18 @@
 {%- liquid
+    assign section_number_val = section.settings.section_number | strip | escape
+    assign heading_val = section.settings.heading | strip | escape
+    assign note_val = section.settings.note | strip | escape
+
     assign has_section_number = false
-    if section.settings.section_number != blank
+    if section_number_val != blank
         assign has_section_number = true
     endif
     assign has_heading = false
-    if section.settings.heading != blank
+    if heading_val != blank
         assign has_heading = true
     endif
     assign has_note = false
-    if section.settings.note != blank
+    if note_val != blank
         assign has_note = true
     endif
     assign has_header = false
@@ -30,106 +34,107 @@
     if details_text == blank
         assign details_text = 'sections.featured-frames.labels.view_details' | t
     endif
-
-    assign has_any_content = false
-    if has_header or valid_product_count > 0
-        assign has_any_content = true
-    endif
 -%}
 
-{%- if has_any_content or request.design_mode -%}
-    <section
-        data-section-id="{{ section.id }}"
-        class="section featured-frames color-{{ section.settings.color_scheme }}"
-        style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
-        {% if has_heading %}
-            aria-labelledby="FeaturedFramesHeading-{{ section.id }}"
-        {% else %}
-            aria-label="{{ 'sections.featured-frames.accessibility.region' | t }}"
-        {% endif %}
-    >
-        <div class="featured-frames__frame">
-            {%- if has_header -%}
-                <div class="featured-frames__head">
-                    {%- if has_section_number or has_heading -%}
-                        <h2
-                            id="FeaturedFramesHeading-{{ section.id }}"
-                            class="featured-frames__title"
-                        >
-                            {%- if has_section_number -%}
-                                <span class="featured-frames__num">
-                                    {{- section.settings.section_number | escape -}}
-                                </span>
-                            {%- endif -%}
-                            {%- if has_section_number and has_heading -%}
-                                <span class="featured-frames__slash" aria-hidden="true">/</span>
-                            {%- endif -%}
-                            {%- if has_heading -%}
-                                <span>{{ section.settings.heading | escape }}</span>
-                            {%- endif -%}
-                        </h2>
-                    {%- endif -%}
+<section
+    data-section-id="{{ section.id }}"
+    class="section featured-frames color-{{ section.settings.color_scheme }}"
+    style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+    {% if has_heading %}
+        aria-labelledby="FeaturedFramesHeading-{{ section.id }}"
+    {% else %}
+        aria-label="{{ 'sections.featured-frames.accessibility.region' | t }}"
+    {% endif %}
+>
+    <div class="featured-frames__frame">
+        {%- if has_header -%}
+            <div class="featured-frames__head">
+                {%- if has_section_number or has_heading -%}
+                    <h2
+                        id="FeaturedFramesHeading-{{ section.id }}"
+                        class="featured-frames__title"
+                    >
+                        {%- if has_section_number -%}
+                            <span class="featured-frames__num">
+                                {{- section_number_val -}}
+                            </span>
+                        {%- endif -%}
+                        {%- if has_section_number and has_heading -%}
+                            <span class="featured-frames__slash" aria-hidden="true">/</span>
+                        {%- endif -%}
+                        {%- if has_heading -%}
+                            <span>{{ heading_val }}</span>
+                        {%- endif -%}
+                    </h2>
+                {%- endif -%}
 
-                    {%- if has_note -%}
-                        <p class="featured-frames__note">
-                            {{- section.settings.note | escape -}}
-                        </p>
-                    {%- endif -%}
-                </div>
-            {%- endif -%}
+                {%- if has_note -%}
+                    <p class="featured-frames__note">
+                        {{- note_val -}}
+                    </p>
+                {%- endif -%}
+            </div>
+        {%- endif -%}
 
+        <ul class="featured-frames__grid" role="list">
             {%- if valid_product_count > 0 -%}
-                <ul class="featured-frames__grid" role="list">
-                    {%- for product_item in selected_products limit: 3 -%}
-                        {%- if product_item != blank -%}
-                            {%- liquid
-                                assign card_alt = product_item.featured_image.alt | default: product_item.title | escape
-                                assign card_link_aria = 'sections.featured-frames.accessibility.view_product' | t: label: details_text, title: product_item.title
-                            -%}
-                            <li class="featured-frames__item">
-                                <article class="featured-frames__card">
+                {%- for product_item in selected_products limit: 3 -%}
+                    {%- if product_item != blank -%}
+                        {%- liquid
+                            assign card_alt = product_item.featured_image.alt | default: product_item.title | escape
+                            assign card_link_aria = 'sections.featured-frames.accessibility.view_product' | t: label: details_text, title: product_item.title
+                            assign ph_key = 'product-' | append: forloop.index
+                            assign product_sub = product_item.type | strip
+                        -%}
+                        <li class="featured-frames__item">
+                            <article class="featured-frames__card">
+                                <div class="featured-frames__media">
                                     {%- if product_item.featured_image != blank -%}
-                                        <div class="featured-frames__media">
-                                            {% render 'image',
-                                                image: product_item.featured_image,
-                                                aspect_ratio: 'landscape',
-                                                mode: 'frame',
-                                                fit: 'contain',
-                                                loading: 'lazy',
-                                                alt: card_alt,
-                                                widths: '360,540,720,960,1200',
-                                                sizes: '(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 94vw',
-                                                wrapper_class: 'featured-frames__image'
-                                            %}
-                                        </div>
-                                    {%- elsif request.design_mode -%}
-                                        <div class="featured-frames__media">
-                                            {% render 'image',
-                                                image: blank,
-                                                aspect_ratio: 'landscape',
-                                                mode: 'frame',
-                                                placeholder_key: 'product-1',
-                                                placeholder_style: 'framed',
-                                                wrapper_class: 'featured-frames__image'
-                                            %}
-                                        </div>
+                                        {% render 'image',
+                                            image: product_item.featured_image,
+                                            aspect_ratio: 'landscape',
+                                            mode: 'frame',
+                                            fit: 'contain',
+                                            loading: 'lazy',
+                                            alt: card_alt,
+                                            widths: '360,540,720,960,1200',
+                                            sizes: '(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 94vw',
+                                            wrapper_class: 'featured-frames__image'
+                                        %}
+                                    {%- else -%}
+                                        {% render 'image',
+                                            aspect_ratio: 'landscape',
+                                            mode: 'frame',
+                                            placeholder_key: ph_key,
+                                            placeholder_style: 'framed',
+                                            wrapper_class: 'featured-frames__image'
+                                        %}
                                     {%- endif -%}
+                                </div>
 
-                                    <div class="featured-frames__body">
-                                        <div class="featured-frames__meta">
+                                <div class="featured-frames__body">
+                                    <div class="featured-frames__meta">
+                                        <div class="featured-frames__title-group">
                                             <h3 class="featured-frames__card-title">
                                                 {{- product_item.title | escape -}}
                                             </h3>
-                                            <p class="featured-frames__price">
-                                                {{- product_item.price | money -}}
-                                            </p>
+                                            {%- if product_sub != blank -%}
+                                                <p class="featured-frames__card-sub">
+                                                    {{- product_sub | escape -}}
+                                                </p>
+                                            {%- endif -%}
                                         </div>
+                                        <p class="featured-frames__price">
+                                            {{- product_item.price | money -}}
+                                        </p>
+                                    </div>
 
+                                    {%- if product_item.url != blank -%}
                                         <div class="featured-frames__footer">
                                             <a
                                                 class="featured-frames__link"
                                                 href="{{ product_item.url }}"
-                                                aria-label="{{ card_link_aria | escape }}"
+                                                aria-label="{{ card_link_aria }}"
                                             >
                                                 <span>{{ details_text | escape }}</span>
                                                 {% render 'icons',
@@ -138,22 +143,62 @@
                                                 %}
                                             </a>
                                         </div>
-                                    </div>
-                                </article>
-                            </li>
-                        {%- endif -%}
-                    {%- endfor -%}
-                </ul>
-            {%- elsif request.design_mode -%}
-                <div class="featured-frames__empty">
-                    <p class="featured-frames__empty-text copy-s">
-                        {{- 'sections.featured-frames.placeholders.empty' | t -}}
-                    </p>
-                </div>
+                                    {%- endif -%}
+                                </div>
+                            </article>
+                        </li>
+                    {%- endif -%}
+                {%- endfor -%}
             {%- endif -%}
-        </div>
-    </section>
-{%- endif -%}
+
+            {%- if valid_product_count < 3 -%}
+                {%- assign next_card_slot = valid_product_count | plus: 1 -%}
+                {%- for slot_i in (next_card_slot..3) -%}
+                    {%- liquid
+                        assign ph_key = 'product-' | append: slot_i
+                        case slot_i
+                            when 1
+                                assign p_title = 'sections.featured-frames.preview.card_1_title' | t
+                                assign p_sub = 'sections.featured-frames.preview.card_1_subtitle' | t
+                            when 2
+                                assign p_title = 'sections.featured-frames.preview.card_2_title' | t
+                                assign p_sub = 'sections.featured-frames.preview.card_2_subtitle' | t
+                            else
+                                assign p_title = 'sections.featured-frames.preview.card_3_title' | t
+                                assign p_sub = 'sections.featured-frames.preview.card_3_subtitle' | t
+                        endcase
+                    -%}
+                    <li class="featured-frames__item">
+                        <article class="featured-frames__card">
+                            <div class="featured-frames__media">
+                                {% render 'image',
+                                    aspect_ratio: 'landscape',
+                                    mode: 'frame',
+                                    placeholder_key: ph_key,
+                                    placeholder_style: 'framed',
+                                    wrapper_class: 'featured-frames__image'
+                                %}
+                            </div>
+
+                            <div class="featured-frames__body">
+                                <div class="featured-frames__meta">
+                                    <div class="featured-frames__title-group">
+                                        <h3 class="featured-frames__card-title">
+                                            {{- p_title -}}
+                                        </h3>
+                                        <p class="featured-frames__card-sub">
+                                            {{- p_sub -}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                {%- endfor -%}
+            {%- endif -%}
+        </ul>
+    </div>
+</section>
 
 {% stylesheet %}
     .featured-frames__frame {
@@ -198,8 +243,8 @@
     }
 
     .featured-frames__slash {
-        font-weight: var(--font-body-weight);
-        color: var(--color-subtle);
+        font-weight: var(--font-heading-weight);
+        color: rgb(var(--color-accent-background));
         flex-shrink: 0;
     }
 
@@ -262,6 +307,13 @@
         min-width: 0;
     }
 
+    .featured-frames__title-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-step-3xs);
+        min-width: 0;
+    }
+
     .featured-frames__card-title {
         font-family: var(--font-heading-family);
         font-weight: var(--font-heading-weight);
@@ -271,6 +323,15 @@
         text-transform: uppercase;
         color: rgb(var(--color-foreground));
         min-width: 0;
+        overflow-wrap: break-word;
+    }
+
+    .featured-frames__card-sub {
+        font-family: var(--font-body-family);
+        font-style: italic;
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        line-height: var(--font-body-line-height);
+        color: var(--color-subtle);
         overflow-wrap: break-word;
     }
 
@@ -312,17 +373,6 @@
         .featured-frames__link:hover {
             color: rgb(var(--color-foreground));
         }
-    }
-
-    .featured-frames__empty {
-        border: 1px dashed var(--color-line-strong);
-        background-color: var(--color-surface-muted);
-        padding: var(--spacing-step-xl);
-        text-align: center;
-    }
-
-    .featured-frames__empty-text {
-        color: var(--color-subtle);
     }
 
     @container featured-frames-frame (max-width: 78rem) {
@@ -420,7 +470,12 @@
     ],
     "presets": [
         {
-            "name": "t:sections.featured-frames.presets.featured_frames"
+            "name": "t:sections.featured-frames.presets.featured_frames",
+            "settings": {
+                "section_number": "04",
+                "heading": "FEATURED FRAMES",
+                "note": "SCULPTURAL ACETATE. ARCHITECTURAL FIT."
+            }
         }
     ]
 }

@@ -329,8 +329,18 @@
             }
         },
         "footer": {
+            "content": {
+                "brand": "Brand",
+                "newsletter": "Stay in focus",
+                "legal": "Legal links"
+            },
             "settings": {
-                "color_scheme": "Color scheme"
+                "color_scheme": "Color scheme",
+                "brand_heading": "Brand wordmark",
+                "brand_tagline": "Brand tagline",
+                "newsletter_heading": "Heading",
+                "newsletter_description": "Description",
+                "legal_menu": "Legal menu"
             },
             "blocks": {
                 "link_column": "Link column"
@@ -450,6 +460,27 @@
                 "padding_top": "Padding top",
                 "padding_bottom": "Padding bottom"
             },
+            "blocks": {
+                "product_fit": {
+                    "name": "Product fit",
+                    "content": {
+                        "media": "Technical views",
+                        "dimensions": "Frame dimensions (mm)"
+                    },
+                    "settings": {
+                        "product": "Product",
+                        "label": "Button label",
+                        "default_selected": "Selected by default",
+                        "front_image": "Front view image",
+                        "side_image": "Side view image",
+                        "frame_width": "Frame width (mm)",
+                        "lens_width": "Lens width (mm)",
+                        "bridge_width": "Bridge width (mm)",
+                        "lens_height": "Lens height (mm)",
+                        "temple_length": "Temple length (mm)"
+                    }
+                }
+            },
             "presets": {
                 "frame_geometry": "Frame geometry & fit"
             }
@@ -473,7 +504,8 @@
                     "name": "Material detail item",
                     "settings": {
                         "index_label": "Index label",
-                        "title": "Title",
+                        "title": "Index title",
+                        "caption_title": "Photo caption title (optional)",
                         "subtitle": "Subtitle",
                         "image": "Image",
                         "caption_position": "Caption position"

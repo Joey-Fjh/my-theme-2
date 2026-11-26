@@ -1,36 +1,26 @@
 {%- liquid
+    assign section_number_val = section.settings.section_number | strip | escape
+    assign heading_val = section.settings.heading | strip | escape
+    assign intro_val = section.settings.intro | strip | escape | newline_to_br
+
     assign has_section_number = false
-    if section.settings.section_number != blank
+    if section_number_val != blank
         assign has_section_number = true
     endif
     assign has_heading = false
-    if section.settings.heading != blank
+    if heading_val != blank
         assign has_heading = true
     endif
     assign has_intro = false
-    if section.settings.intro != blank
+    if intro_val != blank
         assign has_intro = true
     endif
 
     assign visible_item_count = 0
     assign index_item_count = 0
     for block in section.blocks
-        assign item_has_title = false
+        assign visible_item_count = visible_item_count | plus: 1
         if block.settings.title != blank
-            assign item_has_title = true
-        endif
-        assign item_has_subtitle = false
-        if block.settings.subtitle != blank
-            assign item_has_subtitle = true
-        endif
-        assign item_has_image = false
-        if block.settings.image != blank
-            assign item_has_image = true
-        endif
-        if item_has_title or item_has_subtitle or item_has_image
-            assign visible_item_count = visible_item_count | plus: 1
-        endif
-        if item_has_title
             assign index_item_count = index_item_count | plus: 1
         endif
     endfor
@@ -46,7 +36,7 @@
     endif
 -%}
 
-{%- if has_any_content or request.design_mode -%}
+{%- if has_any_content -%}
     <section
         data-section-id="{{ section.id }}"
         class="section material color-{{ section.settings.color_scheme }}"
@@ -58,167 +48,146 @@
         {% endif %}
     >
         <div class="material__frame">
-            {%- if has_any_content -%}
-                <div class="material__shell">
-                    <div class="material__layout{% unless has_sidebar %} material__layout--media-only{% endunless %}">
-                        {%- if has_sidebar -%}
-                            <div class="material__sidebar">
-                                {%- if has_section_number or has_heading -%}
-                                    <h2
-                                        id="MaterialDetailHeading-{{ section.id }}"
-                                        class="material__heading"
-                                    >
-                                        {%- if has_section_number -%}
-                                            <span class="material__num">
-                                                {{- section.settings.section_number | escape -}}
-                                            </span>
-                                        {%- endif -%}
-                                        {%- if has_section_number and has_heading -%}
-                                            <span class="material__slash" aria-hidden="true"
-                                                >/</span
-                                            >
-                                        {%- endif -%}
-                                        {%- if has_heading -%}
-                                            <span>{{ section.settings.heading | escape }}</span>
-                                        {%- endif -%}
-                                    </h2>
-                                {%- endif -%}
-
-                                {%- if has_intro -%}
-                                    <p class="material__intro">
-                                        {{- section.settings.intro | escape | newline_to_br -}}
-                                    </p>
-                                {%- endif -%}
-
-                                {%- if index_item_count > 0 -%}
-                                    <span class="material__dash" aria-hidden="true"></span>
-                                    <ol class="material__index">
-                                        {%- for block in section.blocks -%}
-                                            {%- if block.settings.title != blank -%}
-                                                {%- liquid
-                                                    assign item_index_label = block.settings.index_label | strip
-                                                    if item_index_label == blank
-                                                        assign item_index_label = forloop.index | prepend: '0'
-                                                    endif
-                                                -%}
-                                                <li class="material__index-item">
-                                                    <span class="material__index-num">
-                                                        {{- item_index_label | escape -}}
-                                                    </span>
-                                                    <span class="material__index-title">
-                                                        {{- block.settings.title | escape -}}
-                                                    </span>
-                                                </li>
-                                            {%- endif -%}
-                                        {%- endfor -%}
-                                    </ol>
-                                {%- endif -%}
-                            </div>
-                        {%- endif -%}
-
-                        {%- if visible_item_count > 0 or request.design_mode -%}
-                            <div class="material__mosaic" data-count="{{ visible_item_count }}">
-                                {%- for block in section.blocks -%}
-                                    {%- liquid
-                                        assign item_has_title = false
-                                        if block.settings.title != blank
-                                            assign item_has_title = true
-                                        endif
-                                        assign item_has_subtitle = false
-                                        if block.settings.subtitle != blank
-                                            assign item_has_subtitle = true
-                                        endif
-                                        assign item_has_image = false
-                                        if block.settings.image != blank
-                                            assign item_has_image = true
-                                        endif
-                                        assign item_has_content = false
-                                        if item_has_title or item_has_subtitle or item_has_image
-                                            assign item_has_content = true
-                                        endif
-                                        assign item_index_label = block.settings.index_label | strip
-                                        if item_index_label == blank
-                                            assign item_index_label = forloop.index | prepend: '0'
-                                        endif
-                                        assign item_alt = block.settings.image.alt | default: block.settings.title | default: block.settings.subtitle | escape
-                                        assign caption_pos = block.settings.caption_position | default: 'top_start'
-                                    -%}
-
-                                    {%- if item_has_content -%}
-                                        <figure
-                                            class="material__tile material__tile--slot-{{ forloop.index }}{% unless item_has_image %} material__tile--no-media{% endunless %}"
-                                            data-caption-position="{{ caption_pos }}"
-                                            {{ block.shopify_attributes }}
-                                        >
-                                            {%- if item_has_image -%}
-                                                {% render 'image',
-                                                    image: block.settings.image,
-                                                    aspect_ratio: 'landscape',
-                                                    mode: 'frame',
-                                                    fit: 'cover',
-                                                    loading: 'lazy',
-                                                    alt: item_alt,
-                                                    widths: '360,540,720,960,1200',
-                                                    sizes: '(min-width: 1024px) 44vw, (min-width: 640px) 48vw, 94vw',
-                                                    wrapper_class: 'material__media'
-                                                %}
-                                            {%- elsif request.design_mode -%}
-                                                {% render 'image',
-                                                    image: blank,
-                                                    aspect_ratio: 'landscape',
-                                                    mode: 'frame',
-                                                    placeholder_key: 'collection-1',
-                                                    placeholder_style: 'framed',
-                                                    wrapper_class: 'material__media'
-                                                %}
-                                            {%- endif -%}
-
-                                            {%- if item_has_title or item_has_subtitle -%}
-                                                <figcaption class="material__caption-wrap">
-                                                    <span class="material__caption">
-                                                        {%- if item_has_title -%}
-                                                            <span class="material__caption-heading">
-                                                                {{- item_index_label | escape }} /
-                                                                {{ block.settings.title | escape -}}
-                                                            </span>
-                                                        {%- endif -%}
-                                                        {%- if item_has_subtitle -%}
-                                                            <span class="material__caption-sub">
-                                                                {{-
-                                                                    block.settings.subtitle
-                                                                    | escape
-                                                                -}}
-                                                            </span>
-                                                        {%- endif -%}
-                                                    </span>
-                                                </figcaption>
-                                            {%- endif -%}
-                                        </figure>
-                                    {%- elsif request.design_mode -%}
-                                        <div
-                                            class="material__tile material__tile--slot-{{ forloop.index }} material__tile--empty"
-                                            {{ block.shopify_attributes }}
-                                        >
-                                            <p class="material__empty-text copy-s">
-                                                {{-
-                                                    'sections.material-detail.placeholders.empty_item'
-                                                    | t
-                                                -}}
-                                            </p>
-                                        </div>
+            <div class="material__shell">
+                <div class="material__layout{% unless has_sidebar %} material__layout--media-only{% endunless %}">
+                    {%- if has_sidebar -%}
+                        <div class="material__sidebar">
+                            {%- if has_section_number or has_heading -%}
+                                <h2
+                                    id="MaterialDetailHeading-{{ section.id }}"
+                                    class="material__heading"
+                                >
+                                    {%- if has_section_number -%}
+                                        <span class="material__num">
+                                            {{- section_number_val -}}
+                                        </span>
                                     {%- endif -%}
-                                {%- endfor -%}
-                            </div>
-                        {%- endif -%}
-                    </div>
+                                    {%- if has_section_number and has_heading -%}
+                                        <span class="material__slash" aria-hidden="true">/</span>
+                                    {%- endif -%}
+                                    {%- if has_heading -%}
+                                        <span>{{ heading_val }}</span>
+                                    {%- endif -%}
+                                </h2>
+                            {%- endif -%}
+
+                            {%- if has_intro -%}
+                                <p class="material__intro">
+                                    {{- intro_val -}}
+                                </p>
+                            {%- endif -%}
+
+                            {%- if index_item_count > 0 -%}
+                                <span class="material__dash" aria-hidden="true"></span>
+                                <ol class="material__index">
+                                    {%- for block in section.blocks -%}
+                                        {%- liquid
+                                            assign item_index_label = block.settings.index_label | strip
+                                            if item_index_label == blank
+                                                assign item_index_label = forloop.index | prepend: '0'
+                                            endif
+                                            assign index_title_val = block.settings.title | strip
+                                        -%}
+                                        {%- if index_title_val != blank -%}
+                                            <li class="material__index-item">
+                                                <span class="material__index-num">
+                                                    {{- item_index_label | escape -}}
+                                                </span>
+                                                <span class="material__index-title">
+                                                    {{- index_title_val | escape -}}
+                                                </span>
+                                            </li>
+                                        {%- endif -%}
+                                    {%- endfor -%}
+                                </ol>
+                            {%- endif -%}
+                        </div>
+                    {%- endif -%}
+
+                    {%- if visible_item_count > 0 -%}
+                        <div class="material__mosaic" data-count="{{ visible_item_count }}">
+                            {%- for block in section.blocks -%}
+                                {%- liquid
+                                    assign slot_i = forloop.index
+                                    if slot_i > 4
+                                        assign slot_i = 4
+                                    endif
+                                    assign ph_key = 'collection-' | append: slot_i
+                                    assign item_has_image = false
+                                    if block.settings.image != blank
+                                        assign item_has_image = true
+                                    endif
+
+                                    assign item_index_label = block.settings.index_label | strip
+                                    if item_index_label == blank
+                                        assign item_index_label = forloop.index | prepend: '0'
+                                    endif
+
+                                    assign cap_title = block.settings.caption_title | strip
+                                    if cap_title == blank
+                                        assign cap_title = block.settings.title | strip
+                                    endif
+                                    assign cap_sub = block.settings.subtitle | strip
+
+                                    assign item_has_caption = false
+                                    if cap_title != blank or cap_sub != blank
+                                        assign item_has_caption = true
+                                    endif
+
+                                    assign item_alt = block.settings.image.alt | default: cap_title | default: cap_sub | escape
+                                    assign caption_pos = block.settings.caption_position | default: 'top_start'
+                                -%}
+
+                                <figure
+                                    class="material__tile material__tile--slot-{{ forloop.index }}"
+                                    data-caption-position="{{ caption_pos }}"
+                                    {{ block.shopify_attributes }}
+                                >
+                                    {%- if item_has_image -%}
+                                        {% render 'image',
+                                            image: block.settings.image,
+                                            aspect_ratio: 'landscape',
+                                            mode: 'frame',
+                                            fit: 'cover',
+                                            loading: 'lazy',
+                                            alt: item_alt,
+                                            widths: '360,540,720,960,1200',
+                                            sizes: '(min-width: 1024px) 44vw, (min-width: 640px) 48vw, 94vw',
+                                            wrapper_class: 'material__media'
+                                        %}
+                                    {%- else -%}
+                                        {% render 'image',
+                                            aspect_ratio: 'landscape',
+                                            mode: 'frame',
+                                            placeholder_key: ph_key,
+                                            placeholder_style: 'framed',
+                                            wrapper_class: 'material__media'
+                                        %}
+                                    {%- endif -%}
+
+                                    {%- if item_has_caption -%}
+                                        <figcaption class="material__caption-wrap">
+                                            <span class="material__caption">
+                                                {%- if cap_title != blank -%}
+                                                    <span class="material__caption-heading">
+                                                        {{- item_index_label | escape }} /
+                                                        {{ cap_title | escape -}}
+                                                    </span>
+                                                {%- endif -%}
+                                                {%- if cap_sub != blank -%}
+                                                    <span class="material__caption-sub">
+                                                        {{- cap_sub | escape -}}
+                                                    </span>
+                                                {%- endif -%}
+                                            </span>
+                                        </figcaption>
+                                    {%- endif -%}
+                                </figure>
+                            {%- endfor -%}
+                        </div>
+                    {%- endif -%}
                 </div>
-            {%- else -%}
-                <div class="material__empty">
-                    <p class="material__empty-text copy-s">
-                        {{- 'sections.material-detail.placeholders.empty' | t -}}
-                    </p>
-                </div>
-            {%- endif -%}
+            </div>
         </div>
     </section>
 {%- endif -%}
@@ -280,8 +249,8 @@
     }
 
     .material__slash {
-        font-weight: var(--font-body-weight);
-        color: var(--color-subtle);
+        font-weight: var(--font-heading-weight);
+        color: rgb(var(--color-accent-background));
         flex-shrink: 0;
     }
 
@@ -309,14 +278,14 @@
         padding: 0;
         display: grid;
         grid-template-columns: minmax(0, 1fr);
+        gap: var(--spacing-step-s);
     }
 
     .material__index-item {
         display: flex;
         align-items: baseline;
         gap: var(--spacing-step-s);
-        padding-block: var(--spacing-step-s);
-        border-block-end: 1px solid var(--material-line-color);
+        padding-block: var(--spacing-step-2xs);
         font-family: var(--font-mono-family);
         font-size: calc(var(--type-step--2) * var(--font-body-scale));
         line-height: var(--font-heading-line-height);
@@ -326,13 +295,11 @@
         min-width: 0;
     }
 
-    .material__index-item:first-child {
-        border-block-start: 1px solid var(--material-line-color);
-    }
-
     .material__index-num {
-        color: var(--color-subtle);
+        color: rgb(var(--color-foreground));
         font-weight: var(--font-heading-weight);
+        text-decoration: underline;
+        text-underline-offset: 4px;
         white-space: nowrap;
         flex-shrink: 0;
     }
@@ -437,37 +404,6 @@
         color: var(--color-muted);
     }
 
-    .material__tile--no-media {
-        min-height: 14rem;
-    }
-
-    .material__tile--no-media .material__caption-wrap {
-        align-items: center;
-        justify-content: flex-start;
-        padding: var(--spacing-step-m);
-    }
-
-    .material__tile--no-media .material__caption {
-        border: 0;
-        padding: 0;
-        background-color: transparent;
-        text-align: start;
-    }
-
-    .material__tile--empty,
-    .material__empty {
-        display: grid;
-        place-items: center;
-        border: 1px dashed var(--color-line-strong);
-        background-color: var(--color-surface-muted);
-        padding: var(--spacing-step-xl);
-        text-align: center;
-    }
-
-    .material__empty-text {
-        color: var(--color-subtle);
-    }
-
     @container material-frame (max-width: 78rem) {
         .material__layout {
             grid-template-columns: minmax(0, 1fr);
@@ -477,19 +413,11 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             column-gap: var(--spacing-step-l);
         }
-
-        .material__index-item:nth-child(2) {
-            border-block-start: 1px solid var(--material-line-color);
-        }
     }
 
     @container material-frame (max-width: 36rem) {
         .material__index {
             grid-template-columns: minmax(0, 1fr);
-        }
-
-        .material__index-item:nth-child(2) {
-            border-block-start: 0;
         }
 
         .material__mosaic {
@@ -503,10 +431,6 @@
         .material__tile--slot-4 {
             grid-column: 1 / -1;
             min-height: 18rem;
-        }
-
-        .material__tile--no-media {
-            min-height: 10rem;
         }
     }
 {% endstylesheet %}
@@ -588,6 +512,11 @@
                 },
                 {
                     "type": "text",
+                    "id": "caption_title",
+                    "label": "t:sections.material-detail.blocks.material_item.settings.caption_title"
+                },
+                {
+                    "type": "text",
                     "id": "subtitle",
                     "label": "t:sections.material-detail.blocks.material_item.settings.subtitle"
                 },
@@ -621,7 +550,54 @@
     ],
     "presets": [
         {
-            "name": "t:sections.material-detail.presets.material_detail"
+            "name": "t:sections.material-detail.presets.material_detail",
+            "settings": {
+                "section_number": "03",
+                "heading": "MATERIAL & DETAIL",
+                "intro": "A CLOSER LOOK AT THE LAYERS, MATERIALS, AND PRECISION THAT DEFINE AXIS / LAYR."
+            },
+            "blocks": [
+                {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "01",
+                        "title": "ACETATE LAYERING",
+                        "caption_title": "LAYERED ACETATE",
+                        "subtitle": "(CRYSTAL CLEAR)",
+                        "caption_position": "top_start"
+                    }
+                },
+                {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "02",
+                        "title": "PRECISION HINGE",
+                        "caption_title": "PRECISION HINGE",
+                        "subtitle": "(TITANIUM CORE)",
+                        "caption_position": "top_start"
+                    }
+                },
+                {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "03",
+                        "title": "SCULPTURAL PROFILE",
+                        "caption_title": "SCULPTURAL PROFILE",
+                        "subtitle": "(AL-03)",
+                        "caption_position": "bottom_start"
+                    }
+                },
+                {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "04",
+                        "title": "OPTICAL CLARITY",
+                        "caption_title": "MATERIAL DEPTH",
+                        "subtitle": "(COBALT TRANSLUCENT)",
+                        "caption_position": "bottom_end"
+                    }
+                }
+            ]
         }
     ]
 }

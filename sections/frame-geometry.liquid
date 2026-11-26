@@ -1,87 +1,115 @@
 {%- liquid
-    assign has_section_number = false
-    if section.settings.section_number != blank
-        assign has_section_number = true
+    assign section_number_raw = section.settings.section_number | strip
+    assign heading_raw = section.settings.heading | strip
+    assign note_raw = section.settings.note | strip
+
+    assign section_number_val = section_number_raw | escape
+    assign heading_val = heading_raw | escape
+    assign note_val = note_raw | escape
+
+    if request.design_mode
+        if section_number_raw == blank
+            assign section_number_val = 'sections.frame-geometry.preview.section_number' | t
+        endif
+        if heading_raw == blank
+            assign heading_val = 'sections.frame-geometry.preview.heading' | t
+        endif
+        if note_raw == blank
+            assign note_val = 'sections.frame-geometry.preview.note' | t
+        endif
     endif
-    assign has_heading = false
-    if section.settings.heading != blank
-        assign has_heading = true
-    endif
-    assign has_note = false
-    if section.settings.note != blank
-        assign has_note = true
-    endif
+
+    assign header_text = section_number_val | append: heading_val | append: note_val | strip
     assign has_header = false
-    if has_section_number or has_heading or has_note
+    if header_text != blank
         assign has_header = true
     endif
 
-    assign has_front_image = false
-    if section.settings.front_image != blank
-        assign has_front_image = true
-    endif
-    assign has_side_image = false
-    if section.settings.side_image != blank
-        assign has_side_image = true
+    assign valid_product_blocks_count = 0
+    assign explicit_initial_index = -1
+    assign standard_fallback_index = -1
+    for block in section.blocks
+        if block.type == 'product_fit'
+            assign b_check_text = block.settings.label | append: block.settings.frame_width | append: block.settings.lens_width | append: block.settings.bridge_width | append: block.settings.lens_height | append: block.settings.temple_length | strip
+            if block.settings.product != blank or b_check_text != blank or block.settings.front_image != blank or block.settings.side_image != blank
+                if block.settings.default_selected and explicit_initial_index == -1
+                    assign explicit_initial_index = valid_product_blocks_count
+                endif
+                assign b_label_dc = block.settings.label | strip | downcase
+                if b_label_dc == 'standard' and standard_fallback_index == -1
+                    assign standard_fallback_index = valid_product_blocks_count
+                endif
+                assign valid_product_blocks_count = valid_product_blocks_count | plus: 1
+            endif
+        endif
+    endfor
+
+    assign initial_fit_index = 0
+    if explicit_initial_index >= 0
+        assign initial_fit_index = explicit_initial_index
+    elsif standard_fallback_index >= 0
+        assign initial_fit_index = standard_fallback_index
     endif
 
-    assign has_frame_width = false
-    if section.settings.frame_width != blank
-        assign has_frame_width = true
+    assign has_product_blocks = false
+    if valid_product_blocks_count > 0
+        assign has_product_blocks = true
     endif
-    assign has_lens_width = false
-    if section.settings.lens_width != blank
-        assign has_lens_width = true
+    assign has_multi_products = false
+    if valid_product_blocks_count > 1
+        assign has_multi_products = true
     endif
-    assign has_bridge_width = false
-    if section.settings.bridge_width != blank
-        assign has_bridge_width = true
+
+    assign legacy_front_text = section.settings.frame_width | append: section.settings.lens_width | append: section.settings.bridge_width | append: section.settings.lens_height | strip
+    assign legacy_metrics_text = section.settings.frame_width | append: section.settings.lens_width | append: section.settings.bridge_width | append: section.settings.temple_length | strip
+    assign legacy_summary_text = section.settings.fit_label | append: section.settings.size_code | append: section.settings.fit_note | strip
+
+    assign use_editor_sample_dims = false
+    if request.design_mode and has_product_blocks == false and legacy_front_text == blank and section.settings.temple_length == blank and legacy_summary_text == blank
+        assign use_editor_sample_dims = true
     endif
-    assign has_lens_height = false
-    if section.settings.lens_height != blank
-        assign has_lens_height = true
-    endif
-    assign has_temple_length = false
-    if section.settings.temple_length != blank
-        assign has_temple_length = true
+
+    assign disp_fw = section.settings.frame_width | strip
+    assign disp_lw = section.settings.lens_width | strip
+    assign disp_bw = section.settings.bridge_width | strip
+    assign disp_lh = section.settings.lens_height | strip
+    assign disp_tl = section.settings.temple_length | strip
+    assign disp_f_num = disp_fw
+    assign disp_l_num = disp_lw
+    assign disp_b_num = disp_bw
+    assign disp_t_num = disp_tl
+
+    if use_editor_sample_dims
+        assign disp_fw = 'sections.frame-geometry.preview.frame_width' | t
+        assign disp_lw = 'sections.frame-geometry.preview.lens_width' | t
+        assign disp_bw = 'sections.frame-geometry.preview.bridge_width' | t
+        assign disp_lh = 'sections.frame-geometry.preview.lens_height' | t
+        assign disp_tl = 'sections.frame-geometry.preview.temple_length' | t
+        assign disp_f_num = 'sections.frame-geometry.preview.metric_f' | t
+        assign disp_l_num = 'sections.frame-geometry.preview.metric_l' | t
+        assign disp_b_num = 'sections.frame-geometry.preview.metric_b' | t
+        assign disp_t_num = 'sections.frame-geometry.preview.metric_t' | t
     endif
 
     assign has_front_view = false
-    if has_front_image or has_frame_width or has_lens_width or has_bridge_width or has_lens_height or request.design_mode
+    if section.settings.front_image != blank or legacy_front_text != blank or request.design_mode
         assign has_front_view = true
     endif
     assign has_side_view = false
-    if has_side_image or has_temple_length or request.design_mode
+    if section.settings.side_image != blank or section.settings.temple_length != blank or request.design_mode
         assign has_side_view = true
     endif
-    assign has_views = false
-    if has_front_view or has_side_view
-        assign has_views = true
-    endif
-
-    assign has_fit_label = false
-    if section.settings.fit_label != blank
-        assign has_fit_label = true
-    endif
-    assign has_size_code = false
-    if section.settings.size_code != blank
-        assign has_size_code = true
-    endif
-    assign has_fit_note = false
-    if section.settings.fit_note != blank
-        assign has_fit_note = true
-    endif
     assign has_metrics = false
-    if has_frame_width or has_lens_width or has_bridge_width or has_temple_length
+    if legacy_metrics_text != blank or use_editor_sample_dims
         assign has_metrics = true
     endif
     assign has_spec_bar = false
-    if has_fit_label or has_size_code or has_fit_note or has_metrics
+    if legacy_summary_text != blank or has_metrics or use_editor_sample_dims
         assign has_spec_bar = true
     endif
 
     assign has_any_content = false
-    if has_header or has_front_image or has_side_image or has_spec_bar or has_lens_height
+    if has_header or has_product_blocks or has_spec_bar or section.settings.front_image != blank or section.settings.side_image != blank or section.settings.lens_height != blank
         assign has_any_content = true
     endif
 
@@ -89,64 +117,524 @@
     assign front_alt = section.settings.front_image.alt | default: front_alt_fallback | escape
     assign side_alt_fallback = 'sections.frame-geometry.labels.side_view' | t
     assign side_alt = section.settings.side_image.alt | default: side_alt_fallback | escape
+    assign unit_mm = 'sections.frame-geometry.labels.unit_mm' | t
+    assign label_frame_width = 'sections.frame-geometry.labels.frame_width' | t
+    assign label_lens_width = 'sections.frame-geometry.labels.lens_width' | t
+    assign label_bridge_width = 'sections.frame-geometry.labels.bridge_width' | t
+    assign label_lens_height = 'sections.frame-geometry.labels.lens_height' | t
+    assign label_temple_length = 'sections.frame-geometry.labels.temple_length' | t
+    assign label_frame_size = 'sections.frame-geometry.labels.frame_size' | t
+    assign metric_f = 'sections.frame-geometry.metrics.frame_short' | t
+    assign metric_l = 'sections.frame-geometry.metrics.lens_short' | t
+    assign metric_b = 'sections.frame-geometry.metrics.bridge_short' | t
+    assign metric_t = 'sections.frame-geometry.metrics.temple_short' | t
 -%}
+
+{%- if has_product_blocks -%}
+    {%- assign any_block_has_views = false -%}
+    {%- assign any_block_dual_views = false -%}
+    {%- assign panels_html = '' -%}
+    {%- assign controls_html = '' -%}
+    {%- assign first_static_pill_html = '' -%}
+    {%- assign tables_html = '' -%}
+    {%- assign p_idx = 0 -%}
+
+    {%- for block in section.blocks -%}
+        {%- liquid
+            assign b_eligible = false
+            if block.type == 'product_fit'
+                assign b_check_text = block.settings.label | append: block.settings.frame_width | append: block.settings.lens_width | append: block.settings.bridge_width | append: block.settings.lens_height | append: block.settings.temple_length | strip
+                if block.settings.product != blank or b_check_text != blank or block.settings.front_image != blank or block.settings.side_image != blank
+                    assign b_eligible = true
+                endif
+            endif
+        -%}
+        {%- if b_eligible -%}
+            {%- liquid
+                assign block_product = block.settings.product
+                assign fit_num = p_idx | plus: 1
+                assign b_label_raw = block.settings.label | strip
+                if b_label_raw == blank and block_product != blank
+                    assign b_label_raw = block_product.title | strip
+                endif
+                if b_label_raw != blank
+                    assign b_label = b_label_raw | escape
+                else
+                    assign b_label = 'sections.frame-geometry.labels.fit_option' | t: index: fit_num
+                endif
+                assign b_alt_title = block_product.title | default: b_label_raw | default: fit_num
+
+                assign b_fw = block.settings.frame_width | strip
+                assign b_lw = block.settings.lens_width | strip
+                assign b_bw = block.settings.bridge_width | strip
+                assign b_lh = block.settings.lens_height | strip
+                assign b_tl = block.settings.temple_length | strip
+
+                assign b_fw_ok = 0
+                assign b_lw_ok = 0
+                assign b_bw_ok = 0
+                assign b_lh_ok = 0
+                assign b_tl_ok = 0
+                assign b_lw_n = 0
+                assign b_bw_n = 0
+                assign b_tl_n = 0
+
+                assign b_dim_keys = 'frame_width,lens_width,bridge_width,lens_height,temple_length' | split: ','
+                for dim_key in b_dim_keys
+                    assign dim_raw = block.settings[dim_key] | strip
+                    assign dim_rem = dim_raw | remove: '0' | remove: '1' | remove: '2' | remove: '3' | remove: '4' | remove: '5' | remove: '6' | remove: '7' | remove: '8' | remove: '9'
+                    assign dim_first = dim_raw | slice: 0
+                    assign dim_last = dim_raw | slice: -1
+                    assign dim_n = dim_raw | plus: 0
+                    assign dim_valid = false
+                    if dim_raw != blank and dim_first != '.' and dim_last != '.' and dim_n > 0
+                        if dim_rem == '' or dim_rem == '.'
+                            assign dim_valid = true
+                        endif
+                    endif
+                    if dim_valid
+                        case dim_key
+                            when 'frame_width'
+                                assign b_fw_ok = 1
+                            when 'lens_width'
+                                assign b_lw_ok = 1
+                                assign b_lw_n = dim_n
+                            when 'bridge_width'
+                                assign b_bw_ok = 1
+                                assign b_bw_n = dim_n
+                            when 'lens_height'
+                                assign b_lh_ok = 1
+                            when 'temple_length'
+                                assign b_tl_ok = 1
+                                assign b_tl_n = dim_n
+                        endcase
+                    endif
+                endfor
+
+                assign b_metrics_count = b_fw_ok | plus: b_lw_ok | plus: b_bw_ok | plus: b_tl_ok
+                assign b_front = true
+                assign b_side = true
+                assign any_block_has_views = true
+                assign any_block_dual_views = true
+
+                assign b_size_code = ''
+                assign b_code_parts = b_lw_ok | plus: b_bw_ok | plus: b_tl_ok
+                if b_code_parts == 3
+                    assign lw_int = b_lw_n | floor
+                    assign lw_c = b_lw_n
+                    if lw_int == b_lw_n
+                        assign lw_c = lw_int
+                    endif
+                    assign bw_int = b_bw_n | floor
+                    assign bw_c = b_bw_n
+                    if bw_int == b_bw_n
+                        assign bw_c = bw_int
+                    endif
+                    assign tl_int = b_tl_n | floor
+                    assign tl_c = b_tl_n
+                    if tl_int == b_tl_n
+                        assign tl_c = tl_int
+                    endif
+                    assign b_size_code = lw_c | append: '–' | append: bw_c | append: '–' | append: tl_c
+                endif
+
+                assign b_front_alt_fb = 'sections.frame-geometry.labels.front_view_for' | t: title: b_alt_title
+                if block.settings.front_image.alt != blank
+                    assign b_front_alt = block.settings.front_image.alt | escape
+                else
+                    assign b_front_alt = b_front_alt_fb
+                endif
+                assign b_side_alt_fb = 'sections.frame-geometry.labels.side_view_for' | t: title: b_alt_title
+                if block.settings.side_image.alt != blank
+                    assign b_side_alt = block.settings.side_image.alt | escape
+                else
+                    assign b_side_alt = b_side_alt_fb
+                endif
+            -%}
+
+            {%- capture panel_chunk -%}
+                <div
+                    id="GeometryPanel-{{ section.id }}-{{ block.id }}"
+                    class="geometry__views{% unless b_front and b_side %} geometry__views--single{% endunless %}"
+                    data-panel-index="{{ p_idx }}"
+                    {% if has_multi_products %}
+                        role="tabpanel"
+                        aria-labelledby="GeometryTab-{{ section.id }}-{{ block.id }}"
+                        :hidden="!isSelected($el.dataset.panelIndex)"
+                    {% endif %}
+                    {% if p_idx != initial_fit_index %}
+                        hidden
+                    {% endif %}
+                >
+                    {%- if b_front -%}
+                        <figure class="geometry__view geometry__view--front{% if b_lh_ok == 1 %} geometry__view--with-height{% endif %}">
+                            {%- if b_fw_ok == 1 -%}
+                                <div class="geometry__callout geometry__callout--top">
+                                    <p class="geometry__callout-text">
+                                        <span>{{ label_frame_width }}</span>
+                                        <span class="geometry__callout-value">
+                                            {{- b_fw | escape }}
+                                            {{ unit_mm -}}
+                                        </span>
+                                    </p>
+                                    <span
+                                        class="geometry__dim-line geometry__dim-line--h"
+                                        aria-hidden="true"
+                                    ></span>
+                                </div>
+                            {%- endif -%}
+
+                            {%- if block.settings.front_image != blank -%}
+                                {% render 'image',
+                                    image: block.settings.front_image,
+                                    aspect_ratio: 'adapt',
+                                    placeholder_aspect_ratio: 'wide',
+                                    mode: 'natural',
+                                    fit: 'contain',
+                                    loading: 'lazy',
+                                    alt: b_front_alt,
+                                    widths: '360,540,720,960,1200',
+                                    sizes: '(min-width: 1024px) 52vw, 94vw',
+                                    wrapper_class: 'geometry__media'
+                                %}
+                            {%- else -%}
+                                <div class="geometry__media" aria-hidden="true">
+                                    {% render 'image',
+                                        aspect_ratio: 'wide',
+                                        mode: 'frame',
+                                        placeholder_key: 'lifestyle-1',
+                                        placeholder_style: 'framed'
+                                    %}
+                                </div>
+                            {%- endif -%}
+
+                            {%- if b_lh_ok == 1 -%}
+                                <div class="geometry__callout geometry__callout--side">
+                                    <span
+                                        class="geometry__dim-line geometry__dim-line--v"
+                                        aria-hidden="true"
+                                    ></span>
+                                    <p class="geometry__callout-text">
+                                        <span>{{ label_lens_height }}</span>
+                                        <span class="geometry__callout-value">
+                                            {{- b_lh | escape }}
+                                            {{ unit_mm -}}
+                                        </span>
+                                    </p>
+                                </div>
+                            {%- endif -%}
+
+                            {%- assign b_bottom_dims = b_lw_ok | plus: b_bw_ok -%}
+                            {%- if b_bottom_dims > 0 -%}
+                                <div class="geometry__callouts-bottom">
+                                    {%- if b_lw_ok == 1 -%}
+                                        <div class="geometry__callout geometry__callout--lens">
+                                            <span
+                                                class="geometry__dim-line geometry__dim-line--h"
+                                                aria-hidden="true"
+                                            ></span>
+                                            <p class="geometry__callout-text">
+                                                <span>{{ label_lens_width }}</span>
+                                                <span class="geometry__callout-value">
+                                                    {{- b_lw | escape }}
+                                                    {{ unit_mm -}}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    {%- endif -%}
+
+                                    {%- if b_bw_ok == 1 -%}
+                                        <div class="geometry__callout geometry__callout--bridge">
+                                            <span
+                                                class="geometry__dim-line geometry__dim-line--h"
+                                                aria-hidden="true"
+                                            ></span>
+                                            <p class="geometry__callout-text">
+                                                <span>{{ label_bridge_width }}</span>
+                                                <span class="geometry__callout-value">
+                                                    {{- b_bw | escape }}
+                                                    {{ unit_mm -}}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    {%- endif -%}
+                                </div>
+                            {%- endif -%}
+                        </figure>
+                    {%- endif -%}
+
+                    {%- if b_side -%}
+                        <figure class="geometry__view geometry__view--side">
+                            <div class="geometry__stage--side">
+                                {%- if block.settings.side_image != blank -%}
+                                    {% render 'image',
+                                        image: block.settings.side_image,
+                                        aspect_ratio: 'adapt',
+                                        placeholder_aspect_ratio: 'wide',
+                                        mode: 'natural',
+                                        fit: 'contain',
+                                        loading: 'lazy',
+                                        alt: b_side_alt,
+                                        widths: '360,540,720,960,1200',
+                                        sizes: '(min-width: 1024px) 44vw, 94vw',
+                                        wrapper_class: 'geometry__media'
+                                    %}
+                                {%- else -%}
+                                    <div class="geometry__media" aria-hidden="true">
+                                        {% render 'image',
+                                            aspect_ratio: 'wide',
+                                            mode: 'frame',
+                                            placeholder_key: 'lifestyle-2',
+                                            placeholder_style: 'framed'
+                                        %}
+                                    </div>
+                                {%- endif -%}
+                            </div>
+
+                            {%- if b_tl_ok == 1 -%}
+                                <div class="geometry__callout geometry__callout--bottom">
+                                    <span
+                                        class="geometry__dim-line geometry__dim-line--h"
+                                        aria-hidden="true"
+                                    ></span>
+                                    <p class="geometry__callout-text">
+                                        <span>{{ label_temple_length }}</span>
+                                        <span class="geometry__callout-value">
+                                            {{- b_tl | escape }}
+                                            {{ unit_mm -}}
+                                        </span>
+                                    </p>
+                                </div>
+                            {%- endif -%}
+                        </figure>
+                    {%- endif -%}
+                </div>
+            {%- endcapture -%}
+            {%- assign panels_html = panels_html | append: panel_chunk -%}
+
+            {%- if p_idx == initial_fit_index -%}
+                {%- capture first_static_pill_html -%}
+                    <span class="geometry__spec-pill" {{ block.shopify_attributes }}>
+                        <span>{{ b_label }}</span>
+                        {%- if b_size_code != blank -%}
+                            <span class="geometry__fit-code">{{ b_size_code | escape }}</span>
+                        {%- endif -%}
+                    </span>
+                {%- endcapture -%}
+            {%- endif -%}
+
+            {%- capture control_chunk -%}
+                <button
+                    type="button"
+                    role="tab"
+                    class="geometry__fit-btn"
+                    id="GeometryTab-{{ section.id }}-{{ block.id }}"
+                    data-panel-index="{{ p_idx }}"
+                    data-block-id="{{ block.id }}"
+                    aria-controls="GeometryPanel-{{ section.id }}-{{ block.id }}"
+                    aria-selected="{% if p_idx == initial_fit_index %}true{% else %}false{% endif %}"
+                    :aria-selected="isSelected($el.dataset.panelIndex)"
+                    :tabindex="isSelected($el.dataset.panelIndex) ? 0 : -1"
+                    @click="select($el.dataset.panelIndex)"
+                    @keydown="onKeydown($event)"
+                    {{ block.shopify_attributes }}
+                >
+                    <span>{{ b_label }}</span>
+                    {%- if b_size_code != blank -%}
+                        <span class="geometry__fit-code">{{ b_size_code | escape }}</span>
+                    {%- endif -%}
+                </button>
+            {%- endcapture -%}
+            {%- assign controls_html = controls_html | append: control_chunk -%}
+
+            {%- if b_metrics_count > 0 -%}
+                {%- capture table_chunk -%}
+                    <div
+                        class="geometry__table-wrap"
+                        data-panel-index="{{ p_idx }}"
+                        {% if has_multi_products %}
+                            :hidden="!isSelected($el.dataset.panelIndex)"
+                        {% endif %}
+                        {% if p_idx != initial_fit_index %}
+                            hidden
+                        {% endif %}
+                    >
+                        <p class="geometry__table-heading">{{ label_frame_size }}</p>
+                        <dl class="geometry__metrics">
+                            {%- if b_fw_ok == 1 -%}
+                                <div class="geometry__metric">
+                                    <dt>{{ metric_f }}</dt>
+                                    <dd>{{ b_fw | escape }}</dd>
+                                </div>
+                            {%- endif -%}
+                            {%- if b_lw_ok == 1 -%}
+                                <div class="geometry__metric">
+                                    <dt>{{ metric_l }}</dt>
+                                    <dd>{{ b_lw | escape }}</dd>
+                                </div>
+                            {%- endif -%}
+                            {%- if b_bw_ok == 1 -%}
+                                <div class="geometry__metric">
+                                    <dt>{{ metric_b }}</dt>
+                                    <dd>{{ b_bw | escape }}</dd>
+                                </div>
+                            {%- endif -%}
+                            {%- if b_tl_ok == 1 -%}
+                                <div class="geometry__metric">
+                                    <dt>{{ metric_t }}</dt>
+                                    <dd>{{ b_tl | escape }}</dd>
+                                </div>
+                            {%- endif -%}
+                        </dl>
+                    </div>
+                {%- endcapture -%}
+                {%- assign tables_html = tables_html | append: table_chunk -%}
+            {%- endif -%}
+
+            {%- assign p_idx = p_idx | plus: 1 -%}
+        {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign has_interactive_switcher = false -%}
+    {%- if has_multi_products and any_block_has_views -%}
+        {%- assign has_interactive_switcher = true -%}
+    {%- endif -%}
+{%- endif -%}
 
 {%- if has_any_content or request.design_mode -%}
     <section
         data-section-id="{{ section.id }}"
         class="section geometry color-{{ section.settings.color_scheme }}"
         style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
-        {% if has_heading %}
+        {% if heading_val != blank %}
             aria-labelledby="FrameGeometryHeading-{{ section.id }}"
         {% else %}
             aria-label="{{ 'sections.frame-geometry.accessibility.region' | t }}"
         {% endif %}
     >
-        <div class="geometry__frame">
-            {%- if has_any_content -%}
-                {%- if has_header -%}
-                    <div class="geometry__head">
-                        {%- if has_section_number or has_heading -%}
-                            <h2 id="FrameGeometryHeading-{{ section.id }}" class="geometry__title">
-                                {%- if has_section_number -%}
-                                    <span class="geometry__num">
-                                        {{- section.settings.section_number | escape -}}
-                                    </span>
-                                {%- endif -%}
-                                {%- if has_section_number and has_heading -%}
+        <div
+            class="geometry__frame"
+            {% if has_interactive_switcher %}
+                x-data="frameGeometry"
+                data-module-id="frame-geometry"
+                data-initial-index="{{ initial_fit_index }}"
+            {% endif %}
+        >
+            {%- if has_header -%}
+                <div class="geometry__head">
+                    {%- assign title_text = section_number_val | append: heading_val | strip -%}
+                    {%- if title_text != blank -%}
+                        <h2 id="FrameGeometryHeading-{{ section.id }}" class="geometry__title">
+                            {%- if section_number_val != blank -%}
+                                <span class="geometry__num">
+                                    {{- section_number_val -}}
+                                </span>
+                                {%- if heading_val != blank -%}
                                     <span class="geometry__slash" aria-hidden="true">/</span>
                                 {%- endif -%}
-                                {%- if has_heading -%}
-                                    <span>{{ section.settings.heading | escape }}</span>
-                                {%- endif -%}
-                            </h2>
-                        {%- endif -%}
+                            {%- endif -%}
+                            {%- if heading_val != blank -%}
+                                <span>{{ heading_val }}</span>
+                            {%- endif -%}
+                        </h2>
+                    {%- endif -%}
 
-                        {%- if has_note -%}
-                            <p class="geometry__note">
-                                {{- section.settings.note | escape -}}
-                            </p>
+                    {%- if note_val != blank -%}
+                        <p class="geometry__note">
+                            {{- note_val -}}
+                        </p>
+                    {%- endif -%}
+                </div>
+            {%- endif -%}
+
+            {%- if has_product_blocks -%}
+                {%- if any_block_has_views -%}
+                    <div class="geometry__box">
+                        <span
+                            class="geometry__crosshair geometry__crosshair--top-start"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--top-end"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--bottom-start"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--bottom-end"
+                            aria-hidden="true"
+                        ></span>
+                        {%- if any_block_dual_views -%}
+                            <span
+                                class="geometry__crosshair geometry__crosshair--center"
+                                aria-hidden="true"
+                            ></span>
                         {%- endif -%}
+                        {{ panels_html }}
                     </div>
                 {%- endif -%}
 
-                {%- if has_views -%}
+                <div class="geometry__spec-bar">
+                    <div class="geometry__spec-summary">
+                        <span class="geometry__spec-label">
+                            {{- 'sections.frame-geometry.labels.select_fit' | t -}}
+                        </span>
+
+                        {%- if has_interactive_switcher -%}
+                            <span class="geometry__spec-fallback" :hidden="ready">
+                                {{ first_static_pill_html }}
+                            </span>
+                            <div
+                                class="geometry__fit-list"
+                                role="tablist"
+                                aria-label="{{ 'sections.frame-geometry.accessibility.product_selector' | t }}"
+                                :hidden="!ready"
+                                hidden
+                            >
+                                {{ controls_html }}
+                            </div>
+                        {%- else -%}
+                            {{ first_static_pill_html }}
+                        {%- endif -%}
+                    </div>
+                    {{ tables_html }}
+                </div>
+            {%- else -%}
+                {%- if has_front_view or has_side_view -%}
                     <div class="geometry__box">
-                        <span class="geometry__crosshair" aria-hidden="true"></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--top-start"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--top-end"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--bottom-start"
+                            aria-hidden="true"
+                        ></span>
+                        <span
+                            class="geometry__crosshair geometry__crosshair--bottom-end"
+                            aria-hidden="true"
+                        ></span>
+                        {%- if has_front_view and has_side_view -%}
+                            <span
+                                class="geometry__crosshair geometry__crosshair--center"
+                                aria-hidden="true"
+                            ></span>
+                        {%- endif -%}
                         <div class="geometry__views{% unless has_front_view and has_side_view %} geometry__views--single{% endunless %}">
                             {%- if has_front_view -%}
-                                <figure class="geometry__view geometry__view--front">
-                                    {%- if has_frame_width -%}
+                                <figure class="geometry__view geometry__view--front{% if disp_lh != blank %} geometry__view--with-height{% endif %}">
+                                    {%- if disp_fw != blank -%}
                                         <div class="geometry__callout geometry__callout--top">
                                             <p class="geometry__callout-text">
-                                                <span>
-                                                    {{-
-                                                        'sections.frame-geometry.labels.frame_width'
-                                                        | t
-                                                    -}}
-                                                </span>
+                                                <span>{{ label_frame_width }}</span>
                                                 <span class="geometry__callout-value">
-                                                    {{- section.settings.frame_width | escape -}}
+                                                    {{- disp_fw | escape -}}
                                                 </span>
                                             </p>
                                             <span
@@ -156,115 +644,89 @@
                                         </div>
                                     {%- endif -%}
 
-                                    <div class="geometry__stage">
-                                        {%- if has_front_image -%}
+                                    {%- if section.settings.front_image != blank -%}
+                                        {% render 'image',
+                                            image: section.settings.front_image,
+                                            aspect_ratio: 'adapt',
+                                            placeholder_aspect_ratio: 'wide',
+                                            mode: 'natural',
+                                            fit: 'contain',
+                                            loading: 'lazy',
+                                            alt: front_alt,
+                                            widths: '360,540,720,960,1200',
+                                            sizes: '(min-width: 1024px) 52vw, 94vw',
+                                            wrapper_class: 'geometry__media'
+                                        %}
+                                    {%- elsif request.design_mode -%}
+                                        <div class="geometry__media" aria-hidden="true">
                                             {% render 'image',
-                                                image: section.settings.front_image,
-                                                aspect_ratio: 'adapt',
-                                                placeholder_aspect_ratio: 'wide',
-                                                mode: 'natural',
-                                                fit: 'contain',
-                                                loading: 'lazy',
-                                                alt: front_alt,
-                                                widths: '360,540,720,960,1200',
-                                                sizes: '(min-width: 1024px) 52vw, 94vw',
-                                                wrapper_class: 'geometry__media'
-                                            %}
-                                        {%- elsif request.design_mode -%}
-                                            {% render 'image',
-                                                image: blank,
                                                 aspect_ratio: 'wide',
                                                 mode: 'frame',
-                                                placeholder_key: 'product-1',
-                                                placeholder_style: 'framed',
-                                                wrapper_class: 'geometry__media'
+                                                placeholder_key: 'lifestyle-1',
+                                                placeholder_style: 'framed'
                                             %}
-                                        {%- endif -%}
+                                        </div>
+                                    {%- endif -%}
 
-                                        {%- if has_lens_height -%}
-                                            <div class="geometry__callout geometry__callout--side">
-                                                <span
-                                                    class="geometry__dim-line geometry__dim-line--v"
-                                                    aria-hidden="true"
-                                                ></span>
-                                                <p class="geometry__callout-text">
-                                                    <span>
-                                                        {{-
-                                                            'sections.frame-geometry.labels.lens_height'
-                                                            | t
-                                                        -}}
-                                                    </span>
-                                                    <span class="geometry__callout-value">
-                                                        {{-
-                                                            section.settings.lens_height
-                                                            | escape
-                                                        -}}
-                                                    </span>
-                                                </p>
-                                            </div>
-                                        {%- endif -%}
-                                    </div>
+                                    {%- if disp_lh != blank -%}
+                                        <div class="geometry__callout geometry__callout--side">
+                                            <span
+                                                class="geometry__dim-line geometry__dim-line--v"
+                                                aria-hidden="true"
+                                            ></span>
+                                            <p class="geometry__callout-text">
+                                                <span>{{ label_lens_height }}</span>
+                                                <span class="geometry__callout-value">
+                                                    {{- disp_lh | escape -}}
+                                                </span>
+                                            </p>
+                                        </div>
+                                    {%- endif -%}
 
-                                    {%- if has_lens_width or has_bridge_width -%}
+                                    {%- assign legacy_bottom_text = disp_lw
+                                        | append: disp_bw
+                                        | strip
+                                    -%}
+                                    {%- if legacy_bottom_text != blank -%}
                                         <div class="geometry__callouts-bottom">
-                                            {%- if has_lens_width -%}
-                                                <div class="geometry__callout">
+                                            {%- if disp_lw != blank -%}
+                                                <div class="geometry__callout geometry__callout--lens">
                                                     <span
                                                         class="geometry__dim-line geometry__dim-line--h"
                                                         aria-hidden="true"
                                                     ></span>
                                                     <p class="geometry__callout-text">
-                                                        <span>
-                                                            {{-
-                                                                'sections.frame-geometry.labels.lens_width'
-                                                                | t
-                                                            -}}
-                                                        </span>
+                                                        <span>{{ label_lens_width }}</span>
                                                         <span class="geometry__callout-value">
-                                                            {{-
-                                                                section.settings.lens_width
-                                                                | escape
-                                                            -}}
+                                                            {{- disp_lw | escape -}}
                                                         </span>
                                                     </p>
                                                 </div>
                                             {%- endif -%}
 
-                                            {%- if has_bridge_width -%}
-                                                <div class="geometry__callout">
+                                            {%- if disp_bw != blank -%}
+                                                <div class="geometry__callout geometry__callout--bridge">
                                                     <span
                                                         class="geometry__dim-line geometry__dim-line--h"
                                                         aria-hidden="true"
                                                     ></span>
                                                     <p class="geometry__callout-text">
-                                                        <span>
-                                                            {{-
-                                                                'sections.frame-geometry.labels.bridge_width'
-                                                                | t
-                                                            -}}
-                                                        </span>
+                                                        <span>{{ label_bridge_width }}</span>
                                                         <span class="geometry__callout-value">
-                                                            {{-
-                                                                section.settings.bridge_width
-                                                                | escape
-                                                            -}}
+                                                            {{- disp_bw | escape -}}
                                                         </span>
                                                     </p>
                                                 </div>
                                             {%- endif -%}
                                         </div>
                                     {%- endif -%}
-
-                                    <figcaption class="visually-hidden">
-                                        {{- 'sections.frame-geometry.labels.front_view' | t -}}
-                                    </figcaption>
                                 </figure>
                             {%- endif -%}
 
                             {%- if has_side_view -%}
                                 <figure class="geometry__view geometry__view--side">
-                                    <div class="geometry__stage geometry__stage--side">
-                                        {%- if has_side_image -%}
+                                    <div class="geometry__stage--side">
+                                        {%- if section.settings.side_image != blank -%}
                                             {% render 'image',
                                                 image: section.settings.side_image,
                                                 aspect_ratio: 'adapt',
@@ -278,40 +740,31 @@
                                                 wrapper_class: 'geometry__media'
                                             %}
                                         {%- elsif request.design_mode -%}
-                                            {% render 'image',
-                                                image: blank,
-                                                aspect_ratio: 'wide',
-                                                mode: 'frame',
-                                                placeholder_key: 'product-2',
-                                                placeholder_style: 'framed',
-                                                wrapper_class: 'geometry__media'
-                                            %}
+                                            <div class="geometry__media" aria-hidden="true">
+                                                {% render 'image',
+                                                    aspect_ratio: 'wide',
+                                                    mode: 'frame',
+                                                    placeholder_key: 'lifestyle-2',
+                                                    placeholder_style: 'framed'
+                                                %}
+                                            </div>
                                         {%- endif -%}
                                     </div>
 
-                                    {%- if has_temple_length -%}
+                                    {%- if disp_tl != blank -%}
                                         <div class="geometry__callout geometry__callout--bottom">
                                             <span
                                                 class="geometry__dim-line geometry__dim-line--h"
                                                 aria-hidden="true"
                                             ></span>
                                             <p class="geometry__callout-text">
-                                                <span>
-                                                    {{-
-                                                        'sections.frame-geometry.labels.temple_length'
-                                                        | t
-                                                    -}}
-                                                </span>
+                                                <span>{{ label_temple_length }}</span>
                                                 <span class="geometry__callout-value">
-                                                    {{- section.settings.temple_length | escape -}}
+                                                    {{- disp_tl | escape -}}
                                                 </span>
                                             </p>
                                         </div>
                                     {%- endif -%}
-
-                                    <figcaption class="visually-hidden">
-                                        {{- 'sections.frame-geometry.labels.side_view' | t -}}
-                                    </figcaption>
                                 </figure>
                             {%- endif -%}
                         </div>
@@ -320,19 +773,60 @@
 
                 {%- if has_spec_bar -%}
                     <div class="geometry__spec-bar">
-                        {%- if has_fit_label or has_size_code or has_fit_note -%}
+                        {%- if use_editor_sample_dims -%}
                             <div class="geometry__spec-summary">
-                                {%- if has_fit_label -%}
+                                <span class="geometry__spec-label">
+                                    {{- 'sections.frame-geometry.labels.select_fit' | t -}}
+                                </span>
+                                <div class="geometry__fit-list">
+                                    <span class="geometry__fit-pill">
+                                        <span>
+                                            {{- 'sections.frame-geometry.preview.fit_narrow' | t -}}
+                                        </span>
+                                        <span class="geometry__fit-code">
+                                            {{-
+                                                'sections.frame-geometry.preview.code_narrow'
+                                                | t
+                                            -}}
+                                        </span>
+                                    </span>
+                                    <span class="geometry__spec-pill">
+                                        <span>
+                                            {{-
+                                                'sections.frame-geometry.preview.fit_standard'
+                                                | t
+                                            -}}
+                                        </span>
+                                        <span class="geometry__fit-code">
+                                            {{-
+                                                'sections.frame-geometry.preview.code_standard'
+                                                | t
+                                            -}}
+                                        </span>
+                                    </span>
+                                    <span class="geometry__fit-pill">
+                                        <span>
+                                            {{- 'sections.frame-geometry.preview.fit_wide' | t -}}
+                                        </span>
+                                        <span class="geometry__fit-code">
+                                            {{- 'sections.frame-geometry.preview.code_wide' | t -}}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        {%- elsif legacy_summary_text != blank -%}
+                            <div class="geometry__spec-summary">
+                                {%- if section.settings.fit_label != blank -%}
                                     <span class="geometry__spec-label">
                                         {{- section.settings.fit_label | escape -}}
                                     </span>
                                 {%- endif -%}
-                                {%- if has_size_code -%}
+                                {%- if section.settings.size_code != blank -%}
                                     <span class="geometry__spec-pill">
                                         {{- section.settings.size_code | escape -}}
                                     </span>
                                 {%- endif -%}
-                                {%- if has_fit_note -%}
+                                {%- if section.settings.fit_note != blank -%}
                                     <p class="geometry__spec-note">
                                         {{- section.settings.fit_note | escape -}}
                                     </p>
@@ -342,52 +836,30 @@
 
                         {%- if has_metrics -%}
                             <div class="geometry__table-wrap">
-                                <p class="geometry__table-heading">
-                                    {{- 'sections.frame-geometry.labels.frame_size' | t -}}
-                                </p>
+                                <p class="geometry__table-heading">{{ label_frame_size }}</p>
                                 <dl class="geometry__metrics">
-                                    {%- if has_frame_width -%}
+                                    {%- if disp_f_num != blank -%}
                                         <div class="geometry__metric">
-                                            <dt>
-                                                {{
-                                                    'sections.frame-geometry.metrics.frame_short'
-                                                    | t
-                                                }}
-                                            </dt>
-                                            <dd>{{ section.settings.frame_width | escape }}</dd>
+                                            <dt>{{ metric_f }}</dt>
+                                            <dd>{{ disp_f_num | escape }}</dd>
                                         </div>
                                     {%- endif -%}
-                                    {%- if has_lens_width -%}
+                                    {%- if disp_l_num != blank -%}
                                         <div class="geometry__metric">
-                                            <dt>
-                                                {{
-                                                    'sections.frame-geometry.metrics.lens_short'
-                                                    | t
-                                                }}
-                                            </dt>
-                                            <dd>{{ section.settings.lens_width | escape }}</dd>
+                                            <dt>{{ metric_l }}</dt>
+                                            <dd>{{ disp_l_num | escape }}</dd>
                                         </div>
                                     {%- endif -%}
-                                    {%- if has_bridge_width -%}
+                                    {%- if disp_b_num != blank -%}
                                         <div class="geometry__metric">
-                                            <dt>
-                                                {{
-                                                    'sections.frame-geometry.metrics.bridge_short'
-                                                    | t
-                                                }}
-                                            </dt>
-                                            <dd>{{ section.settings.bridge_width | escape }}</dd>
+                                            <dt>{{ metric_b }}</dt>
+                                            <dd>{{ disp_b_num | escape }}</dd>
                                         </div>
                                     {%- endif -%}
-                                    {%- if has_temple_length -%}
+                                    {%- if disp_t_num != blank -%}
                                         <div class="geometry__metric">
-                                            <dt>
-                                                {{
-                                                    'sections.frame-geometry.metrics.temple_short'
-                                                    | t
-                                                }}
-                                            </dt>
-                                            <dd>{{ section.settings.temple_length | escape }}</dd>
+                                            <dt>{{ metric_t }}</dt>
+                                            <dd>{{ disp_t_num | escape }}</dd>
                                         </div>
                                     {%- endif -%}
                                 </dl>
@@ -395,12 +867,6 @@
                         {%- endif -%}
                     </div>
                 {%- endif -%}
-            {%- else -%}
-                <div class="geometry__empty">
-                    <p class="geometry__empty-text copy-s">
-                        {{- 'sections.frame-geometry.placeholders.empty' | t -}}
-                    </p>
-                </div>
             {%- endif -%}
         </div>
     </section>
@@ -449,8 +915,8 @@
     }
 
     .geometry__slash {
-        font-weight: var(--font-body-weight);
-        color: var(--color-subtle);
+        font-weight: var(--font-heading-weight);
+        color: rgb(var(--color-accent-background));
         flex-shrink: 0;
     }
 
@@ -465,37 +931,81 @@
     }
 
     .geometry__box {
+        --geometry-pad-x: clamp(var(--spacing-step-m), 2.4cqi, var(--spacing-step-2xl));
+        --geometry-views-gap: clamp(var(--spacing-step-l), 3cqi, var(--spacing-step-3xl));
+        --geometry-split-x: calc(
+            56% - 0.12 * var(--geometry-pad-x) - 0.06 * var(--geometry-views-gap)
+        );
         position: relative;
         border: 1px solid var(--geometry-line-color);
         background-color: rgb(var(--color-background));
         padding-block: clamp(var(--spacing-step-l), 2.6cqi, var(--spacing-step-2xl));
-        padding-inline: clamp(var(--spacing-step-m), 2.4cqi, var(--spacing-step-2xl));
+        padding-inline: var(--geometry-pad-x);
     }
 
     .geometry__crosshair {
         --geometry-crosshair-x: -50%;
+        --geometry-crosshair-y: -50%;
         position: absolute;
-        inset-block-start: -0.5px;
-        inset-inline-start: 51%;
         width: clamp(1.2rem, 1.8cqi, 2rem);
         height: clamp(1.2rem, 1.8cqi, 2rem);
         color: var(--geometry-line-color);
-        transform: translate(var(--geometry-crosshair-x), -50%);
+        transform: translate(var(--geometry-crosshair-x), var(--geometry-crosshair-y));
         pointer-events: none;
         background:
             linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
             linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
     }
 
-    [dir='rtl'] .geometry__crosshair {
+    .geometry__crosshair--top-start {
+        inset-block-start: -0.5px;
+        inset-inline-start: -0.5px;
+    }
+
+    .geometry__crosshair--top-end {
         --geometry-crosshair-x: 50%;
+        inset-block-start: -0.5px;
+        inset-inline-end: -0.5px;
+    }
+
+    .geometry__crosshair--bottom-start {
+        --geometry-crosshair-y: 50%;
+        inset-block-end: -0.5px;
+        inset-inline-start: -0.5px;
+    }
+
+    .geometry__crosshair--bottom-end {
+        --geometry-crosshair-x: 50%;
+        --geometry-crosshair-y: 50%;
+        inset-block-end: -0.5px;
+        inset-inline-end: -0.5px;
+    }
+
+    .geometry__crosshair--center {
+        inset-block-start: -0.5px;
+        inset-inline-start: var(--geometry-split-x);
+    }
+
+    [dir='rtl'] .geometry__crosshair--top-start,
+    [dir='rtl'] .geometry__crosshair--bottom-start,
+    [dir='rtl'] .geometry__crosshair--center {
+        --geometry-crosshair-x: 50%;
+    }
+
+    [dir='rtl'] .geometry__crosshair--top-end,
+    [dir='rtl'] .geometry__crosshair--bottom-end {
+        --geometry-crosshair-x: -50%;
     }
 
     .geometry__views {
         display: grid;
         grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
         align-items: center;
-        gap: clamp(var(--spacing-step-l), 3cqi, var(--spacing-step-3xl));
+        gap: var(--geometry-views-gap);
+    }
+
+    .geometry__views[hidden] {
+        display: none;
     }
 
     .geometry__views--single {
@@ -509,16 +1019,47 @@
         min-width: 0;
     }
 
-    .geometry__stage {
+    .geometry__view--front {
+        container-type: inline-size;
+        container-name: geometry-front;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            'top'
+            'media'
+            'bottom';
         align-items: center;
-        gap: var(--spacing-step-s);
-        min-width: 0;
+    }
+
+    .geometry__view--with-height {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            'top .'
+            'media side'
+            'bottom .';
+    }
+
+    .geometry__view--front .geometry__callout--top {
+        grid-area: top;
+    }
+
+    .geometry__view--front .geometry__media {
+        grid-area: media;
+    }
+
+    .geometry__view--front .geometry__callout--side {
+        grid-area: side;
+    }
+
+    .geometry__view--front .geometry__callouts-bottom {
+        grid-area: bottom;
     }
 
     .geometry__stage--side {
+        display: grid;
         grid-template-columns: minmax(0, 1fr);
+        align-items: center;
+        min-width: 0;
     }
 
     .geometry__media {
@@ -566,6 +1107,7 @@
 
     .geometry__callout-value {
         white-space: nowrap;
+        text-transform: none;
     }
 
     .geometry__dim-line {
@@ -596,15 +1138,24 @@
 
     .geometry__callouts-bottom {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-        gap: var(--spacing-step-m);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 0.44fr) minmax(0, 1fr);
+        column-gap: var(--spacing-step-s);
+        row-gap: var(--spacing-step-m);
+    }
+
+    .geometry__callout--lens {
+        grid-column: 1;
+    }
+
+    .geometry__callout--bridge {
+        grid-column: 2;
     }
 
     .geometry__spec-bar {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        gap: var(--spacing-step-m) var(--spacing-step-2xl);
+        gap: var(--spacing-step-m) var(--spacing-step-xl);
         margin-block-start: var(--spacing-step-m);
         padding-block: var(--spacing-step-m);
         border-block-end: 1px solid var(--geometry-line-color);
@@ -614,7 +1165,7 @@
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--spacing-step-s) var(--spacing-step-l);
+        gap: var(--spacing-step-s) var(--spacing-step-m);
         min-width: 0;
     }
 
@@ -628,9 +1179,73 @@
         color: var(--color-subtle);
     }
 
+    .geometry__fit-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--spacing-step-xs);
+        min-width: 0;
+    }
+
+    .geometry__fit-list[hidden] {
+        display: none;
+    }
+
+    .geometry__fit-btn {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-step-xs);
+        min-height: 3.6rem;
+        padding: 0.55em 1.1em;
+        border: 1px solid var(--color-line-strong);
+        background-color: rgb(var(--color-background));
+        color: rgb(var(--color-foreground));
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .geometry__fit-btn[aria-selected='true'] {
+        border-color: rgb(var(--color-accent-background));
+        background-color: rgb(var(--color-accent-background));
+        color: rgb(var(--color-accent-foreground));
+    }
+
+    .geometry__fit-code {
+        font-weight: var(--font-body-weight);
+        text-transform: none;
+    }
+
+    .geometry__fit-pill {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-step-xs);
+        min-height: 3.6rem;
+        padding: 0.55em 1.1em;
+        border: 1px solid var(--color-line);
+        background-color: rgb(var(--color-background));
+        color: rgb(var(--color-foreground));
+        font-family: var(--font-mono-family);
+        font-size: calc(var(--type-step--2) * var(--font-body-scale));
+        font-weight: var(--font-heading-weight);
+        line-height: var(--font-heading-line-height);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
     .geometry__spec-pill {
         display: inline-flex;
+        flex-wrap: wrap;
         align-items: center;
+        gap: var(--spacing-step-xs);
         padding: 0.55em 1.1em;
         border: 1px solid rgb(var(--color-accent-background));
         background-color: rgb(var(--color-accent-background));
@@ -653,9 +1268,19 @@
     .geometry__table-wrap {
         display: flex;
         flex-direction: column;
-        align-items: flex-end;
+        align-items: flex-start;
         gap: var(--spacing-step-2xs);
         min-width: 0;
+    }
+
+    .geometry__table-wrap[hidden] {
+        display: none;
+    }
+
+    .geometry__spec-summary + .geometry__table-wrap,
+    .geometry__spec-summary ~ .geometry__table-wrap {
+        border-inline-start: 1px solid var(--geometry-line-color);
+        padding-inline-start: var(--spacing-step-xl);
     }
 
     .geometry__table-heading {
@@ -671,7 +1296,7 @@
         display: flex;
         flex-wrap: wrap;
         align-items: baseline;
-        justify-content: flex-end;
+        justify-content: flex-start;
         gap: var(--spacing-step-s) var(--spacing-step-xl);
     }
 
@@ -696,29 +1321,21 @@
         color: rgb(var(--color-foreground));
     }
 
-    .geometry__empty {
-        border: 1px dashed var(--color-line-strong);
-        background-color: var(--color-surface-muted);
-        padding: var(--spacing-step-xl);
-        text-align: center;
-    }
-
-    .geometry__empty-text {
-        color: var(--color-subtle);
-    }
-
     @container geometry-frame (max-width: 78rem) {
         .geometry__spec-bar {
             grid-template-columns: minmax(0, 1fr);
         }
 
-        .geometry__table-wrap {
-            align-items: flex-start;
+        .geometry__spec-summary + .geometry__table-wrap,
+        .geometry__spec-summary ~ .geometry__table-wrap {
+            border-inline-start: 0;
+            padding-inline-start: 0;
+            border-block-start: 1px solid var(--geometry-line-color);
+            padding-block-start: var(--spacing-step-m);
         }
 
         .geometry__metrics {
             width: 100%;
-            justify-content: flex-start;
         }
 
         .geometry__metric {
@@ -727,7 +1344,7 @@
     }
 
     @container geometry-frame (max-width: 54rem) {
-        .geometry__crosshair {
+        .geometry__crosshair--center {
             display: none;
         }
 
@@ -746,31 +1363,31 @@
         }
     }
 
-    @container geometry-frame (max-width: 34rem) {
-        .geometry__stage {
+    @container geometry-front (max-width: 34rem) {
+        .geometry__callouts-bottom {
             grid-template-columns: minmax(0, 1fr);
         }
 
-        .geometry__callout--side {
-            flex-direction: column;
+        .geometry__callout--lens {
+            grid-column: 1;
+            align-items: flex-start;
+        }
+
+        .geometry__callout--lens .geometry__dim-line--h {
+            width: 42%;
+        }
+
+        .geometry__callout--lens .geometry__callout-text {
+            width: 42%;
+        }
+
+        .geometry__callout--bridge {
+            grid-column: 1;
             align-items: center;
-            text-align: center;
         }
 
-        .geometry__callout--side .geometry__callout-text {
-            flex-direction: row;
-            align-items: baseline;
-            justify-content: center;
-        }
-
-        .geometry__dim-line--v {
-            width: 100%;
-            min-height: 0.7rem;
-            height: 0.7rem;
-            background:
-                linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
-                linear-gradient(currentColor, currentColor) left center / 1px 100% no-repeat,
-                linear-gradient(currentColor, currentColor) right center / 1px 100% no-repeat;
+        .geometry__callout--bridge .geometry__dim-line--h {
+            width: 20%;
         }
     }
 {% endstylesheet %}
@@ -780,6 +1397,7 @@
     "name": "t:sections.frame-geometry.name",
     "tag": "section",
     "class": "section-frame-geometry",
+    "max_blocks": 3,
     "disabled_on": {
         "groups": ["header", "footer"]
     },
@@ -889,12 +1507,109 @@
             "step": 4,
             "unit": "px",
             "label": "t:sections.frame-geometry.settings.padding_bottom",
-            "default": 0
+            "default": 32
+        }
+    ],
+    "blocks": [
+        {
+            "type": "product_fit",
+            "name": "t:sections.frame-geometry.blocks.product_fit.name",
+            "settings": [
+                {
+                    "type": "product",
+                    "id": "product",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.product"
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.label"
+                },
+                {
+                    "type": "checkbox",
+                    "id": "default_selected",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.default_selected",
+                    "default": false
+                },
+                {
+                    "type": "header",
+                    "content": "t:sections.frame-geometry.blocks.product_fit.content.media"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "front_image",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.front_image"
+                },
+                {
+                    "type": "image_picker",
+                    "id": "side_image",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.side_image"
+                },
+                {
+                    "type": "header",
+                    "content": "t:sections.frame-geometry.blocks.product_fit.content.dimensions"
+                },
+                {
+                    "type": "text",
+                    "id": "frame_width",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.frame_width"
+                },
+                {
+                    "type": "text",
+                    "id": "lens_width",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.lens_width"
+                },
+                {
+                    "type": "text",
+                    "id": "bridge_width",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.bridge_width"
+                },
+                {
+                    "type": "text",
+                    "id": "lens_height",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.lens_height"
+                },
+                {
+                    "type": "text",
+                    "id": "temple_length",
+                    "label": "t:sections.frame-geometry.blocks.product_fit.settings.temple_length"
+                }
+            ]
         }
     ],
     "presets": [
         {
-            "name": "t:sections.frame-geometry.presets.frame_geometry"
+            "name": "t:sections.frame-geometry.presets.frame_geometry",
+            "settings": {
+                "section_number": "02",
+                "heading": "FRAME GEOMETRY & FIT",
+                "note": "PRECISION MEASUREMENTS FOR A TAILORED FIT.",
+                "padding_top": 32,
+                "padding_bottom": 32
+            },
+            "blocks": [
+                {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "NARROW",
+                        "default_selected": false
+                    }
+                },
+                {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "STANDARD",
+                        "default_selected": true
+                    }
+                },
+                {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "WIDE",
+                        "default_selected": false
+                    }
+                }
+            ]
         }
     ]
 }

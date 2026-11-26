@@ -9,50 +9,177 @@
  */
 
 {
-  "sections": {
-    "main": {
-      "type": "hero",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
+    "sections": {
+        "main": {
+            "type": "hero",
+            "settings": {
+                "color_scheme": "scheme-1",
+                "kicker": "EXPERIMENTAL EYEWEAR\nARCHITECTURAL ACETATE",
+                "brand_heading": "AXIS / LAYR",
+                "descriptor_heading": "ARCHITECTURAL\nEYEWEAR",
+                "lede": "SCULPTURAL FRAMES FOR A HIGHER\nOPTICAL PERSPECTIVE.",
+                "description": "A fusion of architectural form, advanced acetate, and optical precision — eyewear that redefines the structure of vision.",
+                "cta_label": "SHOP THE COLLECTION",
+                "cta_link": "/collections/all",
+                "model_specs": "MODEL AL-03\nFRAME CLEAR\nLENS GREY",
+                "focus_specs": "[ FOCUS ]\nf 50.0 mm\nA f/2.8\nISO 100",
+                "diameter_label": "Ø 142.0 mm"
+            }
+        },
+        "frame_geometry": {
+            "type": "frame-geometry",
+            "blocks": {
+                "fit_narrow": {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "NARROW",
+                        "default_selected": false
+                    }
+                },
+                "fit_standard": {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "STANDARD",
+                        "default_selected": true
+                    }
+                },
+                "fit_wide": {
+                    "type": "product_fit",
+                    "settings": {
+                        "label": "WIDE",
+                        "default_selected": false
+                    }
+                }
+            },
+            "block_order": ["fit_narrow", "fit_standard", "fit_wide"],
+            "settings": {
+                "color_scheme": "scheme-1",
+                "section_number": "02",
+                "heading": "FRAME GEOMETRY & FIT",
+                "note": "PRECISION MEASUREMENTS FOR A TAILORED FIT.",
+                "padding_top": 32,
+                "padding_bottom": 32
+            }
+        },
+        "material_detail": {
+            "type": "material-detail",
+            "blocks": {
+                "material_1": {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "01",
+                        "title": "ACETATE LAYERING",
+                        "caption_title": "LAYERED ACETATE",
+                        "subtitle": "(CRYSTAL CLEAR)",
+                        "caption_position": "top_start"
+                    }
+                },
+                "material_2": {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "02",
+                        "title": "PRECISION HINGE",
+                        "caption_title": "PRECISION HINGE",
+                        "subtitle": "(TITANIUM CORE)",
+                        "caption_position": "top_start"
+                    }
+                },
+                "material_3": {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "03",
+                        "title": "SCULPTURAL PROFILE",
+                        "caption_title": "SCULPTURAL PROFILE",
+                        "subtitle": "(AL-03)",
+                        "caption_position": "bottom_start"
+                    }
+                },
+                "material_4": {
+                    "type": "material_item",
+                    "settings": {
+                        "index_label": "04",
+                        "title": "OPTICAL CLARITY",
+                        "caption_title": "MATERIAL DEPTH",
+                        "subtitle": "(COBALT TRANSLUCENT)",
+                        "caption_position": "bottom_end"
+                    }
+                }
+            },
+            "block_order": ["material_1", "material_2", "material_3", "material_4"],
+            "settings": {
+                "color_scheme": "scheme-1",
+                "section_number": "03",
+                "heading": "MATERIAL & DETAIL",
+                "intro": "A CLOSER LOOK AT THE LAYERS, MATERIALS, AND PRECISION THAT DEFINE AXIS / LAYR."
+            }
+        },
+        "featured_frames": {
+            "type": "featured-frames",
+            "settings": {
+                "color_scheme": "scheme-1",
+                "section_number": "04",
+                "heading": "FEATURED FRAMES",
+                "note": "SCULPTURAL ACETATE. ARCHITECTURAL FIT."
+            }
+        },
+        "service_strip": {
+            "type": "service-strip",
+            "blocks": {
+                "service_1": {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "model",
+                        "title": "Fit",
+                        "description": ""
+                    }
+                },
+                "service_2": {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "info",
+                        "title": "Lenses",
+                        "description": ""
+                    }
+                },
+                "service_3": {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "check",
+                        "title": "Materials",
+                        "description": ""
+                    }
+                },
+                "service_4": {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "check",
+                        "title": "Care",
+                        "description": ""
+                    }
+                }
+            },
+            "block_order": ["service_1", "service_2", "service_3", "service_4"],
+            "settings": {
+                "color_scheme": "scheme-1"
+            }
+        },
+        "optician_endorsement": {
+            "type": "optician-endorsement",
+            "settings": {
+                "color_scheme": "scheme-1",
+                "section_number": "05",
+                "kicker": "OPTICIAN ENDORSEMENT",
+                "padding_top": 32,
+                "padding_bottom": 32
+            }
+        }
     },
-    "frame_geometry": {
-      "type": "frame-geometry",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
-    },
-    "material_detail": {
-      "type": "material-detail",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
-    },
-    "featured_frames": {
-      "type": "featured-frames",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
-    },
-    "service_strip": {
-      "type": "service-strip",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
-    },
-    "optician_endorsement": {
-      "type": "optician-endorsement",
-      "settings": {
-        "color_scheme": "scheme-1"
-      }
-    }
-  },
-  "order": [
-    "main",
-    "frame_geometry",
-    "material_detail",
-    "featured_frames",
-    "service_strip",
-    "optician_endorsement"
-  ]
+    "order": [
+        "main",
+        "frame_geometry",
+        "material_detail",
+        "featured_frames",
+        "service_strip",
+        "optician_endorsement"
+    ]
 }

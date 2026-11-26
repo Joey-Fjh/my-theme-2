@@ -20,7 +20,7 @@
     endif
 -%}
 
-{%- if has_any_content or request.design_mode -%}
+{%- if has_any_content -%}
     <section
         data-section-id="{{ section.id }}"
         class="section service-strip color-{{ section.settings.color_scheme }}"
@@ -28,109 +28,86 @@
         aria-label="{{ 'sections.service-strip.accessibility.region' | t }}"
     >
         <div class="service-strip__frame">
-            {%- if has_any_content -%}
-                <ul class="service-strip__grid" data-count="{{ visible_item_count }}" role="list">
-                    {%- for block in section.blocks -%}
-                        {%- liquid
-                            assign item_has_title = false
-                            if block.settings.title != blank
-                                assign item_has_title = true
-                            endif
-                            assign item_has_description = false
-                            if block.settings.description != blank
-                                assign item_has_description = true
-                            endif
-                            assign item_has_content = false
-                            if item_has_title or item_has_description
-                                assign item_has_content = true
-                            endif
-                            assign item_has_link = false
-                            if block.settings.link != blank
-                                assign item_has_link = true
-                            endif
-                            assign icon_file = ''
-                            case block.settings.icon
-                                when 'check'
-                                    assign icon_file = 'icon-check-circle'
-                                when 'info'
-                                    assign icon_file = 'icon-info-circle'
-                                when 'model'
-                                    assign icon_file = 'icon-3d-model'
-                            endcase
-                        -%}
+            <ul class="service-strip__grid" data-count="{{ visible_item_count }}" role="list">
+                {%- for block in section.blocks -%}
+                    {%- liquid
+                        assign item_title = block.settings.title | strip
+                        assign item_desc = block.settings.description | strip
+                        assign item_has_content = false
+                        if item_title != blank or item_desc != blank
+                            assign item_has_content = true
+                        endif
 
-                        {%- if item_has_content -%}
-                            <li class="service-strip__item" {{ block.shopify_attributes }}>
-                                {%- if item_has_link -%}
-                                    <a
-                                        class="service-strip__card service-strip__card--link"
-                                        href="{{ block.settings.link }}"
-                                    >
-                                        {%- if icon_file != blank -%}
-                                            <span class="service-strip__icon" aria-hidden="true">
-                                                {% render 'icons', icon: icon_file, size: 'sm' %}
+                        assign icon_file = ''
+                        case block.settings.icon
+                            when 'check'
+                                assign icon_file = 'icon-check-circle'
+                            when 'info'
+                                assign icon_file = 'icon-info-circle'
+                            when 'model'
+                                assign icon_file = 'icon-3d-model'
+                        endcase
+
+                        assign item_has_link = false
+                        if block.settings.link != blank and item_has_content
+                            assign item_has_link = true
+                        endif
+                    -%}
+
+                    {%- if item_has_content -%}
+                        <li class="service-strip__item" {{ block.shopify_attributes }}>
+                            {%- if item_has_link -%}
+                                <a
+                                    class="service-strip__card service-strip__card--link"
+                                    href="{{ block.settings.link }}"
+                                >
+                                    {%- if icon_file != blank -%}
+                                        <span class="service-strip__icon" aria-hidden="true">
+                                            {% render 'icons', icon: icon_file, size: 'sm' %}
+                                        </span>
+                                    {%- endif -%}
+                                    <span class="service-strip__copy">
+                                        {%- if item_title != blank -%}
+                                            <span class="service-strip__title">
+                                                {{- item_title | escape -}}
                                             </span>
                                         {%- endif -%}
-                                        <span class="service-strip__copy">
-                                            {%- if item_has_title -%}
-                                                <span class="service-strip__title">
-                                                    {{- block.settings.title | escape -}}
-                                                </span>
-                                            {%- endif -%}
-                                            {%- if item_has_description -%}
-                                                <span class="service-strip__desc">
-                                                    {{- block.settings.description | escape -}}
-                                                </span>
-                                            {%- endif -%}
-                                        </span>
-                                        <span class="service-strip__arrow" aria-hidden="true">
-                                            {% render 'icons',
-                                                icon: 'icon-chevron-right',
-                                                size: 'xs'
-                                            %}
-                                        </span>
-                                    </a>
-                                {%- else -%}
-                                    <div class="service-strip__card">
-                                        {%- if icon_file != blank -%}
-                                            <span class="service-strip__icon" aria-hidden="true">
-                                                {% render 'icons', icon: icon_file, size: 'sm' %}
+                                        {%- if item_desc != blank -%}
+                                            <span class="service-strip__desc">
+                                                {{- item_desc | escape -}}
                                             </span>
                                         {%- endif -%}
-                                        <div class="service-strip__copy">
-                                            {%- if item_has_title -%}
-                                                <p class="service-strip__title">
-                                                    {{- block.settings.title | escape -}}
-                                                </p>
-                                            {%- endif -%}
-                                            {%- if item_has_description -%}
-                                                <p class="service-strip__desc">
-                                                    {{- block.settings.description | escape -}}
-                                                </p>
-                                            {%- endif -%}
-                                        </div>
+                                    </span>
+                                    <span class="service-strip__arrow" aria-hidden="true">
+                                        {% render 'icons', icon: 'icon-chevron-right', size: 'xs' %}
+                                    </span>
+                                </a>
+                            {%- else -%}
+                                <div class="service-strip__card">
+                                    {%- if icon_file != blank -%}
+                                        <span class="service-strip__icon" aria-hidden="true">
+                                            {% render 'icons', icon: icon_file, size: 'sm' %}
+                                        </span>
+                                    {%- endif -%}
+                                    <div class="service-strip__copy">
+                                        {%- if item_title != blank -%}
+                                            <p class="service-strip__title">
+                                                {{- item_title | escape -}}
+                                            </p>
+                                        {%- endif -%}
+                                        {%- if item_desc != blank -%}
+                                            <p class="service-strip__desc">
+                                                {{- item_desc | escape -}}
+                                            </p>
+                                        {%- endif -%}
                                     </div>
-                                {%- endif -%}
-                            </li>
-                        {%- elsif request.design_mode -%}
-                            <li
-                                class="service-strip__item service-strip__item--empty"
-                                {{ block.shopify_attributes }}
-                            >
-                                <p class="service-strip__empty-text copy-s">
-                                    {{- 'sections.service-strip.placeholders.empty_item' | t -}}
-                                </p>
-                            </li>
-                        {%- endif -%}
-                    {%- endfor -%}
-                </ul>
-            {%- else -%}
-                <div class="service-strip__empty">
-                    <p class="service-strip__empty-text copy-s">
-                        {{- 'sections.service-strip.placeholders.empty' | t -}}
-                    </p>
-                </div>
-            {%- endif -%}
+                                </div>
+                            {%- endif -%}
+                        </li>
+                    {%- endif -%}
+                {%- endfor -%}
+            </ul>
+            <div class="service-strip__rule" aria-hidden="true"></div>
         </div>
     </section>
 {%- endif -%}
@@ -148,8 +125,6 @@
         padding: 0;
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        border-block-start: 1px solid var(--service-strip-line-color);
-        border-inline-start: 1px solid var(--service-strip-line-color);
     }
 
     .service-strip__grid[data-count='1'] {
@@ -167,18 +142,21 @@
     .service-strip__item {
         display: flex;
         min-width: 0;
-        border-block-end: 1px solid var(--service-strip-line-color);
-        border-inline-end: 1px solid var(--service-strip-line-color);
+        position: relative;
         background-color: rgb(var(--color-background));
+    }
+
+    .service-strip__item + .service-strip__item {
+        border-inline-start: 1px solid var(--service-strip-line-color);
     }
 
     .service-strip__card {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: var(--spacing-step-s);
         width: 100%;
         min-width: 0;
-        padding: clamp(var(--spacing-step-m), 1.6cqi, var(--spacing-step-l));
+        padding: var(--spacing-step-m) clamp(var(--spacing-step-m), 1.6cqi, var(--spacing-step-l));
         color: rgb(var(--color-foreground));
         text-decoration: none;
     }
@@ -245,31 +223,48 @@
         transition: color var(--motion-duration-fast) var(--motion-ease-default);
     }
 
-    .service-strip__item--empty,
-    .service-strip__empty {
-        display: grid;
-        place-items: center;
-        padding: var(--spacing-step-l);
-        text-align: center;
-        background-color: var(--color-surface-muted);
+    .service-strip__rule {
+        position: relative;
+        height: 1px;
+        margin-block-start: var(--spacing-step-m);
+        background-color: var(--service-strip-line-color);
     }
 
-    .service-strip__empty {
-        border: 1px dashed var(--color-line-strong);
+    .service-strip__rule::before,
+    .service-strip__rule::after {
+        content: '';
+        position: absolute;
+        inset-block-start: 50%;
+        width: 1.2rem;
+        height: 1.2rem;
+        color: var(--service-strip-line-color);
+        background:
+            linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+            linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+        transform: translateY(-50%);
     }
 
-    .service-strip__empty-text {
-        color: var(--color-subtle);
+    .service-strip__rule::before {
+        inset-inline-start: 0;
+    }
+
+    .service-strip__rule::after {
+        inset-inline-end: 0;
     }
 
     @container service-strip-frame (max-width: 78rem) {
         .service-strip__grid,
         .service-strip__grid[data-count='3'] {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            row-gap: var(--spacing-step-s);
         }
 
         .service-strip__grid[data-count='1'] {
             grid-template-columns: minmax(0, 1fr);
+        }
+
+        .service-strip__item:nth-child(odd) {
+            border-inline-start: 0;
         }
     }
 
@@ -278,6 +273,11 @@
         .service-strip__grid[data-count='2'],
         .service-strip__grid[data-count='3'] {
             grid-template-columns: minmax(0, 1fr);
+        }
+
+        .service-strip__item + .service-strip__item {
+            border-inline-start: 0;
+            border-block-start: 1px solid var(--service-strip-line-color);
         }
     }
 
@@ -380,7 +380,41 @@
     ],
     "presets": [
         {
-            "name": "t:sections.service-strip.presets.service_strip"
+            "name": "t:sections.service-strip.presets.service_strip",
+            "blocks": [
+                {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "model",
+                        "title": "Fit",
+                        "description": ""
+                    }
+                },
+                {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "info",
+                        "title": "Lenses",
+                        "description": ""
+                    }
+                },
+                {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "check",
+                        "title": "Materials",
+                        "description": ""
+                    }
+                },
+                {
+                    "type": "service_item",
+                    "settings": {
+                        "icon": "check",
+                        "title": "Care",
+                        "description": ""
+                    }
+                }
+            ]
         }
     ]
 }

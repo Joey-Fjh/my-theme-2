@@ -163,14 +163,69 @@
         "no_results_html": "No results found for {{ terms }}"
     },
     "sections": {
+        "footer": {
+            "copyright_symbol": "©",
+            "accessibility": {
+                "legal_nav": "Legal links",
+                "social_links": "Social media links"
+            },
+            "social": {
+                "instagram": "Instagram",
+                "instagram_short": "IG",
+                "youtube": "YouTube",
+                "youtube_short": "YT",
+                "x_twitter": "X",
+                "x_twitter_short": "X",
+                "facebook": "Facebook",
+                "facebook_short": "FB",
+                "tiktok": "TikTok",
+                "tiktok_short": "TT",
+                "pinterest": "Pinterest",
+                "pinterest_short": "PI",
+                "linkedin_short": "IN"
+            },
+            "preview": {
+                "brand_tagline": "ARCHITECTURAL EYEWEAR\nFOR A MODERN WORLD.",
+                "col_1_heading": "Shop",
+                "col_1_link_1": "All Eyewear",
+                "col_1_link_2": "Sunglasses",
+                "col_1_link_3": "Optical (Rx)",
+                "col_1_link_4": "New Arrivals",
+                "col_1_link_5": "Bestsellers",
+                "col_2_heading": "About",
+                "col_2_link_1": "Our Story",
+                "col_2_link_2": "Design Philosophy",
+                "col_2_link_3": "Materials & Tech",
+                "col_2_link_4": "Sustainability",
+                "col_2_link_5": "Journal",
+                "col_3_heading": "Support",
+                "col_3_link_1": "Fit & Sizing",
+                "col_3_link_2": "Prescription (Rx)",
+                "col_3_link_3": "Shipping & Delivery",
+                "col_3_link_4": "Returns & Exchanges",
+                "col_3_link_5": "FAQ",
+                "newsletter_heading": "Stay in focus",
+                "newsletter_description": "Subscribe for new releases, exclusive drops, and optical insights.",
+                "newsletter_placeholder": "Enter your email",
+                "legal_terms": "Terms",
+                "legal_privacy": "Privacy",
+                "legal_cookies": "Cookies",
+                "legal_accessibility": "Accessibility"
+            }
+        },
         "optician-endorsement": {
             "accessibility": {
                 "region": "Optician endorsement"
             },
             "quote_format": "“{{ quote }}”",
             "attribution_prefix": "— {{ author }}",
-            "placeholders": {
-                "empty": "Add a quote and attribution name to display this endorsement."
+            "preview": {
+                "section_number": "05",
+                "kicker": "Optician endorsement",
+                "quote": "Optician endorsement pending.",
+                "body": "Add a verified optical specialist quotation and attribution in Theme Editor.",
+                "author_name": "Optical specialist",
+                "author_role": "Credentials and practice"
             }
         },
         "featured-frames": {
@@ -181,26 +236,33 @@
             "labels": {
                 "view_details": "View details"
             },
-            "placeholders": {
-                "empty": "Select up to three products to display in this section."
+            "preview": {
+                "card_1_title": "AL-01 VECTOR",
+                "card_1_subtitle": "Crystal Clear",
+                "card_2_title": "AL-02 ARC",
+                "card_2_subtitle": "Cobalt Translucent",
+                "card_3_title": "AL-03 LAYR",
+                "card_3_subtitle": "Smoke Grey"
             }
         },
         "service-strip": {
             "accessibility": {
                 "region": "Storefront services"
-            },
-            "placeholders": {
-                "empty": "Add up to four service items to display this section.",
-                "empty_item": "Add a title or description for this service item."
             }
         },
         "frame-geometry": {
             "accessibility": {
-                "region": "Frame geometry and fit"
+                "region": "Frame geometry and fit",
+                "product_selector": "Select frame"
             },
             "labels": {
                 "front_view": "Front view",
                 "side_view": "Side view",
+                "front_view_for": "{{ title }} — Front view",
+                "side_view_for": "{{ title }} — Side view",
+                "fit_option": "Fit {{ index }}",
+                "select_fit": "Select fit",
+                "unit_mm": "mm",
                 "frame_width": "Frame width",
                 "lens_width": "Lens width",
                 "bridge_width": "Bridge width",
@@ -214,17 +276,30 @@
                 "bridge_short": "B",
                 "temple_short": "T"
             },
-            "placeholders": {
-                "empty": "Configure frame views or dimensions to display this section."
+            "preview": {
+                "section_number": "02",
+                "heading": "Frame geometry & fit",
+                "note": "Precision measurements for a tailored fit.",
+                "frame_width": "144.0 mm",
+                "lens_width": "51.0 mm",
+                "bridge_width": "21.0 mm",
+                "lens_height": "38.0 mm",
+                "temple_length": "145.0 mm",
+                "fit_narrow": "Narrow",
+                "code_narrow": "48–20–140",
+                "fit_standard": "Standard",
+                "code_standard": "51–21–145",
+                "fit_wide": "Wide",
+                "code_wide": "54–22–150",
+                "metric_f": "144.0",
+                "metric_l": "51.0",
+                "metric_b": "21.0",
+                "metric_t": "145.0"
             }
         },
         "material-detail": {
             "accessibility": {
                 "region": "Material and detail"
-            },
-            "placeholders": {
-                "empty": "Add an introduction or material detail items to display this section.",
-                "empty_item": "Add a title or image for this material detail item."
             }
         },
         "main-page-contact": {
